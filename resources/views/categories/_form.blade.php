@@ -10,7 +10,11 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Mã danh mục</label>
     <div class="col-sm-6">
+        @if ($category->id)
+        <p class="form-control-static"><strong>{{ $category->code }}</strong></p>
+        @else
         <input type="text" class="form-control" name="code" placeholder="Mã danh mục" value="{{ old('code', $category->code) }}">
+        @endif
         <span class="help-block">
             Dùng để sinh SKU, để trống để sinh tự động theo ID.
         </span>

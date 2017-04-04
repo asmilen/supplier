@@ -89,12 +89,10 @@ class CategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:categories,code,'.$category->id,
         ]);
 
         $category->forceFill([
             'name' => request('name'),
-            'code' => request('code') ? strtoupper(request('code')) : $category->id,
             'status' => !! request('status'),
         ])->save();
 

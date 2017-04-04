@@ -90,12 +90,10 @@ class ManufacturersController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:manufacturers,code,'.$manufacturer->id,
         ]);
 
         $manufacturer->forceFill([
             'name' => request('name'),
-            'code' => strtoupper(request('code')) ? : $manufacturer->id,
             'homepage' => request('homepage'),
             'status' => !! request('status'),
         ])->save();

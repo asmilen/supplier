@@ -34,6 +34,23 @@ class Product extends Model
             ])->with('category', 'manufacturer');
 
         return Datatables::eloquent($model)
+            ->filter(function ($query) {
+                if (request()->has('keyword')) {
+                    $query->where(function ($query) {
+                        $query->where('name', 'like', '%'.request('keyword').'%')
+                            ->orWhere('code', 'like', '%'.request('keyword').'%')
+                            ->orWhere('sku', 'like', '%'.request('keyword').'%');
+                    });
+                }
+
+                if (request()->has('category_id')) {
+                    $query->where('category_id', request('category_id'));
+                }
+
+                if (request()->has('manufacturer_id')) {
+                    $query->where('manufacturer_id', request('manufacturer_id'));
+                }
+            })
             ->editColumn('category_id', function ($model) {
                 return $model->category ? $model->category->name : '';
             })

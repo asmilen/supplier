@@ -112,11 +112,37 @@ class ProductsController extends Controller
      */
     public function update(Product $product)
     {
+        if (empty(request('code'))) {
+            $code = Product::where('category_id', request('category_id'))
+                ->where('manufacturer_id', request('manufacturer_id'))
+                ->count();
+        } else {
+            $code = strtoupper(request('code'));
+        }
+
+        Validator::make(request()->all(), [
+            'category_id' => 'required',
+            'manufacturer_id' => 'required',
+            'name' => 'required|max:255',
+            'code' => 'alpha_num|max:255',
+        ])->after(function ($validator) use ($product, $code) {
+            $check = Product::where('category_id', request('category_id'))
+                ->where('manufacturer_id', request('manufacturer_id'))
+                ->where('code', $code)
+                ->where('id', '<>', $product->id)
+                ->first();
+
+            if ($check) {
+                $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+            }
+        })->validate();
+
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
             'name' => request('name'),
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $product->code),
+            'code' => $code,
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
             'status' => !! request('status'),
         ])->save();
 

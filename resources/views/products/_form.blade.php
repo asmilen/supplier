@@ -34,11 +34,7 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Mã sản phẩm</label>
     <div class="col-sm-6">
-        @if ($product->id)
-        <p class="form-control-static"><strong>{{ $product->code }}</strong></p>
-        @else
         <input type="text" class="form-control" name="code" placeholder="Mã sản phẩm" value="{{ old('code', $product->code) }}">
-        @endif
         <span class="help-block">
             Dùng để sinh SKU.
         </span>

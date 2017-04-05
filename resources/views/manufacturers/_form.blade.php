@@ -15,7 +15,7 @@
         @else
         <input type="text" class="form-control" name="code" placeholder="Mã nhà SX" value="{{ old('code', $manufacturer->code) }}">
         <span class="help-block">
-            Dùng để sinh SKU, để trống để sinh tự động.
+            Dài từ 3~6 kí tự bao gồm chữ cái và số. Dùng để sinh SKU, để trống để sinh tự động.
         </span>
         @endif
     </div>

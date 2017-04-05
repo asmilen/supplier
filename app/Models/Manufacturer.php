@@ -17,6 +17,30 @@ class Manufacturer extends Model
      */
     protected $dates = ['deleted_at'];
 
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($manufacturer) {
+            if (! empty($manufacturer->code)) {
+                return;
+            }
+
+            $name = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', trim($manufacturer->name))));
+
+            if (($pos = strpos($name, '-')) === false) {
+                $manufacturer->code = substr($name, 0, 6);
+            } else {
+                $manufacturer->code = substr($name, 0, 1).substr($name, $pos + 1, 5);
+            }
+        });
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);

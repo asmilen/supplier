@@ -39,7 +39,7 @@ class CategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
-            'code' => 'required|alpha_num|max:3|unique:categories',
+            'code' => 'required|alpha_num|min:3|max:3|unique:categories',
         ], [
             'name.unique' => 'Tên danh mục đã tồn tại.',
             'code.unique' => 'Mã danh mục đã tồn tại.',

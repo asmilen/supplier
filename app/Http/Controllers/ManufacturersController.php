@@ -39,7 +39,7 @@ class ManufacturersController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255|unique:manufacturers',
-            'code' => 'alpha_num|max:6|unique:manufacturers',
+            'code' => 'alpha_num|min:3|max:6|unique:manufacturers',
         ], [
             'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
             'code.unique' => 'Mã nhà sản xuất đã tồn tại.',
@@ -51,12 +51,6 @@ class ManufacturersController extends Controller
             'homepage' => request('homepage'),
             'status' => !! request('status'),
         ]);
-
-        if (empty($manufacturer->code)) {
-            $manufacturer->forceFill([
-                'code' => $manufacturer->id,
-            ])->save();
-        }
 
         flash()->success('Success!', 'Manufacturer successfully created.');
 

@@ -15,7 +15,7 @@
         @else
         <input type="text" class="form-control" name="code" placeholder="Mã danh mục" value="{{ old('code', $category->code) }}">
         <span class="help-block">
-            Dùng để sinh SKU.
+            Dài 3 kí tự bao gồm chữ cái và số. Dùng để sinh SKU.
         </span>
         @endif
     </div>

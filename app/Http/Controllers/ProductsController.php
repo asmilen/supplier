@@ -32,7 +32,9 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        $product = new Product;
+        $product = (new Product)->forceFill([
+            'status' => true,
+        ]);
 
         return view('products.create', compact('product'));
     }

@@ -23,7 +23,9 @@ class CategoriesController extends Controller
      */
     public function create()
     {
-        $category = new Category;
+        $category = (new Category)->forceFill([
+            'status' => true,
+        ]);
 
         return view('categories.create', compact('category'));
     }

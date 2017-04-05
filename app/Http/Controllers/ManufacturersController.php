@@ -23,7 +23,9 @@ class ManufacturersController extends Controller
      */
     public function create()
     {
-        $manufacturer = new Manufacturer;
+        $manufacturer = (new Manufacturer)->forceFill([
+            'status' => true,
+        ]);
 
         return view('manufacturers.create', compact('manufacturer'));
     }

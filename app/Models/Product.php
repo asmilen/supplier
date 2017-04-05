@@ -50,6 +50,12 @@ class Product extends Model
                 if (request()->has('manufacturer_id')) {
                     $query->where('manufacturer_id', request('manufacturer_id'));
                 }
+
+                if (request('status') == 'active') {
+                    $query->where('status', true);
+                } elseif (request('status') == 'inactive') {
+                    $query->where('status', false);
+                }
             })
             ->editColumn('category_id', function ($model) {
                 return $model->category ? $model->category->name : '';

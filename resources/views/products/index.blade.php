@@ -58,6 +58,11 @@
                                 @endforeach
                             </select>
                             <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
+                            <select class="form-control" name="status">
+                                <option value="">--Chọn Trạng thái--</option>
+                                <option value="active">Kích hoạt</option>
+                                <option value="inactive">Không kích hoạt</option>
+                            </select>
                             <button type="submit" class="btn btn-purple btn-sm">
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button>
@@ -107,6 +112,7 @@ $(function () {
                 d.category_id = $('select[name=category_id]').val();
                 d.manufacturer_id = $('select[name=manufacturer_id]').val();
                 d.keyword = $('input[name=keyword]').val();
+                d.status = $('select[name=status]').val();
             }
         },
         columns: [

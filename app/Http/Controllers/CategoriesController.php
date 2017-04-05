@@ -39,10 +39,10 @@ class CategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
-            'code' => 'alpha_num|max:3|unique:categories',
+            'code' => 'required|alpha_num|max:3|unique:categories',
         ], [
-            'name.unique' => 'Tên danh mục đã tồn tại',
-            'code.unique' => 'Mã danh mục đã tồn tại',
+            'name.unique' => 'Tên danh mục đã tồn tại.',
+            'code.unique' => 'Mã danh mục đã tồn tại.',
         ]);
 
         $category = Category::forceCreate([
@@ -50,12 +50,6 @@ class CategoriesController extends Controller
             'code' => strtoupper(request('code')),
             'status' => !! request('status'),
         ]);
-
-        if (empty($category->code)) {
-            $category->forceFill([
-                'code' => $category->id,
-            ])->save();
-        }
 
         flash()->success('Success!', 'Category successfully created.');
 
@@ -95,7 +89,7 @@ class CategoriesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories,name,'.$category->id,
         ], [
-            'name.unique' => 'Tên danh mục đã tồn tại',
+            'name.unique' => 'Tên danh mục đã tồn tại.',
         ]);
 
         $category->forceFill([
@@ -106,19 +100,6 @@ class CategoriesController extends Controller
         flash()->success('Success!', 'Category successfully updated.');
 
         return redirect()->route('categories.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category)
-    {
-        $category->delete();
-
-        flash()->success('Success!', 'Category successfully deleted.');
     }
 
     public function getDatatables()

@@ -39,13 +39,4 @@ class Manufacturer extends Model
     {
         return static::pluck('name', 'id')->all();
     }
-
-    public function delete()
-    {
-        if ($this->products()->count() > 0) {
-            throw new \App\Exceptions\ModelShouldNotDeletedException('Không xóa được nhà SX này do có sản phẩm.');
-        }
-
-        parent::delete();
-    }
 }

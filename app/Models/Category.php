@@ -39,13 +39,4 @@ class Category extends Model
     {
         return static::pluck('name', 'id')->all();
     }
-
-    public function delete()
-    {
-        if ($this->products()->count() > 0) {
-            throw new \App\Exceptions\ModelShouldNotDeletedException('Không xóa được danh mục này do có sản phẩm.');
-        }
-
-        parent::delete();
-    }
 }

@@ -14,10 +14,10 @@
         <p class="form-control-static"><strong>{{ $manufacturer->code }}</strong></p>
         @else
         <input type="text" class="form-control" name="code" placeholder="Mã nhà SX" value="{{ old('code', $manufacturer->code) }}">
-        @endif
         <span class="help-block">
             Dùng để sinh SKU, để trống để sinh tự động.
         </span>
+        @endif
     </div>
 </div>
 

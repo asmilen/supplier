@@ -78,8 +78,6 @@ $(function () {
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
     });
-
-    @include('scripts.click-datatable-delete-button')
 });
 </script>
 @endsection

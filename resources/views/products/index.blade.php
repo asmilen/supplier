@@ -125,8 +125,6 @@ $(function () {
         datatable.draw();
         e.preventDefault();
     });
-
-    @include('scripts.click-datatable-delete-button')
 });
 </script>
 @endsection

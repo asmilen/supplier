@@ -11,8 +11,8 @@ class ProductsController extends Controller
 {
     public function __construct()
     {
-        view()->share('categoriesList', Category::getList());
-        view()->share('manufacturersList', Manufacturer::getList());
+        view()->share('categoriesList', Category::getActiveList());
+        view()->share('manufacturersList', Manufacturer::getActiveList());
     }
 
     /**

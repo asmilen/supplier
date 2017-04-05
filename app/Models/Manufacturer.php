@@ -46,6 +46,11 @@ class Manufacturer extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     public static function getDatatables()
     {
         $model = static::select([
@@ -59,8 +64,8 @@ class Manufacturer extends Model
             ->make(true);
     }
 
-    public static function getList()
+    public static function getActiveList()
     {
-        return static::pluck('name', 'id')->all();
+        return static::active()->pluck('name', 'id')->all();
     }
 }

@@ -36,7 +36,7 @@ class CategoriesController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:categories',
             'code' => 'alpha_num|max:3|unique:categories',
         ]);
 
@@ -88,7 +88,9 @@ class CategoriesController extends Controller
     public function update(Category $category)
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:categories,name,'.$category->id,
+        ], [
+            'name.unique' => 'Tên danh mục đã tồn tại',
         ]);
 
         $category->forceFill([

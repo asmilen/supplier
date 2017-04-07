@@ -43,5 +43,13 @@ Route::group(['middleware' => 'auth'], function () {
         // Products
         Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
+
+        //suppliers
+        Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');
+        Route::post('suppliers/datatables_edit', 'SuppliersController@postDatatables')->name('suppliers.datatables_edit');
+        Route::resource('suppliers', 'SuppliersController');
+
+
+
     });
 });

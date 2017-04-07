@@ -1,0 +1,186 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Validator;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Manufacturer;
+
+
+class SuppliersController extends Controller
+{
+//    public function __construct()
+//    {
+//        view()->share('categoriesList', Category::getList());
+//        view()->share('manufacturersList', Manufacturer::getList());
+//    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('suppliers.index');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $product = new Product;
+
+        return view('products.create', compact('product'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store()
+    {
+        if (empty(request('code'))) {
+            $code = Product::where('category_id', request('category_id'))
+                ->where('manufacturer_id', request('manufacturer_id'))
+                ->count() + 1;
+        } else {
+            $code = strtoupper(request('code'));
+        }
+
+        Validator::make(request()->all(), [
+            'category_id' => 'required',
+            'manufacturer_id' => 'required',
+            'name' => 'required|max:255',
+            'code' => 'alpha_num|max:255',
+        ])->after(function ($validator) use ($code) {
+            $check = Product::where('category_id', request('category_id'))
+                ->where('manufacturer_id', request('manufacturer_id'))
+                ->where('code', $code)
+                ->first();
+
+            if ($check) {
+                $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+            }
+        })->validate();
+
+        $product = Product::forceCreate([
+            'category_id' => request('category_id'),
+            'manufacturer_id' => request('manufacturer_id'),
+            'name' => request('name'),
+            'code' => $code,
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+            'status' => !! request('status'),
+        ]);
+
+        flash()->success('Success!', 'Product successfully created.');
+
+        return redirect()->route('products.index');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Product $product)
+    {
+        return view('products.edit', compact('product'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Product $product)
+    {
+        return view('products.edit', compact('product'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Product $product)
+    {
+        if (empty(request('code'))) {
+            $code = Product::where('category_id', request('category_id'))
+                ->where('manufacturer_id', request('manufacturer_id'))
+                ->count();
+        } else {
+            $code = strtoupper(request('code'));
+        }
+
+        Validator::make(request()->all(), [
+            'category_id' => 'required',
+            'manufacturer_id' => 'required',
+            'name' => 'required|max:255',
+            'code' => 'alpha_num|max:255',
+        ])->after(function ($validator) use ($product, $code) {
+            $check = Product::where('category_id', request('category_id'))
+                ->where('manufacturer_id', request('manufacturer_id'))
+                ->where('code', $code)
+                ->where('id', '<>', $product->id)
+                ->first();
+
+            if ($check) {
+                $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+            }
+        })->validate();
+
+        $product->forceFill([
+            'category_id' => request('category_id'),
+            'manufacturer_id' => request('manufacturer_id'),
+            'name' => request('name'),
+            'code' => $code,
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+            'status' => !! request('status'),
+        ])->save();
+
+        flash()->success('Success!', 'Product successfully updated.');
+
+        return redirect()->route('products.index');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Product $product)
+    {
+        $product->delete();
+
+        flash()->success('Success!', 'Product successfully deleted.');
+    }
+
+    public function getDatatables()
+    {
+        return Product::getDatatables();
+    }
+
+    public function postDatatables(Request $request) {
+        return Product::getDatatables();
+    }
+
+    protected function generateSku($categoryId, $manufacturerId, $code)
+    {
+        $category = Category::findOrFail($categoryId);
+
+        $manufacturer = Manufacturer::findOrFail($manufacturerId);
+
+        return $category->code.'-'.$manufacturer->code.'-'.$code;
+    }
+}

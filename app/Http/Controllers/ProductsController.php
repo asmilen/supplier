@@ -57,7 +57,7 @@ class ProductsController extends Controller
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:products',
             'code' => 'alpha_num|max:255',
         ])->after(function ($validator) use ($code) {
             $check = Product::where('category_id', request('category_id'))
@@ -125,7 +125,7 @@ class ProductsController extends Controller
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:products,name,'.$product->id,
             'code' => 'alpha_num|max:255',
         ])->after(function ($validator) use ($product, $code) {
             $check = Product::where('category_id', request('category_id'))

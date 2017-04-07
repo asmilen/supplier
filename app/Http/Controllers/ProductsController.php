@@ -11,8 +11,8 @@ class ProductsController extends Controller
 {
     public function __construct()
     {
-        view()->share('categoriesList', Category::getList());
-        view()->share('manufacturersList', Manufacturer::getList());
+        view()->share('categoriesList', Category::getActiveList());
+        view()->share('manufacturersList', Manufacturer::getActiveList());
     }
 
     /**
@@ -32,7 +32,9 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        $product = new Product;
+        $product = (new Product)->forceFill([
+            'status' => true,
+        ]);
 
         return view('products.create', compact('product'));
     }
@@ -55,7 +57,7 @@ class ProductsController extends Controller
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:products',
             'code' => 'alpha_num|max:255',
         ])->after(function ($validator) use ($code) {
             $check = Product::where('category_id', request('category_id'))
@@ -123,7 +125,7 @@ class ProductsController extends Controller
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:products,name,'.$product->id,
             'code' => 'alpha_num|max:255',
         ])->after(function ($validator) use ($product, $code) {
             $check = Product::where('category_id', request('category_id'))
@@ -149,19 +151,6 @@ class ProductsController extends Controller
         flash()->success('Success!', 'Product successfully updated.');
 
         return redirect()->route('products.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
-    {
-        $product->delete();
-
-        flash()->success('Success!', 'Product successfully deleted.');
     }
 
     public function getDatatables()

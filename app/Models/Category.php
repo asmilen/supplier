@@ -22,6 +22,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     public static function getDatatables()
     {
         $model = static::select([
@@ -35,17 +40,8 @@ class Category extends Model
             ->make(true);
     }
 
-    public static function getList()
+    public static function getActiveList()
     {
-        return static::pluck('name', 'id')->all();
-    }
-
-    public function delete()
-    {
-        if ($this->products()->count() > 0) {
-            throw new \App\Exceptions\ModelShouldNotDeletedException('Không xóa được danh mục này do có sản phẩm.');
-        }
-
-        parent::delete();
+        return static::active()->pluck('name', 'id')->all();
     }
 }

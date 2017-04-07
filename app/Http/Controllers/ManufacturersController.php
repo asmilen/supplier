@@ -23,7 +23,9 @@ class ManufacturersController extends Controller
      */
     public function create()
     {
-        $manufacturer = new Manufacturer;
+        $manufacturer = (new Manufacturer)->forceFill([
+            'status' => true,
+        ]);
 
         return view('manufacturers.create', compact('manufacturer'));
     }
@@ -36,8 +38,11 @@ class ManufacturersController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:manufacturers',
+            'name' => 'required|max:255|unique:manufacturers',
+            'code' => 'alpha_num|min:3|max:6|unique:manufacturers',
+        ], [
+            'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
+            'code.unique' => 'Mã nhà sản xuất đã tồn tại.',
         ]);
 
         $manufacturer = Manufacturer::forceCreate([
@@ -46,12 +51,6 @@ class ManufacturersController extends Controller
             'homepage' => request('homepage'),
             'status' => !! request('status'),
         ]);
-
-        if (empty($manufacturer->code)) {
-            $manufacturer->forceFill([
-                'code' => $manufacturer->id,
-            ])->save();
-        }
 
         flash()->success('Success!', 'Manufacturer successfully created.');
 
@@ -89,13 +88,13 @@ class ManufacturersController extends Controller
     public function update(Manufacturer $manufacturer)
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:manufacturers,code,'.$manufacturer->id,
+            'name' => 'required|max:255|unique:manufacturers,name,'.$manufacturer->id,
+        ], [
+            'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
         ]);
 
         $manufacturer->forceFill([
             'name' => request('name'),
-            'code' => strtoupper(request('code')) ? : $manufacturer->id,
             'homepage' => request('homepage'),
             'status' => !! request('status'),
         ])->save();
@@ -103,19 +102,6 @@ class ManufacturersController extends Controller
         flash()->success('Success!', 'Manufacturer successfully updated.');
 
         return redirect()->route('manufacturers.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Manufacturer  $manufacturer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Manufacturer $manufacturer)
-    {
-        $manufacturer->delete();
-
-        flash()->success('Success!', 'Manufacturer successfully deleted.');
     }
 
     public function getDatatables()

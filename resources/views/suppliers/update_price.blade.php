@@ -35,12 +35,14 @@
                 </table>
             </div>
             <div class="col-xs-8">
-                <form class="form-horizontal" role="form" id="product_form">
+                @include('common.errors')
+                <form class="form-horizontal" role="form" id="product_form" action="{{ route('supplier.updatePrice') }}" method="POST" >
+                    {!! csrf_field() !!}
                     <input type="hidden" name="product_id" id="product_id" />
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-left">Tên sản phẩm</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="name" id="product_name" placeholder="Nhập tên sản phẩm" >
+                            <input type="text" class="form-control" name="product_name" id="product_name" placeholder="Nhập tên sản phẩm" >
                         </div>
                     </div>
 
@@ -61,7 +63,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-left">Tình trạng</label>
                         <div class="col-sm-6">
-                            <select name="status" class="form-control">
+                            <select name="state" class="form-control">
                                 <option value="0">Hết hàng</option>
                                 <option value="1">Còn hàng</option>
                                 <option value="2">Đặt hàng</option>
@@ -71,9 +73,9 @@
 
                     <div class="form-group">
                         <label class="col-sm-4 control-label no-padding-left"></label>
-                        <a onclick="submit()" class="btn btn-success">
+                        <button type="submit" class="btn btn-success">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu thông tin
-                        </a>
+                        </button>
                         <a onclick="cancel()" class="btn btn-danger">
                             <i class="ace-icon fa fa-trash bigger-110"></i>Hủy
                         </a>
@@ -107,10 +109,7 @@
         function cancel() {
             $('#product_id').val("");
             $('#product_name').val("");
-            $('#product_name').prop('disabled', false);
-        }
-
-        function submit() {
+           // $('#product_name').prop('disabled', false);
         }
 
         $(function () {
@@ -143,7 +142,7 @@
                 var data = datatable.row( $(this).parents('tr') ).data();
                 $('#product_id').val(data.id);
                 $('#product_name').val(data.name);
-                $('#product_name').prop('disabled', true);
+                //$('#product_name').prop('disabled', true);
             } );
 
 
@@ -161,12 +160,23 @@
                 columns: [
                     {data: 'category_name', name: 'category_name'},
                     {data: 'product_name', name: 'product_name'},
-                    {data: 'price', name: 'price'},
+                    {data: 'import_price', name: 'import_price'},
                     {data: 'updated_at', name: 'updated_at'},
                     {data: 'status', name: 'status'},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                    {
+                        "orderable":      false,
+                        "data":           null,
+                        "defaultContent": '<a class="blue" href="#"><i class="ace-icon fa fa-pencil bigger-130"></i></a>'
+                    },
                 ]
             });
+
+            $('#dataTables-products_suppliers tbody').on( 'click', 'a', function () {
+                var data = datatable.row( $(this).parents('tr') ).data();
+                $('#product_id').val(data.id);
+                $('#product_name').val(data.name);
+                //$('#product_name').prop('disabled', true);
+            } );
         });
     </script>
 @endsection

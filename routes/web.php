@@ -44,14 +44,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
 
-        //suppliers
+        // Suppliers
         Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');
-        Route::post('suppliers/datatables_edit', 'SuppliersController@postDatatables')->name('suppliers.datatables_edit');
-        Route::get('suppliers/product-detail/{id}', 'SuppliersController@productDetail')->name('suppliers.productDetail');
-        Route::post('suppliers/store', 'SuppliersController@store')->name('suppliers.store');
+        Route::post('suppliers/datatables-edit', 'SuppliersController@updateDatatables')->name('suppliers.datatables-edit');
+        Route::get('suppliers/show/{id}', 'SuppliersController@show')->name('suppliers.show');
         Route::resource('suppliers', 'SuppliersController');
-
-
 
     });
 });

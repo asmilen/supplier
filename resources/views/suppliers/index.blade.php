@@ -1,8 +1,5 @@
 @extends('layouts.app')
 @section('styles')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.1/css/select.dataTables.min.css">
     <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
 @endsection
 @section('content')
@@ -65,44 +62,15 @@ $(function () {
     var editor = new $.fn.dataTable.Editor( {
         table: "#dataTables-products",
         idSrc:  'id',
-        ajax: function ( method, url, data, success, error ) {
-            $.ajax( {
-                    type: "POST",
-                    url: '{!! route('suppliers.datatables_edit') !!}',
-                    data: data,
-                    dataType: "json",
-                    'headers': {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                success: function (json) {
-                    if(json =='true') {
-                        window.location.reload();
-//                        $("table#dataTables-products").DataTable().draw();
-//                        editor = new $.fn.dataTable.Editor({
-//                            table: "#dataTables-products",
-//                            idSrc:  'id',
-//                            fields: [ {
-//                                label: "Trạng thái:",
-//                                name: "status",
-//                                type: "select",
-//                                options: [{ "label": "Đã đăng", "value": "1" },{ "label": "Chờ duyệt", "value": "2" }]
-//                            }
-//                            ]
-//                        });
-                    }
-
-                },
-                error: function (xhr, error, thrown) {
-                    error(xhr, error, thrown);
-                }
-                });
-
-        },
+        ajax: "{!! route('suppliers.datatables-edit') !!}",
         fields: [ {
             label: "Trạng thái:",
             name: "status",
             type: "select",
-            options: [{ "label": "Đã đăng", "value": "1" },{ "label": "Chờ duyệt", "value": "2" }]
+            options: [
+                { label: "Đã đăng", value: "Đã đăng" },
+                { label: "Chờ duyệt", value: "Chờ duyệt" }
+                ]
         }
         ]
     } );
@@ -110,8 +78,14 @@ $(function () {
     // Activate an inline edit on click of a table cell
     $('#dataTables-products').on( 'click', 'tbody td:nth-child(9)', function (e) {
         editor.inline( this, {
-            buttons: { label: 'Update;', fn: function () { this.submit(); } }
-        } );
+            buttons: {
+                label: 'Save', fn: function () {
+                    this.submit();
+                    datatable.draw();
+                }
+            }
+        }
+        );
     } );
     var datatable = $("#dataTables-products").DataTable({
         autoWidth: false,

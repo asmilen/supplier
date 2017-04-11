@@ -15,11 +15,8 @@
         "laravel/tinker": "~1.0",
         "yajra/laravel-datatables-oracle": "^7.1",
         "maatwebsite/excel": "~2.1.0",
-        "intervention/image": "dev-master"
-        "maatwebsite/excel": "~2.1.0",
-        "php-amqplib/php-amqplib": "^2.6",
-        "yajra/laravel-datatables-oracle": "^7.1"
-
+        "intervention/image": "dev-master",
+        "php-amqplib/php-amqplib": "^2.6"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^2.3",

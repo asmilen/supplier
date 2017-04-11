@@ -9,7 +9,7 @@ use App\Models\Category;
 use App\Models\Manufacturer;
 use DB;
 use Datatables;
-
+use Intervention\Image\Facades\Image as Image;
 class SuppliersController extends Controller
 {
 //    public function __construct()
@@ -47,42 +47,38 @@ class SuppliersController extends Controller
      */
     public function store()
     {
-        if (empty(request('code'))) {
-            $code = Product::where('category_id', request('category_id'))
-                ->where('manufacturer_id', request('manufacturer_id'))
-                ->count() + 1;
-        } else {
-            $code = strtoupper(request('code'));
-        }
 
         Validator::make(request()->all(), [
-            'category_id' => 'required',
-            'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:255',
-        ])->after(function ($validator) use ($code) {
-            $check = Product::where('category_id', request('category_id'))
-                ->where('manufacturer_id', request('manufacturer_id'))
-                ->where('code', $code)
-                ->first();
+            'supplier_id' => 'required|not_in:-- Chọn nhà cung cấp --',
+            'state' => 'required|not_in:-- Chọn tình trạng --',
+            'import_price' => 'required',
+            'vat' => 'required',
+            'saler_price' => 'required',
+            'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
+            'description' => 'required',
+        ])->validate();
 
-            if ($check) {
-                $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
-            }
-        })->validate();
+        $request = request()->all();
+        $file = request()->file('image');
 
-        $product = Product::forceCreate([
-            'category_id' => request('category_id'),
-            'manufacturer_id' => request('manufacturer_id'),
-            'name' => request('name'),
-            'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
-            'status' => !! request('status'),
-        ]);
+        $filename = md5(time()) . '.' . $file->getClientOriginalExtension();
+        Image::make($file->getRealPath())->save(public_path('files/'. $filename));
+        dd($filename);
+//        if ($old) {
+//            @unlink(public_path('files/' .$old));
+//        }
+//        $product = Product::forceCreate([
+//            'category_id' => request('category_id'),
+//            'manufacturer_id' => request('manufacturer_id'),
+//            'name' => request('name'),
+//            'code' => $code,
+//            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+//            'status' => !! request('status'),
+//        ]);
 
         flash()->success('Success!', 'Product successfully created.');
 
-        return redirect()->route('products.index');
+        return redirect()->back();
     }
 
     /**
@@ -91,10 +87,7 @@ class SuppliersController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
-    {
-        return view('products.edit', compact('product'));
-    }
+
 
     public function getDatatables()
     {
@@ -148,16 +141,14 @@ class SuppliersController extends Controller
             ->select('product_supplier.id as id','product_supplier.product_id as id_product', 'products.sku as sku', 'product_supplier.name as product_name','product_supplier.import_price as import_price',
                 'product_supplier.vat','product_supplier.status as status','suppliers.name as supplier_name',
                 'product_supplier.updated_at as updated_at','products.status as status_product')->get();
-
-        return view('suppliers.products_suppliers',compact('products'));
+        $suppliers = DB::table('suppliers')->get();
+        return view('suppliers.products_suppliers',compact('products','id','suppliers'));
     }
 
     protected function generateSku($categoryId, $manufacturerId, $code)
     {
         $category = Category::findOrFail($categoryId);
-
         $manufacturer = Manufacturer::findOrFail($manufacturerId);
-
         return $category->code.'-'.$manufacturer->code.'-'.$code;
     }
 }

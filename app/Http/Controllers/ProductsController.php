@@ -59,6 +59,8 @@ class ProductsController extends Controller
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
             'code' => 'alpha_num|max:255',
+        ], [
+            'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($code) {
             $check = Product::where('category_id', request('category_id'))
                 ->where('manufacturer_id', request('manufacturer_id'))
@@ -127,6 +129,8 @@ class ProductsController extends Controller
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products,name,'.$product->id,
             'code' => 'alpha_num|max:255',
+        ], [
+            'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($product, $code) {
             $check = Product::where('category_id', request('category_id'))
                 ->where('manufacturer_id', request('manufacturer_id'))

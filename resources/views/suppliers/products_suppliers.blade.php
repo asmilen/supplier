@@ -96,6 +96,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-left">Số lượng</label>
+                    <div class="col-sm-6">
+                        <input type="number" class="form-control" name="quantity" id="quantity" placeholder="Nhập số lượng" >
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-left">Ảnh</label>
                     <div class="col-sm-6">
                         <input type="file" class="form-control" name="image"  >

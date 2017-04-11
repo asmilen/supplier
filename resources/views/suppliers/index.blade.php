@@ -68,9 +68,11 @@ $(function () {
             name: "status",
             type: "select",
             options: [
+                { label: "Chờ duyệt", value: "Chờ duyệt" },
+                { label: "Câp nhật", value: "Câp nhật" },
                 { label: "Đã đăng", value: "Đã đăng" },
-                { label: "Chờ duyệt", value: "Chờ duyệt" }
-                ]
+                { label: "Yêu cầu đăng", value: "Yêu cầu đăng" }
+            ]
         }
         ]
     } );

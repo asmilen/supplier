@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+
 use DB;
+use Auth;
 use Validator;
 use Datatables;
 use App\Models\Product;
+use App\Models\Suppliers;
 use Illuminate\Http\Request;
+use App\Models\ProductSupplier;
 use Intervention\Image\Facades\Image as Image;
 
 class SuppliersController extends Controller
@@ -27,10 +31,10 @@ class SuppliersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request $request)
     {
 
-        Validator::make(request()->all(), [
+        Validator::make($request->all(), [
             'supplier_id' => 'required',
             'state' => 'required',
             'import_price' => 'required',
@@ -40,13 +44,31 @@ class SuppliersController extends Controller
             'description' => 'required',
         ])->validate();
 
-
         $file = request()->file('image');
-
         $filename = md5(time()) . '.' . $file->getClientOriginalExtension();
-        Image::make($file->getRealPath())->save(public_path('files/'. $filename));
+        $data = [
+            'product_id' => $request->input('product_id'),
+            'supplier_id' => $request->input('supplier_id'),
+            'import_price' => $request->input('import_price'),
+            'vat' => $request->input('vat'),
+            'image' => $filename,
+            'state' => $request->input('state'),
+            'quantity' => $request->input('quantity'),
+            'description' => $request->input('description')
 
-        flash()->success('Success!', 'Product successfully created.');
+        ];
+
+        $product = Product::find($data['product_id']);
+        $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
+        $data['name'] = $product->name;
+        $data['code'] = $codes_supplier->code;
+        $product_supplier = ProductSupplier::firstOrCreate($data);
+        if($product_supplier) {
+            Image::make($file->getRealPath())->save(public_path('files/'. $filename));
+            flash()->success('Success!', 'Suppliers successfully created.');
+        } else {
+            flash()->success('Failed!', 'Suppliers failed created.');
+        }
 
         return redirect()->back();
     }
@@ -60,7 +82,7 @@ class SuppliersController extends Controller
             ->join('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->select('product_supplier.id as id','product_supplier.product_id as id_product','categories.name as cat_name', 'products.sku as sku', 'products.name as product_name','product_supplier.import_price as import_price',
                      'product_supplier.vat','product_supplier.status as status','suppliers.name as supplier_name', 'manufacturers.name as manufacturer_name',
-                    'product_supplier.updated_at as updated_at','products.status as status_product')->get();
+                    'product_supplier.updated_at as updated_at','product_supplier.state as status_product')->get();
 
         return Datatables::of($products)
             ->editColumn('saler_price', function($product) {
@@ -70,10 +92,23 @@ class SuppliersController extends Controller
                 return $product->import_price;
             })
             ->editColumn('status', function($product) {
-                if($product->status == 1){
-                    $string = 'Đã đăng';
-                } else {
+                if($product->status == 0){
                     $string = 'Chờ duyệt';
+                } else if($product->status == 1){
+                    $string = 'Câp nhật';
+                } else if($product->status == 2){
+                    $string = 'Đã đăng';
+                } else if($product->status == 3){
+                    $string = 'Yêu cầu đăng';
+                }
+                return $string;
+            })->editColumn('status_product', function($product) {
+                if($product->status_product == 0){
+                    $string = 'Hết hàng';
+                } else if($product->status == 1){
+                    $string = 'Còn hàng';
+                } else if($product->status == 2){
+                    $string = 'Đặt hàng';
                 }
                 return $string;
             })
@@ -90,11 +125,14 @@ class SuppliersController extends Controller
 
         foreach ($data_arr as $key => $value) {
             if($value['status'] == 'Chờ duyệt') {
-                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '2']);
-            } else {
+                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '0']);
+            } else if($value['status'] == 'Câp nhật'){
                 $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '1']);
+            } else if($value['status'] == 'Đã đăng'){
+                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '2']);
+            } else if($value['status'] == 'Yêu cầu đăng'){
+                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '3']);
             }
-
         }
     }
 

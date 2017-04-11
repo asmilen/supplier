@@ -9,6 +9,6 @@ class CategoriesController extends Controller
 {
     public function index()
     {
-        return ['data' => Category::all(['id', 'name', 'code'])];
+        return Category::all(['id', 'name', 'code']);
     }
 }

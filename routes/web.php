@@ -46,7 +46,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         //For supplier
         Route::get('supplier/supplier_datatables', 'ForSupplierController@getDatatables')->name('supplier.supplier_datatables');
-        Route::match(['get', 'post'],'supplier/updatePrice', 'ForSupplierController@updatePrice')->name('supplier.updatePrice');
+        Route::get('supplier/updatePrice', 'ForSupplierController@updatePrice')->name('supplier.updatePrice');
+        Route::post('supplier/postUpdatePrice', 'ForSupplierController@postUpdatePrice')->name('supplier.postUpdatePrice');
 
         //suppliers
         Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');

@@ -26,17 +26,24 @@
             <div class="col-xs-4">
                 <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                     <thead>
+                        <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Tên sản phẩm</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
                     <tr>
                         <th>Mã sản phẩm</th>
                         <th>Tên sản phẩm</th>
                         <th></th>
                     </tr>
-                    </thead>
+                    </tfoot>
                 </table>
             </div>
             <div class="col-xs-8">
                 @include('common.errors')
-                <form class="form-horizontal" role="form" id="product_form" action="{{ route('supplier.updatePrice') }}" method="POST" >
+                <form class="form-horizontal" role="form" id="product_form" action="{{ route('supplier.postUpdatePrice') }}" method="POST" >
                     {!! csrf_field() !!}
                     <input type="hidden" name="product_id" id="product_id" />
                     <div class="form-group">
@@ -49,21 +56,28 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-left">Giá bán (có VAT)</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" name="import_price" placeholder="Nhập giá" >
+                            <input type="number" class="form-control" name="import_price" id="import_price" placeholder="Nhập giá" >
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-left">VAT</label>
                         <div class="col-sm-6">
-                            <input type="number" class="form-control" name="vat" placeholder="Nhập VAT" >
+                            <input type="number" class="form-control" name="vat" id="vat" placeholder="Nhập VAT" >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-left">Code</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="code" id="code" placeholder="Nhập Code" >
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-left">Tình trạng</label>
                         <div class="col-sm-6">
-                            <select name="state" class="form-control">
+                            <select name="state" id="state" class="form-control">
                                 <option value="0">Hết hàng</option>
                                 <option value="1">Còn hàng</option>
                                 <option value="2">Đặt hàng</option>
@@ -100,8 +114,10 @@
 @endsection
 
 @section('scripts')
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="/vendor/ace/assets/js/dataTablele>
+ ery.dataTables.bootstrap.js"></script>
 @endsection
 
 @section('inline_scripts')
@@ -109,10 +125,19 @@
         function cancel() {
             $('#product_id').val("");
             $('#product_name').val("");
-           // $('#product_name').prop('disabled', false);
+            $('#import_price').val("");
+            $('#vat').val("");
+            $('#code').val("");
         }
 
         $(function () {
+
+            $('#dataTables-products tfoot th').each( function () {
+                var title = $(this).text();
+                if (title)
+                $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+            } );
+
             var datatable = $("#dataTables-products").DataTable({
                 autoWidth: false,
                 processing: true,
@@ -120,12 +145,6 @@
                 pageLength: 10,
                 ajax: {
                     url: '{!! route('products.datatables') !!}',
-                    data: function (d) {
-                        d.category_id = $('select[name=category_id]').val();
-                        d.manufacturer_id = $('select[name=manufacturer_id]').val();
-                        d.keyword = $('input[name=keyword]').val();
-                        d.status = $('select[name=status]').val();
-                    }
                 },
                 columns: [
                     {data: 'sku', name: 'sku'},
@@ -142,9 +161,23 @@
                 var data = datatable.row( $(this).parents('tr') ).data();
                 $('#product_id').val(data.id);
                 $('#product_name').val(data.name);
+                $('#import_price').val("");
+                $('#vat').val("");
+                $('#code').val("");
                 //$('#product_name').prop('disabled', true);
             } );
 
+            datatable.columns().every( function () {
+                var that = this;
+
+                $( 'input', this.footer() ).on( 'keyup change', function () {
+                    if ( that.search() !== this.value ) {
+                        that
+                            .search( this.value )
+                            .draw();
+                    }
+                } );
+            } );
 
 
             var supplier_datatable = $("#dataTables-products_suppliers").DataTable({
@@ -154,8 +187,6 @@
                 pageLength: 10,
                 ajax: {
                     url: '{!! route('supplier.supplier_datatables') !!}',
-                    data: function (d) {
-                    }
                 },
                 columns: [
                     {data: 'category_name', name: 'category_name'},
@@ -172,10 +203,13 @@
             });
 
             $('#dataTables-products_suppliers tbody').on( 'click', 'a', function () {
-                var data = datatable.row( $(this).parents('tr') ).data();
+                var data = supplier_datatable.row( $(this).parents('tr') ).data();
                 $('#product_id').val(data.id);
-                $('#product_name').val(data.name);
-                //$('#product_name').prop('disabled', true);
+                $('#product_name').val(data.product_name);
+                $('#import_price').val(data.import_price);
+                $('#vat').val(data.vat);
+                $('#state').val(data.state);
+                $('#code').val(data.code);
             } );
         });
     </script>

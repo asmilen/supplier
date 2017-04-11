@@ -23,6 +23,7 @@ class SuppliersController extends Controller
      */
     public function index()
     {
+
         return view('suppliers.index');
     }
 
@@ -62,6 +63,8 @@ class SuppliersController extends Controller
         $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
         $data['name'] = $product->name;
         $data['code'] = $codes_supplier->code;
+        $data['created_id'] = $request->user()->id;
+        $data['updated_id'] = $request->user()->id;
         $product_supplier = ProductSupplier::firstOrCreate($data);
         if($product_supplier) {
             Image::make($file->getRealPath())->save(public_path('files/'. $filename));

@@ -22,7 +22,7 @@ Dùng `supervisord` để nhận message trên production.
 
 ### Gửi Message
 
-Gửi message đến exchange 'test-exchange', routing key 'sale.order.create', body '{"foo":"zzzzz","bar":2}':
+Gửi message đến exchange `'test-exchange'`, routing key `'sale.order.create'`, body `'{"foo":"zzzzz","bar":2}'`:
 
 
     use App\Jobs\PublishMessage;

@@ -15,7 +15,8 @@ Thêm cấu hình trong file `.env`:
 
 Để nhận message từ exchange 'test-exchange', routing key 'wh.import.create':
 
-php artisan test-exchange wh.import.create
+
+    php artisan test-exchange wh.import.create
 
 Dùng `supervisord` để nhận message trên production.
 

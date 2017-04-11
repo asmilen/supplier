@@ -15,6 +15,8 @@ class ProductSupplier extends Model
         'vat',
         'status',
         'state',
+        'description',
+        'image',
     ];
 
 

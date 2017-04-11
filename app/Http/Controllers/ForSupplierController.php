@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Manufacturer;
 use Datatables;
 use Sentinel;
+use Image;
 
 
 class ForSupplierController extends Controller
@@ -25,15 +26,6 @@ class ForSupplierController extends Controller
         return view('suppliers.update_price');
     }
 
-    protected  function checkLowestPrice($product_id,$price)
-    {
-        $product_suppliers = ProductSupplier::where('product_id','=',$product_id)->get();
-        foreach ($product_suppliers as $product_supplier)
-        {
-            if ($product_supplier->import_price < $price) return false;
-        }
-        return true;
-    }
 
     public function postUpdatePrice(Request $request)
     {
@@ -52,6 +44,7 @@ class ForSupplierController extends Controller
         $supplier_product = ProductSupplier::where('product_id','=',request('product_id'))
             ->where('supplier_id','=',$supplier_id)
             ->first();
+        $product = Product::find(request('product_id'));
 
         if ($supplier_product)
         {
@@ -60,25 +53,37 @@ class ForSupplierController extends Controller
             $data['status'] = ProductSupplier::$STATUS_CAP_NHAT;
 
             //Nếu giá sản phẩm là thấp nhất
-            if ($data['state'] != ProductSupplier::$STATE_HET_HANG && self::checkLowestPrice($data['product_id'],$data['import_price']))
+            if ($data['state'] != ProductSupplier::$STATE_HET_HANG && $product->best_price && $data['import_price'] < $product->best_price )
             {
+                $product->best_price = $data['import_price'];
+                $product->save();
                 if ($data['state'] == ProductSupplier::$STATE_CON_HANG)
                     $data['status'] = ProductSupplier::$STATUS_DA_DANG;
                 else
                     $data['status'] = ProductSupplier::$STATUS_YEU_CAU_DANG;
             }
 
+            if (request()->file('image') && request()->file('image')->isValid()) {
+                $data['image'] = $this->saveImage(request()->file('image'), $supplier_product->image);
+            } else {
+                unset($data['image']);
+            }
+
             $supplier_product->update($data);
         }
         else
         {
-            $product = Product::find(request('product_id'));
+            if (request()->file('image') && request()->file('image')->isValid()) {
+                $image = $this->saveImage($request->file('image'), null);
+            }
+
             $supplier_product = ProductSupplier::forceCreate([
                 'product_id' => request('product_id'),
                 'supplier_id' => $supplier_id,
                 'name' => $product->name,
                 'code' => request('code'),
                 'import_price' => request('import_price'),
+                'description' => request('description'),
                 'vat' => request('vat'),
                 'state' => request('state'),
                 'quantity' => 0,
@@ -86,11 +91,22 @@ class ForSupplierController extends Controller
                 'extra_condition' => "",
                 'created_by' => $user_id,
                 'updated_by' => $user_id,
+                'image' => $image,
             ]);
         }
 
         flash()->success('Success!', 'Cập nhật giá thành công');
         return redirect()->route('supplier.updatePrice');
+    }
+
+    public function saveImage($file, $old = null)
+    {
+        $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
+        Image::make($file->getRealPath())->save(public_path('files/' . $filename));
+        if ($old) {
+            @unlink(public_path('files/' . $old));
+        }
+        return $filename;
     }
 
     public function getDatatables()
@@ -103,7 +119,7 @@ class ForSupplierController extends Controller
                         ->join('products','product_supplier.product_id','=','products.id')
                         ->join('categories','products.category_id','=','categories.id')
                         ->where('supplier_id','=',$supplier_id)
-                        ->select('products.id as id','products.category_id','categories.name as category_name',
+                        ->select('products.id as id','products.category_id','categories.name as category_name','product_supplier.description',
                             'products.name as product_name','import_price','product_supplier.updated_at','product_supplier.status','state','vat','product_supplier.code');
         return Datatables::queryBuilder($query_builder)
             ->filter(function ($query) {

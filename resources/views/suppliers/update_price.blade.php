@@ -49,7 +49,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-left">Tên sản phẩm</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="product_name" id="product_name" placeholder="Nhập tên sản phẩm" >
+                            <input type="text" class="form-control" name="product_name" id="product_name" placeholder="Nhập tên sản phẩm" readonly >
                         </div>
                     </div>
 
@@ -72,6 +72,7 @@
                         <div class="col-sm-6">
                             <input type="text" class="form-control" name="code" id="code" placeholder="Nhập Code" >
                         </div>
+
                     </div>
 
                     <div class="form-group">
@@ -86,6 +87,14 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-left">Ảnh đính kèm</label>
+                        <div class="col-sm-3">
+                            <input type="file" class="form-control" name="image" id="image" accept="image/*">
+                        </div>
+                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#des_editor">Mô tả sản phẩm</button>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-4 control-label no-padding-left"></label>
                         <button type="submit" class="btn btn-success">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu thông tin
@@ -93,6 +102,28 @@
                         <a onclick="cancel()" class="btn btn-danger">
                             <i class="ace-icon fa fa-trash bigger-110"></i>Hủy
                         </a>
+                    </div>
+
+                    <!-- Modal -->
+                    <div id="des_editor" class="modal fade" role="dialog">
+                        <div class="modal-dialog">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Thông tin sản phẩm</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <textarea name="description" id="description" rows="10" cols="80">
+                                    </textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </form>
 
@@ -116,18 +147,21 @@
 @section('scripts')
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
-    <script src="/vendor/ace/assets/js/dataTablele>
- ery.dataTables.bootstrap.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="https://cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
 @endsection
 
 @section('inline_scripts')
     <script>
+        CKEDITOR.replace( 'description' );
+
         function cancel() {
             $('#product_id').val("");
             $('#product_name').val("");
             $('#import_price').val("");
             $('#vat').val("");
             $('#code').val("");
+            CKEDITOR.instances.description.setData("");
         }
 
         $(function () {
@@ -164,6 +198,7 @@
                 $('#import_price').val("");
                 $('#vat').val("");
                 $('#code').val("");
+                CKEDITOR.instances.description.setData("");
                 //$('#product_name').prop('disabled', true);
             } );
 
@@ -179,7 +214,6 @@
                 } );
             } );
 
-
             var supplier_datatable = $("#dataTables-products_suppliers").DataTable({
                 autoWidth: false,
                 processing: true,
@@ -187,6 +221,9 @@
                 pageLength: 10,
                 ajax: {
                     url: '{!! route('supplier.supplier_datatables') !!}',
+                    data: function (d) {
+                        d.keyword = $('input[name=keyword]').val();
+                    }
                 },
                 columns: [
                     {data: 'category_name', name: 'category_name'},
@@ -210,6 +247,7 @@
                 $('#vat').val(data.vat);
                 $('#state').val(data.state);
                 $('#code').val(data.code);
+                CKEDITOR.instances.description.setData(data.description);
             } );
         });
     </script>

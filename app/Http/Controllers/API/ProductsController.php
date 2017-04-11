@@ -42,6 +42,7 @@ class ProductsController extends Controller
                     $query->where('manufacturer_id', request('manufacturer_id'));
                 }
             })
+            ->groupBy('products.id' , 'products.name' , 'products.code' , 'products.sku')
             ->make(true);
     }
 }

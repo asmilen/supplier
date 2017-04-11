@@ -9,12 +9,14 @@
         "cartalyst/sentinel": "2.0.*",
         "cviebrock/eloquent-sluggable": "^4.2",
         "gtk/flash-message": "^1.2",
+        "gtk/gapi": "^0.1.1",
         "laravel/framework": "5.4.*",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",
         "yajra/laravel-datatables-oracle": "^7.1",
-        "maatwebsite/excel": "~2.1.0",
         "intervention/image": "dev-master"
+        "maatwebsite/excel": "~2.1.0",
+        "php-amqplib/php-amqplib": "^2.6",
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^2.3",

@@ -174,6 +174,7 @@ return [
         Barryvdh\Debugbar\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        Gtk\Gapi\GapiServiceProvider::class,
 
         /*
          * Application Service Providers...

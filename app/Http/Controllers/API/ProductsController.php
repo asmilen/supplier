@@ -26,7 +26,7 @@ class ProductsController extends Controller
         /**
          * @var array $supplierIds
          */
-        $supplierIds = SupplierSupportedProvince::whereIn('province_id' ,request('province_ids'))->get()->pluck('supplier_id');
+        $supplierIds = SupplierSupportedProvince::whereIn('province_id', request('province_ids'))->get()->pluck('supplier_id');
 
         $model = Product::select([
             'products.id', 'products.name', 'products.code', 'products.sku',
@@ -37,6 +37,10 @@ class ProductsController extends Controller
 
         return Datatables::eloquent($model)
             ->filter(function ($query) {
+                if (request()->has('name')) {
+                    $query->where('name', 'like', '%' . request('name') . '%');
+                }
+
                 if (request()->has('category_id')) {
                     $query->where('category_id', request('category_id'));
                 }
@@ -45,7 +49,7 @@ class ProductsController extends Controller
                     $query->where('manufacturer_id', request('manufacturer_id'));
                 }
             })
-            ->groupBy('products.id' , 'products.name' , 'products.code' , 'products.sku')
+            ->groupBy('products.id', 'products.name', 'products.code', 'products.sku')
             ->make(true);
     }
 }

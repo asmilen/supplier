@@ -127,6 +127,7 @@ class SuppliersController extends Controller
         $data_arr = $request->input('data');
 
         foreach ($data_arr as $key => $value) {
+
             if($value['status'] == 'Chờ duyệt') {
                 $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '0']);
             } else if($value['status'] == 'Câp nhật'){

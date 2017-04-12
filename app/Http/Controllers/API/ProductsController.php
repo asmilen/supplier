@@ -16,14 +16,15 @@ class ProductsController extends Controller
          * @var \Illuminate\Validation\Validator $validator
          */
         $validator = Validator::make(request()->all(), [
-            'province_id' => 'required',
+            'province_ids' => 'required|array',
+            'province_ids.*' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
             return $validator->errors();
         }
 
-        $supplierIds = SupplierSupportedProvince::whereProvinceId(request('province_id'))->get()->pluck('supplier_id');
+        $supplierIds = SupplierSupportedProvince::whereIn('province_id' ,request('province_ids'))->get()->pluck('supplier_id');
 
         $model = Product::select([
             'products.id', 'products.name', 'products.code', 'products.sku',

@@ -23,7 +23,9 @@ class ProductsController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
-
+        /**
+         * @var array $supplierIds
+         */
         $supplierIds = SupplierSupportedProvince::whereIn('province_id' ,request('province_ids'))->get()->pluck('supplier_id');
 
         $model = Product::select([

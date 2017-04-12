@@ -10,6 +10,8 @@ class ProductSupplier extends Model
     protected $table = 'product_supplier';
 
     protected $fillable = [
+        'product_id',
+        'supplier_id',
         'code',
         'import_price',
         'vat',
@@ -17,6 +19,8 @@ class ProductSupplier extends Model
         'state',
         'description',
         'image',
+        'name',
+        'quantity',
     ];
 
 

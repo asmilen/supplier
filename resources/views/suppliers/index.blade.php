@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('styles')
+    <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
+@endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
@@ -27,14 +29,19 @@
             <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
                     <tr>
-                        <th>Tên</th>
-                        <th>SKU</th>
                         <th>Danh mục</th>
-                        <th>Nhà SX</th>
-                        <th>Mã</th>
-                        <th>URL</th>
-                        <th>Trạng thái</th>
-
+                        <th>Nhà sản xuất</th>
+                        <th>SKU</th>
+                        <th>Tên</th>
+                        <th>Giá nhập</th>
+                        <th>GTGT</th>
+                        <th>Giá Saler</th>
+                        <th>Giá Tekshop</th>
+                        <th>Trạng thái </th>
+                        <th>Nhà cung cấp cho khu vực</th>
+                        <th>Tình trạng</th>
+                        <th>Ngày cập nhật</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
             </table>
@@ -53,74 +60,76 @@
 <script>
 $(function () {
     var editor = new $.fn.dataTable.Editor( {
-        ajax: {
-            type: "POST",
-            url: '{!! route('suppliers.datatables_edit') !!}',
-            'headers': {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        },
         table: "#dataTables-products",
         idSrc:  'id',
+        ajax: "{!! route('suppliers.datatables-edit') !!}",
         fields: [ {
-            label: "Tên:",
-            name: "name"
-        }, {
-            label: "SKU:",
-            name: "sku"
-        }, {
-            label: "Danh mục:",
-            name: "category_id"
-        }, {
-            label: "Nhà SX:",
-            name: "manufacturer_id"
-        }, {
-            label: "Mã:",
-            name: "code"
-        }, {
-            label: "URL:",
-            name: "source_url",
-
-        }, {
             label: "Trạng thái:",
-            name: "salary"
+            name: "status",
+            type: "select",
+            options: [
+                { 'label': "Chờ duyệt", 'value': "Chờ duyệt" },
+                { 'label': "Câp nhật", 'value': "Câp nhật" },
+                { 'label': "Đã đăng", 'value': "Đã đăng" },
+                { 'label': "Yêu cầu đăng", 'value': "Yêu cầu đăng" }
+            ]
         }
         ]
     } );
 
     // Activate an inline edit on click of a table cell
-    $('#dataTables-products').on( 'click', 'tbody td', function (e) {
+    $('#dataTables-products').on( 'click', 'tbody td:nth-child(9)', function (e) {
         editor.inline( this, {
-            buttons: { label: '&gt;', fn: function () { this.submit(); } }
-        } );
+            buttons: {
+                label: 'Save', fn: function () {
+                    this.submit();
+//                    datatable.draw();
+                    window.location.reload();
+                }
+            }
+        }
+        );
     } );
     var datatable = $("#dataTables-products").DataTable({
         autoWidth: false,
         processing: true,
         serverSide: true,
         pageLength: 50,
+        "bSort" : false,
         ajax: {
-            url: '{!! route('products.datatables') !!}',
+            url: '{!! route('suppliers.datatables') !!}',
             data: function (d) {
                 //
             }
         },
         columns: [
-            {data: 'name', name: 'name'},
+            {data: 'cat_name', name: 'cat_name'},
+            {data: 'manufacturer_name', name: 'manufacturer_name'},
             {data: 'sku', name: 'sku'},
-            {data: 'category_id', name: 'category_id'},
-            {data: 'manufacturer_id', name: 'manufacturer_id'},
-            {data: 'code', name: 'code'},
-            {data: 'source_url', name: 'source_url'},
-            {data: 'status', name: 'status'},
-
+            {data: 'product_name', name: 'product_name'},
+            {data: 'import_price', name: 'import_price'},
+            {data: 'vat', name: 'vat'},
+            {data: 'saler_price', name: 'saler_price'},
+            {data: 'tekshop_price', name: 'tekshop_price'},
+            {data: 'status',name: 'status'},
+            {data: 'supplier_name',name: 'supplier_name'},
+            {data: 'status_product',name: 'status_product'},
+            {data: 'updated_at',name: 'updated_at'},
+            {data: 'action', name: 'action', searchable: false}
         ],
         select: {
             style:    'os',
-            selector: 'td:first-child'
+            blurable: true
         },
 
     });
+
+    datatable.on('key-focus', function (e, datatable, cell) {
+        editor.inline(cell.index(), {
+            onBlur: 'submit'
+        });
+    });
+
 
     @include('scripts.click-datatable-delete-button')
 });

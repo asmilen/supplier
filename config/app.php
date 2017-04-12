@@ -185,7 +185,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        Intervention\Image\ImageServiceProvider::class
     ],
 
     /*
@@ -241,6 +241,7 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Image' => Intervention\Image\Facades\Image::class
 
     ],
 

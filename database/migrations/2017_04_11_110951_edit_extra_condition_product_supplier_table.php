@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddFieldBestPriceTableProducts extends Migration
+class EditExtraConditionProductSupplierTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddFieldBestPriceTableProducts extends Migration
      */
     public function up()
     {
-        //
-        Schema::table('products', function (Blueprint $table) {
-            $table->decimal('best_price')->default(0);
+        Schema::table('product_supplier', function (Blueprint $table) {
+            $table->string('extra_condition')->nullable()->change();
         });
     }
 
@@ -26,9 +25,8 @@ class AddFieldBestPriceTableProducts extends Migration
      */
     public function down()
     {
-        //
-        Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('best_price');
+        Schema::table('product_supplier', function (Blueprint $table) {
+            //
         });
     }
 }

@@ -68,10 +68,10 @@ $(function () {
             name: "status",
             type: "select",
             options: [
-                { label: "Chờ duyệt", value: "Chờ duyệt" },
-                { label: "Câp nhật", value: "Câp nhật" },
-                { label: "Đã đăng", value: "Đã đăng" },
-                { label: "Yêu cầu đăng", value: "Yêu cầu đăng" }
+                { 'label': "Chờ duyệt", 'value': "Chờ duyệt" },
+                { 'label': "Câp nhật", 'value': "Câp nhật" },
+                { 'label': "Đã đăng", 'value': "Đã đăng" },
+                { 'label': "Yêu cầu đăng", 'value': "Yêu cầu đăng" }
             ]
         }
         ]
@@ -83,7 +83,8 @@ $(function () {
             buttons: {
                 label: 'Save', fn: function () {
                     this.submit();
-                    datatable.draw();
+//                    datatable.draw();
+                    window.location.reload();
                 }
             }
         }

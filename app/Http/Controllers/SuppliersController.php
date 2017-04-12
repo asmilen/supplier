@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
+use Sentinel;
 use Validator;
 use Datatables;
 use App\Models\Product;
@@ -32,10 +33,9 @@ class SuppliersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function mapping(Request $request)
     {
-
-        Validator::make($request->all(), [
+        $rules = [
             'supplier_id' => 'required',
             'state' => 'required',
             'import_price' => 'required',
@@ -43,37 +43,60 @@ class SuppliersController extends Controller
             'saler_price' => 'required',
             'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
             'description' => 'required',
-        ])->validate();
-
-        $file = request()->file('image');
-        $filename = md5(time()) . '.' . $file->getClientOriginalExtension();
-        $data = [
-            'product_id' => $request->input('product_id'),
-            'supplier_id' => $request->input('supplier_id'),
-            'import_price' => $request->input('import_price'),
-            'vat' => $request->input('vat'),
-            'image' => $filename,
-            'state' => $request->input('state'),
-            'quantity' => $request->input('quantity'),
-            'description' => $request->input('description')
-
+            'quantity' => 'required',
         ];
 
-        $product = Product::find($data['product_id']);
-        $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
-        $data['name'] = $product->name;
-        $data['code'] = $codes_supplier->code;
-        $data['created_id'] = $request->user()->id;
-        $data['updated_id'] = $request->user()->id;
-        $product_supplier = ProductSupplier::firstOrCreate($data);
-        if($product_supplier) {
-            Image::make($file->getRealPath())->save(public_path('files/'. $filename));
-            flash()->success('Success!', 'Suppliers successfully created.');
-        } else {
-            flash()->success('Failed!', 'Suppliers failed created.');
-        }
+        $messages = [
+            'supplier_id.required' => 'Hãy chọn nhà cung cấp',
+            'state.required' => 'Hãy chọn tình trạng sản phẩm',
+            'import_price.required' => 'Hãy nhập giá nhập',
+            'vat.required' => 'Hãy nhập VAT',
+            'saler_price.required' => 'Hãy nhập giá khuyến nghị',
+            'image.required' => 'Hãy chọn ảnh sản phẩm ',
+            'image.mimes' => 'Hãy chọn 1 tệp có định dạng ảnh',
+            'image.max' => 'Hãy chọn 1 tệp có định dạng ảnh không quá 1Mb',
+            'description.required' => 'Hãy nhập mô tả',
+            'quantity.required' => 'Hãy nhập so luong',
+        ];
 
-        return redirect()->back();
+        $validator = Validator::make($request->all(), $rules,$messages);
+
+        if($validator->fails()) {
+            $errors = $validator->errors();
+            $response['status']  = 'fails';
+            $response['errors'] = $errors;
+        } else {
+            $file = request()->file('image');
+            $filename = md5(time()) . '.' . $file->getClientOriginalExtension();
+            $data = [
+                'product_id' => $request->input('product_id'),
+                'supplier_id' => $request->input('supplier_id'),
+                'import_price' => $request->input('import_price'),
+                'vat' => $request->input('vat'),
+                'image' => $filename,
+                'state' => $request->input('state'),
+                'quantity' => $request->input('quantity'),
+                'description' => $request->input('description')
+
+            ];
+
+            $product = Product::find($data['product_id']);
+            $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
+            $data['name'] = $product->name;
+            $data['code'] = $codes_supplier->code;
+            $data['created_by'] = Sentinel::getUser()->id;
+            $data['updated_by'] = Sentinel::getUser()->id;
+
+            $product_supplier = ProductSupplier::firstOrCreate($data);
+            if($product_supplier) {
+                Image::make($file->getRealPath())->save(public_path('files/'. $filename));
+                $response['status']  = 'success';
+            } else {
+                $response['status']  = 'exists';
+            }
+        }
+        return json_encode($response);
+
     }
 
     public function getDatatables() {
@@ -127,6 +150,7 @@ class SuppliersController extends Controller
         $data_arr = $request->input('data');
 
         foreach ($data_arr as $key => $value) {
+
             if($value['status'] == 'Chờ duyệt') {
                 $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '0']);
             } else if($value['status'] == 'Câp nhật'){
@@ -145,11 +169,15 @@ class SuppliersController extends Controller
             ->join('product_supplier', 'suppliers.id', '=', 'product_supplier.supplier_id')
             ->join('products', 'product_supplier.product_id', '=', 'products.id')
             ->where('product_supplier.product_id',$id)
-            ->select('product_supplier.id as id','product_supplier.product_id as id_product', 'products.sku as sku', 'product_supplier.name as product_name','product_supplier.import_price as import_price',
-                'product_supplier.vat','product_supplier.status as status','suppliers.name as supplier_name',
+            ->select('product_supplier.id as id','product_supplier.image as image','product_supplier.description as description','product_supplier.product_id as id_product', 'products.sku as sku', 'product_supplier.name as product_name','product_supplier.import_price as import_price',
+                'product_supplier.vat','product_supplier.status as status','suppliers.id as supplier_id','suppliers.name as supplier_name',
                 'product_supplier.updated_at as updated_at','products.status as status_product')->get();
-        $suppliers = DB::table('suppliers')->get();
+        $supplier_arr = [];
+        foreach ($products as $value) {
+            array_push($supplier_arr,$value->supplier_id);
+        }
 
+        $suppliers = DB::table('suppliers')->whereNotIn('id', $supplier_arr)->get();
         return view('suppliers.products_suppliers',compact('products','id','suppliers'));
     }
 

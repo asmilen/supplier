@@ -110,7 +110,6 @@
     <script src="/vendor/ace/assets/js/ace/ace.settings-skin.js"></script>
     <script src="/vendor/ace/assets/js/ace/ace.widget-on-reload.js"></script>
     <script src="/vendor/ace/assets/js/ace/ace.searchbox-autocomplete.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
 
     <!-- Scripts -->

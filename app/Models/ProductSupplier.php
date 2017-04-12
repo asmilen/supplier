@@ -20,7 +20,7 @@ class ProductSupplier extends Model
         'description',
         'image',
         'name',
-        'quantity'
+        'quantity',
     ];
 
 

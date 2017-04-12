@@ -15,7 +15,7 @@ class AddFieldBestPriceTableProducts extends Migration
     {
         //
         Schema::table('products', function (Blueprint $table) {
-            $table->decimal('best_price');
+            $table->decimal('best_price')->default(0);
         });
     }
 

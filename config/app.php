@@ -175,6 +175,7 @@ return [
         Laravel\Socialite\SocialiteServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Gtk\Gapi\GapiServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -237,7 +238,7 @@ return [
         'Activation' => Cartalyst\Sentinel\Laravel\Facades\Activation::class,
         'Reminder' => Cartalyst\Sentinel\Laravel\Facades\Reminder::class,
         'Sentinel' => Cartalyst\Sentinel\Laravel\Facades\Sentinel::class,
-
+        'Image' => Intervention\Image\Facades\Image::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 

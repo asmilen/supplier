@@ -43,7 +43,7 @@
             </div>
             <div class="col-xs-8">
                 @include('common.errors')
-                <form class="form-horizontal" role="form" id="product_form" action="{{ route('supplier.postUpdatePrice') }}" method="POST" >
+                <form enctype="multipart/form-data" class="form-horizontal" role="form" id="product_form" action="{{ route('supplier.postUpdatePrice') }}" method="POST" >
                     {!! csrf_field() !!}
                     <input type="hidden" name="product_id" id="product_id" />
                     <div class="form-group">
@@ -169,7 +169,7 @@
             $('#dataTables-products tfoot th').each( function () {
                 var title = $(this).text();
                 if (title)
-                $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+                $(this).html( '<input type="text" style="max-width: 150px" placeholder="Tìm '+title+'" />' );
             } );
 
             var datatable = $("#dataTables-products").DataTable({

@@ -102,11 +102,16 @@ class ForSupplierController extends Controller
     public function saveImage($file, $old = null)
     {
         $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
-        Image::make($file->getRealPath())->save(public_path('files/' . $filename));
+        Image::make($file->getRealPath())->save(public_path('img/' . $filename));
         if ($old) {
             @unlink(public_path('files/' . $old));
         }
         return $filename;
+    }
+
+    public function ajaxGetProductByName()
+    {
+
     }
 
     public function getDatatables()

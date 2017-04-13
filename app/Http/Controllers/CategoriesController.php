@@ -37,6 +37,10 @@ class CategoriesController extends Controller
      */
     public function store()
     {
+
+        if(!request()->has('margin')){
+            request()->merge(['margin' => 0]);
+        }
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
             'code' => 'required|alpha_num|min:3|max:3|unique:categories',
@@ -44,7 +48,7 @@ class CategoriesController extends Controller
         ], [
             'name.unique' => 'Tên danh mục đã tồn tại.',
             'code.unique' => 'Mã danh mục đã tồn tại.',
-            'margin.between' => 'Margin phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
+            'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
         $category = Category::forceCreate([
@@ -94,7 +98,7 @@ class CategoriesController extends Controller
             'margin' => 'integer|between:0,100',
         ], [
             'name.unique' => 'Tên danh mục đã tồn tại.',
-            'margin.between' => 'Margin phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
+            'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
         $category->forceFill([

@@ -40,15 +40,18 @@ class CategoriesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
             'code' => 'required|alpha_num|min:3|max:3|unique:categories',
+            'margin' => 'integer|between:0,100',
         ], [
             'name.unique' => 'Tên danh mục đã tồn tại.',
             'code.unique' => 'Mã danh mục đã tồn tại.',
+            'margin.between' => 'Margin phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
         $category = Category::forceCreate([
             'name' => request('name'),
             'code' => strtoupper(request('code')),
             'status' => !! request('status'),
+            'margin' => request('margin'),
         ]);
 
         flash()->success('Success!', 'Category successfully created.');
@@ -88,13 +91,16 @@ class CategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories,name,'.$category->id,
+            'margin' => 'integer|between:0,100',
         ], [
             'name.unique' => 'Tên danh mục đã tồn tại.',
+            'margin.between' => 'Margin phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
         $category->forceFill([
             'name' => request('name'),
             'status' => !! request('status'),
+            'margin' => request('margin'),
         ])->save();
 
         flash()->success('Success!', 'Category successfully updated.');

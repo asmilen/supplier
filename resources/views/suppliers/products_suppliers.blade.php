@@ -12,17 +12,15 @@
 
         .tooltip2 .tooltiptext {
             visibility: hidden;
-            width: 120px;
+            width: auto;
             background-color: #555;
             color: #fff;
             text-align: center;
             border-radius: 6px;
-            padding: 5px 0;
+            /*padding: 5px 0;*/
             position: absolute;
             z-index: 1;
             bottom: 125%;
-            left: 50%;
-            margin-left: -60px;
             opacity: 0;
             transition: opacity 1s;
         }
@@ -195,14 +193,14 @@
                                     {!! 'Đặt hàng' !!}
                                 @endif
                             </td>
-                            <td>{{ number_format($val->import_price,2,",",".") }}</td>
-                            <td>{{ number_format($val->vat,2,",",".") }}</td>
-                            <td>{{ number_format($val->recommend_price,2,",",".")  }}</td>
+                            <td>{{ number_format($val->import_price) }}</td>
+                            <td>{!!  number_format($val->vat)  !!}</td>
+                            <td>{{ number_format($val->recommend_price)  }}</td>
                             <td><img src="{{ url('storage/'.$val->image) }}" style="width: 100px;"/></td>
                             <td>
-                                <div class="tooltip2"><span class="tooltip_desc">{!! $val->description  !!}</span>
-                                    <span class="tooltiptext">{!! $val->description  !!} </span>
-                                </div>
+                                <div class="tooltip2"><span class="tooltip_desc">{!! strip_tags($val->description) !!}</span>
+                                    <span class="tooltiptext">{!! html_entity_decode($val->description)  !!} </span>
+        </div>
                             </td>
                         </tr>
                     @endforeach

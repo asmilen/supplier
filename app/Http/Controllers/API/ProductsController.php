@@ -38,15 +38,15 @@ class ProductsController extends Controller
         return Datatables::eloquent($model)
             ->filter(function ($query) {
                 if (request()->has('name')) {
-                    $query->where('name', 'like', '%' . request('name') . '%');
+                    $query->where('products.name', 'like', '%' . request('name') . '%');
                 }
 
                 if (request()->has('category_id')) {
-                    $query->where('category_id', request('category_id'));
+                    $query->where('products.category_id', request('category_id'));
                 }
 
                 if (request()->has('manufacturer_id')) {
-                    $query->where('manufacturer_id', request('manufacturer_id'));
+                    $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })
             ->groupBy('products.id', 'products.name', 'products.code', 'products.sku')

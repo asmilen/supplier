@@ -22,6 +22,13 @@
 </div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Margin</label>
+    <div class="col-sm-6">
+        <input type="number" class="form-control" name="margin" placeholder="Margin" value="{{ old('margin', $category->margin) }}">
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
     <div class="col-sm-6">
         <label>

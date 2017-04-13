@@ -1,5 +1,8 @@
 @extends('layouts.app')
 @section('styles')
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
+
     <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
 @endsection
 @section('content')
@@ -38,7 +41,7 @@
                         <th>Giá Saler</th>
                         <th>Giá Tekshop</th>
                         <th>Trạng thái </th>
-                        <th>Nhà cung cấp cho khu vực</th>
+                        <th>Khu Vuc</th>
                         <th>Tình trạng</th>
                         <th>Ngày cập nhật</th>
                         <th>Thao tác</th>
@@ -64,7 +67,6 @@ $(function () {
         idSrc:  'id',
         ajax: "{!! route('suppliers.datatables-edit') !!}",
         fields: [ {
-            label: "Trạng thái:",
             name: "status",
             type: "select",
             options: [
@@ -110,9 +112,9 @@ $(function () {
             {data: 'import_price', name: 'import_price'},
             {data: 'vat', name: 'vat'},
             {data: 'saler_price', name: 'saler_price'},
-            {data: 'tekshop_price', name: 'tekshop_price'},
+            {data: 'recommend_price', name: 'recommend_price'},
             {data: 'status',name: 'status'},
-            {data: 'supplier_name',name: 'supplier_name'},
+            {data: 'region',name: 'region'},
             {data: 'status_product',name: 'status_product'},
             {data: 'updated_at',name: 'updated_at'},
             {data: 'action', name: 'action', searchable: false}

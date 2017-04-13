@@ -14,6 +14,7 @@ class ProductSupplier extends Model
         'supplier_id',
         'code',
         'import_price',
+        'price_recommend',
         'vat',
         'status',
         'state',
@@ -21,6 +22,8 @@ class ProductSupplier extends Model
         'image',
         'name',
         'quantity',
+        'created_by',
+        'updated_by',
     ];
 
 

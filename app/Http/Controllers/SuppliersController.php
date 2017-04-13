@@ -39,28 +39,32 @@ class SuppliersController extends Controller
         $rules = [
             'supplier_id' => 'required',
             'state' => 'required',
-            'import_price' => 'required|integer',
-            'vat' => 'required|integer',
-            'price_recommend' => 'required|integer',
+            'import_price' => 'required|integer|min:0',
+            'vat' => 'required|integer|min:0',
+            'price_recommend' => 'required|integer|min:0',
             'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
             'description' => 'required',
-            'quantity' => 'required|integer',
+            'quantity' => 'required|integer|min:0',
         ];
         $messages = [
             'supplier_id.required' => 'Hãy chọn nhà cung cấp',
             'state.required' => 'Hãy chọn tình trạng sản phẩm',
             'import_price.required' => 'Hãy nhập giá nhập',
             'import_price.integer' => 'Hãy nhập đúng định dạng',
+            'import_price.min' => 'Hãy nhập đúng định dạng',
             'vat.required' => 'Hãy nhập VAT',
             'vat.integer' => 'Hãy nhập đúng định dạng',
+            'vat.min' => 'Hãy nhập đúng định dạng',
             'price_recommend.required' => 'Hãy nhập giá khuyến nghị',
             'price_recommend.integer' => 'Hãy nhập đúng định dạng',
+            'price_recommend.min' => 'Hãy nhập đúng định dạng',
             'image.required' => 'Hãy chọn ảnh sản phẩm ',
             'image.mimes' => 'Hãy chọn 1 tệp có định dạng ảnh',
             'image.max' => 'Hãy chọn 1 tệp có định dạng ảnh không quá 1Mb',
             'description.required' => 'Hãy nhập mô tả',
             'quantity.required' => 'Hãy nhập so luong',
             'quantity.integer' => 'Hãy nhập đúng định dạng',
+            'quantity.min' => 'Hãy nhập đúng định dạng',
         ];
 
         $validator = Validator::make($request->all(), $rules,$messages);
@@ -71,7 +75,6 @@ class SuppliersController extends Controller
             $response['errors'] = $errors;
         } else {
             $file = request()->file('image');
-            $filename = md5(time()) . '.' . $file->getClientOriginalExtension();
             $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
 
             $data = [
@@ -126,17 +129,17 @@ class SuppliersController extends Controller
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,provinces.region as region, min(import_price)'))->get();
         return Datatables::of($products)
             ->editColumn('import_price', function($product) {
-                return number_format($product->import_price,2,",",".");
+                return number_format($product->import_price);
             })
             ->editColumn('vat', function($product) {
-                return number_format($product->vat,2,",",".");
+                return number_format($product->vat);
             })
             ->editColumn('saler_price', function($product) {
-                $saler_price = number_format($product->import_price + $product->vat,2,",",".");
+                $saler_price = number_format($product->import_price + $product->vat);
                 return $saler_price;
             })
             ->editColumn('recommend_price', function($product) {
-                return number_format($product->recommend_price,2,",",".");
+                return number_format($product->recommend_price);
             })
             ->editColumn('status', function($product) {
                 if($product->status == 0){

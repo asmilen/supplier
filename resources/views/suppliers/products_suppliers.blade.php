@@ -4,6 +4,45 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.2.1/css/select.dataTables.min.css">
     <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
+    <style>
+        .tooltip2 {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip2 .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .tooltip2 .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip2:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
 @endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
@@ -77,8 +116,8 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-left">Giá bán</label>
                                     <div class="col-sm-9">
-                                        <input type="number" min = "0" class="form-control" name="saler_price" placeholder="Nhập giá" >
-                                        <p style="color:red;text-align: left;" id="saler_price">{{$errors->first('saler_price')}}</p>
+                                        <input type="number" min = "0" class="form-control" name="price_recommend" placeholder="Nhập giá" >
+                                        <p style="color:red;text-align: left;" id="price_recommend">{{$errors->first('price_recommend')}}</p>
                                     </div>
                                 </div>
 
@@ -137,7 +176,9 @@
                         <th>Tình trạng hàng</th>
                         <th>Giá nhập</th>
                         <th>GTGT</th>
-                        <th>Giá Saler</th>
+                        <th>Giá khuyến nghị</th>
+                        <th>Ảnh</th>
+                        <th>Mô tả</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -145,10 +186,24 @@
                         <tr>
                             <td>{{$key + 1}}</td>
                             <td>{{$val->supplier_name}}</td>
-                            <td>{{$val->status}}</td>
-                            <td>{{$val->import_price}}</td>
-                            <td>{{$val->vat}}</td>
-                            <td>{{ ($val->import_price + $val->vat) }}</td>
+                            <td>
+                                @if($val->state == 0)
+                                    {!! 'Hết hàng' !!}
+                                @elseif($val->state == 1)
+                                    {!! 'Còn hàng' !!}
+                                @else
+                                    {!! 'Đặt hàng' !!}
+                                @endif
+                            </td>
+                            <td>{{ number_format($val->import_price,2,",",".") }}</td>
+                            <td>{{ number_format($val->vat,2,",",".") }}</td>
+                            <td>{{ number_format($val->recommend_price,2,",",".")  }}</td>
+                            <td><img src="{{ url('storage/'.$val->image) }}" style="width: 100px;"/></td>
+                            <td>
+                                <div class="tooltip2"><span class="tooltip_desc">{!! $val->description  !!}</span>
+                                    <span class="tooltiptext">{!! $val->description  !!} </span>
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -169,8 +224,13 @@
     <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
 <script>
 $(function () {
-    var datatable = $("#dataTables-products").DataTable({});
+    var datatable = $("#dataTables-products").DataTable({
+        "bSort" : false
+    });
     CKEDITOR.replace('_description');
+    $("span.tooltip_desc").text(function(index, currentText) {
+        return currentText.substr(0, 200);
+    });
     $("#btn_save").on("click", function () {
         for ( instance in CKEDITOR.instances )
             CKEDITOR.instances[instance].updateElement();
@@ -186,7 +246,7 @@ $(function () {
             contentType:false,
             dataType: 'JSON',
             success: function (res){
-                $("#supplier_id, #state, #import_price , #vat , #saler_price , #quantity, #image, #description").text('');
+                $("#supplier_id, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
                 if(res.status == 'success'){
                     $('#myModal').modal('hide');
                     swal({

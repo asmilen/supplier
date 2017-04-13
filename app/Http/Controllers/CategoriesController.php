@@ -37,10 +37,10 @@ class CategoriesController extends Controller
      */
     public function store()
     {
-
         if(!request()->has('margin')){
             request()->merge(['margin' => 0]);
         }
+        
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
             'code' => 'required|alpha_num|min:3|max:3|unique:categories',

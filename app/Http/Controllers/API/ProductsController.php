@@ -29,7 +29,7 @@ class ProductsController extends Controller
         $supplierIds = SupplierSupportedProvince::whereIn('province_id', request('province_ids'))->get()->pluck('supplier_id');
 
         $model = Product::select([
-            'products.id', 'products.name', 'products.code', 'products.sku',
+            'products.id', 'products.name', 'products.code', 'products.sku', 'products.source_url','products.best_price',
         ])->join('product_supplier', function ($q) use ($supplierIds) {
             $q->on('product_supplier.product_id', '=', 'products.id')
                 ->whereIn('product_supplier.supplier_id', $supplierIds);
@@ -49,7 +49,7 @@ class ProductsController extends Controller
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })
-            ->groupBy('products.id', 'products.name', 'products.code', 'products.sku')
+            ->groupBy('products.id', 'products.name', 'products.code', 'products.sku', 'products.source_url','products.best_price')
             ->make(true);
     }
 }

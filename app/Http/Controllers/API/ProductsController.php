@@ -7,6 +7,7 @@ use Datatables;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Models\SupplierSupportedProvince;
+use App\Transformers\ProductApiTransformer;
 
 class ProductsController extends Controller
 {
@@ -26,16 +27,23 @@ class ProductsController extends Controller
         /**
          * @var array $supplierIds
          */
-        $supplierIds = SupplierSupportedProvince::whereIn('province_id', request('province_ids'))->get()->pluck('supplier_id');
+        $supplierIds = SupplierSupportedProvince::whereIn('province_id', request('province_ids'))
+            ->get()
+            ->pluck('supplier_id');
 
         $model = Product::select([
-            'products.id', 'products.name', 'products.code', 'products.sku', 'products.source_url','products.best_price',
-        ])->join('product_supplier', function ($q) use ($supplierIds) {
-            $q->on('product_supplier.product_id', '=', 'products.id')
-                ->whereIn('product_supplier.supplier_id', $supplierIds);
-        });
+            'products.id', 'products.name', 'products.code',
+            'products.sku', 'products.source_url', 'products.best_price',
+            'products.category_id'
+        ])
+            ->with('category')
+            ->join('product_supplier', function ($q) use ($supplierIds) {
+                $q->on('product_supplier.product_id', '=', 'products.id')
+                    ->whereIn('product_supplier.supplier_id', $supplierIds);
+            });
 
         return Datatables::eloquent($model)
+            ->setTransformer(new ProductApiTransformer())
             ->filter(function ($query) {
                 if (request()->has('name')) {
                     $query->where('products.name', 'like', '%' . request('name') . '%');
@@ -49,7 +57,21 @@ class ProductsController extends Controller
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })
-            ->groupBy('products.id', 'products.name', 'products.code', 'products.sku', 'products.source_url','products.best_price')
+            ->addColumn('price', function ($model) {
+                return $model->best_price * (1 + 0.01 * $model->category->margin);
+            })
+            ->groupBy('products.id', 'products.name', 'products.code',
+                'products.sku', 'products.source_url', 'products.best_price',
+                'products.category_id')
             ->make(true);
+    }
+
+    /**
+     * @param int $id
+     * @return Product
+     */
+    public function detail($id)
+    {
+        return Product::with('manufacturer', 'category')->findOrFail($id);
     }
 }

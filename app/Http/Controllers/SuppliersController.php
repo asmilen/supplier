@@ -186,7 +186,7 @@ class SuppliersController extends Controller
                 } else if($status == 'Yêu cầu đăng'){
                     $status = 3;
                 }
-                DB::table('product_supplier')->where('id', $id)->update(['status' => $status]);
+                ProductSupplier::findOrFail($id)->update(['status' => $status]);
                 DB::commit();
             } catch (\Throwable $e) {
                 DB::rollback();

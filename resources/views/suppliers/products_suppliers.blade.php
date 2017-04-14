@@ -12,15 +12,14 @@
 
         .tooltip2 .tooltiptext {
             visibility: hidden;
-            width: auto;
+            /*width: auto;*/
             background-color: #555;
             color: #fff;
-            text-align: center;
             border-radius: 6px;
-            /*padding: 5px 0;*/
+            padding: 25px 25px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
+            top: 55%;
             opacity: 0;
             transition: opacity 1s;
         }
@@ -40,6 +39,16 @@
             visibility: visible;
             opacity: 1;
         }
+
+        .tooltip_desc {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            line-height: 16px;     /* fallback */
+            max-height: 200px;      /* fallback */
+            -webkit-line-clamp: 3; /* number of lines to show */
+            -webkit-box-orient: vertical; }
+
     </style>
 @endsection
 @section('content')
@@ -198,9 +207,9 @@
                             <td>{{ number_format($val->recommend_price)  }}</td>
                             <td><img src="{{ url('storage/'.$val->image) }}" style="width: 100px;"/></td>
                             <td>
-                                <div class="tooltip2"><span class="tooltip_desc">{!! strip_tags($val->description) !!}</span>
-                                    <span class="tooltiptext">{!! html_entity_decode($val->description)  !!} </span>
-        </div>
+                                <div class="tooltip2"><span class="tooltip_desc">{!! html_entity_decode($val->description)  !!}</span>
+                                    <span class="tooltiptext">{!! html_entity_decode( $val->description )!!} </span>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -226,9 +235,7 @@ $(function () {
         "bSort" : false
     });
     CKEDITOR.replace('_description');
-    $("span.tooltip_desc").text(function(index, currentText) {
-        return currentText.substr(0, 200);
-    });
+
     $("#btn_save").on("click", function () {
         for ( instance in CKEDITOR.instances )
             CKEDITOR.instances[instance].updateElement();

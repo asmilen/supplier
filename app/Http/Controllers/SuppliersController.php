@@ -171,21 +171,30 @@ class SuppliersController extends Controller
 
     public function updateDatatables(Request $request) {
 
-        $data_arr = $request->input('data');
+        $id =  $request->input('id');
+        $status =  $request->input('status');
 
-        foreach ($data_arr as $key => $value) {
+        DB::beginTransaction();
 
-            if($value['status'] == 'Chờ duyệt') {
-                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '0']);
-            } else if($value['status'] == 'Câp nhật'){
-                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '1']);
-            } else if($value['status'] == 'Đã đăng'){
-                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '2']);
-            } else if($value['status'] == 'Yêu cầu đăng'){
-                $res = DB::table('product_supplier')->where('id', $key)->update(['status' => '3']);
+            try {
+                if($status == 'Chờ duyệt') {
+                   $status = 0;
+                } else if($status == 'Câp nhật'){
+                    $status = 1;
+                } else if($status == 'Đã đăng'){
+                    $status = 2;
+                } else if($status == 'Yêu cầu đăng'){
+                    $status = 3;
+                }
+                ProductSupplier::findOrFail($id)->update(['status' => $status]);
+                DB::commit();
+            } catch (\Throwable $e) {
+                DB::rollback();
+                throw $e;
             }
-        }
+
     }
+
 
     protected function show($id) {
 

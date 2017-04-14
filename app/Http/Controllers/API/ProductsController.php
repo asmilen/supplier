@@ -72,6 +72,15 @@ class ProductsController extends Controller
      */
     public function detail($id)
     {
-        return Product::with('manufacturer', 'category')->findOrFail($id);
+        try {
+            $product = Product::with('manufacturer', 'category')->findOrFail($id);
+            if (isset($product->category->margin)) {
+                $product->best_price = $product->best_price * (1 + 0.01 * $product->category->margin);
+            }
+            return $product;
+        }
+        catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

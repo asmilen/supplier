@@ -25,8 +25,9 @@ class SuppliersController extends Controller
      */
     public function index()
     {
-
-        return view('suppliers.index');
+        $suppliers = Suppliers::all();
+        $products = Product::all();
+        return view('suppliers.index',compact('suppliers','products'));
     }
 
     /**
@@ -37,7 +38,9 @@ class SuppliersController extends Controller
     public function mapping(Request $request)
     {
         $rules = [
+            'product_id' => 'required',
             'supplier_id' => 'required',
+            'status' => 'required',
             'state' => 'required',
             'import_price' => 'required|integer|min:0',
             'vat' => 'required|integer|min:0',
@@ -47,7 +50,9 @@ class SuppliersController extends Controller
             'quantity' => 'required|integer|min:0',
         ];
         $messages = [
+            'product_id.required' => 'Hãy chọn sản phẩm',
             'supplier_id.required' => 'Hãy chọn nhà cung cấp',
+            'status.required' => 'Hãy chọn tình trạng nhà cung cấp',
             'state.required' => 'Hãy chọn tình trạng sản phẩm',
             'import_price.required' => 'Hãy nhập giá nhập',
             'import_price.integer' => 'Hãy nhập đúng định dạng',
@@ -84,6 +89,7 @@ class SuppliersController extends Controller
                 'vat' => $request->input('vat'),
                 'price_recommend' => $request->input('price_recommend'),
                 'image' => $filename,
+                'status' => $request->input('status'),
                 'state' => $request->input('state'),
                 'quantity' => $request->input('quantity'),
                 'description' => $request->input('description')
@@ -115,18 +121,17 @@ class SuppliersController extends Controller
         $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
             ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
             ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
+            ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
             ->join('products', 'product_supplier.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->where('user_supported_province.supported_id',$user_id)
-            ->where('user_supported_province.status',1)
-            ->whereIn('product_supplier.state', [1, 2])
-            ->whereIn('product_supplier.status', [0, 2])
+            ->orderBy('product_supplier.status', 'asc')
             ->groupBy('product_supplier.product_id')
             ->select(DB::raw('product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     products.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,
-                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,provinces.region as region, min(import_price)'))->get();
+                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'))->get();
         return Datatables::of($products)
             ->editColumn('import_price', function($product) {
                 return number_format($product->import_price);
@@ -145,11 +150,13 @@ class SuppliersController extends Controller
                 if($product->status == 0){
                     $string = 'Chờ duyệt';
                 } else if($product->status == 1){
-                    $string = 'Câp nhật';
+                    $string = 'Hết hàng';
                 } else if($product->status == 2){
-                    $string = 'Đã đăng';
+                    $string = 'Ưu tiên lấy hàng';
                 } else if($product->status == 3){
-                    $string = 'Yêu cầu đăng';
+                    $string = 'Yêu cầu ưu tiên lấy hàng';
+                } else if($product->status == 4){
+                    $string = 'Không ưu tiên lấy hàng';
                 }
                 return $string;
             })->editColumn('status_product', function($product) {
@@ -162,11 +169,11 @@ class SuppliersController extends Controller
                 }
                 return $string;
             })
-            ->addColumn('action',function($product){
-                $url = url('suppliers/show/'.$product->id_product);
-                $string = '<a  href="'.$url.'" class="btn btn-outline btn-circle red btn-sm purple"><i class="fa fa-edit"></i></a>';
-                return $string;
-            })->make(true);
+//            ->addColumn('action',function($product){
+//                $url = url('suppliers/show/'.$product->id_product);
+//                $string = '<a  href="'.$url.'" class="btn btn-outline btn-circle red btn-sm purple"><i class="fa fa-edit"></i></a>';
+//                return $string;})
+            ->make(true);
     }
 
     public function updateDatatables(Request $request) {
@@ -179,12 +186,14 @@ class SuppliersController extends Controller
             try {
                 if($status == 'Chờ duyệt') {
                    $status = 0;
-                } else if($status == 'Câp nhật'){
+                } else if($status == 'Hết hàng'){
                     $status = 1;
-                } else if($status == 'Đã đăng'){
+                } else if($status == 'Ưu tiên lấy hàng'){
                     $status = 2;
-                } else if($status == 'Yêu cầu đăng'){
+                } else if($status == 'Yêu cầu ưu tiên lấy hàng'){
                     $status = 3;
+                }  else if($status == 'Không ưu tiên lấy hàng'){
+                    $status = 4;
                 }
                 ProductSupplier::findOrFail($id)->update(['status' => $status]);
                 DB::commit();

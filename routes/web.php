@@ -54,7 +54,6 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');
         Route::post('suppliers/datatables-edit', 'SuppliersController@updateDatatables')->name('suppliers.datatables-edit');
-        Route::get('suppliers/show/{id}', 'SuppliersController@show')->name('suppliers.show');
         Route::post('suppliers/map-suppliers', 'SuppliersController@mapping')->name('suppliers.map-suppliers');
         Route::resource('suppliers', 'SuppliersController');
 

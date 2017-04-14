@@ -58,7 +58,7 @@ class ProductsController extends Controller
                 }
             })
             ->addColumn('price', function ($model) {
-                return $model->best_price * (1 + 0.01 * $model->category->margin);
+                return isset($model->category->margin) ? $model->best_price * (1 + 0.01 * $model->category->margin) : "";
             })
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
@@ -72,6 +72,15 @@ class ProductsController extends Controller
      */
     public function detail($id)
     {
-        return Product::with('manufacturer', 'category')->findOrFail($id);
+        try {
+            $product = Product::with('manufacturer', 'category')->findOrFail($id);
+            if (isset($product->category->margin)) {
+                $product->best_price = $product->best_price * (1 + 0.01 * $product->category->margin);
+            }
+            return $product;
+        }
+        catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }

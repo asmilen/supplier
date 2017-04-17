@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
     <style>
         .my-confirm-class {
             padding: 3px 6px;
@@ -138,9 +139,9 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-sm-3 control-label no-padding-left">Giá bán</label>
+                                    <label class="col-sm-3 control-label no-padding-left">Giá bán khuyến nghị</label>
                                     <div class="col-sm-9">
-                                        <input type="number" min = "0" class="form-control" name="price_recommend" placeholder="Nhập giá" >
+                                        <input type="number" min = "0" class="form-control" name="price_recommend" placeholder="Nhập giá bán khuyến nghị" >
                                         <p style="color:red;text-align: left;" id="price_recommend">{{$errors->first('price_recommend')}}</p>
                                     </div>
                                 </div>
@@ -194,36 +195,50 @@
             <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
                     <tr>
-                        <th  class="select-filter">Danh mục</th>
-                        <th class="select-filter">Nhà sản xuất</th>
-                        <th class="input-filter">SKU</th>
-                        <th>Tên</th>
-                        <th>Giá nhập</th>
-                        <th>GTGT</th>
-                        <th class="select-filter">Giá bán khuyến nghị</th>
-                        <th class="select-filter">Trạng thái </th>
-                        <th  class="select-filter">Nhà cung cấp</th>
-                        <th>Tình trạng</th>
-                        <th>Ngày cập nhật</th>
-                        {{--<th>Thao tác</th>--}}
+                        <th >Danh mục</th>
+                        <th >Nhà sản xuất</th>
+                        <th >SKU</th>
+                        <th >Tên</th>
+                        <th >Giá nhập</th>
+                        <th >GTGT</th>
+                        <th >Giá bán khuyến nghị</th>
+                        <th >Trạng thái </th>
+                        <th >Nhà cung cấp</th>
+                        <th >Tình trạng</th>
+                        <th >Ngày cập nhật</th>
                     </tr>
                 </thead>
+
                 <tfoot>
                     <tr>
-                        <th>Danh mục</th>
-                        <th>Nhà sản xuất</th>
-                        <th>SKU</th>
-                        <th>Tên</th>
-                        <th>Giá nhập</th>
-                        <th>GTGT</th>
-                        <th>Giá bán khuyến nghị</th>
-                        <th>Trạng thái </th>
-                        <th>Nhà cung cấp</th>
-                        <th>Tình trạng</th>
-                        <th>Ngày cập nhật</th>
-                        {{--<th>Thao tác</th>--}}
+                        <th><input type="text" style="width: 100%" name="db_category_name" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_manufacture_name" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_sku" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_name" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
+                        <th><select name="db_status" style="width: 100%">
+                                <option value=""></option>
+                                <option value="0">Chờ duyệt</option>
+                                <option value="1">Hết hàng</option>
+                                <option value="2">Ưu tiên lấy hàng</option>
+                                <option value="3">Yêu cầu ưu tiên lấy hàng</option>
+                                <option value="4">Không ưu tiên lấy hàng</option>
+                            </select></th>
+                        <th><input type="text" style="width: 100%" name="db_supplier_name" placeholder=""/></th>
+
+                        <th><select name="db_state" style="width: 100%">
+                                <option value=""></option>
+                                <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
+                                <option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>
+                                <option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>
+                            </select></th>
+                        <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
+                                    value="" placeholder="Từ ngày" style="width: 200px;"/></th>
                     </tr>
                 </tfoot>
+
             </table>
         </div>
     </div>
@@ -236,6 +251,8 @@
     <script src="/vendor/ace/assets/js/dataTables/dataTables.cellEdit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
     <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 @endsection
 
 @section('inline_scripts')
@@ -248,31 +265,8 @@
                 width: '100%'
             });
 
-            $('#dataTables-products tfoot th').each( function () {
-                var title = $('#example thead th').eq( $(this).index() ).text();
-                $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-            } );
             var datatable = $("#dataTables-products").DataTable({
-                initComplete: function () {
-                    this.api().columns('.select-filter').every( function () {
-                        var column = this;
-                        var select = $('<select><option value=""></option></select>')
-                            .appendTo( $(column.footer()).empty() )
-                            .on( 'change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
-                                );
 
-                                column
-                                    .search( val ? '^'+val+'$' : '', true, false )
-                                    .draw();
-                            } );
-
-                        column.data().unique().sort().each( function ( d, j ) {
-                            select.append( '<option value="'+d+'">'+d+'</option>' )
-                        } );
-                    } );
-                },
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
@@ -282,7 +276,17 @@
                 ajax: {
                     url: '{!! route('suppliers.datatables') !!}',
                     data: function (d) {
-                        //
+                        d.category_name = $('input[name=db_category_name]').val();
+                        d.manufacture_name = $('input[name=db_manufacture_name]').val();
+                        d.product_sku = $('input[name=db_product_sku]').val();
+                        d.product_name = $('input[name=db_product_name]').val();
+                        d.product_import_price = $('input[name=db_product_import_price]').val();
+                        d.vat = $('input[name=vat]').val();
+                        d.recommend_price = $('input[name=db_product_recommend_price]').val();
+                        d.status = $('select[name=db_status]').val();
+                        d.supplier_name = $('input[name=db_supplier_name]').val();
+                        d.state = $('select[name=db_state]').val();
+                        d.updated_at = $('input[name=db_updated_at]').val();
                     }
                 },
                 columns: [
@@ -293,26 +297,18 @@
                     {data: 'import_price', name: 'import_price',"width": "5%"},
                     {data: 'vat', name: 'vat',"width": "5%"},
                     {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
-                    {data: 'status',name: 'status',"width": "20%"},
-                    {data: 'supplier_name',name: 'supplier_name',"width": "5%"},
-                    {data: 'status_product',name: 'status_product',"width": "10%"},
+                    {data: 'status',name: 'status',"width": "10%"},
+                    {data: 'supplier_name',name: 'supplier_name',"width": "10%"},
+                    {data: 'status_product',name: 'status_product',"width": "5%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
-        //            {data: 'action', name: 'action', searchable: false,"width": "5%"}
                 ],
             });
-
-            $("#dataTables-products tfoot input").on( 'keyup change', function () {
-                datatable
-                    .column( $(this).parent().index()+':visible' )
-                    .search( this.value )
-                    .draw();
-            } );
 
             datatable.MakeCellsEditable({
                 "onUpdate": myCallbackFunction,
                 "inputCss":'my-input-class',
                 "idSrc":  'id',
-                "columns": [8],
+                "columns": [7],
                 "allowNulls": {
                     "columns": [1],
                     "errorClass": 'error'
@@ -323,7 +319,7 @@
                 },
                 "inputTypes": [
                     {
-                        "column":8,
+                        "column":7,
                         "type": "list",
                         "options":[
                             { "value": "Chờ duyệt", "display": "Chờ duyệt" },
@@ -350,6 +346,21 @@
                     dataType: "json"
                 });
             }
+
+            datatable.columns().every( function () {
+                $( 'input', this.footer() ).on( 'keyup change', function () {
+                    datatable.draw();
+                } );
+                $( 'select', this.footer() ).on( 'keyup change', function () {
+                    datatable.draw();
+                } );
+                $('.input-daterange-datepicker').on('apply.daterangepicker', function(ev, picker){
+                    var startDate = picker.startDate;
+                    var endDate = picker.endDate;
+                    $('.input-daterange-datepicker').val(startDate.format('DD/MM/YYYY') + ' - ' + endDate.format('DD/MM/YYYY'));
+                    datatable.draw();
+                } );
+            } );
 
             CKEDITOR.replace('_description');
 
@@ -382,7 +393,22 @@
                                 function(){
                                     window.location.reload();
                                 });
-                        } else {
+                        } else if(res.status == "exists") {
+                            $('#myModal').modal('hide');
+                            swal({
+                                    title: "Tạo không thành công",
+                                    'text': "Nhà cung cấp này đã bán sản phẩm",
+                                    type: "warning",
+                                    showCancelButton: false,
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "Ok",
+                                    closeOnConfirm: false
+                                },
+                                function(){
+                                    window.location.reload();
+                                });
+                        }
+                        else {
                             $.each(res.errors,function(index, value) {
                                 $("#"+index).text(value);
                             });
@@ -390,6 +416,50 @@
 
                     }
                 });
+            });
+
+            $('.input-daterange-datepicker').daterangepicker({
+                autoUpdateInput: false,
+                dateLimit: {
+                    days: 60
+                },
+                showDropdowns: true,
+                showWeekNumbers: true,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment()],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                opens: 'left',
+                drops: 'down',
+                buttonClasses: ['btn', 'btn-sm'],
+                applyClass: 'btn-default',
+                cancelClass: 'btn-white',
+                separator: ' to ',
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    applyLabel: 'Submit',
+                    cancelLabel: 'Clear',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                }
+            });
+            $('.input-daterange-datepicker').on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            });
+
+            $('.input-daterange-datepicker').on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
             });
 
             @include('scripts.click-datatable-delete-button')

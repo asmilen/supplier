@@ -8,6 +8,7 @@ use Auth;
 use Sentinel;
 use Validator;
 use Datatables;
+use Carbon;
 use App\Models\Product;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
@@ -25,7 +26,12 @@ class SuppliersController extends Controller
      */
     public function index()
     {
-        $suppliers = Suppliers::all();
+        $user_id = Sentinel::getUser()->id;
+        $suppliers =  UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
+            ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
+            ->join('suppliers', 'supplier_supported_province.supplier_id', '=', 'suppliers.id')
+            ->orderBy('suppliers.name','asc')
+            ->where('user_supported_province.supported_id',$user_id)->get();
         $products = Product::all();
         return view('suppliers.index',compact('suppliers','products'));
     }
@@ -75,40 +81,46 @@ class SuppliersController extends Controller
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if($validator->fails()) {
+
             $errors = $validator->errors();
             $response['status']  = 'fails';
             $response['errors'] = $errors;
         } else {
-            $file = request()->file('image');
-            $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
-
-            $data = [
-                'product_id' => $request->input('product_id'),
-                'supplier_id' => $request->input('supplier_id'),
-                'import_price' => $request->input('import_price'),
-                'vat' => $request->input('vat'),
-                'price_recommend' => $request->input('price_recommend'),
-                'image' => $filename,
-                'status' => $request->input('status'),
-                'state' => $request->input('state'),
-                'quantity' => $request->input('quantity'),
-                'description' => $request->input('description')
-
-            ];
-
-            $product = Product::find($data['product_id']);
-            $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
-            $data['name'] = $product->name;
-            $data['code'] = $codes_supplier->code;
-            $data['created_by'] = Sentinel::getUser()->id;
-            $data['updated_by'] = Sentinel::getUser()->id;
-
-            $product_supplier = ProductSupplier::firstOrCreate($data);
-            if($product_supplier) {
-                Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
-                $response['status']  = 'success';
-            } else {
+            $product_supplier = ProductSupplier::where('product_id',$request->input('product_id'))->where('supplier_id',$request->input('supplier_id'))->get();
+            if(count($product_supplier) > 0) {
                 $response['status']  = 'exists';
+            } else {
+                $file = request()->file('image');
+                $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
+
+                $data = [
+                    'product_id' => $request->input('product_id'),
+                    'supplier_id' => $request->input('supplier_id'),
+                    'import_price' => $request->input('import_price'),
+                    'vat' => $request->input('vat'),
+                    'price_recommend' => $request->input('price_recommend'),
+                    'image' => $filename,
+                    'status' => $request->input('status'),
+                    'state' => $request->input('state'),
+                    'quantity' => $request->input('quantity'),
+                    'description' => $request->input('description')
+
+                ];
+
+                $product = Product::find($data['product_id']);
+                $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
+                $data['name'] = $product->name;
+                $data['code'] = $codes_supplier->code;
+                $data['created_by'] = Sentinel::getUser()->id;
+                $data['updated_by'] = Sentinel::getUser()->id;
+
+                $product_supplier = ProductSupplier::firstOrCreate($data);
+                Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+                if($data['status'] == 2) {
+                    $product->update(['best_price' => $data['import_price']]);
+                }
+
+                $response['status']  = 'success';
             }
         }
         return json_encode($response);
@@ -127,12 +139,71 @@ class SuppliersController extends Controller
             ->join('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->where('user_supported_province.supported_id',$user_id)
             ->orderBy('product_supplier.status', 'asc')
-            ->groupBy('product_supplier.product_id')
             ->select(DB::raw('product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     products.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,
-                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'))->get();
+                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
+
         return Datatables::of($products)
+            ->filter(function ($query) {
+
+                if (request()->has('category_name')) {
+                    $query->where(function ($query) {
+                        $query->where('suppliers.name', 'like', '%'.request('category_name').'%');
+                    });
+                }
+
+                if (request()->has('manufacture_name')) {
+                    $query->where(function ($query) {
+                        $query->where('manufacturers.name','like', '%'.request('manufacture_name').'%');
+                    });
+                }
+
+                if (request()->has('product_sku')) {
+                    $query->where('products.sku', request('product_sku'));
+                }
+
+                if (request()->has('product_name')) {
+                    $query->where('products.name', 'like', '%'.request('product_name').'%');
+                }
+
+                if (request()->has('product_import_price')) {
+                    $query->where('product_supplier.import_price',request('product_import_price'));
+                }
+
+                if (request()->has('vat')) {
+                    $query->where('product_supplier.vat',request('vat'));
+                }
+
+                if (request()->has('recommend_price')) {
+                    $query->where('product_supplier.price_recommend',request('recommend_price'));
+                }
+
+                if (request()->has('status')) {
+                    $query->where('product_supplier.status', request('status'));
+                }
+
+                if (request()->has('supplier_name')) {
+                    $query->where('suppliers.name', request('supplier_name'));
+                }
+
+                if (request()->has('state')) {
+                    $query->where('product_supplier.state', request('state'));
+                }
+
+                if (request()->has('updated_at')) {
+                    $date = request('updated_at');
+
+                    $from = trim(explode(' - ',$date)[0]);
+                    $from = Carbon::createFromFormat('d/m/Y', $from)->startOfDay()->toDateTimeString();
+
+                    $to = trim(explode('-',$date)[1]);
+                    $to = Carbon::createFromFormat('d/m/Y', $to)->endOfDay()->toDateTimeString();
+
+                    $query->where('product_supplier.updated_at', '>', $from);
+                    $query->where('product_supplier.updated_at', '<',$to);
+                }
+            })
             ->editColumn('import_price', function($product) {
                 return number_format($product->import_price);
             })
@@ -168,6 +239,9 @@ class SuppliersController extends Controller
                     $string = 'Đặt hàng';
                 }
                 return $string;
+            })
+            ->editColumn('updated_at', function($product) {
+                return date_format($product->updated_at,"Y-m-d");
             })
 //            ->addColumn('action',function($product){
 //                $url = url('suppliers/show/'.$product->id_product);

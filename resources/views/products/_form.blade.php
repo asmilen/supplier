@@ -51,6 +51,13 @@
     </div>
 </div>
 
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Mô tả</label>
+    <div class="col-sm-6">
+        <textarea class="form-control" name="description" placeholder="Mô tả sản phẩm" rows="5">{{ old('description', $product->description) }}</textarea>
+    </div>
+</div>
+
 @if (! empty($product->old_sku))
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Mã SKU cũ trên kho</label>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manufacturer;
+use App\Jobs\PublishMessage;
 
 class ManufacturersController extends Controller
 {
@@ -52,6 +53,17 @@ class ManufacturersController extends Controller
             'status' => !! request('status'),
         ]);
 
+        $jsonSend = [
+                        "id"        => $manufacturer->id,
+                        "code"      => strtoupper(request('code')),
+                        "name"      => request('name'),
+                        "status"    => $manufacturer->status == true ? 'active' : 'inactive',
+                        "homepage"  => request('homepage') ,
+                        "createdAt" => strtotime($manufacturer->created_at)
+                    ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.branch.upsert', $messSend));
         flash()->success('Success!', 'Manufacturer successfully created.');
 
         return redirect()->route('manufacturers.index');
@@ -98,6 +110,18 @@ class ManufacturersController extends Controller
             'homepage' => request('homepage'),
             'status' => !! request('status'),
         ])->save();
+
+        $jsonSend = [
+            "id"        => $manufacturer->id,
+            "code"      => $manufacturer->code,
+            "name"      => request('name'),
+            "status"    => $manufacturer->status == true ? 'active' : 'inactive',
+            "homepage"  => request('homepage') ,
+            "createdAt" => strtotime($manufacturer->updated_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.branch.upsert', $messSend));
 
         flash()->success('Success!', 'Manufacturer successfully updated.');
 

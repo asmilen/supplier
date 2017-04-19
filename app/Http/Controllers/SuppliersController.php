@@ -8,6 +8,7 @@ use Auth;
 use Sentinel;
 use Validator;
 use Datatables;
+use Carbon;
 use App\Models\Product;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
@@ -25,8 +26,14 @@ class SuppliersController extends Controller
      */
     public function index()
     {
-
-        return view('suppliers.index');
+        $user_id = Sentinel::getUser()->id;
+        $suppliers =  UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
+            ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
+            ->join('suppliers', 'supplier_supported_province.supplier_id', '=', 'suppliers.id')
+            ->orderBy('suppliers.name','asc')
+            ->where('user_supported_province.supported_id',$user_id)->get();
+        $products = Product::all();
+        return view('suppliers.index',compact('suppliers','products'));
     }
 
     /**
@@ -37,7 +44,9 @@ class SuppliersController extends Controller
     public function mapping(Request $request)
     {
         $rules = [
+            'product_id' => 'required',
             'supplier_id' => 'required',
+            'status' => 'required',
             'state' => 'required',
             'import_price' => 'required|integer|min:0',
             'vat' => 'required|integer|min:0',
@@ -47,7 +56,9 @@ class SuppliersController extends Controller
             'quantity' => 'required|integer|min:0',
         ];
         $messages = [
+            'product_id.required' => 'Hãy chọn sản phẩm',
             'supplier_id.required' => 'Hãy chọn nhà cung cấp',
+            'status.required' => 'Hãy chọn tình trạng nhà cung cấp',
             'state.required' => 'Hãy chọn tình trạng sản phẩm',
             'import_price.required' => 'Hãy nhập giá nhập',
             'import_price.integer' => 'Hãy nhập đúng định dạng',
@@ -70,39 +81,46 @@ class SuppliersController extends Controller
         $validator = Validator::make($request->all(), $rules,$messages);
 
         if($validator->fails()) {
+
             $errors = $validator->errors();
             $response['status']  = 'fails';
             $response['errors'] = $errors;
         } else {
-            $file = request()->file('image');
-            $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
-
-            $data = [
-                'product_id' => $request->input('product_id'),
-                'supplier_id' => $request->input('supplier_id'),
-                'import_price' => $request->input('import_price'),
-                'vat' => $request->input('vat'),
-                'price_recommend' => $request->input('price_recommend'),
-                'image' => $filename,
-                'state' => $request->input('state'),
-                'quantity' => $request->input('quantity'),
-                'description' => $request->input('description')
-
-            ];
-
-            $product = Product::find($data['product_id']);
-            $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
-            $data['name'] = $product->name;
-            $data['code'] = $codes_supplier->code;
-            $data['created_by'] = Sentinel::getUser()->id;
-            $data['updated_by'] = Sentinel::getUser()->id;
-
-            $product_supplier = ProductSupplier::firstOrCreate($data);
-            if($product_supplier) {
-                Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
-                $response['status']  = 'success';
-            } else {
+            $product_supplier = ProductSupplier::where('product_id',$request->input('product_id'))->where('supplier_id',$request->input('supplier_id'))->get();
+            if(count($product_supplier) > 0) {
                 $response['status']  = 'exists';
+            } else {
+                $file = request()->file('image');
+                $filename = md5(uniqid().'_'.time()) . '.' . $file->getClientOriginalExtension();
+
+                $data = [
+                    'product_id' => $request->input('product_id'),
+                    'supplier_id' => $request->input('supplier_id'),
+                    'import_price' => $request->input('import_price'),
+                    'vat' => $request->input('vat'),
+                    'price_recommend' => $request->input('price_recommend'),
+                    'image' => $filename,
+                    'status' => $request->input('status'),
+                    'state' => $request->input('state'),
+                    'quantity' => $request->input('quantity'),
+                    'description' => $request->input('description')
+
+                ];
+
+                $product = Product::find($data['product_id']);
+                $codes_supplier = Suppliers::where('id',$data['supplier_id'])->select('code')->first();
+                $data['name'] = $product->name;
+                $data['code'] = $codes_supplier->code;
+                $data['created_by'] = Sentinel::getUser()->id;
+                $data['updated_by'] = Sentinel::getUser()->id;
+
+                $product_supplier = ProductSupplier::firstOrCreate($data);
+                Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+                if($data['status'] == 2) {
+                    $product->update(['best_price' => $data['import_price']]);
+                }
+
+                $response['status']  = 'success';
             }
         }
         return json_encode($response);
@@ -115,19 +133,77 @@ class SuppliersController extends Controller
         $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
             ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
             ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
+            ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
             ->join('products', 'product_supplier.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->where('user_supported_province.supported_id',$user_id)
-            ->where('user_supported_province.status',1)
-            ->whereIn('product_supplier.state', [1, 2])
-            ->whereIn('product_supplier.status', [0, 2])
-            ->groupBy('product_supplier.product_id')
+            ->orderBy('product_supplier.status', 'asc')
             ->select(DB::raw('product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     products.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,
-                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,provinces.region as region, min(import_price)'))->get();
+                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
+
         return Datatables::of($products)
+            ->filter(function ($query) {
+
+                if (request()->has('category_name')) {
+                    $query->where(function ($query) {
+                        $query->where('suppliers.name', 'like', '%'.request('category_name').'%');
+                    });
+                }
+
+                if (request()->has('manufacture_name')) {
+                    $query->where(function ($query) {
+                        $query->where('manufacturers.name','like', '%'.request('manufacture_name').'%');
+                    });
+                }
+
+                if (request()->has('product_sku')) {
+                    $query->where('products.sku', request('product_sku'));
+                }
+
+                if (request()->has('product_name')) {
+                    $query->where('products.name', 'like', '%'.request('product_name').'%');
+                }
+
+                if (request()->has('product_import_price')) {
+                    $query->where('product_supplier.import_price',request('product_import_price'));
+                }
+
+                if (request()->has('vat')) {
+                    $query->where('product_supplier.vat',request('vat'));
+                }
+
+                if (request()->has('recommend_price')) {
+                    $query->where('product_supplier.price_recommend',request('recommend_price'));
+                }
+
+                if (request()->has('status')) {
+                    $query->where('product_supplier.status', request('status'));
+                }
+
+                if (request()->has('supplier_name')) {
+                    $query->where('suppliers.name', request('supplier_name'));
+                }
+
+                if (request()->has('state')) {
+                    $query->where('product_supplier.state', request('state'));
+                }
+
+                if (request()->has('updated_at')) {
+                    $date = request('updated_at');
+
+                    $from = trim(explode(' - ',$date)[0]);
+                    $from = Carbon::createFromFormat('d/m/Y', $from)->startOfDay()->toDateTimeString();
+
+                    $to = trim(explode('-',$date)[1]);
+                    $to = Carbon::createFromFormat('d/m/Y', $to)->endOfDay()->toDateTimeString();
+
+                    $query->where('product_supplier.updated_at', '>', $from);
+                    $query->where('product_supplier.updated_at', '<',$to);
+                }
+            })
             ->editColumn('import_price', function($product) {
                 return number_format($product->import_price);
             })
@@ -145,11 +221,13 @@ class SuppliersController extends Controller
                 if($product->status == 0){
                     $string = 'Chờ duyệt';
                 } else if($product->status == 1){
-                    $string = 'Câp nhật';
+                    $string = 'Hết hàng';
                 } else if($product->status == 2){
-                    $string = 'Đã đăng';
+                    $string = 'Ưu tiên lấy hàng';
                 } else if($product->status == 3){
-                    $string = 'Yêu cầu đăng';
+                    $string = 'Yêu cầu ưu tiên lấy hàng';
+                } else if($product->status == 4){
+                    $string = 'Không ưu tiên lấy hàng';
                 }
                 return $string;
             })->editColumn('status_product', function($product) {
@@ -162,11 +240,14 @@ class SuppliersController extends Controller
                 }
                 return $string;
             })
-            ->addColumn('action',function($product){
-                $url = url('suppliers/show/'.$product->id_product);
-                $string = '<a  href="'.$url.'" class="btn btn-outline btn-circle red btn-sm purple"><i class="fa fa-edit"></i></a>';
-                return $string;
-            })->make(true);
+            ->editColumn('updated_at', function($product) {
+                return date_format($product->updated_at,"Y-m-d");
+            })
+//            ->addColumn('action',function($product){
+//                $url = url('suppliers/show/'.$product->id_product);
+//                $string = '<a  href="'.$url.'" class="btn btn-outline btn-circle red btn-sm purple"><i class="fa fa-edit"></i></a>';
+//                return $string;})
+            ->make(true);
     }
 
     public function updateDatatables(Request $request) {
@@ -179,12 +260,14 @@ class SuppliersController extends Controller
             try {
                 if($status == 'Chờ duyệt') {
                    $status = 0;
-                } else if($status == 'Câp nhật'){
+                } else if($status == 'Hết hàng'){
                     $status = 1;
-                } else if($status == 'Đã đăng'){
+                } else if($status == 'Ưu tiên lấy hàng'){
                     $status = 2;
-                } else if($status == 'Yêu cầu đăng'){
+                } else if($status == 'Yêu cầu ưu tiên lấy hàng'){
                     $status = 3;
+                }  else if($status == 'Không ưu tiên lấy hàng'){
+                    $status = 4;
                 }
                 ProductSupplier::findOrFail($id)->update(['status' => $status]);
                 DB::commit();

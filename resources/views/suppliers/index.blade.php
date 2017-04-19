@@ -281,7 +281,7 @@
                         d.product_sku = $('input[name=db_product_sku]').val();
                         d.product_name = $('input[name=db_product_name]').val();
                         d.product_import_price = $('input[name=db_product_import_price]').val();
-                        d.vat = $('input[name=vat]').val();
+                        d.vat = $('input[name=db_product_vat]').val();
                         d.recommend_price = $('input[name=db_product_recommend_price]').val();
                         d.status = $('select[name=db_status]').val();
                         d.supplier_name = $('input[name=db_supplier_name]').val();

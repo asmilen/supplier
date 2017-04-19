@@ -58,6 +58,17 @@ class CategoriesController extends Controller
             'margin' => request('margin'),
         ]);
 
+        $jsonSend = [
+            "id"        => $category->id,
+            "code"      => strtoupper(request('code')),
+            "name"      => request('name'),
+            "status"    => $category->status == true ? 'active' : 'inactive',
+            "createdAt" => strtotime($category->created_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.cat.upsert', $messSend));
+
         flash()->success('Success!', 'Category successfully created.');
 
         return redirect()->route('categories.index');
@@ -106,6 +117,17 @@ class CategoriesController extends Controller
             'status' => !! request('status'),
             'margin' => request('margin'),
         ])->save();
+
+        $jsonSend = [
+            "id"        => $category->id,
+            "code"      => $category->code,
+            "name"      => request('name'),
+            "status"    => $category->status == true ? 'active' : 'inactive',
+            "createdAt" => strtotime($category->updated_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.cat.upsert', $messSend));
 
         flash()->success('Success!', 'Category successfully updated.');
 

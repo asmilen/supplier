@@ -128,7 +128,6 @@ jQuery.fn.dataTable.Api.register('MakeCellsEditable()', function (settings) {
 
 function getInputHtml(currentColumnIndex, settings, oldValue) {
     var inputSetting, inputType, input, inputCss, confirmCss, cancelCss;
-    console.log(oldValue);
     input = {"focus":true,"html":null}
 
     if(settings.inputTypes){

@@ -79,6 +79,7 @@ class ProductsController extends Controller
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
             'status' => !! request('status'),
+            'description' => request('description'),
         ]);
 
         flash()->success('Success!', 'Product successfully created.');
@@ -150,6 +151,7 @@ class ProductsController extends Controller
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
             'status' => !! request('status'),
+            'description' => request('description'),
         ])->save();
 
         flash()->success('Success!', 'Product successfully updated.');

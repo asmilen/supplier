@@ -102,6 +102,7 @@
 <script>
 $(function () {
     var datatable = $("#dataTables-products").DataTable({
+        searching: false,
         autoWidth: false,
         processing: true,
         serverSide: true,

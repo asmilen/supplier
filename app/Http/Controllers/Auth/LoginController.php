@@ -82,6 +82,6 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect(env('TEKO_ACC_URL').'/signout?_cont='.url('/'));
+        return redirect('/');
     }
 }

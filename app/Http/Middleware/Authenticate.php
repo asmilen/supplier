@@ -39,16 +39,6 @@ class Authenticate
      */
     public function handle($request, Closure $next, ...$guards)
     {
-        if (! isset($_COOKIE['_uat'])) {
-            Sentinel::logout();
-
-            $request->session()->flush();
-
-            $request->session()->regenerate();
-
-            throw new AuthenticationException('Unauthenticated.', $guards);
-        }
-
         $this->authenticate($guards);
 
         return $next($request);

@@ -5,28 +5,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
     <style>
-        .my-confirm-class {
-            padding: 3px 6px;
-            font-size: 12px;
-            color: white;
-            text-align: center;
-            vertical-align: middle;
-            border-radius: 4px;
-            background-color: #337ab7;
-            text-decoration: none;
-        }
-        .my-cancel-class {
-            padding: 3px 4px;
-            font-size: 12px;
-            color: white;
-            text-align: center;
-            vertical-align: middle;
-            border-radius: 4px;
-            background-color: #a94442;
-            text-decoration: none;
-        }
         tfoot {
             display: table-header-group;
+        }
+
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-dialog{
+            width: 1240px;
+            overflow: auto;
+        }
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 100%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
         }
 
     </style>
@@ -56,10 +77,9 @@
     <div class="row">
         <div class="col-xs-12">
             <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Thêm mới</button>
-            <!-- Modal -->
+            <!-- Modal Add Product-->
             <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog">
-
                     <!-- Modal content-->
                     <div class="modal-content">
                         <div class="modal-header">
@@ -184,9 +204,84 @@
 
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Modal Duyet -->
+            <div class="modal fade" id="myModalCheckStatus" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Duyệt trạng thái nhà cung cấp</h4>
+                        </div>
+                        <div class="modal-body" id = "CheckStatusBody">
+
+                        </div>
+                    </div>
 
                 </div>
             </div>
+
+            <!-- Modal Product to Connect -->
+            <div class="modal fade" id="myModalProduct" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Duyệt trạng thái nhà cung cấp</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" id="supplier_form" action="{{ url('suppliers/updateIdProduct') }}" method="POST" enctype="multipart/form-data" >
+                                {!! csrf_field() !!}
+                                <input type="hidden" value="" name="product_supplier_id" id = "product_supplier_id"/>
+                                <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                                    <thead>
+                                    <tr>
+                                        <th> Chọn </th>
+                                        <th >ID</th>
+                                        <th >Tên</th>
+                                        <th >SKU</th>
+                                        <th >Mã</th>
+                                        <th >Trạng thái </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($products as $key => $value)
+                                        <tr>
+                                            <td> <input type="radio" class="radio" value="{{ $value->id }}" name="product_id"></td>
+                                            <td>{{ $value->id }}</td>
+                                            <td>{{ $value->name }}</td>
+                                            <td>{{ $value->sku }}</td>
+                                            <td>{{ $value->code }}</td>
+                                            <td>@if (!! $value->status)
+                                                    <i class="ace-icon fa bigger-130 fa-check-circle-o green"></i>
+                                                @else
+                                                    <i class="ace-icon fa bigger-130 fa-times-circle-o red"></i>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                                <br>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label no-padding-left"></label>
+                                    <button type="submit" class="btn btn-success" id = "btn_save">
+                                        <i class="ace-icon fa fa-save bigger-110"></i>Lưu thông tin
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
     <br>
@@ -206,6 +301,7 @@
                         <th >Nhà cung cấp</th>
                         <th >Tình trạng</th>
                         <th >Ngày cập nhật</th>
+                        <th >Thao tac</th>
                     </tr>
                 </thead>
 
@@ -258,13 +354,42 @@
 @section('inline_scripts')
 
     <script>
-        $(function () {
+        $( document ).ready(function() {
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
                 width: '100%'
             });
 
+            $(document).on("click",".checkStatus",function() {
+                var product_id = $(this).attr('data-id');
+                $.ajax({
+                    headers: { 'X-CSRF-Token': $('input[name="_token"]').val() },
+                    url: '{{ url('suppliers/getSuppliers') }}',
+                    type: 'POST',
+                    data: {
+                        product_id: product_id
+                    },
+                    dataType: 'JSON',
+                    success: function (res){
+                        if(res.status == 'success'){
+                            $('#CheckStatusBody').html(res.data);
+                            $('#myModalCheckStatus').modal({
+                                backdrop: 'static',   // This disable for click outside event
+                                keyboard: true        // This for keyboard event
+                            })
+                            $('#myModalCheckStatus').modal('show');
+                        }
+                    }
+                });
+            });
+
+            $(document).on("click",".connect",function() {
+                var product_supplier_id = $(this).attr('data-id');
+                $("#product_supplier_id").val(product_supplier_id);
+                $('#myModalProduct').modal('show');
+
+            });
             var datatable = $("#dataTables-products").DataTable({
                 "searching": false,
                 autoWidth: false,
@@ -301,51 +426,10 @@
                     {data: 'supplier_name',name: 'supplier_name',"width": "10%"},
                     {data: 'status_product',name: 'status_product',"width": "5%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
             });
 
-            datatable.MakeCellsEditable({
-                "onUpdate": myCallbackFunction,
-                "inputCss":'my-input-class',
-                "idSrc":  'id',
-                "columns": [7],
-                "allowNulls": {
-                    "columns": [1],
-                    "errorClass": 'error'
-                },
-                "confirmationButton": { // could also be true
-                    "confirmCss": 'my-confirm-class',
-                    "cancelCss": 'my-cancel-class'
-                },
-                "inputTypes": [
-                    {
-                        "column":7,
-                        "type": "list",
-                        "options":[
-                            { "value": "Chờ duyệt", "display": "Chờ duyệt" },
-                            { "value": "Hết hàng", "display": "Hết hàng" },
-                            { "value": "Ưu tiên lấy hàng", "display": "Ưu tiên lấy hàng" },
-                            { "value": "Yêu cầu ưu tiên lấy hàng'", "display": "Yêu cầu ưu tiên lấy hàng'" },
-                            { "value": "Không ưu tiên lấy hàng'", "display": "Không ưu tiên lấy hàng'" }
-                        ]
-                    }
-                ]
-            });
-
-            function myCallbackFunction (updatedCell, updatedRow, oldValue) {
-                var data = updatedRow.data();
-                var id = data.id;
-                var status = data.status;
-                $.ajax({
-                    url: "{!! route('suppliers.datatables-edit') !!}",
-                    type: "POST",
-                    data: {
-                        id : id,
-                        status: status
-                    },
-                    dataType: "json"
-                });
-            }
 
             datatable.columns().every( function () {
                 $( 'input', this.footer() ).on( 'keyup change', function () {
@@ -361,6 +445,8 @@
                     datatable.draw();
                 } );
             } );
+
+            $("#tableproducts").DataTable({});
 
             CKEDITOR.replace('_description');
 
@@ -454,6 +540,7 @@
                     firstDay: 1
                 }
             });
+
             $('.input-daterange-datepicker').on('apply.daterangepicker', function (ev, picker) {
                 $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
             });
@@ -462,7 +549,9 @@
                 $(this).val('');
             });
 
+
             @include('scripts.click-datatable-delete-button')
         });
+
     </script>
 @endsection

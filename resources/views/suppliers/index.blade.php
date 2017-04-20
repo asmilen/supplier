@@ -23,7 +23,7 @@
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
         }
         .modal-dialog{
-            width: 1240px;
+            width: 1240px ! important;
             overflow: auto;
         }
         /* Modal Content */

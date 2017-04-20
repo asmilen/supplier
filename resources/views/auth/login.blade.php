@@ -69,7 +69,7 @@
                         </a>
                         @endif
 
-                        <a href="{{ url('http://acc.teko.vn/signin?_cont='.url('/auth/teko/callback')) }}" class="btn btn-success">
+                        <a href="{{ env('TEKO_ACC_URL').'/signin?_cont='.url('/auth/teko/callback') }}" class="btn btn-success">
                             Login With Teko
                         </a>
                     </div>

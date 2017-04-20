@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use Sentinel;
 use Socialite;
+use App\Models\User;
+use GuzzleHttp\Client;
 use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
@@ -45,6 +47,29 @@ class AuthController extends Controller
 
     public function handleTekoCallback()
     {
-        dd(request()->cookie());
+        $client = new Client([
+            'base_uri' => env('TEKO_ACC_URL'),
+        ]);
+
+        $response = $client->get('/api/validate_access_token?accessToken='.$_COOKIE['_uat']);
+
+        $userInfo = json_decode($response->getBody()->getContents(), true);
+
+        if (isset($userInfo['error'])) {
+            return redirect('/login');
+        }
+
+        $user = User::where('email', $userInfo['email'])->first();
+
+        if (! $user) {
+            $user = User::forceCreate([
+                'email' => $userInfo['email'],
+                'name' => $userInfo['name'],
+            ]);
+        }
+
+        Sentinel::login($user);
+
+        return redirect('/dashboard');
     }
 }

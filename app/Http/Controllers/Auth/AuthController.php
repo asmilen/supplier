@@ -42,4 +42,9 @@ class AuthController extends Controller
 
         return redirect('/dashboard');
     }
+
+    public function handleTekoCallback()
+    {
+        dd(request()->cookie());
+    }
 }

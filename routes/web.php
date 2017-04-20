@@ -8,6 +8,8 @@ Auth::routes();
 Route::get('auth/google', 'Auth\AuthController@redirectToProvider');
 Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback');
 
+Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 

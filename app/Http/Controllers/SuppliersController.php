@@ -242,7 +242,7 @@ class SuppliersController extends Controller
                 return $string;
             })
             ->editColumn('updated_at', function($product) {
-                return date_format($product->updated_at,"Y-m-d");
+                return ($product->updated_at) ? date_format($product->updated_at,"Y-m-d") : '';
             })
             ->addColumn('action',function($product){
                 $string = '';

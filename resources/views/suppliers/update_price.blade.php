@@ -341,7 +341,7 @@
                 var data = supplier_datatable.row( $(this).parents('tr') ).data();
                 $('#product_id').val(data.id);
                 $('#product_name').val(data.product_name);
-                $('#import_price').val(data.import_price);
+                $('#import_price').val(data.import_price.replace(',',''));
                 $('#vat').val(data.vat);
                 $('#state').val(data.state);
                 $('#code').val(data.code);

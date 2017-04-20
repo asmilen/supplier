@@ -46,9 +46,10 @@ Route::group(['middleware' => 'auth'], function () {
 
         // For supplier
         Route::get('supplier/supplier_datatables', 'ForSupplierController@getDatatables')->name('supplier.supplier_datatables');
+        Route::get('supplier/ajaxGetProductById', 'ForSupplierController@ajaxGetProductById')->name('supplier.ajaxGetProductById');
         Route::get('supplier/ajaxGetProductByName', 'ForSupplierController@ajaxGetProductByName')->name('supplier.ajaxGetProductByName');
         Route::get('supplier/updatePrice', 'ForSupplierController@updatePrice')->name('supplier.updatePrice');
-        Route::post('supplier/postUpdatePrice', 'ForSupplierController@postUpdatePrice')->name('supplier.postUpdatePrice');
+        Route::post('supplier/updatePrice', 'ForSupplierController@postUpdatePrice')->name('supplier.postUpdatePrice');
 
         // Suppliers
 

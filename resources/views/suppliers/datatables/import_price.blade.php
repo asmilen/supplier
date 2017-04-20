@@ -1,0 +1,1 @@
+{{  number_format (  $import_price , 0 , "." , "," )}}

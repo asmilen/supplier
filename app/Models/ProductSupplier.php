@@ -32,9 +32,11 @@ class ProductSupplier extends Model
     public static $STATE_DAT_HANG = 2;
 
     public static $STATUS_CHO_DUYET = 0;
-    public static $STATUS_CAP_NHAT = 1;
-    public static $STATUS_DA_DANG = 2;
-    public static $STATUS_YEU_CAU_DANG = 3;
+    public static $STATUS_HET_HANG = 1;
+    public static $STATUS_UU_TIEN_LAY_HANG = 2;
+    public static $STATUS_YEU_CAU_UU_TIEN_LAY_HANG = 3;
+    public static $STATUS_KHONG_UU_TIEN_LAY_HANG = 4;
+
 
 
     public function product()

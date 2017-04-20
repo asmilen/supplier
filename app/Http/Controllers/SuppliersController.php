@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 
 use DB;
 use Auth;
+use Carbon;
+use Response;
 use Sentinel;
 use Validator;
 use Datatables;
-use Carbon;
 use App\Models\Product;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
@@ -134,13 +135,13 @@ class SuppliersController extends Controller
             ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
             ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
             ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
-            ->join('products', 'product_supplier.product_id', '=', 'products.id')
-            ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->join('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
+            ->leftJoin('products', 'product_supplier.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->where('user_supported_province.supported_id',$user_id)
             ->orderBy('product_supplier.status', 'asc')
             ->select(DB::raw('product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
-                    products.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
+                    product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
 
@@ -243,71 +244,71 @@ class SuppliersController extends Controller
             ->editColumn('updated_at', function($product) {
                 return date_format($product->updated_at,"Y-m-d");
             })
-//            ->addColumn('action',function($product){
-//                $url = url('suppliers/show/'.$product->id_product);
-//                $string = '<a  href="'.$url.'" class="btn btn-outline btn-circle red btn-sm purple"><i class="fa fa-edit"></i></a>';
-//                return $string;})
+            ->addColumn('action',function($product){
+                $string = '';
+                if($product->status == 0) {
+                    $string = '<button data-id = "'.$product->id_product.'" class="btn btn-success checkStatus" id = "checkStatus">Duyệt </button>';
+                }
+                if($product->id_product == 0) {
+                    $string .= '<button style = "margin-top:5px" data-id = "'.$product->id.'" class="btn btn-primary connect" id="connect">Liên kết</button>';
+                }
+                return $string;
+            })
             ->make(true);
     }
 
-    public function updateDatatables(Request $request) {
+    protected function getSuppliers(Request $request) {
 
-        $id =  $request->input('id');
-        $status =  $request->input('status');
-
-        DB::beginTransaction();
-
-            try {
-                if($status == 'Chờ duyệt') {
-                   $status = 0;
-                } else if($status == 'Hết hàng'){
-                    $status = 1;
-                } else if($status == 'Ưu tiên lấy hàng'){
-                    $status = 2;
-                } else if($status == 'Yêu cầu ưu tiên lấy hàng'){
-                    $status = 3;
-                }  else if($status == 'Không ưu tiên lấy hàng'){
-                    $status = 4;
-                }
-                ProductSupplier::findOrFail($id)->update(['status' => $status]);
-                DB::commit();
-            } catch (\Throwable $e) {
-                DB::rollback();
-                throw $e;
-            }
-
-    }
-
-
-    protected function show($id) {
-
+        $product_id = $request->input('product_id');
         $user_id = Sentinel::getUser()->id;
         $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
             ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
             ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
             ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
             ->where('user_supported_province.supported_id',$user_id)
-            ->where('product_supplier.product_id',$id)
-            ->select('product_supplier.id as id','product_supplier.image as image','product_supplier.description as description', 'product_supplier.name as product_name',
-                'product_supplier.import_price as import_price', 'product_supplier.vat','product_supplier.status as status','product_supplier.state as state',
-                'suppliers.name as supplier_name','suppliers.id as supplier_id','product_supplier.price_recommend as recommend_price')->get();
-        $supplier_product_arr = [];
-        foreach ($products as $value) {
-            array_push($supplier_product_arr,$value->supplier_id);
-        }
-        $suppliers_arr = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
-            ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
-            ->where('user_supported_province.supported_id',$user_id)
-            ->select('supplier_supported_province.supplier_id as supplier_id')
-            ->get();
-        $supplier_arr = [];
-        foreach ($suppliers_arr as $value) {
-            array_push($supplier_arr,$value->supplier_id);
-        }
-        $supplier_id_arr = array_merge(array_diff($supplier_product_arr, $supplier_arr), array_diff($supplier_arr, $supplier_product_arr));
-        $suppliers = DB::table('suppliers')->whereIn('id', $supplier_id_arr)->where('status',1)->get();
+            ->where('product_supplier.product_id',$product_id)
+            ->orderBy('product_supplier.status', 'asc')
+            ->select('product_supplier.id as id','product_supplier.image as image', 'product_supplier.name as product_name','product_supplier.product_id as product_id',
+                'product_supplier.import_price as import_price', 'product_supplier.vat as vat','product_supplier.status as status','product_supplier.state as state',
+                'suppliers.name as supplier_name','suppliers.id as supplier_id','product_supplier.price_recommend as recommend_price','product_supplier.updated_at as updated_at')->get();
 
-        return view('suppliers.products_suppliers',compact('products','id','suppliers'));
+        $html = view('suppliers.temp', compact('products'))->render();
+        $data = [
+            'status' => 'success',
+            'data' => $html
+        ];
+        return Response::json($data);
+
+    }
+
+    public function updateStatus(Request $request) {
+
+        $product_supplier_arr = $request->input('product_supplier_id');
+        $product_supplier_status = $request->input('status');
+        $products = $request->input('product');
+        $best_price = $request->input('best_price');
+
+        for ($i = 0 ;$i< count($product_supplier_arr); $i++) {
+            ProductSupplier::find($product_supplier_arr[$i])->update(['status' => $product_supplier_status[$i]]);
+            if($product_supplier_status[$i] == 2)
+            {
+                Product::find($products[$i])->forceFill(['best_price' => $best_price[$i]])->save();
+            }
+        }
+
+        flash()->success('Success!', 'Status successfully updated.');
+        return redirect()->back();
+    }
+
+    public function updateIdProduct(Request $request) {
+
+        $product_supplier_id = $request->input('product_supplier_id');
+        $product_id = $request->input('product_id');
+
+        ProductSupplier::find($product_supplier_id)->update(['product_id' => $product_id]);
+
+        flash()->success('Success!', 'Status successfully updated.');
+        return redirect()->back();
     }
 
 }

@@ -64,7 +64,7 @@
 
         @if ($currentUser->hasAccess('suppliers.index'))
             <li class="{{ (Request::is('suppliers') || Request::is('suppliers/*')) ? 'active' : '' }}">
-                <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Nhà cung cấp </span></a>
+                <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
             </li>
         @endif
 

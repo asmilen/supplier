@@ -66,6 +66,31 @@ class ProductsController extends Controller
             ->make(true);
     }
 
+    public function getListProductSku()
+    {
+        /**
+         * @var array $supplierIds
+         */
+        $model = Product::select(['products.id', 'products.name','products.sku','products.category_id'])
+            ->with('category');
+
+        return Datatables::eloquent($model)
+            ->filter(function ($query) {
+                if (request()->has('name')) {
+                    $query->where('products.name', 'like', '%' . request('name') . '%');
+                }
+
+                if (request()->has('category_id')) {
+                    $query->where('products.category_id', request('category_id'));
+                }
+
+                if (request()->has('manufacturer_id')) {
+                    $query->where('products.manufacturer_id', request('manufacturer_id'));
+                }
+            })
+            ->make(true);
+    }
+
     /**
      * @param int $id
      * @return Product

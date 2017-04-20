@@ -49,11 +49,11 @@ class ProductsController extends Controller
                     $query->where('products.name', 'like', '%' . request('name') . '%');
                 }
 
-                if (request()->has('category_id')) {
+                if (request()->has('category_id') && request('category_id')) {
                     $query->where('products.category_id', request('category_id'));
                 }
 
-                if (request()->has('manufacturer_id')) {
+                if (request()->has('manufacturer_id') && request('manufacturer_id')) {
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })
@@ -83,11 +83,11 @@ class ProductsController extends Controller
                     $query->where('products.name', 'like', '%' . request('name') . '%');
                 }
 
-                if (request()->has('category_id')) {
+                if (request()->has('category_id') && request('category_id')) {
                     $query->where('products.category_id', request('category_id'));
                 }
 
-                if (request()->has('manufacturer_id')) {
+                if (request()->has('manufacturer_id') && request('manufacturer_id')) {
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })

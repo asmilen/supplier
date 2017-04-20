@@ -23,7 +23,7 @@
                         <input type="hidden" name = "best_price[]" value="{{ $value->import_price }}"/>
                         <input type="hidden" name = "product[]" value="{{ $value->product_id }}"/>
                         <td>{{ $key + 1 }}</td>
-                        <td><img src="{{ url('storage/'.$value->image) }}"></td>
+                        <td><img src="{{ $value->image }}"></td>
                         <td>{{ $value->product_name }}</td>
                         <td>{{ $value->import_price }}</td>
                         <td>{{ $value->vat }}</td>

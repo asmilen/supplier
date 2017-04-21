@@ -320,6 +320,7 @@ class SuppliersController extends Controller
         $id =  $request->input('id');
         $status =  $request->input('status');
         $import_price =  $request->input('import_price');
+        $supplier_quantity =  $request->input('supplier_quantity');
         DB::beginTransaction();
         try {
             if($status == 'Chờ duyệt') {
@@ -333,7 +334,7 @@ class SuppliersController extends Controller
             }  else if($status == 'Không ưu tiên lấy hàng'){
                 $status = 4;
             }
-            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price]);
+            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price, 'quantity' => $supplier_quantity]);
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();

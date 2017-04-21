@@ -268,9 +268,9 @@ class SuppliersController extends Controller
             ->where('user_supported_province.supported_id',$user_id)
             ->where('product_supplier.product_id',$product_id)
             ->orderBy('product_supplier.status', 'asc')
-            ->select(DB::raw('distinct product_supplier.id as id','product_supplier.image as image', 'product_supplier.name as product_name','product_supplier.product_id as product_id',
-                'product_supplier.import_price as import_price', 'product_supplier.vat as vat','product_supplier.status as status','product_supplier.state as state',
-                'suppliers.name as supplier_name','suppliers.id as supplier_id','product_supplier.price_recommend as recommend_price','product_supplier.updated_at as updated_at'))->get();
+            ->select(DB::raw('distinct product_supplier.id as id,product_supplier.image as image, product_supplier.name as product_name,product_supplier.product_id as product_id,
+                product_supplier.import_price as import_price, product_supplier.vat as vat, product_supplier.status as status, product_supplier.state as state,
+                suppliers.name as supplier_name, suppliers.id as supplier_id, product_supplier.price_recommend as recommend_price, product_supplier.updated_at as updated_at'))->get();
 
         $html = view('suppliers.temp', compact('products'))->render();
         $data = [

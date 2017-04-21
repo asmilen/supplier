@@ -119,10 +119,10 @@
                                     <div class="col-sm-9">
                                         <select name="status"  class="form-control">
                                             <option value="">-- Chọn tình trạng --</option>
-                                            <option value="0">Chờ duyệt</option>
-                                            <option value="1">Hết hàng</option>
+                                            {{--<option value="0">Chờ duyệt</option>--}}
+                                            {{--<option value="1">Hết hàng</option>--}}
                                             <option value="2">Ưu tiên lấy hàng</option>
-                                            <option value="3">Yêu cầu ưu tiên lấy hàng</option>
+                                            {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
                                             <option value="4">Không ưu tiên lấy hàng</option>
                                         </select>
                                         <p style="color:red;text-align: left;" id="state">{{$errors->first('status')}}</p>
@@ -132,10 +132,10 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-left">Tình trạng sản phẩm</label>
                                     <div class="col-sm-9">
-                                        <select name="state"  class="form-control">
+                                        <select name="state"  class="form-control" disabled>
                                             <option value="">-- Chọn tình trạng --</option>
                                             <option value="0">Hết hàng</option>
-                                            <option value="1">Còn hàng</option>
+                                            <option value="1" selected>Còn hàng</option>
                                             <option value="2">Đặt hàng</option>
                                         </select>
                                         <p style="color:red;text-align: left;" id="state">{{$errors->first('state')}}</p>
@@ -294,12 +294,13 @@
                         <th >Nhà sản xuất</th>
                         <th >SKU</th>
                         <th >Tên</th>
-                        <th >Giá nhập</th>
-                        <th >GTGT</th>
+                        {{--<th >Giá nhập</th>--}}
+                        {{--<th >GTGT</th>--}}
                         <th >Giá bán khuyến nghị</th>
                         <th >Trạng thái </th>
                         <th >Nhà cung cấp</th>
-                        <th >Tình trạng</th>
+                        <th >Số lượng</th>
+                        {{--<th >Tình trạng</th>--}}
                         <th >Ngày cập nhật</th>
                         <th >Thao tac</th>
                     </tr>
@@ -311,8 +312,8 @@
                         <th><input type="text" style="width: 100%" name="db_manufacture_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_sku" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_name" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>
+                        {{--<th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>--}}
+                        {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
                         <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
                         <th><select name="db_status" style="width: 100%">
                                 <option value=""></option>
@@ -323,13 +324,14 @@
                                 <option value="4">Không ưu tiên lấy hàng</option>
                             </select></th>
                         <th><input type="text" style="width: 100%" name="db_supplier_name" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_supplier_quantity" placeholder=""/></th>
 
-                        <th><select name="db_state" style="width: 100%">
-                                <option value=""></option>
-                                <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>
-                            </select></th>
+                        {{--<th><select name="db_state" style="width: 100%">--}}
+                                {{--<option value=""></option>--}}
+                                {{--<option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>--}}
+                                {{--<option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>--}}
+                                {{--<option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>--}}
+                            {{--</select></th>--}}
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>
                     </tr>
@@ -405,12 +407,13 @@
                         d.manufacture_name = $('input[name=db_manufacture_name]').val();
                         d.product_sku = $('input[name=db_product_sku]').val();
                         d.product_name = $('input[name=db_product_name]').val();
-                        d.product_import_price = $('input[name=db_product_import_price]').val();
-                        d.vat = $('input[name=db_product_vat]').val();
+//                        d.product_import_price = $('input[name=db_product_import_price]').val();
+//                        d.vat = $('input[name=db_product_vat]').val();
                         d.recommend_price = $('input[name=db_product_recommend_price]').val();
                         d.status = $('select[name=db_status]').val();
                         d.supplier_name = $('input[name=db_supplier_name]').val();
-                        d.state = $('select[name=db_state]').val();
+                        d.supplier_quantity = $('input[name=db_supplier_quantity]').val();
+//                        d.state = $('select[name=db_state]').val();
                         d.updated_at = $('input[name=db_updated_at]').val();
                     }
                 },
@@ -419,12 +422,13 @@
                     {data: 'manufacturer_name', name: 'manufacturer_name',"width": "5%"},
                     {data: 'sku', name: 'sku',"width": "10%"},
                     {data: 'product_name', name: 'product_name',"width": "15%"},
-                    {data: 'import_price', name: 'import_price',"width": "5%"},
-                    {data: 'vat', name: 'vat',"width": "5%"},
+//                    {data: 'import_price', name: 'import_price',"width": "5%"},
+//                    {data: 'vat', name: 'vat',"width": "5%"},
                     {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
                     {data: 'status',name: 'status',"width": "10%"},
                     {data: 'supplier_name',name: 'supplier_name',"width": "10%"},
-                    {data: 'status_product',name: 'status_product',"width": "5%"},
+                    {data: 'supplier_quantity',name: 'supplier_quantity',"width": "10%"},
+//                    {data: 'status_product',name: 'status_product',"width": "5%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
@@ -446,7 +450,12 @@
                 } );
             } );
 
-            $("#tableproducts").DataTable({});
+            $("#tableproducts").DataTable({
+                "fnDrawCallback": function(oSettings) {
+                    $(".radio").prop('checked', false);
+                },
+                autoWidth: false
+            });
 
             CKEDITOR.replace('_description');
 

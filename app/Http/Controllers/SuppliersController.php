@@ -142,7 +142,7 @@ class SuppliersController extends Controller
             ->orderBy('product_supplier.status', 'asc')
             ->select(DB::raw('product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
-                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,
+                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
 
         return Datatables::of($products)
@@ -168,13 +168,13 @@ class SuppliersController extends Controller
                     $query->where('products.name', 'like', '%'.request('product_name').'%');
                 }
 
-                if (request()->has('product_import_price')) {
-                    $query->where('product_supplier.import_price',request('product_import_price'));
-                }
-
-                if (request()->has('vat')) {
-                    $query->where('product_supplier.vat',request('vat'));
-                }
+//                if (request()->has('product_import_price')) {
+//                    $query->where('product_supplier.import_price',request('product_import_price'));
+//                }
+//
+//                if (request()->has('vat')) {
+//                    $query->where('product_supplier.vat',request('vat'));
+//                }
 
                 if (request()->has('recommend_price')) {
                     $query->where('product_supplier.price_recommend',request('recommend_price'));
@@ -188,9 +188,13 @@ class SuppliersController extends Controller
                     $query->where('suppliers.name', request('supplier_name'));
                 }
 
-                if (request()->has('state')) {
-                    $query->where('product_supplier.state', request('state'));
+                if (request()->has('supplier_quantity')) {
+                    $query->where('product_supplier.quantity', request('supplier_quantity'));
                 }
+
+//                if (request()->has('state')) {
+//                    $query->where('product_supplier.state', request('state'));
+//                }
 
                 if (request()->has('updated_at')) {
                     $date = request('updated_at');

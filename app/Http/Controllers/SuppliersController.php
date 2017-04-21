@@ -11,6 +11,7 @@ use Sentinel;
 use Validator;
 use Datatables;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
 use App\Models\ProductSupplier;
@@ -142,7 +143,7 @@ class SuppliersController extends Controller
             ->orderBy('product_supplier.status', 'asc')
             ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
-                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,
+                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
 
         return Datatables::of($products)
@@ -150,7 +151,7 @@ class SuppliersController extends Controller
 
                 if (request()->has('category_name')) {
                     $query->where(function ($query) {
-                        $query->where('suppliers.name', 'like', '%'.request('category_name').'%');
+                        $query->where('categories.name', 'like', '%'.request('category_name').'%');
                     });
                 }
 
@@ -168,13 +169,13 @@ class SuppliersController extends Controller
                     $query->where('products.name', 'like', '%'.request('product_name').'%');
                 }
 
-                if (request()->has('product_import_price')) {
-                    $query->where('product_supplier.import_price',request('product_import_price'));
-                }
-
-                if (request()->has('vat')) {
-                    $query->where('product_supplier.vat',request('vat'));
-                }
+//                if (request()->has('product_import_price')) {
+//                    $query->where('product_supplier.import_price',request('product_import_price'));
+//                }
+//
+//                if (request()->has('vat')) {
+//                    $query->where('product_supplier.vat',request('vat'));
+//                }
 
                 if (request()->has('recommend_price')) {
                     $query->where('product_supplier.price_recommend',request('recommend_price'));
@@ -188,9 +189,13 @@ class SuppliersController extends Controller
                     $query->where('suppliers.name', 'like', '%'.request('supplier_name').'%');
                 }
 
-                if (request()->has('state')) {
-                    $query->where('product_supplier.state', request('state'));
+                if (request()->has('supplier_quantity')) {
+                    $query->where('product_supplier.quantity', request('supplier_quantity'));
                 }
+
+//                if (request()->has('state')) {
+//                    $query->where('product_supplier.state', request('state'));
+//                }
 
                 if (request()->has('updated_at')) {
                     $date = request('updated_at');
@@ -309,6 +314,31 @@ class SuppliersController extends Controller
 
         flash()->success('Success!', 'Status successfully updated.');
         return redirect()->back();
+    }
+
+    public function updateDatatables(Request $request) {
+        $id =  $request->input('id');
+        $status =  $request->input('status');
+        $import_price =  $request->input('import_price');
+        DB::beginTransaction();
+        try {
+            if($status == 'Chờ duyệt') {
+                $status = 0;
+            } else if($status == 'Hết hàng'){
+                $status = 1;
+            } else if($status == 'Ưu tiên lấy hàng'){
+                $status = 2;
+            } else if($status == 'Yêu cầu ưu tiên lấy hàng'){
+                $status = 3;
+            }  else if($status == 'Không ưu tiên lấy hàng'){
+                $status = 4;
+            }
+            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price]);
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
     }
 
 }

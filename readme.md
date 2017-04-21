@@ -13,7 +13,7 @@ Thêm cấu hình trong file `.env`:
 
 ### Nhận Message
 
-Để nhận message từ exchange 'test-exchange', routing key 'wh.import.create':
+Để nhận message từ exchange `'test-exchange'`, routing key `'wh.import.create'`:
 
 
     php artisan message:consume test-exchange wh.import.create

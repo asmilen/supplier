@@ -366,7 +366,7 @@
 @section('scripts')
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/dataTables.cellEdit.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/datatables.cellEdit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
     <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>

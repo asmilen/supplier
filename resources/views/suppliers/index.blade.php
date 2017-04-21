@@ -5,6 +5,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
     <style>
+        .my-confirm-class {
+            padding: 3px 6px;
+            font-size: 12px;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+            border-radius: 4px;
+            background-color: #337ab7;
+            text-decoration: none;
+        }
+        .my-cancel-class {
+            padding: 3px 4px;
+            font-size: 12px;
+            color: white;
+            text-align: center;
+            vertical-align: middle;
+            border-radius: 4px;
+            background-color: #a94442;
+            text-decoration: none;
+        }
         tfoot {
             display: table-header-group;
         }
@@ -294,9 +314,9 @@
                         <th >Nhà sản xuất</th>
                         <th >SKU</th>
                         <th >Tên</th>
-                        {{--<th >Giá nhập</th>--}}
+                        <th >Giá nhập</th>
                         {{--<th >GTGT</th>--}}
-                        <th >Giá bán khuyến nghị</th>
+                        {{--<th >Giá bán khuyến nghị</th>--}}
                         <th >Trạng thái </th>
                         <th >Nhà cung cấp</th>
                         <th >Số lượng</th>
@@ -312,9 +332,9 @@
                         <th><input type="text" style="width: 100%" name="db_manufacture_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_sku" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_name" placeholder=""/></th>
-                        {{--<th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>--}}
+                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>
                         {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
-                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
+                        {{--<th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>--}}
                         <th><select name="db_status" style="width: 100%">
                                 <option value=""></option>
                                 <option value="0">Chờ duyệt</option>
@@ -407,9 +427,9 @@
                         d.manufacture_name = $('input[name=db_manufacture_name]').val();
                         d.product_sku = $('input[name=db_product_sku]').val();
                         d.product_name = $('input[name=db_product_name]').val();
-//                        d.product_import_price = $('input[name=db_product_import_price]').val();
+                        d.product_import_price = $('input[name=db_product_import_price]').val();
 //                        d.vat = $('input[name=db_product_vat]').val();
-                        d.recommend_price = $('input[name=db_product_recommend_price]').val();
+//                        d.recommend_price = $('input[name=db_product_recommend_price]').val();
                         d.status = $('select[name=db_status]').val();
                         d.supplier_name = $('input[name=db_supplier_name]').val();
                         d.supplier_quantity = $('input[name=db_supplier_quantity]').val();
@@ -422,9 +442,9 @@
                     {data: 'manufacturer_name', name: 'manufacturer_name',"width": "5%"},
                     {data: 'sku', name: 'sku',"width": "10%"},
                     {data: 'product_name', name: 'product_name',"width": "15%"},
-//                    {data: 'import_price', name: 'import_price',"width": "5%"},
+                    {data: 'import_price', name: 'import_price',"width": "5%"},
 //                    {data: 'vat', name: 'vat',"width": "5%"},
-                    {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
+//                    {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
                     {data: 'status',name: 'status',"width": "10%"},
                     {data: 'supplier_name',name: 'supplier_name',"width": "10%"},
                     {data: 'supplier_quantity',name: 'supplier_quantity',"width": "10%"},
@@ -433,6 +453,51 @@
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
             });
+
+            datatable.MakeCellsEditable({
+                "onUpdate": myCallbackFunction,
+                "inputCss":'my-input-class',
+                "idSrc":  'id',
+                "columns": [4,5],
+                "allowNulls": {
+                    "columns": [2],
+                    "errorClass": 'error'
+                },
+                "confirmationButton": { // could also be true
+                    "confirmCss": 'my-confirm-class',
+                    "cancelCss": 'my-cancel-class'
+                },
+                "inputTypes": [
+                    {
+                        "column":5,
+                        "type": "list",
+                        "options":[
+                            { "value": "Chờ duyệt", "display": "Chờ duyệt" },
+                            { "value": "Hết hàng", "display": "Hết hàng" },
+                            { "value": "Ưu tiên lấy hàng", "display": "Ưu tiên lấy hàng" },
+                            { "value": "Yêu cầu ưu tiên lấy hàng'", "display": "Yêu cầu ưu tiên lấy hàng'" },
+                            { "value": "Không ưu tiên lấy hàng'", "display": "Không ưu tiên lấy hàng'" }
+                        ]
+                    }
+                ]
+            });
+            function myCallbackFunction (updatedCell, updatedRow, oldValue) {
+                var data = updatedRow.data();
+                var id = data.id;
+                var import_price = data.import_price;
+                var status = data.status;
+
+                $.ajax({
+                    url: "{!! route('suppliers.datatables-edit') !!}",
+                    type: "POST",
+                    data: {
+                        id : id,
+                        status: status,
+                        import_price: import_price
+                    },
+                    dataType: "json"
+                });
+            }
 
 
             datatable.columns().every( function () {

@@ -11,6 +11,7 @@ use Sentinel;
 use Validator;
 use Datatables;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Suppliers;
 use Illuminate\Http\Request;
 use App\Models\ProductSupplier;
@@ -150,7 +151,7 @@ class SuppliersController extends Controller
 
                 if (request()->has('category_name')) {
                     $query->where(function ($query) {
-                        $query->where('suppliers.name', 'like', '%'.request('category_name').'%');
+                        $query->where('categories.name', 'like', '%'.request('category_name').'%');
                     });
                 }
 
@@ -313,6 +314,31 @@ class SuppliersController extends Controller
 
         flash()->success('Success!', 'Status successfully updated.');
         return redirect()->back();
+    }
+
+    public function updateDatatables(Request $request) {
+        $id =  $request->input('id');
+        $status =  $request->input('status');
+        $import_price =  $request->input('import_price');
+        DB::beginTransaction();
+        try {
+            if($status == 'Chờ duyệt') {
+                $status = 0;
+            } else if($status == 'Hết hàng'){
+                $status = 1;
+            } else if($status == 'Ưu tiên lấy hàng'){
+                $status = 2;
+            } else if($status == 'Yêu cầu ưu tiên lấy hàng'){
+                $status = 3;
+            }  else if($status == 'Không ưu tiên lấy hàng'){
+                $status = 4;
+            }
+            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price]);
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollback();
+            throw $e;
+        }
     }
 
 }

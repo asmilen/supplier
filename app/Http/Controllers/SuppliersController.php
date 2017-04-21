@@ -140,7 +140,7 @@ class SuppliersController extends Controller
             ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->where('user_supported_province.supported_id',$user_id)
             ->orderBy('product_supplier.status', 'asc')
-            ->select(DB::raw('product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
+            ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
@@ -185,7 +185,7 @@ class SuppliersController extends Controller
                 }
 
                 if (request()->has('supplier_name')) {
-                    $query->where('suppliers.name', request('supplier_name'));
+                    $query->where('suppliers.name', 'like', '%'.request('supplier_name').'%');
                 }
 
                 if (request()->has('supplier_quantity')) {
@@ -272,9 +272,9 @@ class SuppliersController extends Controller
             ->where('user_supported_province.supported_id',$user_id)
             ->where('product_supplier.product_id',$product_id)
             ->orderBy('product_supplier.status', 'asc')
-            ->select('product_supplier.id as id','product_supplier.image as image', 'product_supplier.name as product_name','product_supplier.product_id as product_id',
-                'product_supplier.import_price as import_price', 'product_supplier.vat as vat','product_supplier.status as status','product_supplier.state as state',
-                'suppliers.name as supplier_name','suppliers.id as supplier_id','product_supplier.price_recommend as recommend_price','product_supplier.updated_at as updated_at')->get();
+            ->select(DB::raw('distinct product_supplier.id as id,product_supplier.image as image, product_supplier.name as product_name,product_supplier.product_id as product_id,
+                product_supplier.import_price as import_price, product_supplier.vat as vat, product_supplier.status as status, product_supplier.state as state,
+                suppliers.name as supplier_name, suppliers.id as supplier_id, product_supplier.price_recommend as recommend_price, product_supplier.updated_at as updated_at'))->get();
 
         $html = view('suppliers.temp', compact('products'))->render();
         $data = [

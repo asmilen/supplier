@@ -14,7 +14,7 @@ class AddCodeToProvincesTable extends Migration
     public function up()
     {
         Schema::table('provinces', function (Blueprint $table) {
-            //
+            $table->char('code', 20)->nullable();
         });
     }
 

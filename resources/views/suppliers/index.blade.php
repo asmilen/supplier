@@ -319,7 +319,7 @@
                         <th >Số lượng</th>
                         {{--<th >GTGT</th>--}}
                         {{--<th >Giá bán khuyến nghị</th>--}}
-                        <th >Trạng thái </th>
+                        {{--<th >Trạng thái </th>--}}
                         {{--<th >Tình trạng</th>--}}
                         <th >Ngày cập nhật</th>
                         <th >Thao tac</th>
@@ -337,14 +337,14 @@
                         <th><input type="text" style="width: 100%" name="db_supplier_quantity" placeholder=""/></th>
                         {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
                         {{--<th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>--}}
-                        <th><select name="db_status" style="width: 100%">
-                                <option value=""></option>
-                                <option value="0">Chờ duyệt</option>
-                                <option value="1">Hết hàng</option>
-                                <option value="2">Ưu tiên lấy hàng</option>
-                                <option value="3">Yêu cầu ưu tiên lấy hàng</option>
-                                <option value="4">Không ưu tiên lấy hàng</option>
-                            </select></th>
+                        {{--<th><select name="db_status" style="width: 100%">--}}
+                                {{--<option value=""></option>--}}
+                                {{--<option value="0">Chờ duyệt</option>--}}
+                                {{--<option value="1">Hết hàng</option>--}}
+                                {{--<option value="2">Ưu tiên lấy hàng</option>--}}
+                                {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
+                                {{--<option value="4">Không ưu tiên lấy hàng</option>--}}
+                            {{--</select></th>--}}
 
 
 
@@ -420,7 +420,6 @@
                 processing: true,
                 serverSide: true,
                 pageLength: 50,
-                "bSort" : false,
                 "bDestroy": true,
                 ajax: {
                     url: '{!! route('suppliers.datatables') !!}',
@@ -434,22 +433,22 @@
                         d.supplier_quantity = $('input[name=db_supplier_quantity]').val();
 //                        d.vat = $('input[name=db_product_vat]').val();
 //                        d.recommend_price = $('input[name=db_product_recommend_price]').val();
-                        d.status = $('select[name=db_status]').val();
+//                       d.status = $('select[name=db_status]').val();
 //                        d.state = $('select[name=db_state]').val();
                         d.updated_at = $('input[name=db_updated_at]').val();
                     }
                 },
                 columns: [
                     {data: 'cat_name', name: 'cat_name',"width": "10%"},
-                    {data: 'manufacturer_name', name: 'manufacturer_name',"width": "5%"},
+                    {data: 'manufacturer_name', name: 'manufacturer_name',"width": "10%"},
                     {data: 'sku', name: 'sku',"width": "10%"},
-                    {data: 'product_name', name: 'product_name',"width": "15%"},
+                    {data: 'product_name', name: 'product_name',"width": "20%"},
                     {data: 'supplier_name',name: 'supplier_name',"width": "10%"},
-                    {data: 'import_price', name: 'import_price',"width": "5%"},
+                    {data: 'import_price', name: 'import_price',"width": "10%"},
                     {data: 'supplier_quantity',name: 'supplier_quantity',"width": "10%"},
 //                   {data: 'vat', name: 'vat',"width": "5%"},
 //                   {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
-                    {data: 'status',name: 'status',"width": "10%"},
+//                    {data: 'status',name: 'status',"width": "10%"},
 //                   {data: 'status_product',name: 'status_product',"width": "5%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}

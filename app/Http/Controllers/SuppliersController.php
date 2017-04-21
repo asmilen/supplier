@@ -251,9 +251,9 @@ class SuppliersController extends Controller
             })
             ->addColumn('action',function($product){
                 $string = '';
-                if($product->status == 0) {
-                    $string = '<button data-id = "'.$product->id_product.'" class="btn btn-success checkStatus" id = "checkStatus">Duyệt </button>';
-                }
+//                if($product->status == 0) {
+//                    $string = '<button data-id = "'.$product->id_product.'" class="btn btn-success checkStatus" id = "checkStatus">Duyệt </button>';
+//                }
                 if($product->id_product == 0) {
                     $string .= '<button style = "margin-top:5px" data-id = "'.$product->id.'" class="btn btn-primary connect" id="connect">Liên kết</button>';
                 }
@@ -310,7 +310,7 @@ class SuppliersController extends Controller
         $product_supplier_id = $request->input('product_supplier_id');
         $product_id = $request->input('product_id');
 
-        ProductSupplier::find($product_supplier_id)->update(['product_id' => $product_id]);
+        ProductSupplier::find($product_supplier_id)->update(['product_id' => $product_id, 'status' => 2]);
 
         flash()->success('Success!', 'Status successfully updated.');
         return redirect()->back();

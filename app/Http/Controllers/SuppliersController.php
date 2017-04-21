@@ -185,7 +185,7 @@ class SuppliersController extends Controller
                 }
 
                 if (request()->has('supplier_name')) {
-                    $query->where('suppliers.name', request('supplier_name'));
+                    $query->where('suppliers.name', 'like', '%'.request('supplier_name').'%');
                 }
 
                 if (request()->has('state')) {

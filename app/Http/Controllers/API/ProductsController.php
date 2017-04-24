@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\MarginRegionSupplier;
+use App\Models\Province;
 use Validator;
 use Datatables;
 use App\Models\Product;
@@ -24,17 +26,23 @@ class ProductsController extends Controller
         if ($validator->fails()) {
             return $validator->errors();
         }
+
+        $regions = Province::whereIn('id', request('province_ids'))->pluck('region_id');
+
+        $provinceIds = Province::whereIn('region_id', $regions)->pluck('id');
+
         /**
          * @var array $supplierIds
          */
-        $supplierIds = SupplierSupportedProvince::whereIn('province_id', request('province_ids'))
+        $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
             ->get()
             ->pluck('supplier_id');
+
 
         $model = Product::select([
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price',
-            'products.category_id'
+            'products.category_id', 'product_supplier.supplier_id'
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {
@@ -57,8 +65,10 @@ class ProductsController extends Controller
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })
-            ->addColumn('price', function ($model) {
-                return isset($model->category->margin) ? $model->best_price * (1 + 0.01 * $model->category->margin) : "";
+            ->addColumn('price', function ($model) use ($regions) {
+                $margin = MarginRegionSupplier::where('supplier_id', $model->supplier_id)
+                    ->whereIn('region_id', $regions)->first();
+                return isset($margin) ? $model->best_price * (1 + 0.01 * $regions->margin) : $model->best_price;
             })
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
@@ -71,7 +81,7 @@ class ProductsController extends Controller
         /**
          * @var array $supplierIds
          */
-        $model = Product::select(['products.id', 'products.name','products.sku','products.category_id'])
+        $model = Product::select(['products.id', 'products.name', 'products.sku', 'products.category_id'])
             ->with('category');
 
         return Datatables::eloquent($model)
@@ -100,14 +110,44 @@ class ProductsController extends Controller
      */
     public function detail($id)
     {
+        /**
+         * @var \Illuminate\Validation\Validator $validator
+         */
+        $validator = Validator::make(request()->all(), [
+            'province_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+
         try {
-            $product = Product::with('manufacturer', 'category')->findOrFail($id);
-            if (isset($product->category->margin)) {
-                $product->best_price = $product->best_price * (1 + 0.01 * $product->category->margin);
+
+            $regions = Province::where('id', request('province_id'))->findOrFail();
+
+            $provinceIds = Province::where('region_id', $regions->region_id)->pluck('id');
+
+            /**
+             * @var array $supplierIds
+             */
+            $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
+                ->get()
+                ->pluck('supplier_id');
+
+            $product = Product::with('manufacturer', 'category')
+                ->join('product_supplier', function ($q) use ($supplierIds) {
+                    $q->on('product_supplier.product_id', '=', 'products.id')
+                        ->whereIn('product_supplier.supplier_id', $supplierIds);
+                })
+                ->findOrFail($id);
+            $margin = MarginRegionSupplier::where('supplier_id', $product->supplier_id)
+                ->whereIn('region_id', $regions)->first();
+
+            if ($margin) {
+                $product->best_price = $product->best_price * (1 + 0.01 * $margin->margin);
             }
             return $product;
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
     }

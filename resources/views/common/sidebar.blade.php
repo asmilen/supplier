@@ -56,6 +56,12 @@
         </li>
         @endif
 
+        @if ($currentUser->hasAccess('attributes.index'))
+        <li class="{{ (Request::is('attributes') || Request::is('attributes/*')) ? 'active' : '' }}">
+            <a href="{{ url('/attributes') }}"><i class="menu-icon fa fa-list-alt"></i> <span class="menu-text"> Thuộc tính </span></a>
+        </li>
+        @endif
+
         @if ($currentUser->hasAccess('products.index'))
         <li class="{{ (Request::is('products') || Request::is('products/*')) ? 'active' : '' }}">
             <a href="{{ url('/products') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm </span></a>

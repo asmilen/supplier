@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\MarginRegionSupplier;
-use App\Models\Province;
 use Validator;
 use Datatables;
 use App\Models\Product;
+use App\Models\Province;
+use App\Models\MarginRegionSupplier;
 use App\Http\Controllers\Controller;
 use App\Models\SupplierSupportedProvince;
 use App\Transformers\ProductApiTransformer;
@@ -68,7 +68,7 @@ class ProductsController extends Controller
             ->addColumn('price', function ($model) use ($regions) {
                 $margin = MarginRegionSupplier::where('supplier_id', $model->supplier_id)
                     ->whereIn('region_id', $regions)->first();
-                return isset($margin) ? $model->best_price * (1 + 0.01 * $margin->margin) : $model->best_price;
+                return isset($margin) ? $model->best_price * (1 + 0.01 * $margin->margin) : $model->best_price * 1.03;
             })
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
@@ -146,6 +146,8 @@ class ProductsController extends Controller
 
             if ($margin) {
                 $product->best_price = $product->best_price * (1 + 0.01 * $margin->margin);
+            } else {
+                $product->best_price = $product->best_price * 1.03;
             }
             return $product;
         } catch (\Exception $e) {

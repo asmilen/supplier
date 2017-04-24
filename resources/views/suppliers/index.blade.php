@@ -459,28 +459,28 @@
                 "onUpdate": myCallbackFunction,
                 "inputCss":'my-input-class',
                 "idSrc":  'id',
-                "columns": [4,5,7],
+                "columns": [5,6],
                 "allowNulls": {
-                    "columns": [3],
+                    "columns": [2],
                     "errorClass": 'error'
                 },
                 "confirmationButton": { // could also be true
                     "confirmCss": 'my-confirm-class',
                     "cancelCss": 'my-cancel-class'
                 },
-                "inputTypes": [
-                    {
-                        "column":5,
-                        "type": "list",
-                        "options":[
-                            { "value": "Chờ duyệt", "display": "Chờ duyệt" },
-                            { "value": "Hết hàng", "display": "Hết hàng" },
-                            { "value": "Ưu tiên lấy hàng", "display": "Ưu tiên lấy hàng" },
-                            { "value": "Yêu cầu ưu tiên lấy hàng'", "display": "Yêu cầu ưu tiên lấy hàng'" },
-                            { "value": "Không ưu tiên lấy hàng'", "display": "Không ưu tiên lấy hàng'" }
-                        ]
-                    }
-                ]
+//                "inputTypes": [
+//                    {
+//                        "column":5,
+//                        "type": "list",
+//                        "options":[
+//                            { "value": "Chờ duyệt", "display": "Chờ duyệt" },
+//                            { "value": "Hết hàng", "display": "Hết hàng" },
+//                            { "value": "Ưu tiên lấy hàng", "display": "Ưu tiên lấy hàng" },
+//                            { "value": "Yêu cầu ưu tiên lấy hàng'", "display": "Yêu cầu ưu tiên lấy hàng'" },
+//                            { "value": "Không ưu tiên lấy hàng'", "display": "Không ưu tiên lấy hàng'" }
+//                        ]
+//                    }
+//                ]
             });
             function myCallbackFunction (updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();

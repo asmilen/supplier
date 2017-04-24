@@ -42,7 +42,8 @@ class ProductsController extends Controller
         $model = Product::select([
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price',
-            'products.category_id', 'product_supplier.supplier_id'
+            'products.category_id', 'product_supplier.supplier_id',
+            'product_supplier.image'
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {

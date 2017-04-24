@@ -123,7 +123,7 @@ class ProductsController extends Controller
 
         try {
 
-            $regions = Province::where('id', request('province_id'))->findOrFail();
+            $regions = Province::where('id', request('province_id'))->firstOrFail();
 
             $provinceIds = Province::where('region_id', $regions->region_id)->pluck('id');
 
@@ -140,6 +140,7 @@ class ProductsController extends Controller
                         ->whereIn('product_supplier.supplier_id', $supplierIds);
                 })
                 ->findOrFail($id);
+
             $margin = MarginRegionSupplier::where('supplier_id', $product->supplier_id)
                 ->whereIn('region_id', $regions)->first();
 

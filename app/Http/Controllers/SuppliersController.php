@@ -140,7 +140,7 @@ class SuppliersController extends Controller
             ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
             ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
             ->where('user_supported_province.supported_id',$user_id)
-            ->orderBy('product_supplier.status', 'asc')
+            ->orderBy('product_supplier.updated_at', 'desc')
             ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
@@ -245,15 +245,11 @@ class SuppliersController extends Controller
                     $string = 'Đặt hàng';
                 }
                 return $string;
-            })
-            ->editColumn('updated_at', function($product) {
-                return ($product->updated_at) ? date_format($product->updated_at,"Y-m-d") : '';
-            })
-            ->addColumn('action',function($product){
+            })->addColumn('action',function($product){
                 $string = '';
-                if($product->status == 0) {
-                    $string = '<button data-id = "'.$product->id_product.'" class="btn btn-success checkStatus" id = "checkStatus">Duyệt </button>';
-                }
+//                if($product->status == 0) {
+//                    $string = '<button data-id = "'.$product->id_product.'" class="btn btn-success checkStatus" id = "checkStatus">Duyệt </button>';
+//                }
                 if($product->id_product == 0) {
                     $string .= '<button style = "margin-top:5px" data-id = "'.$product->id.'" class="btn btn-primary connect" id="connect">Liên kết</button>';
                 }
@@ -310,7 +306,7 @@ class SuppliersController extends Controller
         $product_supplier_id = $request->input('product_supplier_id');
         $product_id = $request->input('product_id');
 
-        ProductSupplier::find($product_supplier_id)->update(['product_id' => $product_id]);
+        ProductSupplier::find($product_supplier_id)->update(['product_id' => $product_id, 'status' => 2]);
 
         flash()->success('Success!', 'Status successfully updated.');
         return redirect()->back();
@@ -320,6 +316,7 @@ class SuppliersController extends Controller
         $id =  $request->input('id');
         $status =  $request->input('status');
         $import_price =  $request->input('import_price');
+        $supplier_quantity =  $request->input('supplier_quantity');
         DB::beginTransaction();
         try {
             if($status == 'Chờ duyệt') {
@@ -333,7 +330,7 @@ class SuppliersController extends Controller
             }  else if($status == 'Không ưu tiên lấy hàng'){
                 $status = 4;
             }
-            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price]);
+            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price, 'quantity' => $supplier_quantity]);
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();

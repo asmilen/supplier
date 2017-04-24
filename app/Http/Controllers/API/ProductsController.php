@@ -20,14 +20,14 @@ class ProductsController extends Controller
          */
         $validator = Validator::make(request()->all(), [
             'province_ids' => 'required|array',
-            'province_ids.*' => 'required|integer',
+            'province_ids.*' => 'required',
         ]);
 
         if ($validator->fails()) {
             return $validator->errors();
         }
 
-        $regions = Province::whereIn('id', request('province_ids'))->pluck('region_id');
+        $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id');
 
         $provinceIds = Province::whereIn('region_id', $regions)->pluck('id');
 
@@ -114,7 +114,7 @@ class ProductsController extends Controller
          * @var \Illuminate\Validation\Validator $validator
          */
         $validator = Validator::make(request()->all(), [
-            'province_id' => 'required|integer',
+            'province_id' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -123,7 +123,7 @@ class ProductsController extends Controller
 
         try {
 
-            $regions = Province::where('id', request('province_id'))->findOrFail();
+            $regions = Province::where('code', request('province_id'))->firstOrFail();
 
             $provinceIds = Province::where('region_id', $regions->region_id)->pluck('id');
 
@@ -140,6 +140,7 @@ class ProductsController extends Controller
                         ->whereIn('product_supplier.supplier_id', $supplierIds);
                 })
                 ->findOrFail($id);
+
             $margin = MarginRegionSupplier::where('supplier_id', $product->supplier_id)
                 ->whereIn('region_id', $regions)->first();
 

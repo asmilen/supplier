@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Jobs\PublishMessage;
 
 class CategoriesController extends Controller
 {

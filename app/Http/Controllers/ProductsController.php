@@ -6,6 +6,7 @@ use Validator;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
+use App\Jobs\PublishMessage;
 
 class ProductsController extends Controller
 {
@@ -82,6 +83,23 @@ class ProductsController extends Controller
             'description' => request('description'),
         ]);
 
+
+        $jsonSend = [
+            "id"            => $product->id,
+            "categoryId"      => $product->category_id,
+            "brandId"      => $product->manufacturer_id,
+            "type" => "simple",
+            "sku"      => $product->sku,
+            "name"      => $product->name,
+            "skuIdentifier"      => $product->code,
+            "status"    => $product->status == true ? 'active' : 'inactive',
+            "sourceUrl"      => $product->source_url,
+            "createdAt" => strtotime($product->created_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.product.upsert', $messSend));
+
         flash()->success('Success!', 'Product successfully created.');
 
         return redirect()->route('products.index');
@@ -153,6 +171,21 @@ class ProductsController extends Controller
             'status' => !! request('status'),
             'description' => request('description'),
         ])->save();
+
+        $jsonSend = [
+            "id"            => $product->id,
+            "categoryId"      => $product->category_id,
+            "brandId"      => $product->manufacturer_id,
+            "sku"      => $product->sku,
+            "name"      => $product->name,
+            "skuIdentifier"      => $product->code,
+            "status"    => $product->status == true ? 'active' : 'inactive',
+            "sourceUrl"      => $product->source_url,
+            "createdAt" => strtotime($product->created_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.product.upsert', $messSend));
 
         flash()->success('Success!', 'Product successfully updated.');
 

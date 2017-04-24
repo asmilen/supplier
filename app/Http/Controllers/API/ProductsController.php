@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use DB;
 use Validator;
 use Datatables;
 use App\Models\Product;
 use App\Models\Province;
-use App\Models\MarginRegionSupplier;
+use App\Models\ProductSupplier;
+use App\Models\MarginRegionCategory;
 use App\Http\Controllers\Controller;
 use App\Models\SupplierSupportedProvince;
 use App\Transformers\ProductApiTransformer;
@@ -43,7 +45,7 @@ class ProductsController extends Controller
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price',
             'products.category_id', 'product_supplier.supplier_id',
-            'product_supplier.image'
+            'product_supplier.image', DB::raw('MIN(product_supplier.import_price) as best_import_price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {
@@ -67,9 +69,9 @@ class ProductsController extends Controller
                 }
             })
             ->addColumn('price', function ($model) use ($regions) {
-                $margin = MarginRegionSupplier::where('supplier_id', $model->supplier_id)
+                $margin = MarginRegionCategory::where('category_id', $model->category_id)
                     ->whereIn('region_id', $regions)->first();
-                return isset($margin) ? $model->best_price * (1 + 0.01 * $margin->margin) : $model->best_price * 1.03;
+                return isset($margin) ? $model->best_import_price * (1 + 0.01 * $margin->margin) : $model->best_import_price * 1.03;
             })
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
@@ -136,20 +138,26 @@ class ProductsController extends Controller
                 ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
+                ->select('products.*')
                 ->join('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->whereIn('product_supplier.supplier_id', $supplierIds);
                 })
                 ->findOrFail($id);
 
-            $margin = MarginRegionSupplier::where('supplier_id', $product->supplier_id)
+            $bestPrice = ProductSupplier::where('product_id', $id)
+                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->min('import_price');
+
+            $margin = MarginRegionCategory::where('category_id', $product->category_id)
                 ->whereIn('region_id', $regions)->first();
 
             if ($margin) {
-                $product->best_price = $product->best_price * (1 + 0.01 * $margin->margin);
+                $product->best_price = $bestPrice * (1 + 0.01 * $margin->margin);
             } else {
-                $product->best_price = $product->best_price * 1.03;
+                $product->best_price = $bestPrice * 1.03;
             }
+
             return $product;
         } catch (\Exception $e) {
 

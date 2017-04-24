@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CteateMarginRegionSupplierTable extends Migration
+class CreateMarginRegionCategoryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CteateMarginRegionSupplierTable extends Migration
      */
     public function up()
     {
-        Schema::create('margin_region_supplier', function (Blueprint $table) {
+        Schema::create('margin_region_category', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('margin')->default(0);
-            $table->integer('supplier_id')->default(0);
             $table->integer('region_id')->default(0);
-            $table->timestamps();
+            $table->integer('category_id')->default(0);
         });
     }
 
@@ -29,6 +28,6 @@ class CteateMarginRegionSupplierTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('margin_region_supplier');
+        Schema::dropIfExists('margin_region_category');
     }
 }

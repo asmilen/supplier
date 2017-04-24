@@ -149,7 +149,8 @@ class ProductsController extends Controller
             }
             return $product;
         } catch (\Exception $e) {
-            return $e->getMessage();
+
+            return api_response(['message' => $e->getMessage()], 500);
         }
     }
 }

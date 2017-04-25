@@ -71,7 +71,7 @@ class ProductsController extends Controller
             ->addColumn('price', function ($model) use ($regions) {
                 $margin = MarginRegionCategory::where('category_id', $model->category_id)
                     ->whereIn('region_id', $regions)->first();
-                return isset($margin) ? $model->best_import_price * (1 + 0.01 * $margin->margin) : $model->best_import_price * 1.03;
+                return isset($margin) ? $model->best_import_price * (1 + 0.01 * $margin->margin) : $model->best_import_price * 1.05;
             })
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
@@ -155,7 +155,7 @@ class ProductsController extends Controller
             if ($margin) {
                 $product->best_price = $bestPrice * (1 + 0.01 * $margin->margin);
             } else {
-                $product->best_price = $bestPrice * 1.03;
+                $product->best_price = $bestPrice * 1.05;
             }
 
             return $product;

@@ -227,8 +227,9 @@ class SuppliersController extends Controller
                 $saler_price = number_format($product->import_price + $product->vat);
                 return $saler_price;
             })
-            ->editColumn('recommend_price', function($product) {
-                return number_format($product->recommend_price);
+            ->editColumn('updated_at', function($product) {
+                $updated_at = Carbon::parse($product->updated_at)->addHour(7);
+                return $updated_at;
             })
             ->editColumn('status', function($product) {
                 if($product->status == 0){
@@ -252,6 +253,8 @@ class SuppliersController extends Controller
                     $string = 'Đặt hàng';
                 }
                 return $string;
+            })->editColumn('recommend_price', function($product) {
+                return number_format($product->recommend_price);
             })->addColumn('action',function($product){
                 $string = '';
 //                if($product->status == 0) {

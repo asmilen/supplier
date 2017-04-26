@@ -139,7 +139,7 @@ class ProductsController extends Controller
                 ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
-                ->select('products.*')
+                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`"))
                 ->join('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->whereIn('product_supplier.supplier_id', $supplierIds);

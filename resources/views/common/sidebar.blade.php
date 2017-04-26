@@ -62,8 +62,14 @@
         </li>
         @endif
 
+        @if ($currentUser->hasAccess('suppliers.getList'))
+            <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/getList')) ? 'active' : '' }}">
+                <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Nhà cung cấp </span></a>
+            </li>
+        @endif
+
         @if ($currentUser->hasAccess('suppliers.index'))
-            <li class="{{ (Request::is('suppliers') || Request::is('suppliers/*')) ? 'active' : '' }}">
+            <li class="{{ (Request::is('suppliers') || Request::is('suppliers/index')) ? 'active' : '' }}">
                 <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
             </li>
         @endif

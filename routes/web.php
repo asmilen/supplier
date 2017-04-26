@@ -61,6 +61,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/getSuppliers', 'SuppliersController@getSuppliers')->name('suppliers.getSuppliers');
         Route::post('suppliers/updateStatus', 'SuppliersController@updateStatus')->name('suppliers.updateStatus');
         Route::post('suppliers/updateIdProduct', 'SuppliersController@updateIdProduct')->name('suppliers.updateIdProduct');
+        Route::get('suppliers/getList', 'SuppliersController@getList')->name('suppliers.getList');
+        Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::resource('suppliers', 'SuppliersController');
 
     });

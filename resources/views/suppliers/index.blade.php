@@ -145,18 +145,15 @@
                                             {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
                                             <option value="4">Không ưu tiên lấy hàng</option>
                                         </select>
-                                        <p style="color:red;text-align: left;" id="state">{{$errors->first('status')}}</p>
+                                        <p style="color:red;text-align: left;" id="status">{{$errors->first('status')}}</p>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-left">Tình trạng sản phẩm</label>
                                     <div class="col-sm-9">
-                                        <select name="state"  class="form-control" disabled>
-                                            <option value="">-- Chọn tình trạng --</option>
-                                            <option value="0">Hết hàng</option>
+                                        <select name="state"  class="form-control">
                                             <option value="1" selected>Còn hàng</option>
-                                            <option value="2">Đặt hàng</option>
                                         </select>
                                         <p style="color:red;text-align: left;" id="state">{{$errors->first('state')}}</p>
                                     </div>

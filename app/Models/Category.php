@@ -22,6 +22,11 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function attributes()
+    {
+        return $this->belongsToMany(Attribute::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', true);

@@ -177,6 +177,7 @@ return [
         Gtk\Gapi\GapiServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
+        Cviebrock\EloquentSluggable\ServiceProvider::class,
 
         /*
          * Application Service Providers...

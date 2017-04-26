@@ -33,6 +33,9 @@
 
     @yield('inline_styles')
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
     <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
     <!--[if lte IE 8]>
     <script src="/vendor/ace/assets/js/html5shiv.js"></script>
@@ -46,8 +49,8 @@
         ]) !!};
     </script>
 </head>
-<body class="no-skin">
-    <div id="app">
+<body class="no-skin" ng-app="app" ng-cloak>
+    <div id="app" ng-controller="AppController">
         @include('common.header')
 
         <div id="main-container" class="main-container">
@@ -56,7 +59,7 @@
             </script>
 
             @include('common.sidebar')
-            
+
             <div class="main-content">
                 <div class="main-content-inner">
                     @yield('content')

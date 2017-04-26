@@ -63,14 +63,20 @@
 /******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
+var app = angular.module('app', ['controllers.app']);
 
+app.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+}]);
+
+__webpack_require__(2);
 
 /***/ }),
 /* 1 */
@@ -80,6 +86,19 @@
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.app', []).controller('AppController', AppController);
+
+AppController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function AppController($scope, $http) {
+    console.log('Booting App Controller');
+}
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

@@ -80,11 +80,12 @@ class ProductsController extends Controller
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
             'status' => !! request('status'),
             'description' => request('description'),
+            'attributes' => json_encode(request('attributes', [])),
         ]);
 
         flash()->success('Success!', 'Product successfully created.');
 
-        return redirect()->route('products.index');
+        return $product;
     }
 
     /**
@@ -152,11 +153,12 @@ class ProductsController extends Controller
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
             'status' => !! request('status'),
             'description' => request('description'),
+            'attributes' => json_encode(request('attributes', [])),
         ])->save();
 
         flash()->success('Success!', 'Product successfully updated.');
 
-        return redirect()->route('products.index');
+        return $product;
     }
 
     public function getDatatables()

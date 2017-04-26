@@ -25,7 +25,6 @@ class Attribute extends Model
         return [
             'slug' => [
                 'source' => 'name',
-                'onUpdate' => true,
             ]
         ];
     }
@@ -39,5 +38,10 @@ class Attribute extends Model
         return Datatables::eloquent($model)
             ->addColumn('action', 'attributes.datatables.action')
             ->make(true);
+    }
+
+    public static function getList()
+    {
+        return static::pluck('name', 'id')->all();
     }
 }

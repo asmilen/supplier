@@ -84,9 +84,11 @@
     </div>
 </div>
 
+<hr>
+
 <div class="clearfix form-actions">
     <div class="col-md-offset-3 col-md-9">
-        <button type="submit" class="btn btn-success">
+        <button type="submit" class="btn btn-success" ng-click="addProduct()" ng-disabled="customForm.disabled">
             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
         </button>
     </div>

@@ -38,6 +38,21 @@
     </div>
 </div>
 
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-top" for="attributes">Thuộc tính</label>
+
+    <div class="col-sm-8">
+        @php
+        $attributeIds = $category->attributes()->pluck('id')->all();
+        @endphp
+        <select multiple="multiple" size="10" name="attributes[]" id="attributes">
+            @foreach ($attributesList as $k => $v)
+            <option value="{{ $k }}"{{ in_array($k, $attributeIds) ? ' selected=selected' : '' }}>{{ $v }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
 <div class="clearfix form-actions">
     <div class="col-md-offset-3 col-md-9">
         <button type="submit" class="btn btn-success">

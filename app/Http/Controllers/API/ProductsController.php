@@ -165,4 +165,9 @@ class ProductsController extends Controller
             return api_response(['message' => $e->getMessage()], 500);
         }
     }
+
+    public function show(Product $product)
+    {
+        return $product;
+    }
 }

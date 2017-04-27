@@ -44,13 +44,14 @@ class ProductsController extends Controller
         $model = Product::select([
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price',
-            'products.category_id', 'product_supplier.supplier_id',
-            'product_supplier.image', DB::raw('MIN(product_supplier.import_price) as best_import_price')
+            'products.category_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
+            'product_supplier.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds);
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1);
             });
 
         return Datatables::eloquent($model)
@@ -139,16 +140,17 @@ class ProductsController extends Controller
                 ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
-                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`"))
+                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
                 ->join('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
-                        ->whereIn('product_supplier.supplier_id', $supplierIds);
+                        ->whereIn('product_supplier.supplier_id', $supplierIds)
+                        ->where('product_supplier.state', '=', 1);
                 })
                 ->findOrFail($id);
 
             $bestPrice = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->min('import_price');
+                ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price))'));
 
             $margin = MarginRegionCategory::where('category_id', $product->category_id)
                 ->whereIn('region_id', $regions)->first();

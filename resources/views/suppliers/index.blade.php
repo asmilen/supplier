@@ -480,10 +480,10 @@
             function myCallbackFunction (updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();
                 var id = data.id;
-                var import_price = data.import_price;
+                var import_price = data.import_price.replace(/,/g , "");
                 var status = data.status;
-                var supplier_quantity = data.supplier_quantity;
-                var recommend_price = data.recommend_price;
+                var supplier_quantity = data.supplier_quantity.replace(/,/g , "");
+                var recommend_price = data.recommend_price.replace(/,/g , "");
                 var status_product = data.status_product;
                 $.ajax({
                     url: "{!! route('suppliers.datatables-edit') !!}",

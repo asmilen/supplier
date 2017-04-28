@@ -340,9 +340,10 @@ class SuppliersController extends Controller
             $status_product = 0;
         } else if ($status_product == 'Còn hàng') {
             $status_product = 1;
-        } else if ($status_product == 'Đặt hàng') {
-            $status_product = 2;
         }
+//         else if ($status_product == 'Đặt hàng') {
+//            $status_product = 2;
+//        }
 
         $product = ProductSupplier::findOrFail($id);
         $product_id = $product->id;

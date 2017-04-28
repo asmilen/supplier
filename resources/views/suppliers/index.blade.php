@@ -471,7 +471,6 @@
                         "options":[
                             { "value": "Hết hàng", "display": "Hết hàng" },
                             { "value": "Còn hàng", "display": "Còn hàng" },
-                            { "value": "Đặt hàng", "display": "Đặt hàng" },
                         ]
                     }
                 ]

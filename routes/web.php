@@ -10,6 +10,8 @@ Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback')
 
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
 
+Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
@@ -58,7 +60,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('supplier/updatePrice', 'ForSupplierController@postUpdatePrice')->name('supplier.postUpdatePrice');
 
         // Suppliers
-
         Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');
         Route::post('suppliers/datatables-edit', 'SuppliersController@updateDatatables')->name('suppliers.datatables-edit');
         Route::post('suppliers/map-suppliers', 'SuppliersController@mapping')->name('suppliers.map-suppliers');
@@ -68,6 +69,5 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('suppliers/getList', 'SuppliersController@getList')->name('suppliers.getList');
         Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::resource('suppliers', 'SuppliersController');
-
     });
 });

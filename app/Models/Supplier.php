@@ -5,13 +5,11 @@ namespace App\Models;
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
 
-class Suppliers extends Model
+class Supplier extends Model
 {
-    protected $table = 'suppliers';
-
-    public function suppliers_addresses()
+    public function addresses()
     {
-        return $this->belongsTo(SupplierAddress::class,'id','supplier_id');
+        return $this->hasMany(SupplierAddress::class);
     }
 
     public function suppliers_supported_provinces()
@@ -28,7 +26,7 @@ class Suppliers extends Model
     {
         $model = static::select([
             'id','name','code','tax_number','status'
-        ])->with('suppliers_addresses');
+        ])->with('addresses');
 
         return Datatables::eloquent($model)
             ->filter(function ($query) {
@@ -40,12 +38,12 @@ class Suppliers extends Model
                 return $model->suppliers_supported_provinces ? $model->suppliers_supported_provinces->first()['name'] : '';
             })
             ->editColumn('address', function ($model) {
-                return $model->suppliers_addresses ? $model->suppliers_addresses->address : '';
+                return $model->addresses()->first() ? $model->addresses()->first()->address : '';
             })
             ->editColumn('info_person', function ($model) {
-                $string = $model->suppliers_addresses ? $model->suppliers_addresses->contact_name : '';
+                $string = $model->addresses()->first() ? $model->addresses()->first()->contact_name : '';
                 $string .= ' - ';
-                $string .= $model->suppliers_addresses ? $model->suppliers_addresses->contact_phone : '';
+                $string .= $model->addresses()->first() ? $model->addresses()->first()->contact_phone : '';
                 return $string;
             })
             ->editColumn('status', 'products.datatables.status')

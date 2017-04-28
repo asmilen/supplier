@@ -48,3 +48,27 @@
         </div>
     </div><!-- /.page-content -->
 @endsection
+@section('inline_scripts')
+    <script type="application/javascript">
+        $( document ).ready(function() {
+            $('#province_id').on('change', '', function (e) {
+                loadDistrictsByProvince(this.value);
+            });
+        });
+
+        function loadDistrictsByProvince(provinceId) {
+            $("#district_id").html();
+            $.ajax({
+                url: "/provinces/" + provinceId + "/districts",
+                success: function(districts) {
+                    $.each(districts, function(key, district) {
+                        $("#district_id").append('<option value="' + district.district_id + '">' + district.name + '</option>')
+                    })
+                },
+                error: function() {
+
+                }
+            });
+        }
+    </script>
+@endsection

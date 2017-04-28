@@ -317,7 +317,7 @@
                         {{--<th >GTGT</th>--}}
                         <th >Giá bán khuyến nghị</th>
                         {{--<th >Trạng thái </th>--}}
-                        {{--<th >Tình trạng</th>--}}
+                        <th >Tình trạng</th>
                         <th >Ngày cập nhật</th>
                         <th >Thao tac</th>
                     </tr>
@@ -345,12 +345,12 @@
 
 
 
-                        {{--<th><select name="db_state" style="width: 100%">--}}
-                                {{--<option value=""></option>--}}
-                                {{--<option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>--}}
-                                {{--<option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>--}}
-                                {{--<option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>--}}
-                            {{--</select></th>--}}
+                        <th><select name="db_state" style="width: 100%">
+                                <option value=""></option>
+                                <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
+                                <option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>
+                                <option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>
+                            </select></th>
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>
                     </tr>
@@ -431,7 +431,7 @@
 //                        d.vat = $('input[name=db_product_vat]').val();
                         d.recommend_price = $('input[name=db_product_recommend_price]').val();
 //                       d.status = $('select[name=db_status]').val();
-//                        d.state = $('select[name=db_state]').val();
+                        d.state = $('select[name=db_state]').val();
                         d.updated_at = $('input[name=db_updated_at]').val();
                     }
                 },
@@ -446,7 +446,7 @@
 //                   {data: 'vat', name: 'vat',"width": "5%"},
                    {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
 //                    {data: 'status',name: 'status',"width": "10%"},
-//                   {data: 'status_product',name: 'status_product',"width": "5%"},
+                   {data: 'status_product',name: 'status_product',"width": "10%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
@@ -456,28 +456,26 @@
                 "onUpdate": myCallbackFunction,
                 "inputCss":'my-input-class',
                 "idSrc":  'id',
-                "columns": [5,6,7],
+                "columns": [5,6,7,8],
                 "allowNulls": {
-                    "columns": [3],
+                    "columns": [4],
                     "errorClass": 'error'
                 },
                 "confirmationButton": { // could also be true
                     "confirmCss": 'my-confirm-class',
                     "cancelCss": 'my-cancel-class'
                 },
-//                "inputTypes": [
-//                    {
-//                        "column":5,
-//                        "type": "list",
-//                        "options":[
-//                            { "value": "Chờ duyệt", "display": "Chờ duyệt" },
-//                            { "value": "Hết hàng", "display": "Hết hàng" },
-//                            { "value": "Ưu tiên lấy hàng", "display": "Ưu tiên lấy hàng" },
-//                            { "value": "Yêu cầu ưu tiên lấy hàng'", "display": "Yêu cầu ưu tiên lấy hàng'" },
-//                            { "value": "Không ưu tiên lấy hàng'", "display": "Không ưu tiên lấy hàng'" }
-//                        ]
-//                    }
-//                ]
+                "inputTypes": [
+                    {
+                        "column":8,
+                        "type": "list",
+                        "options":[
+                            { "value": "Hết hàng", "display": "Hết hàng" },
+                            { "value": "Còn hàng", "display": "Còn hàng" },
+                            { "value": "Đặt hàng", "display": "Đặt hàng" },
+                        ]
+                    }
+                ]
             });
             function myCallbackFunction (updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();
@@ -486,6 +484,7 @@
                 var status = data.status;
                 var supplier_quantity = data.supplier_quantity;
                 var recommend_price = data.recommend_price;
+                var status_product = data.status_product;
                 $.ajax({
                     url: "{!! route('suppliers.datatables-edit') !!}",
                     type: "POST",
@@ -496,6 +495,7 @@
                         supplier_quantity: supplier_quantity,
                         supplier_quantity: supplier_quantity,
                         recommend_price: recommend_price,
+                        status_product: status_product,
                     },
                     dataType: "json"
                 });

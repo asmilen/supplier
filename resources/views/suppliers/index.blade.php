@@ -349,7 +349,6 @@
                                 <option value=""></option>
                                 <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
                                 <option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>
                             </select></th>
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>

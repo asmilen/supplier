@@ -129,7 +129,8 @@ class SuppliersController extends Controller
                 $product_supplier = ProductSupplier::firstOrCreate($data);
                 Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
                 if ($data['status'] == 2) {
-                    $product->update(['best_price' => $data['import_price']]);
+                    $product->best_price = $data['import_price'];
+                    $product->save();
                 }
 
                 $response['status'] = 'success';

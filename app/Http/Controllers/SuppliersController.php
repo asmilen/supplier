@@ -176,9 +176,9 @@ class SuppliersController extends Controller
                     $query->where('products.name', 'like', '%'.request('product_name').'%');
                 }
 
-//                if (request()->has('product_import_price')) {
-//                    $query->where('product_supplier.import_price',request('product_import_price'));
-//                }
+                if (request()->has('product_import_price')) {
+                    $query->where('product_supplier.import_price',request('product_import_price'));
+                }
 //
 //                if (request()->has('vat')) {
 //                    $query->where('product_supplier.vat',request('vat'));
@@ -327,6 +327,7 @@ class SuppliersController extends Controller
         $status =  $request->input('status');
         $import_price =  $request->input('import_price');
         $supplier_quantity =  $request->input('supplier_quantity');
+        $recommend_price =  $request->input('recommend_price');
         DB::beginTransaction();
         try {
             if($status == 'Chờ duyệt') {
@@ -340,7 +341,7 @@ class SuppliersController extends Controller
             }  else if($status == 'Không ưu tiên lấy hàng'){
                 $status = 4;
             }
-            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price, 'quantity' => $supplier_quantity]);
+            ProductSupplier::findOrFail($id)->update(['status' => $status, 'import_price' => $import_price, 'quantity' => $supplier_quantity, 'price_recommend' => $recommend_price]);
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();

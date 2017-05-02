@@ -541,7 +541,7 @@
                     success: function (res){
                         $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
                         if(res.status == 'success'){
-                            $('#myModal').modal('hide');
+                            $('#myModal').hide();
                             swal({
                                     title: "Tạo thành công",
                                     type: "success",

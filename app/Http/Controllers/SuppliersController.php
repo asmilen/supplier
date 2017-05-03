@@ -364,6 +364,14 @@ class SuppliersController extends Controller
             'created_by' => $created_by,
         ]);
 
+        $jsonSend = [
+            'product_id' => $product_id,
+            'supplier_id' => $supplier_id,
+            'import_price' => $import_price,
+            'createdAt' => strtotime($product->updated_at)
+        ];
+        $messSend = json_encode($jsonSend);
+        dispatch(new PublishMessage('test-exchange', 'sale.price.import.update', $messSend));
     }
 
     public function getList()

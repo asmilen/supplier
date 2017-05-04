@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Validator;
 use App\Models\Product;
+use App\Models\Saleprice;
 
 class ProductSalepriceController extends Controller
 {
@@ -20,19 +21,23 @@ class ProductSalepriceController extends Controller
             if (request('price') <= 0) {
                 $validator->errors()->add('price', 'Giá bán phải > 0.');
             }
+        })->validate();
 
-            $hasStore = false;
-
-            foreach (request('stores') as $storeId => $flag) {
-                if ($flag) {
-                    $hasStore = true;
+        foreach (request('stores') as $storeId => $flag) {
+            if ($flag) {
+                try {
+                    $product->addSaleprice([
+                        'store_id' => $storeId,
+                        'price' => request('price'),
+                    ]);
+                } catch (\Exception $e) {
+                    return response()->json([
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
+        }
 
-            if (! $hasStore) {
-                $validator->errors()->add('stores', 'Cần chọn ít nhất 1 store để áp dụng giá bán.');
-            }
-        })->validate();
         return $product;
     }
 }

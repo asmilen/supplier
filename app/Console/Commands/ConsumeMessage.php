@@ -48,7 +48,7 @@ class ConsumeMessage extends Command
 
         $channel = $connection->channel();
 
-        $channel->exchange_declare($this->argument('exchange'), 'topic', false, false, false);
+        $channel->exchange_declare($this->argument('exchange'), 'topic', false, true, false);
 
         list($queueName, ,) = $channel->queue_declare('', false, false, true, false);
 

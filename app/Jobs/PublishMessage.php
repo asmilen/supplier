@@ -49,7 +49,7 @@ class PublishMessage implements ShouldQueue
 
         $channel = $connection->channel();
 
-        $channel->exchange_declare($this->exchange, 'topic', false, false, false);
+        $channel->exchange_declare($this->exchange, 'topic', false, true, false);
 
         $message = new AMQPMessage($this->body);
 

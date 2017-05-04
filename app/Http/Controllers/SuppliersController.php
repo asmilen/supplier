@@ -7,6 +7,7 @@ use App\Models\District;
 use DB;
 use Auth;
 use Carbon;
+use Excel;
 use Response;
 use Sentinel;
 use Validator;
@@ -457,6 +458,14 @@ class SuppliersController extends Controller
             'created_by' => $created_by,
         ]);
 
+        $jsonSend = [
+            'product_id' => $product_id,
+            'supplier_id' => $supplier_id,
+            'import_price' => $import_price,
+            'createdAt' => strtotime($product->updated_at)
+        ];
+        $messSend = json_encode($jsonSend);
+        dispatch(new PublishMessage('test-exchange', 'sale.price.import.update', $messSend));
     }
 
     public function getList()
@@ -755,5 +764,89 @@ class SuppliersController extends Controller
         flash()->success('Success!', 'Suppliers successfully created.');
         return redirect()->route('suppliers.getList');
     }
+
+    public function exportExcel()
+{
+    $user_id = Sentinel::getUser()->id;
+    $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
+        ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
+        ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
+        ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
+        ->leftJoin('products', 'product_supplier.product_id', '=', 'products.id')
+        ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+        ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
+        ->where('user_supported_province.supported_id', $user_id)
+        ->orderBy('product_supplier.updated_at', 'desc')
+        ->select(DB::raw('distinct product_supplier.id as id,categories.name as cat_name, products.sku as sku,
+                    product_supplier.name as product_name,product_supplier.import_price as import_price,product_supplier.status as status,
+                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
+                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
+
+            if (request()->has('category_name')) {
+                $products->where('categories.name', 'like', '%' . request('category_name') . '%');
+            }
+
+            if (request()->has('manufacture_name')) {
+                $products->where('manufacturers.name', 'like', '%' . request('manufacture_name') . '%');
+            }
+
+            if (request()->has('product_sku')) {
+                $products->where('products.sku', 'like', '%' . request('product_sku') . '%');
+            }
+
+            if (request()->has('product_name')) {
+                $products->where('products.name', 'like', '%' . request('product_name') . '%');
+            }
+
+            if (request()->has('product_import_price')) {
+                $products->where('product_supplier.import_price', request('product_import_price'));
+            }
+
+            if (request()->has('recommend_price')) {
+                $products->where('product_supplier.price_recommend', request('recommend_price'));
+            }
+
+            if (request()->has('status')) {
+                $products->where('product_supplier.status', request('status'));
+            }
+
+            if (request()->has('supplier_name')) {
+                $products->where('suppliers.name', 'like', '%' . request('supplier_name') . '%');
+            }
+
+            if (request()->has('supplier_quantity')) {
+                $products->where('product_supplier.quantity', request('supplier_quantity'));
+            }
+
+            if (request()->has('state')) {
+                $products->where('product_supplier.state', request('state'));
+            }
+
+            if (request()->has('updated_at')) {
+                $date = request('updated_at');
+
+                $from = trim(explode(' - ', $date)[0]);
+                $from = Carbon::createFromFormat('d/m/Y', $from)->startOfDay()->toDateTimeString();
+
+                $to = trim(explode('-', $date)[1]);
+                $to = Carbon::createFromFormat('d/m/Y', $to)->endOfDay()->toDateTimeString();
+
+                $products->where('product_supplier.updated_at', '>', $from);
+                $products->where('product_supplier.updated_at', '<', $to);
+            }
+
+    $products = $products->get();
+
+    Excel::create('supplier_product', function ($excel) use($products) {
+    $excel->sheet('Sheet 1',function ($sheet) use ($products) {
+            $sheet->fromArray($products);
+        });
+    })->store('xlsx','exports');
+    return [
+        'success' => true,
+        'path' => 'http://'.request()->getHttpHost().'/exports/supplier_product.xlsx'
+    ];
+
+}
 
 }

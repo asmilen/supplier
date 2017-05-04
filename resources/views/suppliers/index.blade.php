@@ -2,6 +2,7 @@
 @section('styles')
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
     <style>
@@ -85,7 +86,7 @@
             <a href="{{ url('/dashboard') }}">Dashboard</a>
         </li>
         <li>
-            <a href="{{ route('suppliers.index') }}">Sản phẩm</a>
+            <a href="{{ route('suppliers.index') }}">Sản phẩm theo nhà cung cấp</a>
         </li>
         <li class="active">Danh sách</li>
     </ul><!-- /.breadcrumb -->
@@ -94,10 +95,16 @@
 <!-- /section:basics/content.breadcrumbs -->
 
 <div class="page-content">
-    <div class="row">
-        <div class="col-xs-12">
-            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Thêm mới</button>
-            <!-- Modal Add Product-->
+    <div class="page-header">
+        <h1>
+            Sản phẩm theo nhà cung cấp
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                Danh sách
+            </small>
+            <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                <span class="hidden-xs">Thêm</span></button>
+            <!-- Modal Add Product Supplier-->
             <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog">
                     <!-- Modal content-->
@@ -223,6 +230,11 @@
                     </div>
                 </div>
             </div>
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
 
             <!-- Modal Duyet -->
             <div class="modal fade" id="myModalCheckStatus" role="dialog">
@@ -365,10 +377,12 @@
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/datatables.cellEdit.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
     <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
+
 @endsection
 
 @section('inline_scripts')
@@ -449,6 +463,16 @@
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
+                "dom": 'T<"clear">lfrtip',
+                tableTools: {
+                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+                    "aButtons": [{
+                    "sExtends": "xls",
+                    "oSelectorOpts": { filter: 'applied', order: 'current' },
+                    "sButtonText": "Export Excel",
+                        "mColumns": [ 0, 1, 2 , 3 , 4, 5 , 6 , 7 , 8 , 9 ],
+                        "bFooter": false
+                }]},
             });
 
             datatable.MakeCellsEditable({

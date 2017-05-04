@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "./";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit']);
+var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -78,7 +78,8 @@ app.config(['$httpProvider', function ($httpProvider) {
 
 __webpack_require__(2);
 __webpack_require__(3);
-__webpack_require__(8);
+__webpack_require__(4);
+__webpack_require__(5);
 
 /***/ }),
 /* 1 */
@@ -178,17 +179,6 @@ function ProductCreateController($scope, $http, $window) {
 
 /***/ }),
 /* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(0);
-module.exports = __webpack_require__(1);
-
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */,
-/* 8 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -294,6 +284,69 @@ function ProductEditController($scope, $http, $window) {
         });
     };
 }
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.productSaleprice', []).controller('ProductSalepriceController', ProductSalepriceController);
+
+ProductSalepriceController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function ProductSalepriceController($scope, $http, $window) {
+    $scope.productIsLoaded = false;
+
+    function productSalepriceForm() {
+        this.price = 0;
+        this.stores = [];
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    };
+
+    $scope.productSalepriceForm = new productSalepriceForm();
+
+    $scope.getProduct = function () {
+        $http.get('/api/products/' + PRODUCT_ID).then(function (response) {
+            $scope.product = response.data;
+
+            $scope.productIsLoaded = true;
+        });
+    };
+
+    $scope.getProduct();
+
+    $scope.update = function () {
+        $scope.productSalepriceForm.errors = [];
+        $scope.productSalepriceForm.disabled = true;
+        $scope.productSalepriceForm.successful = false;
+        $scope.productSalepriceForm.stores = _.filter($scope.productSalepriceForm.stores, true);
+
+        $http.put('/products/' + PRODUCT_ID + '/saleprice', $scope.productSalepriceForm).then(function () {
+            $scope.productSalepriceForm = new productSalepriceForm();
+
+            $scope.productSalepriceForm.successful = true;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.productSalepriceForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.productSalepriceForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.productSalepriceForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(0);
+module.exports = __webpack_require__(1);
+
 
 /***/ })
 /******/ ]);

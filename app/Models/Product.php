@@ -33,6 +33,11 @@ class Product extends Model
         return $this->belongsTo(Manufacturer::class);
     }
 
+    public function saleprices()
+    {
+        return $this->hasMany(Saleprice::class);
+    }
+
     public static function getDatatables()
     {
         $model = static::select([

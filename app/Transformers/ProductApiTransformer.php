@@ -15,7 +15,8 @@ class ProductApiTransformer extends TransformerAbstract
             'id' => $data['id'],
             'name' => $data['name'],
             'price' => $data['price'],
-            'source_url' => $data['source_url']
+            'source_url' => $data['image'],
+            'sku' => $data['sku'],
         ];
     }
 }

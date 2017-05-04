@@ -3,10 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Attribute;
 use App\Jobs\PublishMessage;
 
 class CategoriesController extends Controller
 {
+    public function __construct()
+    {
+        view()->share('attributesList', Attribute::getList());
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,7 +47,7 @@ class CategoriesController extends Controller
         if(!request()->has('margin')){
             request()->merge(['margin' => 0]);
         }
-        
+
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
             'code' => 'required|alpha_num|min:3|max:3|unique:categories',
@@ -58,6 +64,8 @@ class CategoriesController extends Controller
             'status' => !! request('status'),
             'margin' => request('margin'),
         ]);
+
+        $category->attributes()->attach(request('attributes', []));
 
         $jsonSend = [
             "id"        => $category->id,
@@ -118,6 +126,8 @@ class CategoriesController extends Controller
             'status' => !! request('status'),
             'margin' => request('margin'),
         ])->save();
+
+        $category->attributes()->sync(request('attributes', []));
 
         $jsonSend = [
             "id"        => $category->id,

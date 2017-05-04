@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('styles')
+<link rel="stylesheet" href="/vendor/ace/assets/css/bootstrap-duallistbox.css">
+@endsection
+
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
@@ -47,4 +51,18 @@
         </div>
     </div>
 </div><!-- /.page-content -->
+@endsection
+
+@section('scripts')
+<script src="/vendor/ace/assets/js/jquery.bootstrap-duallistbox.js"></script>
+@endsection
+
+@section('inline_scripts')
+<script>
+$(function () {
+    var attributes = $('select[name="attributes[]"]').bootstrapDualListbox({infoTextFiltered: '<span class="label label-purple label-lg">Lọc</span>'});
+    var attributesContainer = attributes.bootstrapDualListbox('getContainer');
+    attributesContainer.find('.btn').addClass('btn-white btn-info btn-bold');
+});
+</script>
 @endsection

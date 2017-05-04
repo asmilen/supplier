@@ -74,8 +74,8 @@ jQuery.fn.dataTable.Api.register('MakeCellsEditable()', function (settings) {
             var currentPageIndex = table.page.info().page;
 
             //Redraw table
-            // table.page(currentPageIndex).draw(false);
-            window.location.reload();
+             table.page(currentPageIndex).draw(false);
+          //  window.location.reload();
         },
         // CANCEL
         cancelEditableCell: function (callingElement) {
@@ -196,9 +196,11 @@ function getInputHtml(currentColumnIndex, settings, oldValue) {
             input.html = "<input id='ejbeatycelledit' class='" + inputCss + "' value='"+oldValue+"'></input>&nbsp;<a href='#' class='" + confirmCss + "' onclick='$(this).updateEditableCell(this)'>Confirm</a> <a href='#' class='" + cancelCss + "' onclick='$(this).cancelEditableCell(this)'>Cancel</a> ";
             break;
         case "undefined-confirm": // text input w/ confirm
+            oldValue = oldValue.replace(/,/g, "");
             input.html = "<input id='ejbeatycelledit' class='" + inputCss + "' value='" + oldValue + "'></input>&nbsp;<a href='#' class='" + confirmCss + "' onclick='$(this).updateEditableCell(this)'>Confirm</a> <a href='#' class='" + cancelCss + "' onclick='$(this).cancelEditableCell(this)'>Cancel</a> ";
             break;
         default: // text input
+
             input.html = "<input id='ejbeatycelledit' class='" + inputCss + "' onfocusout='$(this).updateEditableCell(this)' value='" + oldValue + "'></input>";
             break;
     }

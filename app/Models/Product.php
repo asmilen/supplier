@@ -17,6 +17,12 @@ class Product extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $casts = [
+        'category_id' => 'string',
+        'manufacturer_id' => 'string',
+        'status' => 'boolean',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);

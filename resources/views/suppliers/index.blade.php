@@ -29,6 +29,47 @@
             display: table-header-group;
         }
 
+        /* The Modal (background) */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-dialog{
+            width: 1240px ! important;
+            overflow: auto;
+        }
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 100%;
+        }
+
+        /* The Close Button */
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
     </style>
 @endsection
 @section('content')
@@ -56,10 +97,9 @@
     <div class="row">
         <div class="col-xs-12">
             <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Thêm mới</button>
-            <!-- Modal -->
+            <!-- Modal Add Product-->
             <div class="modal fade" id="myModal" role="dialog">
                 <div class="modal-dialog">
-
                     <!-- Modal content-->
                     <div class="modal-content">
                         <div class="modal-header">
@@ -99,13 +139,13 @@
                                     <div class="col-sm-9">
                                         <select name="status"  class="form-control">
                                             <option value="">-- Chọn tình trạng --</option>
-                                            <option value="0">Chờ duyệt</option>
-                                            <option value="1">Hết hàng</option>
+                                            {{--<option value="0">Chờ duyệt</option>--}}
+                                            {{--<option value="1">Hết hàng</option>--}}
                                             <option value="2">Ưu tiên lấy hàng</option>
-                                            <option value="3">Yêu cầu ưu tiên lấy hàng</option>
+                                            {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
                                             <option value="4">Không ưu tiên lấy hàng</option>
                                         </select>
-                                        <p style="color:red;text-align: left;" id="state">{{$errors->first('status')}}</p>
+                                        <p style="color:red;text-align: left;" id="status">{{$errors->first('status')}}</p>
                                     </div>
                                 </div>
 
@@ -113,10 +153,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Tình trạng sản phẩm</label>
                                     <div class="col-sm-9">
                                         <select name="state"  class="form-control">
-                                            <option value="">-- Chọn tình trạng --</option>
-                                            <option value="0">Hết hàng</option>
-                                            <option value="1">Còn hàng</option>
-                                            <option value="2">Đặt hàng</option>
+                                            <option value="1" selected>Còn hàng</option>
                                         </select>
                                         <p style="color:red;text-align: left;" id="state">{{$errors->first('state')}}</p>
                                     </div>
@@ -184,9 +221,84 @@
 
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Modal Duyet -->
+            <div class="modal fade" id="myModalCheckStatus" role="dialog">
+                <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Duyệt trạng thái nhà cung cấp</h4>
+                        </div>
+                        <div class="modal-body" id = "CheckStatusBody">
+
+                        </div>
+                    </div>
 
                 </div>
             </div>
+
+            <!-- Modal Product to Connect -->
+            <div class="modal fade" id="myModalProduct" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Duyệt trạng thái nhà cung cấp</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form class="form-horizontal" role="form" id="supplier_form" action="{{ url('suppliers/updateIdProduct') }}" method="POST" enctype="multipart/form-data" >
+                                {!! csrf_field() !!}
+                                <input type="hidden" value="" name="product_supplier_id" id = "product_supplier_id"/>
+                                <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                                    <thead>
+                                    <tr>
+                                        <th> Chọn </th>
+                                        <th >ID</th>
+                                        <th >Tên</th>
+                                        <th >SKU</th>
+                                        <th >Mã</th>
+                                        <th >Trạng thái </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($products as $key => $value)
+                                        <tr>
+                                            <td> <input type="radio" class="radio" value="{{ $value->id }}" name="product_id"></td>
+                                            <td>{{ $value->id }}</td>
+                                            <td>{{ $value->name }}</td>
+                                            <td>{{ $value->sku }}</td>
+                                            <td>{{ $value->code }}</td>
+                                            <td>@if (!! $value->status)
+                                                    <i class="ace-icon fa bigger-130 fa-check-circle-o green"></i>
+                                                @else
+                                                    <i class="ace-icon fa bigger-130 fa-times-circle-o red"></i>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                                <br>
+                                <div class="form-group">
+                                    <label class="col-sm-4 control-label no-padding-left"></label>
+                                    <button type="submit" class="btn btn-success" id = "btn_save">
+                                        <i class="ace-icon fa fa-save bigger-110"></i>Lưu thông tin
+                                    </button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
     </div>
     <br>
@@ -199,13 +311,15 @@
                         <th >Nhà sản xuất</th>
                         <th >SKU</th>
                         <th >Tên</th>
-                        <th >Giá nhập</th>
-                        <th >GTGT</th>
-                        <th >Giá bán khuyến nghị</th>
-                        <th >Trạng thái </th>
                         <th >Nhà cung cấp</th>
+                        <th >Giá nhập</th>
+                        <th >Số lượng</th>
+                        {{--<th >GTGT</th>--}}
+                        <th >Giá bán khuyến nghị</th>
+                        {{--<th >Trạng thái </th>--}}
                         <th >Tình trạng</th>
                         <th >Ngày cập nhật</th>
+                        <th >Thao tac</th>
                     </tr>
                 </thead>
 
@@ -215,24 +329,26 @@
                         <th><input type="text" style="width: 100%" name="db_manufacture_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_sku" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_name" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
-                        <th><select name="db_status" style="width: 100%">
-                                <option value=""></option>
-                                <option value="0">Chờ duyệt</option>
-                                <option value="1">Hết hàng</option>
-                                <option value="2">Ưu tiên lấy hàng</option>
-                                <option value="3">Yêu cầu ưu tiên lấy hàng</option>
-                                <option value="4">Không ưu tiên lấy hàng</option>
-                            </select></th>
                         <th><input type="text" style="width: 100%" name="db_supplier_name" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_supplier_quantity" placeholder=""/></th>
+                        {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
+                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
+                        {{--<th><select name="db_status" style="width: 100%">--}}
+                                {{--<option value=""></option>--}}
+                                {{--<option value="0">Chờ duyệt</option>--}}
+                                {{--<option value="1">Hết hàng</option>--}}
+                                {{--<option value="2">Ưu tiên lấy hàng</option>--}}
+                                {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
+                                {{--<option value="4">Không ưu tiên lấy hàng</option>--}}
+                            {{--</select></th>--}}
+
+
 
                         <th><select name="db_state" style="width: 100%">
                                 <option value=""></option>
                                 <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
                                 <option value="{{ App\Models\ProductSupplier::$STATE_CON_HANG }}">Còn hàng</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATE_DAT_HANG }}">Đặt hàng</option>
                             </select></th>
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>
@@ -248,7 +364,7 @@
 @section('scripts')
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/dataTables.cellEdit.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/datatables.cellEdit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
     <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -258,20 +374,48 @@
 @section('inline_scripts')
 
     <script>
-        $(function () {
+        $( document ).ready(function() {
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
                 width: '100%'
             });
 
+            $(document).on("click",".checkStatus",function() {
+                var product_id = $(this).attr('data-id');
+                $.ajax({
+                    headers: { 'X-CSRF-Token': $('input[name="_token"]').val() },
+                    url: '{{ url('suppliers/getSuppliers') }}',
+                    type: 'POST',
+                    data: {
+                        product_id: product_id
+                    },
+                    dataType: 'JSON',
+                    success: function (res){
+                        if(res.status == 'success'){
+                            $('#CheckStatusBody').html(res.data);
+                            $('#myModalCheckStatus').modal({
+                                backdrop: 'static',   // This disable for click outside event
+                                keyboard: true        // This for keyboard event
+                            })
+                            $('#myModalCheckStatus').modal('show');
+                        }
+                    }
+                });
+            });
+
+            $(document).on("click",".connect",function() {
+                var product_supplier_id = $(this).attr('data-id');
+                $("#product_supplier_id").val(product_supplier_id);
+                $('#myModalProduct').modal('show');
+
+            });
             var datatable = $("#dataTables-products").DataTable({
                 "searching": false,
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
                 pageLength: 50,
-                "bSort" : false,
                 "bDestroy": true,
                 ajax: {
                     url: '{!! route('suppliers.datatables') !!}',
@@ -280,27 +424,30 @@
                         d.manufacture_name = $('input[name=db_manufacture_name]').val();
                         d.product_sku = $('input[name=db_product_sku]').val();
                         d.product_name = $('input[name=db_product_name]').val();
-                        d.product_import_price = $('input[name=db_product_import_price]').val();
-                        d.vat = $('input[name=db_product_vat]').val();
-                        d.recommend_price = $('input[name=db_product_recommend_price]').val();
-                        d.status = $('select[name=db_status]').val();
                         d.supplier_name = $('input[name=db_supplier_name]').val();
+                        d.product_import_price = $('input[name=db_product_import_price]').val();
+                        d.supplier_quantity = $('input[name=db_supplier_quantity]').val();
+//                        d.vat = $('input[name=db_product_vat]').val();
+                        d.recommend_price = $('input[name=db_product_recommend_price]').val();
+//                       d.status = $('select[name=db_status]').val();
                         d.state = $('select[name=db_state]').val();
                         d.updated_at = $('input[name=db_updated_at]').val();
                     }
                 },
                 columns: [
                     {data: 'cat_name', name: 'cat_name',"width": "10%"},
-                    {data: 'manufacturer_name', name: 'manufacturer_name',"width": "5%"},
+                    {data: 'manufacturer_name', name: 'manufacturer_name',"width": "10%"},
                     {data: 'sku', name: 'sku',"width": "10%"},
-                    {data: 'product_name', name: 'product_name',"width": "15%"},
-                    {data: 'import_price', name: 'import_price',"width": "5%"},
-                    {data: 'vat', name: 'vat',"width": "5%"},
-                    {data: 'recommend_price', name: 'recommend_price',"width": "5%"},
-                    {data: 'status',name: 'status',"width": "10%"},
+                    {data: 'product_name', name: 'product_name',"width": "20%"},
                     {data: 'supplier_name',name: 'supplier_name',"width": "10%"},
-                    {data: 'status_product',name: 'status_product',"width": "5%"},
+                    {data: 'import_price', name: 'import_price',"width": "10%"},
+                    {data: 'supplier_quantity',name: 'supplier_quantity',"width": "5%"},
+//                   {data: 'vat', name: 'vat',"width": "5%"},
+                   {data: 'recommend_price', name: 'recommend_price',"width": "10%"},
+//                    {data: 'status',name: 'status',"width": "10%"},
+                   {data: 'status_product',name: 'status_product',"width": "10%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
             });
 
@@ -308,9 +455,9 @@
                 "onUpdate": myCallbackFunction,
                 "inputCss":'my-input-class',
                 "idSrc":  'id',
-                "columns": [7],
+                "columns": [5,6,7,8],
                 "allowNulls": {
-                    "columns": [1],
+                    "columns": [4],
                     "errorClass": 'error'
                 },
                 "confirmationButton": { // could also be true
@@ -319,33 +466,39 @@
                 },
                 "inputTypes": [
                     {
-                        "column":7,
+                        "column":8,
                         "type": "list",
                         "options":[
-                            { "value": "Chờ duyệt", "display": "Chờ duyệt" },
                             { "value": "Hết hàng", "display": "Hết hàng" },
-                            { "value": "Ưu tiên lấy hàng", "display": "Ưu tiên lấy hàng" },
-                            { "value": "Yêu cầu ưu tiên lấy hàng'", "display": "Yêu cầu ưu tiên lấy hàng'" },
-                            { "value": "Không ưu tiên lấy hàng'", "display": "Không ưu tiên lấy hàng'" }
+                            { "value": "Còn hàng", "display": "Còn hàng" },
                         ]
                     }
                 ]
             });
-
             function myCallbackFunction (updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();
                 var id = data.id;
+                var import_price = data.import_price.replace(/,/g , "");
                 var status = data.status;
+                var supplier_quantity = data.supplier_quantity.replace(/,/g , "");
+                var recommend_price = data.recommend_price.replace(/,/g , "");
+                var status_product = data.status_product;
                 $.ajax({
                     url: "{!! route('suppliers.datatables-edit') !!}",
                     type: "POST",
                     data: {
                         id : id,
-                        status: status
+                        status: status,
+                        import_price: import_price,
+                        supplier_quantity: supplier_quantity,
+                        supplier_quantity: supplier_quantity,
+                        recommend_price: recommend_price,
+                        status_product: status_product,
                     },
                     dataType: "json"
                 });
             }
+
 
             datatable.columns().every( function () {
                 $( 'input', this.footer() ).on( 'keyup change', function () {
@@ -361,6 +514,13 @@
                     datatable.draw();
                 } );
             } );
+
+            $("#tableproducts").DataTable({
+                "fnDrawCallback": function(oSettings) {
+                    $(".radio").prop('checked', false);
+                },
+                autoWidth: false
+            });
 
             CKEDITOR.replace('_description');
 
@@ -381,7 +541,7 @@
                     success: function (res){
                         $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
                         if(res.status == 'success'){
-                            $('#myModal').modal('hide');
+                            $('#myModal').hide();
                             swal({
                                     title: "Tạo thành công",
                                     type: "success",
@@ -454,6 +614,7 @@
                     firstDay: 1
                 }
             });
+
             $('.input-daterange-datepicker').on('apply.daterangepicker', function (ev, picker) {
                 $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
             });
@@ -462,7 +623,9 @@
                 $(this).val('');
             });
 
+
             @include('scripts.click-datatable-delete-button')
         });
+
     </script>
 @endsection

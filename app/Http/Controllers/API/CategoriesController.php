@@ -9,6 +9,6 @@ class CategoriesController extends Controller
 {
     public function index()
     {
-        return Category::all(['id', 'name', 'code']);
+        return Category::select('id', 'name', 'code')->where('status',1)->orderBy('sort_weight','desc')->get();
     }
 }

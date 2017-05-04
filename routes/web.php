@@ -10,6 +10,8 @@ Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback')
 
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
 
+Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
@@ -42,6 +44,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
         Route::resource('manufacturers', 'ManufacturersController');
 
+        // Attributes
+        Route::get('attributes/datatables', 'AttributesController@getDatatables')->name('attributes.datatables');
+        Route::resource('attributes', 'AttributesController');
+
         // Products
         Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
@@ -54,11 +60,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('supplier/updatePrice', 'ForSupplierController@postUpdatePrice')->name('supplier.postUpdatePrice');
 
         // Suppliers
-
         Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');
         Route::post('suppliers/datatables-edit', 'SuppliersController@updateDatatables')->name('suppliers.datatables-edit');
         Route::post('suppliers/map-suppliers', 'SuppliersController@mapping')->name('suppliers.map-suppliers');
+        Route::post('suppliers/getSuppliers', 'SuppliersController@getSuppliers')->name('suppliers.getSuppliers');
+        Route::post('suppliers/updateStatus', 'SuppliersController@updateStatus')->name('suppliers.updateStatus');
+        Route::post('suppliers/updateIdProduct', 'SuppliersController@updateIdProduct')->name('suppliers.updateIdProduct');
+        Route::get('suppliers/getList', 'SuppliersController@getList')->name('suppliers.getList');
+        Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::resource('suppliers', 'SuppliersController');
-
     });
 });

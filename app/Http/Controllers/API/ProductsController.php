@@ -57,6 +57,10 @@ class ProductsController extends Controller
         return Datatables::eloquent($model)
             ->setTransformer(new ProductApiTransformer())
             ->filter(function ($query) {
+                if (request()->has('sku')) {
+                    $query->where('products.sku', 'like', '%' . request('sku') . '%');
+                }
+
                 if (request()->has('name')) {
                     $query->where('products.name', 'like', '%' . request('name') . '%');
                 }

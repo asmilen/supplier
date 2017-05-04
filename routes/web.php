@@ -66,6 +66,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/updateIdProduct', 'SuppliersController@updateIdProduct')->name('suppliers.updateIdProduct');
         Route::get('suppliers/getList', 'SuppliersController@getList')->name('suppliers.getList');
         Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
+        Route::post('suppliers/exportExcel', 'SuppliersController@exportExcel')->name('suppliers.exportExcel');
         Route::resource('suppliers', 'SuppliersController');
 
     });

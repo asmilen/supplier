@@ -235,6 +235,26 @@
 
     <div class="row">
         <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Export</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <form class="form-inline" id="export-form">
+                            <button type="submit" class="btn btn-purple btn-sm">
+                               Export
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-12">
 
             <!-- Modal Duyet -->
             <div class="modal fade" id="myModalCheckStatus" role="dialog">
@@ -264,7 +284,7 @@
                             <h4 class="modal-title">Duyệt trạng thái nhà cung cấp</h4>
                         </div>
                         <div class="modal-body">
-                            <form class="form-horizontal" role="form" id="supplier_form" action="{{ url('suppliers/updateIdProduct') }}" method="POST" enctype="multipart/form-data" >
+                            <form class="form-horizontal" role="form" id="supplier_form" action="" method="POST" enctype="multipart/form-data" >
                                 {!! csrf_field() !!}
                                 <input type="hidden" value="" name="product_supplier_id" id = "product_supplier_id"/>
                                 <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
@@ -374,10 +394,14 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/datatables.cellEdit.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+    {{--<script type="text/javascript" src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>--}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
     <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -463,16 +487,23 @@
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
-                "dom": 'T<"clear">lfrtip',
-                tableTools: {
-                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
-                    "aButtons": [{
-                    "sExtends": "xls",
-                    "oSelectorOpts": { filter: 'applied', order: 'current' },
-                    "sButtonText": "Export Excel",
-                        "mColumns": [ 0, 1, 2 , 3 , 4, 5 , 6 , 7 , 8 , 9 ],
-                        "bFooter": false
-                }]},
+//                "dom": 'T<"clear">lfrtip',
+//                tableTools: {
+//                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
+//                    "aButtons": [{
+//                    "sExtends": "xls",
+//                    "oSelectorOpts": { filter: 'applied',order: 'applied',search: 'applied'},
+//                    "sButtonText": "Export Excel",
+//                        "mColumns": [ 0, 1, 2 , 3 , 4, 5 , 6 , 7 , 8 , 9 ],
+//                        "bFooter": false
+//                }]},
+//                dom: 'Bfrtip',
+//                buttons: [
+//
+//                    'excelHtml5',
+//                    'csvHtml5',
+//                    'pdfHtml5'
+//                ]
             });
 
             datatable.MakeCellsEditable({
@@ -647,6 +678,33 @@
                 $(this).val('');
             });
 
+            $('#export-form').on('submit', function(e) {
+                $.ajax({
+                    url: "{{ url('suppliers/exportExcel') }}",
+                    type: "POST",
+                    data:  {
+                            "_token" : '{{ csrf_token() }}',
+                            "category_name" : $('input[name=db_category_name]').val(),
+                            "manufacture_name" :  $('input[name=db_manufacture_name]').val(),
+                            "product_sku" : $('input[name=db_product_sku]').val(),
+                            "product_name" : $('input[name=db_product_name]').val(),
+                            "supplier_name" : $('input[name=db_supplier_name]').val(),
+                            "product_import_price" : $('input[name=db_product_import_price]').val(),
+                            "supplier_quantity" : $('input[name=db_supplier_quantity]').val(),
+                            "recommend_price" : $('input[name=db_product_recommend_price]').val(),
+                            "state" : $('select[name=db_state]').val(),
+                            "updated_at" : $('input[name=db_updated_at]').val(),
+                        },
+                    success: function(res) {
+
+                        location.href = res.path;
+                    },
+                    error: function() {
+
+                    }
+                });
+                e.preventDefault();
+            });
 
             @include('scripts.click-datatable-delete-button')
         });

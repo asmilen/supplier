@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
 /******/ 			exports: {}
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.l = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// identity function for calling harmony imports with the correct context
 /******/ 	__webpack_require__.i = function(value) { return value; };
-
+/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -46,7 +46,7 @@
 /******/ 			});
 /******/ 		}
 /******/ 	};
-
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -55,19 +55,20 @@
 /******/ 		__webpack_require__.d(getter, 'a', getter);
 /******/ 		return getter;
 /******/ 	};
-
+/******/
 /******/ 	// Object.prototype.hasOwnProperty.call
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-
+/******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "./";
-
+/******/ 	__webpack_require__.p = "";
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ "./resources/assets/js/app.js":
 /***/ (function(module, exports, __webpack_require__) {
 
 var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice']);
@@ -76,19 +77,14 @@ app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
 
-__webpack_require__(2);
-__webpack_require__(3);
-__webpack_require__(4);
-__webpack_require__(5);
+__webpack_require__("./resources/assets/js/controllers/app.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productCreate.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productEdit.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productSaleprice.controller.js");
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports) {
 
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 2 */
+/***/ "./resources/assets/js/controllers/app.controller.js":
 /***/ (function(module, exports) {
 
 angular.module('controllers.app', []).controller('AppController', AppController);
@@ -101,7 +97,8 @@ function AppController($scope, $http) {
 }
 
 /***/ }),
-/* 3 */
+
+/***/ "./resources/assets/js/controllers/productCreate.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -178,7 +175,8 @@ function ProductCreateController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 4 */
+
+/***/ "./resources/assets/js/controllers/productEdit.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -286,7 +284,8 @@ function ProductEditController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 5 */
+
+/***/ "./resources/assets/js/controllers/productSaleprice.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -312,6 +311,12 @@ function ProductSalepriceController($scope, $http, $window) {
     };
 
     $scope.productSalepriceForm = new productSalepriceForm();
+
+    $scope.updateMargin = function () {
+        $scope.productMargin = ($scope.productSalepriceForm.price / BEST_PRICE - 1) * 100;
+    };
+
+    $scope.updateMargin();
 
     $scope.getProduct = function () {
         $http.get('/api/products/' + PRODUCT_ID).then(function (response) {
@@ -343,12 +348,21 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 6 */
+
+/***/ "./resources/assets/sass/app.scss":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 0:
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(0);
-module.exports = __webpack_require__(1);
+__webpack_require__("./resources/assets/js/app.js");
+module.exports = __webpack_require__("./resources/assets/sass/app.scss");
 
 
 /***/ })
-/******/ ]);
+
+/******/ });

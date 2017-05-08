@@ -50,6 +50,99 @@ class SuppliersController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return 1;
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store()
+    {
+        $supplier = new Suppliers();
+        $jsonSend = [
+            "id"        => $supplier->id,
+            "name"      => $supplier->name,
+            "code"      => $supplier->code,
+            "status"    => $supplier->status == true ? 'active' : 'inactive',
+            "phone"      => $supplier->phone,
+            "fax"      => $supplier->fax,
+            "email"      => $supplier->email,
+            "website"      => $supplier->website,
+            "tax_number"      => $supplier->tax_number,
+            "contactName"      => $supplier->contact_name,
+            "contactMobile"      => $supplier->contact_mobile,
+            "contactPhone"      => $supplier->contact_phone,
+            "contactEmail"      => $supplier->contact_email,
+            "createdAt" => strtotime($supplier->created_at),
+            "addresses"      => "",
+            "supportedProvince"      => "",
+            "accounts"      => "",
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.supplier.upsert', $messSend));
+        flash()->success('Success!', 'Suppliers successfully created.');
+
+        return 1;
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Manufacturer  $manufacturer
+     * @return \Illuminate\Http\Response
+     */
+    public function edit()
+    {
+        return 1;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Models\Manufacturer  $manufacturer
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Suppliers $supplier)
+    {
+
+        $jsonSend = [
+            "id"        => $supplier->id,
+            "name"      => $supplier->name,
+            "code"      => $supplier->code,
+            "status"    => $supplier->status == true ? 'active' : 'inactive',
+            "phone"      => $supplier->phone,
+            "fax"      => $supplier->fax,
+            "email"      => $supplier->email,
+            "website"      => $supplier->website,
+            "tax_number"      => $supplier->tax_number,
+            "contactName"      => $supplier->contact_name,
+            "contactMobile"      => $supplier->contact_mobile,
+            "contactPhone"      => $supplier->contact_phone,
+            "contactEmail"      => $supplier->contact_email,
+            "createdAt" => strtotime($supplier->created_at),
+            "addresses"      => "",
+            "supportedProvince"      => "",
+            "accounts"      => "",
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('test-exchange', 'sale.supplier.upsert', $messSend));
+
+        flash()->success('Success!', 'Suppliers successfully updated.');
+
+        return 1;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @return \Illuminate\Http\Response

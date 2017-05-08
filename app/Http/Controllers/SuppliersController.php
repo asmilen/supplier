@@ -49,98 +49,6 @@ class SuppliersController extends Controller
         return view('suppliers.index', compact('suppliers', 'products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return 1;
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function store()
-    {
-        $supplier = new Suppliers();
-        $jsonSend = [
-            "id"        => $supplier->id,
-            "name"      => $supplier->name,
-            "code"      => $supplier->code,
-            "status"    => $supplier->status == true ? 'active' : 'inactive',
-            "phone"      => $supplier->phone,
-            "fax"      => $supplier->fax,
-            "email"      => $supplier->email,
-            "website"      => $supplier->website,
-            "tax_number"      => $supplier->tax_number,
-            "contactName"      => $supplier->contact_name,
-            "contactMobile"      => $supplier->contact_mobile,
-            "contactPhone"      => $supplier->contact_phone,
-            "contactEmail"      => $supplier->contact_email,
-            "createdAt" => strtotime($supplier->created_at),
-            "addresses"      => "",
-            "supportedProvince"      => "",
-            "accounts"      => "",
-        ];
-        $messSend = json_encode($jsonSend);
-
-        dispatch(new PublishMessage('test-exchange', 'sale.supplier.upsert', $messSend));
-        flash()->success('Success!', 'Suppliers successfully created.');
-
-        return 1;
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Manufacturer  $manufacturer
-     * @return \Illuminate\Http\Response
-     */
-    public function edit()
-    {
-        return 1;
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Models\Manufacturer  $manufacturer
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Suppliers $supplier)
-    {
-
-        $jsonSend = [
-            "id"        => $supplier->id,
-            "name"      => $supplier->name,
-            "code"      => $supplier->code,
-            "status"    => $supplier->status == true ? 'active' : 'inactive',
-            "phone"      => $supplier->phone,
-            "fax"      => $supplier->fax,
-            "email"      => $supplier->email,
-            "website"      => $supplier->website,
-            "tax_number"      => $supplier->tax_number,
-            "contactName"      => $supplier->contact_name,
-            "contactMobile"      => $supplier->contact_mobile,
-            "contactPhone"      => $supplier->contact_phone,
-            "contactEmail"      => $supplier->contact_email,
-            "createdAt" => strtotime($supplier->created_at),
-            "addresses"      => "",
-            "supportedProvince"      => "",
-            "accounts"      => "",
-        ];
-        $messSend = json_encode($jsonSend);
-
-        dispatch(new PublishMessage('test-exchange', 'sale.supplier.upsert', $messSend));
-
-        flash()->success('Success!', 'Suppliers successfully updated.');
-
-        return 1;
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -766,7 +674,7 @@ class SuppliersController extends Controller
     }
 
     public function exportExcel()
-{
+    {
     $user_id = Sentinel::getUser()->id;
     $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
         ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
@@ -777,7 +685,7 @@ class SuppliersController extends Controller
         ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
         ->where('user_supported_province.supported_id', $user_id)
         ->orderBy('product_supplier.updated_at', 'desc')
-        ->select(DB::raw('distinct product_supplier.id as id,categories.name as cat_name, products.sku as sku,
+        ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,product_supplier.supplier_id as id_supplier,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
@@ -846,7 +754,40 @@ class SuppliersController extends Controller
         'success' => true,
         'path' => 'http://'.request()->getHttpHost().'/exports/supplier_product.xlsx'
     ];
+    }
 
-}
+    public function importExcel()
+    {
+        $file = request()->file('file');
+          Excel::load($file,function($reader) {
+              $reader->each(function ($sheet){
+                  $supplier_product = ProductSupplier::where('product_id', $sheet->id_product)->where('supplier_id', $sheet->id_supplier)->first();
+                  if(count($supplier_product) > 0) {
+                      $supplier_product->forceFill([
+                          'name' => $sheet->product_name,
+                          'code' => request('code'),
+                          'import_price' => $sheet->import_price,
+                          'price_recommend' => $sheet->recommend_price,
+                          'state' => $sheet->status_product,
+                      ])->save();
+
+                  } else {
+                      ProductSupplier::forceCreate([
+                          'product_id' => $sheet->id_product,
+                          'supplier_id' =>  $sheet->id_supplier,
+                          'name' => $sheet->product_name,
+                          'code' => request('code'),
+                          'import_price' => $sheet->import_price,
+                          'price_recommend' => $sheet->recommend_price,
+                          'state' => $sheet->status_product,
+                      ]);
+                  }
+              });
+          });
+
+        flash()->success('Success!', 'Product Supplier successfully updated.');
+
+        return redirect()->back();
+    }
 
 }

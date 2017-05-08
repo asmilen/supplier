@@ -69,6 +69,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('suppliers/getList', 'SuppliersController@getList')->name('suppliers.getList');
         Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::post('suppliers/exportExcel', 'SuppliersController@exportExcel')->name('suppliers.exportExcel');
+        Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::resource('suppliers', 'SuppliersController');
 
     });

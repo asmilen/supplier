@@ -55,7 +55,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Giá bán</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="price" placeholder="Giá bán" ng-model="productSalepriceForm.price">
+                        <input type="text" class="form-control" name="price" placeholder="Giá bán" ng-model="productSalepriceForm.price" ng-change="updateMargin()">
+                        <label class="col-sm-6 control-label no-padding-right">Lợi nhuận : <strong ng-bind="productMargin"></strong> %</label>
                     </div>
                 </div>
 
@@ -84,11 +85,34 @@
             </form>
         </div>
     </div>
+    <div class="row">
+        <table class="table  table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($product_suppliers as $k => $v)
+                <tr>
+                    <td>{{$k + 1}}</td>
+                    <td>{{$v->supplier->name}}</td>
+                    <td></td>
+                    <td>{{$v->import_price}}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div><!-- /.page-content -->
 @endsection
 
 @section('inline_scripts')
 <script>
 var PRODUCT_ID = {{ $product->id }};
+var BEST_PRICE = {{$product_suppliers[0]->import_price}};
 </script>
 @endsection

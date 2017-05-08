@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductSupplier;
 use Validator;
 use App\Models\Product;
 
@@ -9,7 +10,12 @@ class ProductSalepriceController extends Controller
 {
     public function show(Product $product)
     {
-        return view('products.saleprice.show', compact('product'));
+        //Get Price for suppliers
+        $product_suppliers = ProductSupplier::where('product_id',$product->id)
+                                ->orderBy('import_price')
+                                ->take(5)->get();
+
+        return view('products.saleprice.show', compact('product','product_suppliers'));
     }
 
     public function update(Product $product)

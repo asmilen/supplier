@@ -22,6 +22,12 @@ function ProductSalepriceController($scope, $http, $window) {
 
     $scope.productSalepriceForm = new productSalepriceForm();
 
+    $scope.updateMargin = function(){
+        $scope.productMargin = ($scope.productSalepriceForm.price / BEST_PRICE - 1 ) * 100 ;
+    };
+
+    $scope.updateMargin();
+
     $scope.getProduct = function () {
         $http.get('/api/products/' + PRODUCT_ID)
             .then(function (response) {

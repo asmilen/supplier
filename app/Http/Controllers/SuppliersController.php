@@ -673,7 +673,7 @@ class SuppliersController extends Controller
     }
 
     public function exportExcel()
-{
+    {
     $user_id = Sentinel::getUser()->id;
     $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
         ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
@@ -684,7 +684,7 @@ class SuppliersController extends Controller
         ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
         ->where('user_supported_province.supported_id', $user_id)
         ->orderBy('product_supplier.updated_at', 'desc')
-        ->select(DB::raw('distinct product_supplier.id as id,categories.name as cat_name, products.sku as sku,
+        ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,product_supplier.supplier_id as id_supplier,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
@@ -753,7 +753,40 @@ class SuppliersController extends Controller
         'success' => true,
         'path' => 'http://'.request()->getHttpHost().'/exports/supplier_product.xlsx'
     ];
+    }
 
-}
+    public function importExcel()
+    {
+        $file = request()->file('file');
+          Excel::load($file,function($reader) {
+              $reader->each(function ($sheet){
+                  $supplier_product = ProductSupplier::where('product_id', $sheet->id_product)->where('supplier_id', $sheet->id_supplier)->first();
+                  if(count($supplier_product) > 0) {
+                      $supplier_product->forceFill([
+                          'name' => $sheet->product_name,
+                          'code' => request('code'),
+                          'import_price' => $sheet->import_price,
+                          'price_recommend' => $sheet->recommend_price,
+                          'state' => $sheet->status_product,
+                      ])->save();
+
+                  } else {
+                      ProductSupplier::forceCreate([
+                          'product_id' => $sheet->id_product,
+                          'supplier_id' =>  $sheet->id_supplier,
+                          'name' => $sheet->product_name,
+                          'code' => request('code'),
+                          'import_price' => $sheet->import_price,
+                          'price_recommend' => $sheet->recommend_price,
+                          'state' => $sheet->status_product,
+                      ]);
+                  }
+              });
+          });
+
+        flash()->success('Success!', 'Product Supplier successfully updated.');
+
+        return redirect()->back();
+    }
 
 }

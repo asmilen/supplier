@@ -237,16 +237,26 @@
         <div class="col-xs-12">
             <div class="widget-box">
                 <div class="widget-header">
-                    <h5 class="widget-title">Export</h5>
+                    <h5 class="widget-title">Export & Import</h5>
                 </div>
 
                 <div class="widget-body">
                     <div class="widget-main">
-                        <form class="form-inline" id="export-form">
-                            <button type="submit" class="btn btn-purple btn-sm">
-                               Export
-                            </button>
-                        </form>
+
+                            <form class="form-inline" id="export-form" action="{{ url('suppliers/exportExcel') }}" method="post">
+                                <button type="submit" class="btn btn-purple btn-sm">
+                                    Export
+                                </button>
+                            </form>
+
+                            <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="file" name="file">
+                                <button type="submit" class="btn btn-purple btn-sm">
+                                    Import
+                                </button>
+                            </form>
+
                     </div>
                 </div>
             </div>

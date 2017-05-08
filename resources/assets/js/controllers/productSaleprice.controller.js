@@ -10,7 +10,11 @@ function ProductSalepriceController($scope, $http, $window) {
 
     function productSalepriceForm() {
         this.price = 0;
-        this.stores = [];
+        this.stores = {
+            1: false,
+            2: false,
+            3: false
+        };
         this.errors = [];
         this.disabled = false;
         this.successful = false;
@@ -39,13 +43,11 @@ function ProductSalepriceController($scope, $http, $window) {
         $scope.productSalepriceForm.errors = [];
         $scope.productSalepriceForm.disabled = true;
         $scope.productSalepriceForm.successful = false;
-        $scope.productSalepriceForm.stores = _.filter($scope.productSalepriceForm.stores, true);
 
         $http.put('/products/' + PRODUCT_ID + '/saleprice', $scope.productSalepriceForm)
             .then(function () {
-                $scope.productSalepriceForm = new productSalepriceForm();
-
                 $scope.productSalepriceForm.successful = true;
+                $scope.productSalepriceForm.disabled = false;
             })
             .catch(function (response) {
                 if (typeof response.data === 'object') {

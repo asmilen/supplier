@@ -14,5 +14,11 @@ return [
             3 => 'Yêu cầu ưu tiên lấy hàng',
             4 => 'Không ưu tiên lấy hàng'
         ],
-    ]
+    ],
+
+    'stores' => [
+        1 => 'Online',
+        2 => 'Offline',
+        3 => 'Phòng máy',
+    ],
 ];

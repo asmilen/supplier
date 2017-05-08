@@ -2,6 +2,7 @@ var app = angular.module('app', [
     'controllers.app',
     'controllers.productCreate',
     'controllers.productEdit',
+    'controllers.productSaleprice',
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {
@@ -11,3 +12,4 @@ app.config(['$httpProvider', function ($httpProvider) {
 require('./controllers/app.controller.js');
 require('./controllers/productCreate.controller.js');
 require('./controllers/productEdit.controller.js');
+require('./controllers/productSaleprice.controller.js');

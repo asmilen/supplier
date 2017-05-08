@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Datatables;
+use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -31,6 +32,11 @@ class Product extends Model
     public function manufacturer()
     {
         return $this->belongsTo(Manufacturer::class);
+    }
+
+    public function saleprices()
+    {
+        return $this->hasMany(Saleprice::class);
     }
 
     public static function getDatatables()
@@ -73,5 +79,26 @@ class Product extends Model
             ->addColumn('action', 'products.datatables.action')
             ->rawColumns(['status', 'action'])
             ->make(true);
+    }
+
+    public function addSaleprice($data)
+    {
+        if (! isset(config('teko.stores')[$data['store_id']])) {
+            throw new \Exception('Store không tồn tại.');
+        }
+
+        $saleprice = (new Saleprice)->forceFill($data);
+
+        $this->saleprices()->save($saleprice);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.price.update', json_encode([
+            'storeId' => $saleprice->store_id,
+            'storeName' => config('teko.stores')[$saleprice->store_id],
+            'sku' => $this->sku,
+            'price' => $saleprice->price,
+            'createdAt' => time(),
+        ])));
+
+        return $this;
     }
 }

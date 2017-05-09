@@ -99,6 +99,7 @@ class Product extends Model
         dispatch(new PublishMessage('teko.sale', 'sale.price.update', json_encode([
             'storeId' => $saleprice->store_id,
             'storeName' => config('teko.stores')[$saleprice->store_id],
+            'productId' => $this->id,
             'sku' => $this->sku,
             'price' => $saleprice->price,
             'createdAt' => time(),

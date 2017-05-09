@@ -44,7 +44,7 @@ $attributeIds = $category->attributes()->pluck('id')->all();
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-top" for="attributes">Thuộc tính</label>
     <div class="col-sm-8">
-        @if (! empty($attributeIds))
+        @if (! empty($attributesList))
         <select multiple="multiple" size="10" name="attributes[]" id="attributes">
             @foreach ($attributesList as $k => $v)
             <option value="{{ $k }}"{{ in_array($k, $attributeIds) ? ' selected=selected' : '' }}>{{ $v }}</option>

@@ -21,6 +21,7 @@ class Product extends Model
     protected $casts = [
         'category_id' => 'string',
         'manufacturer_id' => 'string',
+        'color_id' => 'string',
         'status' => 'boolean',
     ];
 

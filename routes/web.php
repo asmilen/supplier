@@ -41,6 +41,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
         Route::resource('manufacturers', 'ManufacturersController');
 
+        // Colors
+        Route::get('color/datatables', 'ColorsController@getDatatables')->name('colors.datatables');
+        Route::resource('colors', 'ColorsController');
+
         // Attributes
         Route::get('attributes/datatables', 'AttributesController@getDatatables')->name('attributes.datatables');
         Route::resource('attributes', 'AttributesController');

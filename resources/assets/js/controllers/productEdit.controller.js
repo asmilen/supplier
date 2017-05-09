@@ -11,6 +11,7 @@ function ProductEditController($scope, $http, $window) {
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
+        this.color_id = '';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -42,6 +43,7 @@ function ProductEditController($scope, $http, $window) {
     $scope.populateProductForm = function () {
         $scope.productForm.category_id = $scope.product.category_id;
         $scope.productForm.manufacturer_id = $scope.product.manufacturer_id;
+        $scope.productForm.color_id = $scope.product.color_id;
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
@@ -61,6 +63,13 @@ function ProductEditController($scope, $http, $window) {
         $http.get('/api/manufacturers')
             .then(function (response) {
                 $scope.manufacturers = response.data;
+            });
+    };
+
+    $scope.getColors = function () {
+        $http.get('/api/colors')
+            .then(function (response) {
+                $scope.colors = response.data;
             });
     };
 
@@ -86,6 +95,7 @@ function ProductEditController($scope, $http, $window) {
 
     $scope.getCategories();
     $scope.getManufacturers();
+    $scope.getColors();
     $scope.getProduct();
 
     $scope.updateProduct = function () {

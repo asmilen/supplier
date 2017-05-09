@@ -56,6 +56,12 @@
         </li>
         @endif
 
+        @if ($currentUser->hasAccess('colors.index'))
+            <li class="{{ (Request::is('colors') || Request::is('colors/*')) ? 'active' : '' }}">
+                <a href="{{ url('/colors') }}"><i class="menu-icon fa fa-cube"></i> <span class="menu-text"> Màu sắc </span></a>
+            </li>
+        @endif
+
         @if ($currentUser->hasAccess('attributes.index'))
         <li class="{{ (Request::is('attributes') || Request::is('attributes/*')) ? 'active' : '' }}">
             <a href="{{ url('/attributes') }}"><i class="menu-icon fa fa-list-alt"></i> <span class="menu-text"> Thuộc tính </span></a>

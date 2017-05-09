@@ -66,6 +66,16 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Màu sắc</label>
+                    <div class="col-sm-6">
+                        <select name="color_id" class="form-control" ng-model="productForm.color_id">
+                            <option value="">--Chọn Màu sắc--</option>
+                            <option ng-repeat="color in colors" value="@{{ color.id }}">@{{ color.name }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                     <div class="col-sm-6">
                         <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" ng-model="productForm.name">

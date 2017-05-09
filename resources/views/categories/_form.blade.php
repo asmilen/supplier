@@ -38,18 +38,21 @@
     </div>
 </div>
 
+@php
+$attributeIds = $category->attributes()->pluck('id')->all();
+@endphp
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-top" for="attributes">Thuộc tính</label>
-
     <div class="col-sm-8">
-        @php
-        $attributeIds = $category->attributes()->pluck('id')->all();
-        @endphp
+        @if (! empty($attributeIds))
         <select multiple="multiple" size="10" name="attributes[]" id="attributes">
             @foreach ($attributesList as $k => $v)
             <option value="{{ $k }}"{{ in_array($k, $attributeIds) ? ' selected=selected' : '' }}>{{ $v }}</option>
             @endforeach
         </select>
+        @else
+        <p class="form-control-static">Danh mục này không có thuộc tính.</p>
+        @endif
     </div>
 </div>
 

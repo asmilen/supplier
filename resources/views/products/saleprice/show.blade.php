@@ -86,26 +86,28 @@
         </div>
     </div>
     <div class="row">
-        <table class="table  table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th>STT</th>
-                    <th>Nhà cung cấp</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($product_suppliers as $k => $v)
-                <tr>
-                    <td>{{$k + 1}}</td>
-                    <td>{{$v->supplier->name}}</td>
-                    <td></td>
-                    <td>{{$v->import_price}}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="col-xs-12">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Nhà cung cấp</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($productSuppliers as $k => $v)
+                    <tr>
+                        <td>{{ $k + 1 }}</td>
+                        <td>{{ $v->supplier->name }}</td>
+                        <td></td>
+                        <td>{{ $v->import_price }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div><!-- /.page-content -->
 @endsection
@@ -113,6 +115,6 @@
 @section('inline_scripts')
 <script>
 var PRODUCT_ID = {{ $product->id }};
-var BEST_PRICE = {{ ($product_suppliers->count()) ? $product_suppliers[0]->import_price : 0 }};
+var BEST_PRICE = {{ isset($productSuppliers[0]) ? $productSuppliers[0]->import_price : 0}};
 </script>
 @endsection

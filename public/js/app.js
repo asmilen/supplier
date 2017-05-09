@@ -63,12 +63,11 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ "./resources/assets/js/app.js":
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice']);
@@ -77,14 +76,19 @@ app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
 
-__webpack_require__("./resources/assets/js/controllers/app.controller.js");
-__webpack_require__("./resources/assets/js/controllers/productCreate.controller.js");
-__webpack_require__("./resources/assets/js/controllers/productEdit.controller.js");
-__webpack_require__("./resources/assets/js/controllers/productSaleprice.controller.js");
+__webpack_require__(2);
+__webpack_require__(3);
+__webpack_require__(4);
+__webpack_require__(5);
 
 /***/ }),
+/* 1 */
+/***/ (function(module, exports) {
 
-/***/ "./resources/assets/js/controllers/app.controller.js":
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports) {
 
 angular.module('controllers.app', []).controller('AppController', AppController);
@@ -97,8 +101,7 @@ function AppController($scope, $http) {
 }
 
 /***/ }),
-
-/***/ "./resources/assets/js/controllers/productCreate.controller.js":
+/* 3 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -175,8 +178,7 @@ function ProductCreateController($scope, $http, $window) {
 }
 
 /***/ }),
-
-/***/ "./resources/assets/js/controllers/productEdit.controller.js":
+/* 4 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -284,8 +286,7 @@ function ProductEditController($scope, $http, $window) {
 }
 
 /***/ }),
-
-/***/ "./resources/assets/js/controllers/productSaleprice.controller.js":
+/* 5 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -300,7 +301,11 @@ function ProductSalepriceController($scope, $http, $window) {
 
     function productSalepriceForm() {
         this.price = 0;
-        this.stores = [];
+        this.stores = {
+            1: false,
+            2: false,
+            3: false
+        };
         this.errors = [];
         this.disabled = false;
         this.successful = false;
@@ -309,7 +314,7 @@ function ProductSalepriceController($scope, $http, $window) {
     $scope.productSalepriceForm = new productSalepriceForm();
 
     $scope.updateMargin = function () {
-        $scope.productMargin = ($scope.productSalepriceForm.price / BEST_PRICE - 1) * 100;
+        if (BEST_PRICE == 0) $scope.productMargin = 'Chưa có giá nhập';else $scope.productMargin = 'Lợi nhuận : ' + ($scope.productSalepriceForm.price / BEST_PRICE - 1) * 100 + ' %';
     };
 
     $scope.updateMargin();
@@ -328,12 +333,10 @@ function ProductSalepriceController($scope, $http, $window) {
         $scope.productSalepriceForm.errors = [];
         $scope.productSalepriceForm.disabled = true;
         $scope.productSalepriceForm.successful = false;
-        $scope.productSalepriceForm.stores = _.filter($scope.productSalepriceForm.stores, true);
 
         $http.put('/products/' + PRODUCT_ID + '/saleprice', $scope.productSalepriceForm).then(function () {
-            $scope.productSalepriceForm = new productSalepriceForm();
-
             $scope.productSalepriceForm.successful = true;
+            $scope.productSalepriceForm.disabled = false;
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productSalepriceForm.errors = _.flatten(_.toArray(response.data));
@@ -346,21 +349,12 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-
-/***/ "./resources/assets/sass/app.scss":
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-
-/***/ 0:
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__("./resources/assets/js/app.js");
-module.exports = __webpack_require__("./resources/assets/sass/app.scss");
+__webpack_require__(0);
+module.exports = __webpack_require__(1);
 
 
 /***/ })
-
-/******/ });
+/******/ ]);

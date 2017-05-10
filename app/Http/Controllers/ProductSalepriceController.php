@@ -23,9 +23,13 @@ class ProductSalepriceController extends Controller
     {
         Validator::make(request()->all(), [
             'price' => 'required|numeric',
+            'stores.*' => 'required',
         ])->after(function ($validator) {
             if (request('price') <= 0) {
                 $validator->errors()->add('price', 'Giá bán phải > 0.');
+            }
+            if (!in_array(true,request('stores'))) {
+                $validator->errors()->add('stores', 'Bạn phải chọn ít nhất 1 store.');
             }
         })->validate();
 

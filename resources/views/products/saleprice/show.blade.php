@@ -86,25 +86,52 @@
         </div>
     </div>
     <div class="row">
+        <h3>Nhà cung cấp</h3>
         <div class="col-xs-12">
             <table class="table table-bordered table-hover">
                 <thead>
-                    <tr>
-                        <th>STT</th>
-                        <th>Nhà cung cấp</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                    </tr>
+                <tr>
+                    <th>STT</th>
+                    <th>Nhà cung cấp</th>
+                    <th>Số lượng</th>
+                    <th>Giá</th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach($productSuppliers as $k => $v)
+                @foreach($productSuppliers as $k => $v)
                     <tr>
                         <td>{{ $k + 1 }}</td>
                         <td>{{ $v->supplier->name }}</td>
-                        <td></td>
+                        <td>{{ $v->quantity }}</td>
                         <td>{{ $v->import_price }}</td>
                     </tr>
-                    @endforeach
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="clearfix form-actions"></div>
+    <div class="row">
+        <h3>Lịch sử cập nhật giá</h3>
+        <div class="col-xs-12">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Store</th>
+                    <th>Price</th>
+                    <th>Cập nhật</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($product->saleprices as $k => $v)
+                    <tr>
+                        <td>{{ $k + 1 }}</td>
+                        <td>{{ config('teko.stores')[$v->store_id] }}</td>
+                        <td>{{ $v->price }}</td>
+                        <td>{{ $v->created_at }}</td>
+                    </tr>
+                @endforeach
                 </tbody>
             </table>
         </div>

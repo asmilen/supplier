@@ -35,13 +35,16 @@ class ColorsController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'name' => 'required',
+            'name' => 'required|max:255|unique:colors',
+            'code' => 'alpha_num|min:3|max:6|unique:colors',
         ], [
             'name.unique' => 'Hãy nhập tên màu sắc.',
+            'code.unique' => 'Mã mau đã tồn tại.',
         ]);
 
         $color = Color::forceCreate([
-            'name' => request('name')
+            'name' => request('name'),
+            'code' => request('code')
         ]);
 
         flash()->success('Success!', 'Color successfully created.');

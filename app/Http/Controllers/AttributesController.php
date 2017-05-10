@@ -78,6 +78,7 @@ class AttributesController extends Controller
      * @param  \App\Models\Attribute  $attribute
      * @return \Illuminate\Http\Response
      */
+
     public function update(Attribute $attribute)
     {
         $this->validate(request(), [

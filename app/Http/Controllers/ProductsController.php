@@ -81,7 +81,7 @@ class ProductsController extends Controller
             'color_id' => request('color_id'),
             'name' => request('name'),
             'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
             'status' => !! request('status'),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
@@ -172,7 +172,7 @@ class ProductsController extends Controller
             'color_id' => request('color_id'),
             'name' => request('name'),
             'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
             'status' => !! request('status'),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
@@ -203,12 +203,14 @@ class ProductsController extends Controller
         return Product::getDatatables();
     }
 
-    protected function generateSku($categoryId, $manufacturerId, $code)
+    protected function generateSku($categoryId, $manufacturerId, $code, $colorId = null)
     {
         $category = Category::findOrFail($categoryId);
 
         $manufacturer = Manufacturer::findOrFail($manufacturerId);
 
-        return $category->code.'-'.$manufacturer->code.'-'.$code;
+        $color = Color::findOrFail($colorId);
+
+        return $category->code.'-'.$manufacturer->code.'-'.$code.'-'.$color->code;
     }
 }

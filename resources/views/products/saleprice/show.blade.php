@@ -103,7 +103,7 @@
                         <td>{{ $k + 1 }}</td>
                         <td>{{ $v->supplier->name }}</td>
                         <td>{{ $v->quantity }}</td>
-                        <td>{{ $v->import_price }}</td>
+                        <td>{{  number_format (  $v->import_price , 0 , "." , "," )}}</td>
                     </tr>
                 @endforeach
                 </tbody>

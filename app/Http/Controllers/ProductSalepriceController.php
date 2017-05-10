@@ -22,7 +22,7 @@ class ProductSalepriceController extends Controller
     public function update(Product $product)
     {
         Validator::make(request()->all(), [
-            'price' => 'required',
+            'price' => 'required|numeric',
         ])->after(function ($validator) {
             if (request('price') <= 0) {
                 $validator->errors()->add('price', 'Giá bán phải > 0.');

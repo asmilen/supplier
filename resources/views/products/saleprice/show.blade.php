@@ -56,7 +56,7 @@
                     <label class="col-sm-3 control-label no-padding-right">Giá bán</label>
                     <div class="col-sm-6">
                         <input type="text" class="form-control" name="price" placeholder="Giá bán" ng-model="productSalepriceForm.price" ng-change="updateMargin()">
-                        <label class="col-sm-6 control-label no-padding-right">Lợi nhuận : <strong ng-bind="productMargin"></strong> %</label>
+                        <label class="col-sm-6 control-label no-padding-right"><strong ng-bind="productMargin"></strong></label>
                     </div>
                 </div>
 

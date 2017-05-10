@@ -26,7 +26,7 @@ function ProductSalepriceController($scope, $http, $window) {
         if (BEST_PRICE == 0)
             $scope.productMargin = 'Chưa có giá nhập';
         else
-            $scope.productMargin = 'Lợi nhuận : ' + (($scope.productSalepriceForm.price / BEST_PRICE - 1 ) * 100) + ' %';
+            $scope.productMargin = 'Lợi nhuận : ' + (($scope.productSalepriceForm.price / BEST_PRICE - 1 ) * 100).toFixed(2) + ' %';
     };
 
     $scope.updateMargin();

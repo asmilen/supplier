@@ -137,7 +137,6 @@
                         <th>Tên sản phẩm</th>
                         <th>Giá nhập</th>
                         <th>Cập nhật</th>
-                        <th>Trạng thái</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -147,13 +146,6 @@
                         <th><input type="text" style="width: 100%" name="db_product_name" placeholder="Tìm Tên sản phẩm"/></th>
                         <th><input type="text" style="width: 100%" name="db_import_price" placeholder="Tìm giá"/></th>
                         <th></th>
-                        <th><select name="db_status" style="width: 100%">
-                                <option value="">Chọn trạng thái</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATUS_KHONG_UU_TIEN_LAY_HANG }}">Chưa ưu tiên lấy hàng</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATUS_UU_TIEN_LAY_HANG }}">Ưu tiên lấy hàng</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATUS_CHO_DUYET }}">Chờ Duyệt</option>
-                                <option value="{{ App\Models\ProductSupplier::$STATUS_HET_HANG }}">Hết hàng</option>
-                            </select></th>
                         <th></th>
                     </tr>
                     </tfoot>
@@ -206,7 +198,7 @@
                     $('#product_id').val(id);
                     $('#product_name').val(product_name);
                     if (product) {
-                        $('#import_price').val(product.import_price);
+                        $('#import_price').val(parseInt(product.import_price));
                         $('#vat').val(product.vat);
                         $('#code').val(product.code);
                         $('#state').val(product.state);
@@ -319,7 +311,6 @@
                     {data: 'product_name', name: 'product_name'},
                     {data: 'import_price', name: 'import_price'},
                     {data: 'updated_at', name: 'updated_at'},
-                    {data: 'status', name: 'status'},
                     {
                         "orderable":      false,
                         "data":           null,
@@ -341,7 +332,7 @@
                 var data = supplier_datatable.row( $(this).parents('tr') ).data();
                 $('#product_id').val(data.id);
                 $('#product_name').val(data.product_name);
-                $('#import_price').val(data.import_price.replace(',',''));
+                $('#import_price').val(data.import_price.replace(/,/g,''));
                 $('#vat').val(data.vat);
                 $('#state').val(data.state);
                 $('#code').val(data.code);

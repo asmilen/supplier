@@ -25,6 +25,18 @@
 </div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Màu sắc</label>
+    <div class="col-sm-6">
+        <select name="manufacturer_id" class="form-control">
+            <option value="">--Chọn Màu sắc--</option>
+            @foreach ($colorsList as $id => $name)
+                <option value="{{ $id }}"{{ $id == $product->color_id ? ' selected=selected' : '' }}>{{ $name }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" value="{{ old('name', $product->name) }}">

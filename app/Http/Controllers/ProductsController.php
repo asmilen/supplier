@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Validator;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
@@ -14,6 +15,7 @@ class ProductsController extends Controller
     {
         view()->share('categoriesList', Category::getActiveList());
         view()->share('manufacturersList', Manufacturer::getActiveList());
+        view()->share('colorsList', Color::getActiveList());
     }
 
     /**
@@ -76,6 +78,7 @@ class ProductsController extends Controller
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
+            'color_id' => request('color_id'),
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
@@ -166,6 +169,7 @@ class ProductsController extends Controller
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
+            'color_id' => request('color_id'),
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),

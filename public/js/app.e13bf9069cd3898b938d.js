@@ -112,6 +112,7 @@ function ProductCreateController($scope, $http, $window) {
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
+        this.color_id = '';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -137,6 +138,12 @@ function ProductCreateController($scope, $http, $window) {
         });
     };
 
+    $scope.getColors = function () {
+        $http.get('/api/colors').then(function (response) {
+            $scope.colors = response.data;
+        });
+    };
+
     $scope.refreshData = function () {
         categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
 
@@ -151,6 +158,7 @@ function ProductCreateController($scope, $http, $window) {
 
     $scope.getCategories();
     $scope.getManufacturers();
+    $scope.getColors();
     $scope.refreshData();
 
     $scope.addProduct = function () {
@@ -192,6 +200,7 @@ function ProductEditController($scope, $http, $window) {
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
+        this.color_id = '';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -222,6 +231,7 @@ function ProductEditController($scope, $http, $window) {
     $scope.populateProductForm = function () {
         $scope.productForm.category_id = $scope.product.category_id;
         $scope.productForm.manufacturer_id = $scope.product.manufacturer_id;
+        $scope.productForm.color_id = $scope.product.color_id;
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
@@ -239,6 +249,12 @@ function ProductEditController($scope, $http, $window) {
     $scope.getManufacturers = function () {
         $http.get('/api/manufacturers').then(function (response) {
             $scope.manufacturers = response.data;
+        });
+    };
+
+    $scope.getColors = function () {
+        $http.get('/api/colors').then(function (response) {
+            $scope.colors = response.data;
         });
     };
 
@@ -260,6 +276,7 @@ function ProductEditController($scope, $http, $window) {
 
     $scope.getCategories();
     $scope.getManufacturers();
+    $scope.getColors();
     $scope.getProduct();
 
     $scope.updateProduct = function () {

@@ -21,6 +21,7 @@ class Product extends Model
     protected $casts = [
         'category_id' => 'string',
         'manufacturer_id' => 'string',
+        'color_id' => 'string',
         'status' => 'boolean',
     ];
 
@@ -32,6 +33,11 @@ class Product extends Model
     public function manufacturer()
     {
         return $this->belongsTo(Manufacturer::class);
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
     }
 
     public function saleprices()

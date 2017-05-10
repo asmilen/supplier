@@ -13,7 +13,7 @@
                 <a href="{{ url('/dashboard') }}">Dashboard</a>
             </li>
             <li>
-                <a href="{{ route('products.index') }}">Sản phẩm</a>
+                <a href="{{ url('/supplier/updatePrice') }}">Cập nhật giá</a>
             </li>
             <li class="active">Danh sách</li>
         </ul><!-- /.breadcrumb -->
@@ -57,7 +57,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-left">Giá bán (có VAT)</label>
+                        <label class="col-sm-3 control-label no-padding-left">Giá nhập (có VAT)</label>
                         <div class="col-sm-6">
                             <input type="number" class="form-control" name="import_price" value="{{ old('import_price') }}" id="import_price" placeholder="Nhập giá" >
                         </div>

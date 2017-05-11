@@ -63,7 +63,7 @@ class ManufacturersController extends Controller
                     ];
         $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('test-exchange', 'sale.branch.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.branch.upsert', $messSend));
         flash()->success('Success!', 'Manufacturer successfully created.');
 
         return redirect()->route('manufacturers.index');
@@ -121,7 +121,7 @@ class ManufacturersController extends Controller
         ];
         $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('test-exchange', 'sale.branch.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.branch.upsert', $messSend));
 
         flash()->success('Success!', 'Manufacturer successfully updated.');
 

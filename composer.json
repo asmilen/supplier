@@ -19,6 +19,7 @@
         "laravel/tinker": "~1.0",
         "maatwebsite/excel": "~2.1.0",
         "php-amqplib/php-amqplib": "^2.6",
+        "predis/predis": "^1.1",
         "yajra/laravel-datatables-oracle": "^7.1"
     },
     "require-dev": {

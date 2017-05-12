@@ -102,7 +102,7 @@ class ProductsController extends Controller
         ];
         $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('test-exchange', 'sale.product.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', $messSend));
 
         flash()->success('Success!', 'Product successfully created.');
 
@@ -191,7 +191,7 @@ class ProductsController extends Controller
         ];
         $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('test-exchange', 'sale.product.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', $messSend));
 
         flash()->success('Success!', 'Product successfully updated.');
 

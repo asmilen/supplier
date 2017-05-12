@@ -76,7 +76,7 @@ class CategoriesController extends Controller
         ];
         $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('test-exchange', 'sale.cat.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $messSend));
 
         flash()->success('Success!', 'Category successfully created.');
 
@@ -138,7 +138,7 @@ class CategoriesController extends Controller
         ];
         $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('test-exchange', 'sale.cat.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $messSend));
 
         flash()->success('Success!', 'Category successfully updated.');
 

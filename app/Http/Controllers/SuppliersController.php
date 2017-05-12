@@ -367,7 +367,7 @@ class SuppliersController extends Controller
             'createdAt' => strtotime($product->updated_at)
         ];
         $messSend = json_encode($jsonSend);
-        dispatch(new PublishMessage('test-exchange', 'sale.price.import.update', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.price.import.update', $messSend));
     }
 
     public function getList()
@@ -528,7 +528,7 @@ class SuppliersController extends Controller
         ];
 
         $messSend = json_encode($jsonSend);
-        dispatch(new PublishMessage('test-exchange', 'sale.supplier.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
 
         flash()->success('Success!', 'Suppliers successfully created.');
         return redirect()->route('suppliers.getList');
@@ -663,7 +663,7 @@ class SuppliersController extends Controller
         ];
 
         $messSend = json_encode($jsonSend);
-        dispatch(new PublishMessage('test-exchange', 'sale.supplier.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
 
         flash()->success('Success!', 'Suppliers successfully created.');
         return redirect()->route('suppliers.getList');

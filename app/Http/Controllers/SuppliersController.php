@@ -63,10 +63,10 @@ class SuppliersController extends Controller
             'status' => 'required',
             'state' => 'required',
             'import_price' => 'required|integer|min:0',
-            'vat' => 'required|integer|min:0',
-            'price_recommend' => 'required|integer|min:0',
-            'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
-            'description' => 'required',
+//            'vat' => 'required|integer|min:0',
+//            'price_recommend' => 'required|integer|min:0',
+//            'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
+//            'description' => 'required',
             'quantity' => 'required|integer|min:0',
         ];
         $messages = [
@@ -77,16 +77,16 @@ class SuppliersController extends Controller
             'import_price.required' => 'Hãy nhập giá nhập',
             'import_price.integer' => 'Hãy nhập đúng định dạng',
             'import_price.min' => 'Hãy nhập đúng định dạng',
-            'vat.required' => 'Hãy nhập VAT',
-            'vat.integer' => 'Hãy nhập đúng định dạng',
-            'vat.min' => 'Hãy nhập đúng định dạng',
-            'price_recommend.required' => 'Hãy nhập giá khuyến nghị',
-            'price_recommend.integer' => 'Hãy nhập đúng định dạng',
-            'price_recommend.min' => 'Hãy nhập đúng định dạng',
-            'image.required' => 'Hãy chọn ảnh sản phẩm ',
-            'image.mimes' => 'Hãy chọn 1 tệp có định dạng ảnh',
-            'image.max' => 'Hãy chọn 1 tệp có định dạng ảnh không quá 1Mb',
-            'description.required' => 'Hãy nhập mô tả',
+//            'vat.required' => 'Hãy nhập VAT',
+//            'vat.integer' => 'Hãy nhập đúng định dạng',
+//            'vat.min' => 'Hãy nhập đúng định dạng',
+//            'price_recommend.required' => 'Hãy nhập giá khuyến nghị',
+//            'price_recommend.integer' => 'Hãy nhập đúng định dạng',
+//            'price_recommend.min' => 'Hãy nhập đúng định dạng',
+//            'image.required' => 'Hãy chọn ảnh sản phẩm ',
+//            'image.mimes' => 'Hãy chọn 1 tệp có định dạng ảnh',
+//            'image.max' => 'Hãy chọn 1 tệp có định dạng ảnh không quá 1Mb',
+//            'description.required' => 'Hãy nhập mô tả',
             'quantity.required' => 'Hãy nhập so luong',
             'quantity.integer' => 'Hãy nhập đúng định dạng',
             'quantity.min' => 'Hãy nhập đúng định dạng',
@@ -104,20 +104,25 @@ class SuppliersController extends Controller
             if (count($product_supplier) > 0) {
                 $response['status'] = 'exists';
             } else {
-                $file = request()->file('image');
-                $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
+                $filename = '';
+                if(isset($file)){
+                    $file = request()->file('image');
+                    $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
+                    Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+                }
+
 
                 $data = [
                     'product_id' => $request->input('product_id'),
                     'supplier_id' => $request->input('supplier_id'),
                     'import_price' => $request->input('import_price'),
-                    'vat' => $request->input('vat'),
-                    'price_recommend' => $request->input('price_recommend'),
+                    'vat' => $request->input('vat') ? $request->input('vat') : 0,
+                    'price_recommend' => $request->input('price_recommend') ? $request->input('price_recommend') : 0,
                     'image' => $filename,
                     'status' => $request->input('status'),
                     'state' => $request->input('state'),
-                    'quantity' => $request->input('quantity'),
-                    'description' => $request->input('description')
+                    'quantity' => $request->input('quantity') ? $request->input('quantity') : 0,
+                    'description' => $request->input('description') ? $request->input('description') : ''
 
                 ];
 
@@ -129,7 +134,7 @@ class SuppliersController extends Controller
                 $data['updated_by'] = Sentinel::getUser()->id;
 
                 $product_supplier = ProductSupplier::firstOrCreate($data);
-                Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+
                 if ($data['status'] == 2) {
                     $product->best_price = $data['import_price'];
                     $product->save();

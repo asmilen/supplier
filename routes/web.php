@@ -55,6 +55,15 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
 
+
+        // Bundles
+        Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
+        Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);
+
+        // BundleCateogories
+        Route::get('bundleCateogories/datatables', 'BundleCategoriesController@getDatatables')->name('bundleCategories.datatables');
+        Route::resource('bundleCategories', 'BundleCategoriesController', ['except' => 'destroy']);
+
         // For supplier
         Route::get('supplier/supplier_datatables', 'ForSupplierController@getDatatables')->name('supplier.supplier_datatables');
         Route::get('supplier/ajaxGetProductById', 'ForSupplierController@ajaxGetProductById')->name('supplier.ajaxGetProductById');

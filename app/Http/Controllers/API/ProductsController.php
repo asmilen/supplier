@@ -46,12 +46,17 @@ class ProductsController extends Controller
             'products.sku', 'products.source_url', 'products.best_price',
             'products.category_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
             'product_supplier.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5)))) as price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds)
                     ->where('product_supplier.state', '=', 1);
+            })
+            ->leftJoin('margin_region_category', function ($q) use ($regions) {
+                $q->on('margin_region_category.category_id', '=', 'products.category_id')
+                    ->whereIn('margin_region_category.region_id', $regions);
             });
 
         return Datatables::eloquent($model)
@@ -73,11 +78,11 @@ class ProductsController extends Controller
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
                 }
             })
-            ->addColumn('price', function ($model) use ($regions) {
-                $margin = MarginRegionCategory::where('category_id', $model->category_id)
-                    ->whereIn('region_id', $regions)->first();
-                return isset($margin) ? $model->best_import_price * (1 + 0.01 * $margin->margin) : $model->best_import_price * 1.05;
-            })
+            // ->addColumn('price', function ($model) use ($regions) {
+            // $margin = MarginRegionCategory::where('category_id', $model->category_id)
+            // ->whereIn('region_id', $regions)->first();
+            // return isset($margin) ? $model->best_import_price * (1 + 0.01 * $margin->margin) : $model->best_import_price * 1.05;
+            // })
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
                 'products.category_id')
@@ -131,7 +136,7 @@ class ProductsController extends Controller
         }
 
         try {
-            
+
             $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id');
 
             $provinceIds = Province::whereIn('region_id', $regions)->pluck('id');
@@ -152,18 +157,18 @@ class ProductsController extends Controller
                 })
                 ->findOrFail($id);
 
-            $bestPrice = ProductSupplier::where('product_id', $id)
-                ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price))'));
-
             $margin = MarginRegionCategory::where('category_id', $product->category_id)
                 ->whereIn('region_id', $regions)->first();
 
             if ($margin) {
-                $product->best_price = $bestPrice * (1 + 0.01 * $margin->margin);
+                $productMargin = 1 + 0.01 * $margin->margin;
             } else {
-                $product->best_price = $bestPrice * 1.05;
+                $productMargin = 1.05;
             }
+
+            $product->best_price = ProductSupplier::where('product_id', $id)
+                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * ' . $productMargin . '))'));
 
             return $product;
         } catch (\Exception $e) {

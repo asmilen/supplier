@@ -425,11 +425,7 @@
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
-                width: '100%',
-//                query: function (options) {
-//                    alert(options);
-//
-//                }
+                width: '100%'
             });
 
             $(document).on("click",".checkStatus",function() {

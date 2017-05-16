@@ -78,7 +78,7 @@ class ProductsController extends Controller
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id'),
+            'color_id' => request('color_id') ? request('color_id') : 0,
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
@@ -169,7 +169,7 @@ class ProductsController extends Controller
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id'),
+            'color_id' => request('color_id') ? request('color_id') : 0,
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),

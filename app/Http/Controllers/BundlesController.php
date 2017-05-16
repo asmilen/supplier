@@ -45,6 +45,7 @@ class BundlesController extends Controller
         $bundle = Bundle::forceCreate([
             'name' => request('name'),
             'price' => request('price'),
+            'region_id' => request('region_id'),
         ]);
 
         flash()->success('Success!', 'Color successfully created.');
@@ -93,6 +94,7 @@ class BundlesController extends Controller
         $bundle->forceFill([
             'name' => request('name'),
             'price' => request('price'),
+            'region_id' => request('region_id'),
         ])->save();
 
         flash()->success('Success!', 'Color successfully updated.');
@@ -105,10 +107,4 @@ class BundlesController extends Controller
         return Bundle::getDatatables();
     }
 
-    public function createCategory()
-    {
-        dd(1);
-//        $bundle = Bundle::all();
-//        return view('bundles.create',compact('bundle'));
-    }
 }

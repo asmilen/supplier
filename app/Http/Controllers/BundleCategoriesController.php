@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bundle;
 use App\Models\Category;
+use App\Models\BundleProduct;
 use App\Models\BundleCategory;
 
 class BundleCategoriesController extends Controller
@@ -75,7 +76,8 @@ class BundleCategoriesController extends Controller
      */
     public function show(BundleCategory $bundleCategory)
     {
-        return view('bundleCategories.edit', compact('bundleCategory'));
+        $categories = json_decode($bundleCategory->category);
+        return view('bundleCategories.edit', compact('bundleCategory','categories'));
     }
 
     /**
@@ -125,5 +127,7 @@ class BundleCategoriesController extends Controller
     {
         return BundleCategory::getDatatables();
     }
+
+
 
 }

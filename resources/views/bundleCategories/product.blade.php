@@ -14,7 +14,7 @@
             <a href="{{ url('/dashboard') }}">Dashboard</a>
         </li>
         <li>
-            <a href="{{ route('bundleCategories.index') }}">Nhóm sản phẩm </a>
+            <a href="{{ route('bundleProducts.index') }}">Sản phẩm </a>
         </li>
         <li class="active">Thay đổi</li>
     </ul><!-- /.breadcrumb -->
@@ -28,9 +28,9 @@
             Nhóm sản phẩm
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
-                Thay đổi
+                Sản phẩm
             </small>
-            <a class="btn btn-primary pull-right" href="{{ route('bundleCategories.index') }}">
+            <a class="btn btn-primary pull-right" href="{{ route('bundleProducts.index') }}">
                 <i class="ace-icon fa fa-list" aria-hidden="true"></i>
                 <span class="hidden-xs">Danh sách</span>
             </a>
@@ -40,47 +40,48 @@
         <div class="col-xs-12">
             @include('common.errors')
 
-            <form class="form-horizontal" role="form" method="POST" action="{{ route('bundleCategories.update', $bundleCategory->id) }}">
+            <form class="form-horizontal" role="form" method="POST" action="{{ route('bundleProducts.store', $bundleCategory->id) }}">
                 {!! method_field('PUT') !!}
                 {!! csrf_field() !!}
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhóm sản phẩm</label>
                     <div class="col-sm-6">
-                        <select name="bundle_id" class="form-control">
-                            <option value="">--Chọn nhóm sản phẩm--</option>
-                            @foreach ($bundlesList as $id => $name)
-                                <option value="{{ $id }}" {{ $id == $bundleCategory->id_bundle ? ' selected=selected' : '' }}>{{ $name }}</option>
-                            @endforeach
+                        <select name="id_bundle" class="form-control" readonly="true">
+                            <option value="{{ $bundleCategory->bundle->id }}">{{ $bundleCategory->bundle->name }}</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="category">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right">Danh mục từ hệ thống</label>
-                        <div class="col-sm-6">
-                            <select name="category_id[]" class="multiple" multiple="multiple">
-                                @foreach ($categoriesList as $id => $name)
-                                    <option value="{{ $id }}" {{ in_array($id,$categories) ? ' selected=selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">Tên danh mục theo nhóm sản phẩm</label>
+                    <label class="col-sm-3 control-label no-padding-right">Tên danh mục của nhóm sản phẩm</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="name" placeholder="Tên danh mục ...." value="{{ old('name', $bundleCategory->name) }}">
+                        <select name="id_bundleCategory" class="form-control" readonly="true">
+                            <option value="{{ $bundleCategory->id }}">{{ $bundleCategory->name }}</option>
+                        </select>
                     </div>
                 </div>
 
+                @foreach ($categories as $category)
+                    <?php  $products = $category->products;?>
+                    <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Chọn sản phẩm cho danh mục " {{ $category->name }} " </label>
+                            <div class="col-sm-6">
+                                <select name="id_product[]" class="form-control">
+                                    @foreach($products as $product)
+                                        <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                    </div>
+                @endforeach
+
+
                 <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">Bắt buộc</label>
+                    <label class="col-sm-3 control-label no-padding-right">Mặc định</label>
                     <div class="col-sm-6">
                         <label>
-                            <input type="checkbox" name="isRequired" value="1"
-                                   class="ace ace-switch ace-switch-6"{{ old('isRequired', !! $bundleCategory->isRequired) ? ' checked=checked' : '' }}>
+                            <input type="checkbox" name="is_default" value="1"
+                                   class="ace ace-switch ace-switch-6"{{ old('is_default', !! $bundleProduct->is_default) ? ' checked=checked' : '' }}>
                             <span class="lbl"></span>
                         </label>
                     </div>

@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+
+use App\Models\SupplierProductLog;
 use Illuminate\Database\Eloquent\Model;
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
+
 
 class ProductSupplier extends Model
 {
@@ -48,4 +52,23 @@ class ProductSupplier extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::updating(function ($productsupplier) {
+            /**
+             * @var ProductSupplier $productsupplier
+             */
+            SupplierProductLog::forceCreate([
+                'product_id' => $productsupplier->product_id,
+                'supplier_id' => $productsupplier->supplier_id,
+                'current_data' => json_encode($productsupplier->getOriginal()),
+                'update_data' => json_encode($productsupplier),
+                'created_by' => Sentinel::getUser()->id,
+            ]);
+        });
+    }
+
 }

@@ -213,7 +213,7 @@ class ProductsController extends Controller
 
         $color = Color::find($colorId);
 
-        if($color) {
+        if ($color) {
             $sku .= '-'.$color->code;
         }
 

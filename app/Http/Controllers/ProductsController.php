@@ -209,8 +209,14 @@ class ProductsController extends Controller
 
         $manufacturer = Manufacturer::findOrFail($manufacturerId);
 
-        $color = Color::findOrFail($colorId);
+        $sku = $category->code.'-'.$manufacturer->code.'-'.$code;
 
-        return $category->code.'-'.$manufacturer->code.'-'.$code.'-'.$color->code;
+        $color = Color::find($colorId);
+
+        if ($color) {
+            $sku .= '-'.$color->code;
+        }
+
+        return $sku;
     }
 }

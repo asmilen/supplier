@@ -25,6 +25,18 @@
 </div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Màu sắc</label>
+    <div class="col-sm-6">
+        <select name="manufacturer_id" class="form-control">
+            <option value="">--Chọn Màu sắc--</option>
+            @foreach ($colorsList as $id => $name)
+                <option value="{{ $id }}"{{ $id == $product->color_id ? ' selected=selected' : '' }}>{{ $name }}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" value="{{ old('name', $product->name) }}">
@@ -48,6 +60,13 @@
         <span class="help-block">
             URL nguồn sản phẩm.
         </span>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Mô tả</label>
+    <div class="col-sm-6">
+        <textarea class="form-control" name="description" placeholder="Mô tả sản phẩm" rows="5">{{ old('description', $product->description) }}</textarea>
     </div>
 </div>
 
@@ -77,9 +96,11 @@
     </div>
 </div>
 
+<hr>
+
 <div class="clearfix form-actions">
     <div class="col-md-offset-3 col-md-9">
-        <button type="submit" class="btn btn-success">
+        <button type="submit" class="btn btn-success" ng-click="addProduct()" ng-disabled="customForm.disabled">
             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
         </button>
     </div>

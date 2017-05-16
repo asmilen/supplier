@@ -41,4 +41,12 @@ return [
         'redirect' => env('GOOGLE_CALLBACK_URL'),
     ],
 
+    'amqp' => [
+        'host' => env('AMQP_HOST', 'localhost'),
+        'port' => env('AMQP_PORT', 5672),
+        'user' => env('AMQP_USER'),
+        'password' => env('AMQP_PASSWORD'),
+        'vhost' => env('AMQP_VHOST', '/'),
+    ],
+
 ];

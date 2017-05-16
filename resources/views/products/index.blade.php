@@ -37,6 +37,43 @@
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Search</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <form class="form-inline" id="search-form">
+                            <select class="form-control" name="category_id">
+                                <option value="">--Chọn danh mục--</option>
+                                @foreach ($categoriesList as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <select class="form-control" name="manufacturer_id">
+                                <option value="">--Chọn nhà SX--</option>
+                                @foreach ($manufacturersList as $id => $name)
+                                <option value="{{ $id }}">{{ $name }}</option>
+                                @endforeach
+                            </select>
+                            <select class="form-control" name="status">
+                                <option value="">--Chọn Trạng thái--</option>
+                                <option value="active">Kích hoạt</option>
+                                <option value="inactive">Không kích hoạt</option>
+                            </select>
+                            <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
+                            <button type="submit" class="btn btn-purple btn-sm">
+                                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
             <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
                     <tr>
@@ -65,6 +102,7 @@
 <script>
 $(function () {
     var datatable = $("#dataTables-products").DataTable({
+        searching: false,
         autoWidth: false,
         processing: true,
         serverSide: true,
@@ -72,7 +110,10 @@ $(function () {
         ajax: {
             url: '{!! route('products.datatables') !!}',
             data: function (d) {
-                //
+                d.category_id = $('select[name=category_id]').val();
+                d.manufacturer_id = $('select[name=manufacturer_id]').val();
+                d.keyword = $('input[name=keyword]').val();
+                d.status = $('select[name=status]').val();
             }
         },
         columns: [
@@ -87,7 +128,10 @@ $(function () {
         ]
     });
 
-    @include('scripts.click-datatable-delete-button')
+    $('#search-form').on('submit', function(e) {
+        datatable.draw();
+        e.preventDefault();
+    });
 });
 </script>
 @endsection

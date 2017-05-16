@@ -3,9 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Attribute;
+use App\Jobs\PublishMessage;
 
 class CategoriesController extends Controller
 {
+    public function __construct()
+    {
+        view()->share('attributesList', Attribute::getList());
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +30,9 @@ class CategoriesController extends Controller
      */
     public function create()
     {
-        $category = new Category;
+        $category = (new Category)->forceFill([
+            'status' => true,
+        ]);
 
         return view('categories.create', compact('category'));
     }
@@ -35,22 +44,39 @@ class CategoriesController extends Controller
      */
     public function store()
     {
+        if(!request()->has('margin')){
+            request()->merge(['margin' => 0]);
+        }
+
         $this->validate(request(), [
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:categories',
+            'name' => 'required|max:255|unique:categories',
+            'code' => 'required|alpha_num|min:3|max:3|unique:categories',
+            'margin' => 'integer|between:0,100',
+        ], [
+            'name.unique' => 'Tên danh mục đã tồn tại.',
+            'code.unique' => 'Mã danh mục đã tồn tại.',
+            'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
         $category = Category::forceCreate([
             'name' => request('name'),
             'code' => strtoupper(request('code')),
             'status' => !! request('status'),
+            'margin' => request('margin'),
         ]);
 
-        if (empty($category->code)) {
-            $category->forceFill([
-                'code' => $category->id,
-            ])->save();
-        }
+        $category->attributes()->attach(request('attributes', []));
+
+        $jsonSend = [
+            "id"        => $category->id,
+            "code"      => strtoupper(request('code')),
+            "name"      => request('name'),
+            "status"    => $category->status == true ? 'active' : 'inactive',
+            "createdAt" => strtotime($category->created_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $messSend));
 
         flash()->success('Success!', 'Category successfully created.');
 
@@ -88,32 +114,35 @@ class CategoriesController extends Controller
     public function update(Category $category)
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:categories,code,'.$category->id,
+            'name' => 'required|max:255|unique:categories,name,'.$category->id,
+            'margin' => 'integer|between:0,100',
+        ], [
+            'name.unique' => 'Tên danh mục đã tồn tại.',
+            'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
         $category->forceFill([
             'name' => request('name'),
-            'code' => request('code') ? strtoupper(request('code')) : $category->id,
             'status' => !! request('status'),
+            'margin' => request('margin'),
         ])->save();
+
+        $category->attributes()->sync(request('attributes', []));
+
+        $jsonSend = [
+            "id"        => $category->id,
+            "code"      => $category->code,
+            "name"      => request('name'),
+            "status"    => $category->status == true ? 'active' : 'inactive',
+            "createdAt" => strtotime($category->updated_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $messSend));
 
         flash()->success('Success!', 'Category successfully updated.');
 
         return redirect()->route('categories.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category)
-    {
-        $category->delete();
-
-        flash()->success('Success!', 'Category successfully deleted.');
     }
 
     public function getDatatables()

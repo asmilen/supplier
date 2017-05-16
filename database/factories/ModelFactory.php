@@ -23,3 +23,9 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
         'api_token' => str_random(60),
     ];
 });
+
+$factory->define(App\Models\Attribute::class, function (Faker\Generator $faker) {
+    return [
+        'name' => ucfirst($faker->word),
+    ];
+});

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Datatables;
+use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -17,6 +18,13 @@ class Product extends Model
      */
     protected $dates = ['deleted_at'];
 
+    protected $casts = [
+        'category_id' => 'string',
+        'manufacturer_id' => 'string',
+        'color_id' => 'string',
+        'status' => 'boolean',
+    ];
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -27,6 +35,16 @@ class Product extends Model
         return $this->belongsTo(Manufacturer::class);
     }
 
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    public function saleprices()
+    {
+        return $this->hasMany(Saleprice::class);
+    }
+
     public static function getDatatables()
     {
         $model = static::select([
@@ -34,6 +52,29 @@ class Product extends Model
             ])->with('category', 'manufacturer');
 
         return Datatables::eloquent($model)
+            ->filter(function ($query) {
+                if (request()->has('keyword')) {
+                    $query->where(function ($query) {
+                        $query->where('name', 'like', '%'.request('keyword').'%')
+                            ->orWhere('code', 'like', '%'.request('keyword').'%')
+                            ->orWhere('sku', 'like', '%'.request('keyword').'%');
+                    });
+                }
+
+                if (request()->has('category_id')) {
+                    $query->where('category_id', request('category_id'));
+                }
+
+                if (request()->has('manufacturer_id')) {
+                    $query->where('manufacturer_id', request('manufacturer_id'));
+                }
+
+                if (request('status') == 'active') {
+                    $query->where('status', true);
+                } elseif (request('status') == 'inactive') {
+                    $query->where('status', false);
+                }
+            })
             ->editColumn('category_id', function ($model) {
                 return $model->category ? $model->category->name : '';
             })
@@ -44,5 +85,27 @@ class Product extends Model
             ->addColumn('action', 'products.datatables.action')
             ->rawColumns(['status', 'action'])
             ->make(true);
+    }
+
+    public function addSaleprice($data)
+    {
+        if (! isset(config('teko.stores')[$data['store_id']])) {
+            throw new \Exception('Store không tồn tại.');
+        }
+
+        $saleprice = (new Saleprice)->forceFill($data);
+
+        $this->saleprices()->save($saleprice);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.price.update', json_encode([
+            'storeId' => $saleprice->store_id,
+            'storeName' => config('teko.stores')[$saleprice->store_id],
+            'productId' => $this->id,
+            'sku' => $this->sku,
+            'price' => $saleprice->price,
+            'createdAt' => time(),
+        ])));
+
+        return $this;
     }
 }

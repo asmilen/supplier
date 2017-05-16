@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Manufacturer;
+use App\Jobs\PublishMessage;
 
 class ManufacturersController extends Controller
 {
@@ -23,7 +24,9 @@ class ManufacturersController extends Controller
      */
     public function create()
     {
-        $manufacturer = new Manufacturer;
+        $manufacturer = (new Manufacturer)->forceFill([
+            'status' => true,
+        ]);
 
         return view('manufacturers.create', compact('manufacturer'));
     }
@@ -36,8 +39,11 @@ class ManufacturersController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:manufacturers',
+            'name' => 'required|max:255|unique:manufacturers',
+            'code' => 'alpha_num|min:3|max:6|unique:manufacturers',
+        ], [
+            'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
+            'code.unique' => 'Mã nhà sản xuất đã tồn tại.',
         ]);
 
         $manufacturer = Manufacturer::forceCreate([
@@ -47,12 +53,17 @@ class ManufacturersController extends Controller
             'status' => !! request('status'),
         ]);
 
-        if (empty($manufacturer->code)) {
-            $manufacturer->forceFill([
-                'code' => $manufacturer->id,
-            ])->save();
-        }
+        $jsonSend = [
+                        "id"        => $manufacturer->id,
+                        "code"      => strtoupper(request('code')),
+                        "name"      => request('name'),
+                        "status"    => $manufacturer->status == true ? 'active' : 'inactive',
+                        "homepage"  => request('homepage') ,
+                        "createdAt" => strtotime($manufacturer->created_at)
+                    ];
+        $messSend = json_encode($jsonSend);
 
+        dispatch(new PublishMessage('teko.sale', 'sale.branch.upsert', $messSend));
         flash()->success('Success!', 'Manufacturer successfully created.');
 
         return redirect()->route('manufacturers.index');
@@ -89,33 +100,32 @@ class ManufacturersController extends Controller
     public function update(Manufacturer $manufacturer)
     {
         $this->validate(request(), [
-            'name' => 'required|max:255',
-            'code' => 'alpha_num|max:3|unique:manufacturers,code,'.$manufacturer->id,
+            'name' => 'required|max:255|unique:manufacturers,name,'.$manufacturer->id,
+        ], [
+            'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
         ]);
 
         $manufacturer->forceFill([
             'name' => request('name'),
-            'code' => strtoupper(request('code')) ? : $manufacturer->id,
             'homepage' => request('homepage'),
             'status' => !! request('status'),
         ])->save();
 
+        $jsonSend = [
+            "id"        => $manufacturer->id,
+            "code"      => $manufacturer->code,
+            "name"      => request('name'),
+            "status"    => $manufacturer->status == true ? 'active' : 'inactive',
+            "homepage"  => request('homepage') ,
+            "createdAt" => strtotime($manufacturer->updated_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.branch.upsert', $messSend));
+
         flash()->success('Success!', 'Manufacturer successfully updated.');
 
         return redirect()->route('manufacturers.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Manufacturer  $manufacturer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Manufacturer $manufacturer)
-    {
-        $manufacturer->delete();
-
-        flash()->success('Success!', 'Manufacturer successfully deleted.');
     }
 
     public function getDatatables()

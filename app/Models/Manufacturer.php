@@ -17,9 +17,38 @@ class Manufacturer extends Model
      */
     protected $dates = ['deleted_at'];
 
+    /**
+     * The "booting" method of the model.
+     *
+     * @return void
+     */
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($manufacturer) {
+            if (! empty($manufacturer->code)) {
+                return;
+            }
+
+            $name = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', trim($manufacturer->name))));
+
+            if (($pos = strpos($name, '-')) === false) {
+                $manufacturer->code = substr($name, 0, 6);
+            } else {
+                $manufacturer->code = substr($name, 0, 1).substr($name, $pos + 1, 5);
+            }
+        });
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
     }
 
     public static function getDatatables()
@@ -35,17 +64,8 @@ class Manufacturer extends Model
             ->make(true);
     }
 
-    public static function getList()
+    public static function getActiveList()
     {
-        return static::pluck('name', 'id')->all();
-    }
-
-    public function delete()
-    {
-        if ($this->products()->count() > 0) {
-            throw new \App\Exceptions\ModelShouldNotDeletedException('Không xóa được nhà SX này do có sản phẩm.');
-        }
-
-        parent::delete();
+        return static::active()->pluck('name', 'id')->all();
     }
 }

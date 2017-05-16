@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use Validator;
+use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
+use App\Jobs\PublishMessage;
 
 class ProductsController extends Controller
 {
     public function __construct()
     {
-        view()->share('categoriesList', Category::getList());
-        view()->share('manufacturersList', Manufacturer::getList());
+        view()->share('categoriesList', Category::getActiveList());
+        view()->share('manufacturersList', Manufacturer::getActiveList());
+        view()->share('colorsList', Color::getActiveList());
     }
 
     /**
@@ -32,7 +35,9 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        $product = new Product;
+        $product = (new Product)->forceFill([
+            'status' => true,
+        ]);
 
         return view('products.create', compact('product'));
     }
@@ -55,8 +60,10 @@ class ProductsController extends Controller
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:products',
             'code' => 'alpha_num|max:255',
+        ], [
+            'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($code) {
             $check = Product::where('category_id', request('category_id'))
                 ->where('manufacturer_id', request('manufacturer_id'))
@@ -71,15 +78,35 @@ class ProductsController extends Controller
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
+            'color_id' => request('color_id'),
             'name' => request('name'),
             'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
             'status' => !! request('status'),
+            'description' => request('description'),
+            'attributes' => json_encode(request('attributes', [])),
         ]);
+
+
+        $jsonSend = [
+            "id"            => $product->id,
+            "categoryId"      => $product->category_id,
+            "brandId"      => $product->manufacturer_id,
+            "type" => "simple",
+            "sku"      => $product->sku,
+            "name"      => $product->name,
+            "skuIdentifier"      => $product->code,
+            "status"    => $product->status == true ? 'active' : 'inactive',
+            "sourceUrl"      => $product->source_url,
+            "createdAt" => strtotime($product->created_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', $messSend));
 
         flash()->success('Success!', 'Product successfully created.');
 
-        return redirect()->route('products.index');
+        return $product;
     }
 
     /**
@@ -123,8 +150,10 @@ class ProductsController extends Controller
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:products,name,'.$product->id,
             'code' => 'alpha_num|max:255',
+        ], [
+            'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($product, $code) {
             $check = Product::where('category_id', request('category_id'))
                 ->where('manufacturer_id', request('manufacturer_id'))
@@ -140,28 +169,33 @@ class ProductsController extends Controller
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
+            'color_id' => request('color_id'),
             'name' => request('name'),
             'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code),
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
             'status' => !! request('status'),
+            'description' => request('description'),
+            'attributes' => json_encode(request('attributes', [])),
         ])->save();
+
+        $jsonSend = [
+            "id"            => $product->id,
+            "categoryId"      => $product->category_id,
+            "brandId"      => $product->manufacturer_id,
+            "sku"      => $product->sku,
+            "name"      => $product->name,
+            "skuIdentifier"      => $product->code,
+            "status"    => $product->status == true ? 'active' : 'inactive',
+            "sourceUrl"      => $product->source_url,
+            "createdAt" => strtotime($product->created_at)
+        ];
+        $messSend = json_encode($jsonSend);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', $messSend));
 
         flash()->success('Success!', 'Product successfully updated.');
 
-        return redirect()->route('products.index');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
-    {
-        $product->delete();
-
-        flash()->success('Success!', 'Product successfully deleted.');
+        return $product;
     }
 
     public function getDatatables()
@@ -169,12 +203,14 @@ class ProductsController extends Controller
         return Product::getDatatables();
     }
 
-    protected function generateSku($categoryId, $manufacturerId, $code)
+    protected function generateSku($categoryId, $manufacturerId, $code, $colorId = null)
     {
         $category = Category::findOrFail($categoryId);
 
         $manufacturer = Manufacturer::findOrFail($manufacturerId);
 
-        return $category->code.'-'.$manufacturer->code.'-'.$code;
+        $color = Color::findOrFail($colorId);
+
+        return $category->code.'-'.$manufacturer->code.'-'.$code.'-'.$color->code;
     }
 }

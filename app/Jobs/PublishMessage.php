@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
+use App\Models\MessageQueueLog;
 use PhpAmqpLib\Message\AMQPMessage;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -39,6 +40,12 @@ class PublishMessage implements ShouldQueue
      */
     public function handle()
     {
+        MessageQueueLog::forceCreate([
+            'exchange' => $this->exchange,
+            'routingKey' => $this->routingKey,
+            'body' => $this->body,
+        ]);
+
         $connection = new AMQPStreamConnection(
             config('services.amqp.host'),
             config('services.amqp.port'),

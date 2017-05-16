@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
-use Illuminate\Database\Eloquent\Model;
-
 use App\Models\SupplierProductLog;
+use Illuminate\Database\Eloquent\Model;
+use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 
 class ProductSupplier extends Model
 {

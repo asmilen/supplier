@@ -354,16 +354,18 @@ class SuppliersController extends Controller
 //        }
 
         $product = ProductSupplier::findOrFail($id);
-        $product_id = $product->id;
+        $product_id = $product->product_id;
         $supplier_id = $product->supplier_id;
 
         $product->update(['state' => $status_product, 'import_price' => $import_price, 'quantity' => $supplier_quantity, 'price_recommend' => $recommend_price]);
 
+        $sku = Product::where('id',$product->id)->pluck('sku');
 
         $jsonSend = [
             'product_id' => $product_id,
             'supplier_id' => $supplier_id,
             'import_price' => $import_price,
+            'sku' => $sku[0],
             'createdAt' => strtotime($product->updated_at)
         ];
         $messSend = json_encode($jsonSend);

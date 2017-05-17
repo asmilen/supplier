@@ -119,7 +119,7 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Mã địa chỉ Code</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="addressCode" placeholder="Mã địa chỉ nhà cung cấp"
+        <input type="text" class="form-control" name="addressCode" id="addressCode" placeholder="Mã địa chỉ nhà cung cấp"
                value="{{ old('addressCode', $address->addressCode) }}">
     </div>
 </div>

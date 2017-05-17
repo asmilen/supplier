@@ -87,7 +87,7 @@ class SuppliersController extends Controller
 //            'image.mimes' => 'Hãy chọn 1 tệp có định dạng ảnh',
 //            'image.max' => 'Hãy chọn 1 tệp có định dạng ảnh không quá 1Mb',
 //            'description.required' => 'Hãy nhập mô tả',
-            'quantity.required' => 'Hãy nhập so luong',
+            'quantity.required' => 'Hãy nhập số lượng',
             'quantity.integer' => 'Hãy nhập đúng định dạng',
             'quantity.min' => 'Hãy nhập đúng định dạng',
         ];
@@ -102,6 +102,7 @@ class SuppliersController extends Controller
         } else {
             $product_supplier = ProductSupplier::where('product_id', $request->input('product_id'))->where('supplier_id', $request->input('supplier_id'))->get();
             if (count($product_supplier) > 0) {
+                flash()->warning('Warning Title!', 'Existed.');
                 $response['status'] = 'exists';
             } else {
                 $filename = '';
@@ -139,11 +140,12 @@ class SuppliersController extends Controller
                     $product->best_price = $data['import_price'];
                     $product->save();
                 }
-
+                flash()->success('Success!', 'Product Supplier successfully created.');
                 $response['status'] = 'success';
             }
         }
-        return json_encode($response);
+
+        return response()->json($response);
 
     }
 
@@ -407,27 +409,12 @@ class SuppliersController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'province_id' => 'required',
             'address' => 'required',
-            'addressCode' => 'required',
             'name' => 'required|max:255',
-            'code' => 'required',
             'phone' => 'required',
-            'fax' => 'required',
-            'email' => 'required',
-            'website' => 'required',
             'tax_number' => 'required',
-            'type' => 'required',
-            'contact_name' => 'required',
-            'contact_mobile' => 'required',
-            'contact_phone' => 'required',
-            'contact_email' => 'required',
-            'bank_account' => 'required',
-            'bank_account_name' => 'required',
-            'bank_name' => 'required',
-            'bank_code' => 'required',
-            'bank_branch' => 'required',
-            'bank_province' => 'required',
+            'province_id' => 'required',
+            'district_id' => 'required',
         ]);
 
         $supplier = Supplier::forceCreate([
@@ -450,14 +437,14 @@ class SuppliersController extends Controller
             'supplier_id' => $supplier->id,
             'province_id' => request('province_id'),
             'district_id' => request('district_id'),
-            'province_name' => $province->name,
-            'district_name' => $district->name,
-            'address' => request('address'),
-            'addressCode' => request('addressCode'),
-            'contact_name' => request('contact_name'),
-            'contact_mobile' => request('contact_mobile'),
-            'contact_phone' => request('contact_phone'),
-            'contact_email' => request('contact_email'),
+            'province_name' => isset($province->name) ? $province->name : '',
+            'district_name' => isset($district->name) ? $district->name : '',
+            'address' => request('address',''),
+            'addressCode' => request('addressCode',''),
+            'contact_name' => request('contact_name',''),
+            'contact_mobile' => request('contact_mobile',''),
+            'contact_phone' => request('contact_phone',''),
+            'contact_email' => request('contact_email',''),
             'status' => !!request('status'),
             'is_default' => !!request('is_default'),
             'created_by' => Sentinel::getUser()->id
@@ -465,19 +452,19 @@ class SuppliersController extends Controller
 
         $supplier_bank_account = SupplierBankAccount::forceCreate([
             'supplier_id' => $supplier->id,
-            'bank_name' => request('bank_name'),
-            'bank_code' => request('bank_code'),
-            'bank_account' => request('bank_account'),
-            'bank_branch' => request('bank_branch'),
-            'bank_province' => request('bank_province'),
-            'bank_account_name' => request('bank_account_name'),
+            'bank_name' => request('bank_name',''),
+            'bank_code' => request('bank_code',''),
+            'bank_account' => request('bank_account',''),
+            'bank_branch' => request('bank_branch',''),
+            'bank_province' => request('bank_province',''),
+            'bank_account_name' => request('bank_account_name',''),
             'status' => !!request('status'),
             'is_default' => !!request('is_default'),
         ]);
 
         $supplier_supported_province = SupplierSupportedProvince::forceCreate([
             'supplier_id' => $supplier->id,
-            'province_id' => request('province_id'),
+            'province_id' => request('province_id',''),
             'status' => !!request('status'),
         ]);
 
@@ -544,27 +531,12 @@ class SuppliersController extends Controller
     public function update(Supplier $supplier)
     {
         $this->validate(request(), [
-            'province_id' => 'required',
             'address' => 'required',
-            'addressCode' => 'required',
             'name' => 'required|max:255',
-            'code' => 'required',
             'phone' => 'required',
-            'fax' => 'required',
-            'email' => 'required',
-            'website' => 'required',
             'tax_number' => 'required',
-            'type' => 'required',
-            'contact_name' => 'required',
-            'contact_mobile' => 'required',
-            'contact_phone' => 'required',
-            'contact_email' => 'required',
-            'bank_account' => 'required',
-            'bank_account_name' => 'required',
-            'bank_name' => 'required',
-            'bank_code' => 'required',
-            'bank_branch' => 'required',
-            'bank_province' => 'required',
+            'province_id' => 'required',
+            'district_id' => 'required',
         ]);
 
         $supplier->forceFill([

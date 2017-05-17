@@ -10,4 +10,9 @@ class ProvinceDistrictsController extends Controller
     {
         return $province->districts;
     }
+
+    public function addressCode(Province $province)
+    {
+        return $province->code;
+    }
 }

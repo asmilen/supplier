@@ -13,6 +13,8 @@ class ConvertEmptyStringsToNull extends BaseConverter
      */
     protected $except = [
         'code',
+        'password',
+        'password_confirmation',
     ];
 
     /**

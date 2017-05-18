@@ -134,7 +134,7 @@
                                         <select name="supplier_id" class="form-control">
                                             <option value="">-- Chọn nhà cung cấp --</option>
                                             @foreach($suppliers as $key => $value)
-                                                <option value="{{  $value->id }}">{{  $value->name }}</option>
+                                                <option value="{{  $value->supplier_id }}">{{  $value->supplier_name }}</option>
                                             @endforeach
                                         </select>
                                         <p style="color:red;text-align: left;" id="supplier_id">{{$errors->first('supplier_id')}}</p>

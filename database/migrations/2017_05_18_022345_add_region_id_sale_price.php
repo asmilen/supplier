@@ -13,7 +13,6 @@ class AddRegionIdSalePrice extends Migration
      */
     public function up()
     {
-        //
         Schema::table('saleprices', function (Blueprint $table) {
             $table->integer('region_id');
         });
@@ -26,7 +25,6 @@ class AddRegionIdSalePrice extends Migration
      */
     public function down()
     {
-        //
         Schema::table('saleprices', function (Blueprint $table) {
         });
     }

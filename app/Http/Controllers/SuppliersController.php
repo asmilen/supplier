@@ -414,7 +414,7 @@ class SuppliersController extends Controller
             'phone' => 'required',
             'tax_number' => 'required',
             'province_id' => 'required',
-            'district_id' => 'required',
+
         ]);
 
         $supplier = Supplier::forceCreate([
@@ -543,7 +543,6 @@ class SuppliersController extends Controller
             'phone' => 'required',
             'tax_number' => 'required',
             'province_id' => 'required',
-            'district_id' => 'required',
         ]);
 
         $supplier->forceFill([
@@ -559,41 +558,90 @@ class SuppliersController extends Controller
             'created_by' => Sentinel::getUser()->id
         ])->save();
 
-        $supplier_address = SupplierAddress::where('supplier_id', $supplier->id)->first();
 
-        $supplier_address->forceFill([
-            'supplier_id' => $supplier->id,
-            'province_id' => request('province_id'),
-            'address' => request('address'),
-            'addressCode' => request('addressCode'),
-            'contact_name' => request('contact_name'),
-            'contact_mobile' => request('contact_mobile'),
-            'contact_phone' => request('contact_phone'),
-            'contact_email' => request('contact_email'),
-            'status' => !!request('status'),
-            'is_default' => !!request('is_default'),
-            'updated_by' => Sentinel::getUser()->id
-        ])->save();
+        $province = Province::find(request('province_id'));
+        $district = District::where('district_id', request('district_id'))->select('name')->first();
+
+        $supplier_address = SupplierAddress::where('supplier_id', $supplier->id)->first();
+        if (count($supplier_address) > 0) {
+            $supplier_address->forceFill([
+                'supplier_id' => $supplier->id,
+                'province_id' => request('province_id'),
+                'district_id' => request('district_id'),
+                'province_name' => isset($province->name) ? $province->name : '',
+                'district_name' => isset($district->name) ? $district->name : '',
+                'address' => request('address',''),
+                'addressCode' => request('addressCode',''),
+                'contact_name' => request('contact_name',''),
+                'contact_mobile' => request('contact_mobile',''),
+                'contact_phone' => request('contact_phone',''),
+                'contact_email' => request('contact_email',''),
+                'status' => !!request('status'),
+                'is_default' => !!request('is_default'),
+                'updated_by' => Sentinel::getUser()->id
+            ])->save();
+        } else {
+            $supplier_address = SupplierAddress::forceCreate([
+                'supplier_id' => $supplier->id,
+                'province_id' => request('province_id'),
+                'district_id' => request('district_id'),
+                'province_name' => isset($province->name) ? $province->name : '',
+                'district_name' => isset($district->name) ? $district->name : '',
+                'address' => request('address',''),
+                'addressCode' => request('addressCode',''),
+                'contact_name' => request('contact_name',''),
+                'contact_mobile' => request('contact_mobile',''),
+                'contact_phone' => request('contact_phone',''),
+                'contact_email' => request('contact_email',''),
+                'status' => !!request('status'),
+                'is_default' => !!request('is_default'),
+                'created_by' => Sentinel::getUser()->id
+            ]);
+        }
 
         $supplier_bank_account = SupplierBankAccount::where('supplier_id', $supplier->id)->first();
-        $supplier_bank_account->forceFill([
-            'supplier_id' => $supplier->id,
-            'bank_name' => request('bank_name'),
-            'bank_code' => request('bank_code'),
-            'bank_account' => request('bank_account'),
-            'bank_branch' => request('bank_branch'),
-            'bank_province' => request('bank_province'),
-            'bank_account_name' => request('bank_account_name'),
-            'status' => !!request('status'),
-            'is_default' => !!request('is_default'),
-        ])->save();
+
+        if (count($supplier_bank_account) > 0) {
+            $supplier_bank_account->forceFill([
+                'supplier_id' => $supplier->id,
+                'bank_name' => request('bank_name',''),
+                'bank_code' => request('bank_code',''),
+                'bank_account' => request('bank_account',''),
+                'bank_branch' => request('bank_branch',''),
+                'bank_province' => request('bank_province',''),
+                'bank_account_name' => request('bank_account_name',''),
+                'status' => !!request('status'),
+                'is_default' => !!request('is_default'),
+            ])->save();
+        } else {
+            $supplier_bank_account = SupplierBankAccount::forceCreate([
+                'supplier_id' => $supplier->id,
+                'bank_name' => request('bank_name',''),
+                'bank_code' => request('bank_code',''),
+                'bank_account' => request('bank_account',''),
+                'bank_branch' => request('bank_branch',''),
+                'bank_province' => request('bank_province',''),
+                'bank_account_name' => request('bank_account_name',''),
+                'status' => !!request('status'),
+                'is_default' => !!request('is_default'),
+            ]);
+        }
 
         $supplier_supported_province = SupplierSupportedProvince::where('supplier_id', $supplier->id)->first();
-        $supplier_supported_province->forceFill([
-            'supplier_id' => $supplier->id,
-            'province_id' => request('province_id'),
-            'status' => !!request('status'),
-        ])->save();
+
+        if (count($supplier_supported_province) > 0) {
+            $supplier_supported_province->forceFill([
+                'supplier_id' => $supplier->id,
+                'province_id' => request('province_id'),
+                'status' => !!request('status'),
+            ])->save();
+        } else {
+            $supplier_supported_province = SupplierSupportedProvince::forceCreate([
+                'supplier_id' => $supplier->id,
+                'province_id' => request('province_id',''),
+                'status' => !!request('status'),
+            ]);
+        }
 
         // MQ
 

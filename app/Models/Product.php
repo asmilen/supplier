@@ -93,6 +93,10 @@ class Product extends Model
             throw new \Exception('Store không tồn tại.');
         }
 
+        if (! isset(config('teko.regions')[$data['region_id']])) {
+            throw new \Exception('Miền không tồn tại.');
+        }
+
         $saleprice = (new Saleprice)->forceFill($data);
 
         $this->saleprices()->save($saleprice);

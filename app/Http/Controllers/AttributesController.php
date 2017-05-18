@@ -95,19 +95,6 @@ class AttributesController extends Controller
         return redirect()->route('attributes.index');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Attribute  $attribute
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Attribute $attribute)
-    {
-        $attribute->delete();
-
-        flash()->success('Success!', 'Attribute successfully deleted.');
-    }
-
     public function getDatatables()
     {
         return Attribute::getDatatables();

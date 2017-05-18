@@ -77,6 +77,7 @@
             <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Tên</th>
                         <th>SKU</th>
                         <th>Danh mục</th>
@@ -117,6 +118,7 @@ $(function () {
             }
         },
         columns: [
+            {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},
             {data: 'sku', name: 'sku'},
             {data: 'category_id', name: 'category_id'},

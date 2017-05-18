@@ -53,6 +53,7 @@
         $( document ).ready(function() {
             $('#province_id').on('change', '', function (e) {
                 loadDistrictsByProvince(this.value);
+                loadAddressCode(this.value);
             });
         });
 
@@ -64,6 +65,18 @@
                     $.each(districts, function(key, district) {
                         $("#district_id").append('<option value="' + district.district_id + '">' + district.name + '</option>')
                     })
+                },
+                error: function() {
+
+                }
+            });
+        }
+
+        function loadAddressCode(provinceId) {
+            $.ajax({
+                url: "/provinces/" + provinceId + "/addressCode",
+                success: function(addressCode) {
+                    $("#addressCode").val(addressCode)
                 },
                 error: function() {
 

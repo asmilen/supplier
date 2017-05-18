@@ -524,7 +524,14 @@ class SuppliersController extends Controller
     public function edit(Supplier $supplier)
     {
         $address = $supplier->addresses()->first();
-        $distristList = District::where('province_id', $address->province_id)->get();
+
+        if(isset($address)){
+            $distristList = District::where('province_id', $address->province_id)->get();
+        } else {
+            $address = new SupplierAddress();
+            $distristList = [];
+        }
+
         return view('suppliers.edit', compact('supplier', 'address', 'distristList'));
     }
 

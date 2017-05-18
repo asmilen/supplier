@@ -31,19 +31,28 @@ class ProductSalepriceController extends Controller
             if (!in_array(true,request('stores'))) {
                 $validator->errors()->add('stores', 'Bạn phải chọn ít nhất 1 store.');
             }
+            if (!in_array(true,request('regions'))) {
+                $validator->errors()->add('regions', 'Bạn phải chọn ít nhất 1 miền.');
+            }
         })->validate();
 
-        foreach (request('stores') as $storeId => $flag) {
-            if ($flag) {
-                try {
-                    $product->addSaleprice([
-                        'store_id' => $storeId,
-                        'price' => request('price'),
-                    ]);
-                } catch (\Exception $e) {
-                    return response()->json([
-                        'error' => $e->getMessage(),
-                    ]);
+        foreach (request('stores') as $storeId => $flagStore) {
+            if ($flagStore) {
+                foreach (request('regions') as $regionId => $flagRegion)
+                {
+                    if ($flagRegion) {
+                        try {
+                            $product->addSaleprice([
+                                'store_id' => $storeId,
+                                'region_id' => $regionId,
+                                'price' => request('price'),
+                            ]);
+                        } catch (\Exception $e) {
+                            return response()->json([
+                                'error' => $e->getMessage(),
+                            ]);
+                        }
+                    }
                 }
             }
         }

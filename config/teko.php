@@ -21,4 +21,10 @@ return [
         2 => 'Offline',
         3 => 'Phòng máy',
     ],
+
+    'regions' => [
+        1 => 'Miền Bắc',
+        2 => 'Miền Trung',
+        3 => 'Miền Nam',
+    ]
 ];

@@ -36,15 +36,15 @@ class ProductSalepriceController extends Controller
             }
         })->validate();
 
-        foreach (request('stores') as $storeId => $flag) {
-            if ($flag) {
-                foreach (request('regions') as $region_id => $flag_region)
+        foreach (request('stores') as $storeId => $flagStore) {
+            if ($flagStore) {
+                foreach (request('regions') as $regionId => $flagRegion)
                 {
-                    if ($flag_region) {
+                    if ($flagRegion) {
                         try {
                             $product->addSaleprice([
                                 'store_id' => $storeId,
-                                'region_id' => $region_id,
+                                'region_id' => $regionId,
                                 'price' => request('price'),
                             ]);
                         } catch (\Exception $e) {

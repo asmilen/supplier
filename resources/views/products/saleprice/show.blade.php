@@ -146,7 +146,7 @@
                         <td>{{ config('teko.stores')[$v->store_id] }}</td>
                         <td>{{ config('teko.regions')[$v->region_id] }}</td>
                         <td>{{  number_format (  $v->price , 0 , "." , "," )}}</td>
-                        <td>{{ Helper::convertTime($v->created_at) }}</td>
+                        <td>{{ convert_time($v->created_at) }}</td>
                     </tr>
                 @endforeach
                 </tbody>

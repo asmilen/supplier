@@ -56,6 +56,21 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
 
+
+        // Bundles
+        Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
+        Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);
+
+        // BundleCateogories
+        Route::get('bundleCategories/datatables', 'BundleCategoriesController@getDatatables')->name('bundleCategories.datatables');
+        Route::resource('bundleCategories', 'BundleCategoriesController', ['except' => 'destroy']);
+        Route::get('bundleProducts/{bundleCategory}/create', 'BundleProductsController@create')->name('bundleProducts.create');
+        Route::put('bundleProducts/{bundleCategory}/store', 'BundleProductsController@store')->name('bundleProducts.store');
+
+        // BundleProducts
+        Route::get('bundleProducts/datatables', 'BundleProductsController@getDatatables')->name('bundleProducts.datatables');
+        Route::resource('bundleProducts', 'BundleProductsController', ['except' => ['destroy','create','store']]);
+
         // For supplier
         Route::get('supplier/supplier_datatables', 'ForSupplierController@getDatatables')->name('supplier.supplier_datatables');
         Route::get('supplier/ajaxGetProductById', 'ForSupplierController@ajaxGetProductById')->name('supplier.ajaxGetProductById');
@@ -64,7 +79,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('supplier/updatePrice', 'ForSupplierController@postUpdatePrice')->name('supplier.postUpdatePrice');
 
         // Suppliers
-
         Route::get('suppliers/datatables', 'SuppliersController@getDatatables')->name('suppliers.datatables');
         Route::post('suppliers/datatables-edit', 'SuppliersController@updateDatatables')->name('suppliers.datatables-edit');
         Route::post('suppliers/map-suppliers', 'SuppliersController@mapping')->name('suppliers.map-suppliers');

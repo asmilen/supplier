@@ -142,6 +142,7 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.getColors = function () {
+        console.log(10);
         $http.get('/api/colors').then(function (response) {
             $scope.colors = response.data;
         });

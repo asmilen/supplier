@@ -9,6 +9,8 @@ Route::get('products/{product}', 'ProductsController@show');
 Route::get('products/{id}/detail', 'ProductsController@detail');
 Route::get('listProductSku', 'ProductsController@getListProductSku');
 Route::get('listSupplierByProductId', 'SuppliersController@getListSupplierByProductId');
+Route::get('listBundleByRegionId/{codeProvince}', 'BundlesController@getBundleByCodeProvince');
+Route::get('listBundleProduct/{bundleId}', 'BundlesController@getBundleProduct');
 
 Route::group(['middleware' => 'auth:api'], function () {
     //

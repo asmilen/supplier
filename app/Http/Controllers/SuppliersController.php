@@ -401,7 +401,9 @@ class SuppliersController extends Controller
             'status' => true,
         ]);
 
-        $address = new SupplierAddress();
+        $address = (new SupplierAddress)->forceFill([
+            'is_default' => true,
+        ]);
 
         return view('suppliers.create', compact('supplier', 'address'));
     }

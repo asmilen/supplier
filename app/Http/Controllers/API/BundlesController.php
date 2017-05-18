@@ -15,7 +15,7 @@ use App\Models\BundleCategory;
 
 class BundlesController extends Controller
 {
-    public function getBundleByCodeProvince($codeProvince){
+    public function listBundleByCodeProvince($codeProvince){
 
         $regionId = Province::where('code', $codeProvince)->pluck('region_id');
 

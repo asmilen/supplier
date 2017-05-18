@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\District;
 use DB;
 use Auth;
-use Carbon;
+use Carbon\Carbon;
 use Excel;
 use Response;
 use Sentinel;

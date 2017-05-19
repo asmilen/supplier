@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-
 use App\Models\SupplierProductLog;
 use Illuminate\Database\Eloquent\Model;
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
-
 
 class ProductSupplier extends Model
 {
@@ -70,5 +68,4 @@ class ProductSupplier extends Model
             ]);
         });
     }
-
 }

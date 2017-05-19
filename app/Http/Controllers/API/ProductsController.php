@@ -46,7 +46,7 @@ class ProductsController extends Controller
             'products.sku', 'products.source_url', 'products.best_price',
             'products.category_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
             'product_supplier.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
-            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5)))) as price')
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {
@@ -168,7 +168,7 @@ class ProductsController extends Controller
 
             $product->best_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * ' . $productMargin . '))'));
+                ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
 
             return $product;
         } catch (\Exception $e) {

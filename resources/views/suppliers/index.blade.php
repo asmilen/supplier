@@ -134,7 +134,7 @@
                                         <select name="supplier_id" class="form-control">
                                             <option value="">-- Chọn nhà cung cấp --</option>
                                             @foreach($suppliers as $key => $value)
-                                                <option value="{{  $value->id }}">{{  $value->name }}</option>
+                                                <option value="{{  $value->supplier_id }}">{{  $value->supplier_name }}</option>
                                             @endforeach
                                         </select>
                                         <p style="color:red;text-align: left;" id="supplier_id">{{$errors->first('supplier_id')}}</p>
@@ -328,7 +328,7 @@
                                 <br>
                                 <div class="form-group">
                                     <label class="col-sm-4 control-label no-padding-left"></label>
-                                    <button type="submit" class="btn btn-success" id = "btn_save">
+                                    <button type="submit" class="btn btn-success" id = "btn_update">
                                         <i class="ace-icon fa fa-save bigger-110"></i>Lưu thông tin
                                     </button>
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
@@ -604,33 +604,8 @@
                     dataType: 'JSON',
                     success: function (res){
                         $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
-                        if(res.status == 'success'){
-                            $('#myModal').hide();
-                            swal({
-                                    title: "Tạo thành công",
-                                    type: "success",
-                                    showCancelButton: false,
-                                    confirmButtonColor: "#DD6B55",
-                                    confirmButtonText: "Ok",
-                                    closeOnConfirm: false
-                                },
-                                function(){
-                                    window.location.reload();
-                                });
-                        } else if(res.status == "exists") {
-                            $('#myModal').modal('hide');
-                            swal({
-                                    title: "Tạo không thành công",
-                                    'text': "Nhà cung cấp này đã bán sản phẩm",
-                                    type: "warning",
-                                    showCancelButton: false,
-                                    confirmButtonColor: "#DD6B55",
-                                    confirmButtonText: "Ok",
-                                    closeOnConfirm: false
-                                },
-                                function(){
-                                    window.location.reload();
-                                });
+                        if(res.status == 'success' || res.status == 'exists'){
+                            window.location.reload();
                         }
                         else {
                             $.each(res.errors,function(index, value) {

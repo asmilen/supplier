@@ -244,8 +244,6 @@ return [
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Image' => Intervention\Image\Facades\Image::class,
-        'Carbon' => 'Carbon\Carbon'
-
     ],
 
 ];

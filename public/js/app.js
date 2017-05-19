@@ -142,6 +142,7 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.getColors = function () {
+        console.log(10);
         $http.get('/api/colors').then(function (response) {
             $scope.colors = response.data;
         });
@@ -319,6 +320,11 @@ function ProductSalepriceController($scope, $http, $window) {
     function productSalepriceForm() {
         this.price = 0;
         this.stores = {
+            1: false,
+            2: false,
+            3: false
+        };
+        this.regions = {
             1: false,
             2: false,
             3: false

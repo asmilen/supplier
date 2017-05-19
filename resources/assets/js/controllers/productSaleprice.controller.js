@@ -15,6 +15,11 @@ function ProductSalepriceController($scope, $http, $window) {
             2: false,
             3: false
         };
+        this.regions = {
+            1: false,
+            2: false,
+            3: false
+        };
         this.errors = [];
         this.disabled = false;
         this.successful = false;

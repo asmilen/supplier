@@ -53,9 +53,9 @@ class BundlesController extends Controller
                             ->whereIn('product_supplier.supplier_id', $supplierIds)
                             ->where('product_supplier.state', '=', 1);
                     })
-                    ->findOrFail($bundleProduct->id_product)->toArray();
+                    ->findOrFail($bundleProduct->id_product);
 
-                $margin = MarginRegionCategory::where('category_id', $product['category_id'])
+                $margin = MarginRegionCategory::where('category_id', $product->category_id)
                     ->where('region_id', $regionId)->first();
 
                 if ($margin) {
@@ -64,11 +64,12 @@ class BundlesController extends Controller
                     $productMargin = 1.05;
                 }
 
-                $product['best_price'] = ProductSupplier::where('product_id', $product['id'])
+                $product->best_price = ProductSupplier::where('product_id', $product->id)
                     ->whereIn('product_supplier.supplier_id', $supplierIds)
                     ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * ' . $productMargin . '))'));
 
-                $product['quantity'] = $bundleProduct->quantity;
+                $product->quantity = $bundleProduct->quantity;
+                $product->isDefault = $bundleProduct->is_default;
 
                 array_push($products,$product);
             }
@@ -76,13 +77,13 @@ class BundlesController extends Controller
             $bundleCategory = $bundleCategory->name;
 
             $bundle = [
-                [ $bundleCategory => $products ]
+                'title' => $bundleCategory,
+                'data' => $products
             ];
 
             array_push($response,$bundle);
         }
 
-        dd($response);
         return $response;
     }
 }

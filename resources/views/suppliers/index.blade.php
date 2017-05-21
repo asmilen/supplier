@@ -122,7 +122,7 @@
                                         <select name="product_id" class="js-example-basic-single" id="js-example-basic-single">
                                             <option value="">-- Chọn sản phẩm --</option>
                                             @foreach($products as $key => $value)
-                                                <option value="{{  $value->id }}">{{  $value->name }}</option>
+                                                <option value="{{  $value->id }}">{{ $value->sku }} - {{  $value->name }}</option>
                                             @endforeach
                                         </select>
                                         <p style="color:red;text-align: left;" id="product_id">{{$errors->first('product_id')}}</p>

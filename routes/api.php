@@ -9,7 +9,7 @@ Route::get('products/{product}', 'ProductsController@show');
 Route::get('products/{id}/detail', 'ProductsController@detail');
 Route::get('listProductSku', 'ProductsController@getListProductSku');
 Route::get('listSupplierByProductId', 'SuppliersController@getListSupplierByProductId');
-Route::get('listBundleByCodeProvince/{codeProvince}', 'BundlesController@listBundleByCodeProvince');
+Route::get('listBundleByProvinceCode/{codeProvince}', 'BundlesController@listBundleByProvinceCode');
 Route::get('listBundleProduct/{bundleId}', 'BundlesController@getBundleProduct');
 
 Route::group(['middleware' => 'auth:api'], function () {

@@ -26,5 +26,11 @@ return [
         1 => 'Miền Bắc',
         2 => 'Miền Trung',
         3 => 'Miền Nam',
+    ],
+
+    'bundleLabels' => [
+        1 => 'Máy chủ',
+        2 => 'Máy trạm',
+        3 => 'Linh kiện, phụ kiện khác',
     ]
 ];

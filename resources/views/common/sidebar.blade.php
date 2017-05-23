@@ -103,7 +103,7 @@
         @endif
 
         @if ($currentUser->hasAccess('suppliers.getList'))
-            <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/getList')) ? 'active' : '' }}">
+            <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active' : '' }}">
                 <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Nhà cung cấp </span></a>
             </li>
         @endif

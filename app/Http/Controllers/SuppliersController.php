@@ -192,7 +192,7 @@ class SuppliersController extends Controller
                 }
 
                 if (request()->has('product_import_price')) {
-                    $query->where('product_supplier.import_price', request('product_import_price'));
+                    $query->where('product_supplier.import_price', 'like', '%' . request('product_import_price') . '%');
                 }
 //
 //                if (request()->has('vat')) {
@@ -418,6 +418,7 @@ class SuppliersController extends Controller
             'phone' => 'required',
             'tax_number' => 'required',
             'province_id' => 'required',
+            'type' => 'required',
 
         ]);
 
@@ -547,6 +548,7 @@ class SuppliersController extends Controller
             'phone' => 'required',
             'tax_number' => 'required',
             'province_id' => 'required',
+            'type' => 'required',
         ]);
 
         $supplier->forceFill([
@@ -785,6 +787,10 @@ class SuppliersController extends Controller
 
     public function importExcel()
     {
+        $this->validate(request(), [
+            'file'=>'required|max:50000|mimes:xlsx'
+        ]);
+
         $file = request()->file('file');
           Excel::load($file,function($reader) {
               $reader->each(function ($sheet){

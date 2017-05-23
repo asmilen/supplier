@@ -111,7 +111,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Thêm mới nhà sản phẩm cho nhà cung cấp</h4>
+                            <h4 class="modal-title">Thêm mới sản phẩm cho nhà cung cấp</h4>
                         </div>
                         <div class="modal-body">
                             <form class="form-horizontal" role="form" id="supplier_form" action="{{ url('suppliers/map-suppliers') }}" method="POST" enctype="multipart/form-data" >
@@ -241,22 +241,33 @@
                 </div>
 
                 <div class="widget-body">
-                    <div class="widget-main">
-                            <form class="form-inline" id="export-form" action="{{ url('suppliers/exportExcel') }}" method="post">
-                                <button type="submit" class="btn btn-sm">
-                                    Export
+                    <div class="widget-main" style="overflow:hidden;">
+                           <div style="float: left; margin-right: 15px">
+                               <form class="form-inline" id="export-form" action="{{ url('suppliers/exportExcel') }}" method="post">
+                                   <button type="submit" class="btn btn-sm">
+                                       Export
+                                   </button>
+                               </form>
+                           </div>
+                        <div style="float: left; margin-right: 15px">
+                            <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                </div>
+                                <button type="submit" class="btn btn-purple btn-sm">
+                                    Import
                                 </button>
+                                <div class="form-group">
+                                    <input type="file" name="file">
+                                </div>
+
+
                             </form>
+                        </div>
+
+
                     </div>
-                    <div class="widget-main">
-                        <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="file" name="file">
-                            <button type="submit" class="btn btn-purple btn-sm">
-                                Import
-                            </button>
-                        </form>
-                    </div>
+
                 </div>
             </div>
         </div>

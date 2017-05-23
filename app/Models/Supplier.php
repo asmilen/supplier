@@ -25,13 +25,27 @@ class Supplier extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id','name','code','tax_number','status'
-        ])->with('addresses');
+            'id','name','code','tax_number','status','type'
+        ])->with('addresses','suppliers_supported_provinces');
 
         return Datatables::eloquent($model)
             ->filter(function ($query) {
                 if (request()->has('keyword')) {
                     $query->where('name', 'like', '%'.request('keyword').'%');
+                }
+
+                if (request()->has('typeId')) {
+                    $query->where('type', request('typeId'));
+                }
+
+                if (request()->has('province')) {
+                    $query->where('type', request('typeId'));
+                }
+
+                if (request('status') == 'active') {
+                    $query->where('status', true);
+                } elseif (request('status') == 'inactive') {
+                    $query->where('status', false);
                 }
             })
             ->editColumn('province', function ($model) {

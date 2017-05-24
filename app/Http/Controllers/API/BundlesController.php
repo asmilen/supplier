@@ -18,16 +18,13 @@ class BundlesController extends Controller
     public function listBundleByProvinceCode($codeProvince,$labelId)
     {
         try {
-
             $regionId = Province::where('code', $codeProvince)->pluck('region_id');
 
             $bundles = Bundle::whereIn('region_id',$regionId)->where('label',$labelId)->get();
 
             return $bundles;
-
         }
         catch (\Exception $e) {
-
             return api_response(['message' => $e->getMessage()], 500);
         }
 

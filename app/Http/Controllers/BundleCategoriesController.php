@@ -23,7 +23,6 @@ class BundleCategoriesController extends Controller
      */
     public function index()
     {
-
         return view('bundleCategories.index');
     }
 

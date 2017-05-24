@@ -27,8 +27,7 @@ class BundlesController extends Controller
     public function create()
     {
         $bundle = new Bundle;
-        $products = Product::where('status',1)->get();
-        return view('bundles.create',compact('bundle','products'));
+        return view('bundles.create',compact('bundle'));
     }
 
     /**
@@ -41,9 +40,11 @@ class BundlesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255',
             'label' => 'required',
+            'region_id' => 'required',
         ], [
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
             'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
+            'region_id.required' => 'Hãy chọn vùng miền.',
         ]);
 
         $bundle = Bundle::forceCreate([
@@ -52,24 +53,6 @@ class BundlesController extends Controller
             'region_id' => request('region_id'),
             'label' => request('label'),
         ]);
-
-        if (request()->has('productIds')) {
-
-            $productsId = request('productIds');
-            $quantity = request('quantity');
-
-            for ($i = 0 ; $i< count($productsId); $i++)
-            {
-                $bundleProduct = BundleProduct::forceCreate([
-                    'id_bundle' => $bundle->id,
-                    'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
-                    'id_product' => $productsId[$i],
-                    'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
-                ]);
-
-            }
-
-        }
 
         flash()->success('Success!', 'Bundle successfully created.');
 
@@ -95,10 +78,7 @@ class BundlesController extends Controller
      */
     public function edit(Bundle $bundle)
     {
-        $bundleProducts = $bundle->products()->get();
-        $productIds = $bundle->products()->pluck('products.id');
-        $products = Product::where('status',1)->whereNotIn('id',$productIds)->get();
-        return view('bundles.edit', compact('bundle','bundleProducts','products'));
+        return view('bundles.edit', compact('bundle'));
     }
 
     /**
@@ -113,10 +93,12 @@ class BundlesController extends Controller
             'name' => 'required|max:255',
             'price' => 'required|max:255',
             'label' => 'required',
+            'region_id' => 'required',
         ], [
             'name.unique' => 'Hãy nhập tên nhóm sản phẩm.',
             'price.unique' => 'Hãy nhập giá nhóm sản phẩm.',
             'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
+            'region_id.required' => 'Hãy chọn vùng miền.',
         ]);
 
         $bundle->forceFill([
@@ -125,33 +107,6 @@ class BundlesController extends Controller
             'region_id' => request('region_id'),
             'label' => request('label'),
         ])->save();
-
-        if (request()->has('productIds')) {
-
-            $productsId = request('productIds');
-            $quantity = request('quantity');
-            for ($i = 0 ; $i< count($productsId); $i++)
-            {
-                $bundleProduct = BundleProduct::where('id_bundle',$bundle->id)->where('id_product',$productsId[$i])->first();
-
-                if(count($bundleProduct) > 0)
-                {
-                    $bundleProduct->forceFill([
-                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
-                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
-                    ])->save();
-                } else
-                {
-                    $bundleProduct = BundleProduct::forceCreate([
-                        'id_bundle' => $bundle->id,
-                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
-                        'id_product' => $productsId[$i],
-                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
-                    ]);
-                }
-            }
-
-        }
 
         flash()->success('Success!', 'Bundle successfully updated.');
 

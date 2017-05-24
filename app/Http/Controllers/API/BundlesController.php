@@ -21,7 +21,7 @@ class BundlesController extends Controller
 
             $regionId = Province::where('code', $codeProvince)->pluck('region_id');
 
-            $bundles = Bundle::where('region_id',$regionId)->where('label',$labelId)->get();
+            $bundles = Bundle::whereIn('region_id',$regionId)->where('label',$labelId)->get();
 
             return $bundles;
 

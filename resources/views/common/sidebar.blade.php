@@ -75,38 +75,29 @@
         @endif
 
         @if ($currentUser->hasAccess('bundles.index'))
-            <li class="{{ (Request::is('bundles') || Request::is('bundles/*')) ? 'active' : '' }}">
-                <a href="{{ url('/bundles') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Nhóm sản phẩm </span></a>
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-list"></i>
+                    <span class="menu-text"> Nhóm sản phẩm </span>
+
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    <li class="{{ (Request::is('bundles') || Request::is('bundles/*')) ? 'active' : '' }}">
+                        <a href="{{ url('/bundles') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách nhóm sản phẩm </span></a>
+                    </li>
+
+                    <li class="{{ (Request::is('bundleCategories') || Request::is('bundleCategories/*')) ? 'active' : '' }}">
+                        <a href="{{ url('/bundleCategories') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách danh mục theo nhóm sản phẩm </span></a>
+                    </li>
+
+                </ul>
             </li>
+
         @endif
-
-        {{--@if ($currentUser->hasAccess('bundles.index'))--}}
-            {{--<li class="">--}}
-                {{--<a href="#" class="dropdown-toggle">--}}
-                    {{--<i class="menu-icon fa fa-list"></i>--}}
-                    {{--<span class="menu-text"> Nhóm sản phẩm </span>--}}
-
-                    {{--<b class="arrow fa fa-angle-down"></b>--}}
-                {{--</a>--}}
-
-                {{--<b class="arrow"></b>--}}
-
-                {{--<ul class="submenu nav-show" style="display: none;">--}}
-                    {{--<li class="{{ (Request::is('bundles') || Request::is('bundles/*')) ? 'active' : '' }}">--}}
-                        {{--<a href="{{ url('/bundles') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách nhóm sản phẩm </span></a>--}}
-                    {{--</li>--}}
-
-                    {{--<li class="{{ (Request::is('bundleCategories') || Request::is('bundleCategories/*')) ? 'active' : '' }}">--}}
-                        {{--<a href="{{ url('/bundleCategories') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách danh mục theo nhóm sản phẩm </span></a>--}}
-                    {{--</li>--}}
-
-                    {{--<li class="{{ (Request::is('bundleProducts') || Request::is('bundleProducts/*')) ? 'active' : '' }}">--}}
-                        {{--<a href="{{ url('/bundleProducts') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách sản phẩm </span></a>--}}
-                    {{--</li>--}}
-                {{--</ul>--}}
-            {{--</li>--}}
-
-        {{--@endif--}}
 
         @if ($currentUser->hasAccess('suppliers.getList'))
             <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active' : '' }}">

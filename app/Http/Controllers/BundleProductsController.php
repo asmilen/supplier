@@ -115,7 +115,7 @@ class BundleProductsController extends Controller
 
     public function destroy()
     {
-      // BundleProduct::where('id_product',request('productId'))->where('id_bundle',request('bundleId'))->delete();
+       BundleProduct::where('id_product',request('productId'))->where('id_bundle',request('bundleId'))->delete();
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bundle;
+use App\Models\Product;
 use App\Models\Category;
 use App\Models\BundleProduct;
 use App\Models\BundleCategory;
@@ -36,7 +37,8 @@ class BundleCategoriesController extends Controller
         $bundleCategory = (new BundleCategory)->forceFill([
             'isRequired' => true,
         ]);
-        return view('bundleCategories.create',compact('bundleCategory'));
+        $products = Product::where('status',1)->get();
+        return view('bundleCategories.create',compact('bundleCategory','products'));
     }
 
     /**
@@ -48,11 +50,9 @@ class BundleCategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
-            'category_id' => 'required',
             'bundle_id' => 'required',
         ], [
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
-            'category_id.required' => 'Hãy chọn danh mục.',
             'bundle_id.required' => 'Hãy chọn nhóm sản phẩm.',
         ]);
 
@@ -60,10 +60,28 @@ class BundleCategoriesController extends Controller
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
             'isRequired' => request('isRequired'),
-            'category' => json_encode(request('category_id')),
         ]);
 
-        flash()->success('Success!', 'Bundle Cateogry successfully created.');
+        if (request()->has('productIds')) {
+
+            $productsId = request('productIds');
+            $quantity = request('quantity');
+
+            for ($i = 0 ; $i< count($productsId); $i++)
+            {
+                $bundleProduct = BundleProduct::forceCreate([
+                    'id_bundle' => request('bundle_id'),
+                    'id_bundleCategory' => $bundleCateogry->id,
+                    'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
+                    'id_product' => $productsId[$i],
+                    'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                ]);
+
+            }
+
+        }
+
+        flash()->success('Success!', 'Bundle Category successfully created.');
 
         return redirect()->route('bundleCategories.index');
     }
@@ -88,8 +106,10 @@ class BundleCategoriesController extends Controller
      */
     public function edit(BundleCategory $bundleCategory)
     {
-        $categories = json_decode($bundleCategory->category);
-        return view('bundleCategories.edit', compact('bundleCategory','categories'));
+        $bundleProducts = $bundleCategory->products()->get();
+        $productIds = $bundleCategory->products()->pluck('products.id');
+        $products = Product::where('status',1)->whereNotIn('id',$productIds)->get();
+        return view('bundleCategories.edit', compact('bundleCategory','bundleProducts','products'));
     }
 
     /**
@@ -102,11 +122,9 @@ class BundleCategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
-            'category_id' => 'required',
             'bundle_id' => 'required',
         ], [
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
-            'category_id.required' => 'Hãy chọn danh mục.',
             'bundle_id.required' => 'Hãy chọn nhóm sản phẩm.',
         ]);
 
@@ -115,8 +133,35 @@ class BundleCategoriesController extends Controller
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
             'isRequired' => request('isRequired'),
-            'category' => json_encode(request('category_id')),
         ])->save();
+
+        if (request()->has('productIds')) {
+
+            $productsId = request('productIds');
+            $quantity = request('quantity');
+            for ($i = 0 ; $i< count($productsId); $i++)
+            {
+                $bundleProduct = BundleProduct::where('id_bundle',request('bundle_id'))->where('id_product',$productsId[$i])->first();
+
+                if(count($bundleProduct) > 0)
+                {
+                    $bundleProduct->forceFill([
+                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
+                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                    ])->save();
+                } else
+                {
+                    $bundleProduct = BundleProduct::forceCreate([
+                        'id_bundle' => request('bundle_id'),
+                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
+                        'id_bundleCategory' => $bundleCategory->id,
+                        'id_product' => $productsId[$i],
+                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                    ]);
+                }
+            }
+
+        }
 
         flash()->success('Success!', 'Bundle Category successfully updated.');
 

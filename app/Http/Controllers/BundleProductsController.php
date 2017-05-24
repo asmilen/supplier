@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Request;
 use App\Models\Bundle;
 use App\Models\Category;
 use App\Models\BundleProduct;

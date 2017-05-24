@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bundle extends Model
 {
-    protected $table = "bundles";
-
     public function products()
     {
         return $this->belongsToMany(Product::class,'bundle_product','id_bundle','id_product')->withPivot('is_default', 'quantity');

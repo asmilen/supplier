@@ -56,7 +56,7 @@ class BundleCategoriesController extends Controller
             'bundle_id.required' => 'Hãy chọn nhóm sản phẩm.',
         ]);
 
-        $bundleCateogry = BundleCategory::forceCreate([
+        $bundleCategory = BundleCategory::forceCreate([
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
             'isRequired' => request('isRequired'),
@@ -71,31 +71,18 @@ class BundleCategoriesController extends Controller
             {
                 $bundleProduct = BundleProduct::forceCreate([
                     'id_bundle' => request('bundle_id'),
-                    'id_bundleCategory' => $bundleCateogry->id,
+                    'id_bundleCategory' => $bundleCategory->id,
                     'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
                     'id_product' => $productsId[$i],
                     'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
                 ]);
 
             }
-
         }
 
         flash()->success('Success!', 'Bundle Category successfully created.');
 
         return redirect()->route('bundleCategories.index');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Manufacturer  $manufacturer
-     * @return \Illuminate\Http\Response
-     */
-    public function show(BundleCategory $bundleCategory)
-    {
-        $categories = json_decode($bundleCategory->category);
-        return view('bundleCategories.edit', compact('bundleCategory','categories'));
     }
 
     /**
@@ -107,8 +94,11 @@ class BundleCategoriesController extends Controller
     public function edit(BundleCategory $bundleCategory)
     {
         $bundleProducts = $bundleCategory->products()->get();
+
         $productIds = $bundleCategory->products()->pluck('products.id');
+
         $products = Product::where('status',1)->whereNotIn('id',$productIds)->get();
+
         return view('bundleCategories.edit', compact('bundleCategory','bundleProducts','products'));
     }
 
@@ -127,7 +117,6 @@ class BundleCategoriesController extends Controller
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
             'bundle_id.required' => 'Hãy chọn nhóm sản phẩm.',
         ]);
-
 
         $bundleCategory->forceFill([
             'name' => request('name'),

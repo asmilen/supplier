@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bundle;
-use App\Models\Product;
-use App\Models\BundleProduct;
-use GuzzleHttp\Psr7\Request;
 
 class BundlesController extends Controller
 {

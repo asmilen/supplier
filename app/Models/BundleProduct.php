@@ -14,7 +14,6 @@ class BundleProduct extends Model
         return $this->belongsTo(Bundle::class,'id_bundle');
     }
 
-
     public function bundleCategory()
     {
         return $this->belongsTo(BundleCategory::class,'id_bundleCategory');
@@ -50,5 +49,31 @@ class BundleProduct extends Model
     public static function getActiveList()
     {
         return static::pluck('name', 'id')->all();
+    }
+
+    public function getProduct($supplierIds, $regionId)
+    {
+        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`"))
+            ->join('product_supplier', function ($q) use ($supplierIds) {
+                $q->on('product_supplier.product_id', '=', 'products.id')
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1);
+            })
+            ->findOrFail($this->id_product);
+
+        $margin = MarginRegionCategory::where('category_id', $product->category_id)
+            ->where('region_id', $regionId)->first();
+
+        $productMargin = $margin ? 1 + 0.01 * $margin->margin : 1.05;
+
+        $product->best_price = ProductSupplier::where('product_id', $product->id)
+            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * ' . $productMargin . '))'));
+
+        $product->quantity = $this->quantity;
+
+        $product->isDefault = $this->is_default;
+
+        return $product;
     }
 }

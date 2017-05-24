@@ -46,7 +46,7 @@ class BundlesController extends Controller
 
         $bundle = Bundle::forceCreate([
             'name' => request('name'),
-            'price' => (request('price')) ? request('price') : 0,
+            'price' => request('price', 0),
             'region_id' => request('region_id'),
             'label' => request('label'),
         ]);
@@ -100,7 +100,7 @@ class BundlesController extends Controller
 
         $bundle->forceFill([
             'name' => request('name'),
-            'price' => (request('price')) ? request('price') : 0,
+            'price' => request('price', 0),
             'region_id' => request('region_id'),
             'label' => request('label'),
         ])->save();

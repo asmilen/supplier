@@ -119,9 +119,4 @@ class Product extends Model
 
         return $this;
     }
-
-    public static function getActiveList()
-    {
-        return static::active()->get();
-    }
 }

@@ -46,4 +46,20 @@ class BundleCategory extends Model
     {
         return static::pluck('name', 'id')->all();
     }
+
+    public static function getListByBundleId($bundleId)
+    {
+        return static::where('id_bundle', $bundleId)->get();
+    }
+
+    public function getBundleProducts($supplierIds, $regionId)
+    {
+        $bundleProducts = BundleProduct::where('id_bundle', $this->id_bundle)
+            ->where('id_bundleCategory', $this->id)
+            ->get();
+
+        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds) {
+            return $bundleProduct->getProduct($supplierIds, $regionId);
+        });
+    }
 }

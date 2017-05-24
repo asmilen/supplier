@@ -37,9 +37,9 @@ class BundleCategoriesController extends Controller
             'isRequired' => true,
         ]);
 
-        $products = Product::getActiveList();
+        $products = Product::active()->get();
 
-        return view('bundleCategories.create',compact('bundleCategory','products'));
+        return view('bundleCategories.create', compact('bundleCategory','products'));
     }
 
     /**
@@ -64,20 +64,18 @@ class BundleCategoriesController extends Controller
         ]);
 
         if (request()->has('productIds')) {
+            $productIds = request('productIds');
 
-            $productsId = request('productIds');
             $quantity = request('quantity');
 
-            for ($i = 0 ; $i< count($productsId); $i++)
-            {
+            for ($i = 0; $i < count($productIds); $i++) {
                 $bundleProduct = BundleProduct::forceCreate([
                     'id_bundle' => request('bundle_id'),
                     'id_bundleCategory' => $bundleCategory->id,
-                    'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
-                    'id_product' => $productsId[$i],
-                    'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                    'is_default' => $productIds[$i] == request('default'),
+                    'id_product' => $productIds[$i],
+                    'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0,
                 ]);
-
             }
         }
 
@@ -100,7 +98,7 @@ class BundleCategoriesController extends Controller
 
         $products = Product::where('status',true)->whereNotIn('id',$productIds)->get();
 
-        return view('bundleCategories.edit', compact('bundleCategory','bundleProducts','products'));
+        return view('bundleCategories.edit', compact('bundleCategory', 'bundleProducts', 'products'));
     }
 
     /**
@@ -126,31 +124,26 @@ class BundleCategoriesController extends Controller
         ])->save();
 
         if (request()->has('productIds')) {
-
-            $productsId = request('productIds');
+            $productIds = request('productIds');
             $quantity = request('quantity');
-            for ($i = 0 ; $i< count($productsId); $i++)
-            {
-                $bundleProduct = BundleProduct::where('id_bundle',request('bundle_id'))->where('id_product',$productsId[$i])->first();
+            for ($i = 0; $i < count($productIds); $i++) {
+                $bundleProduct = BundleProduct::where('id_bundle',request('bundle_id'))
+                    ->where('id_product',$productIds[$i])
+                    ->first();
 
-                if(count($bundleProduct) > 0)
-                {
-                    $bundleProduct->forceFill([
-                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
-                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
-                    ])->save();
-                } else
-                {
-                    $bundleProduct = BundleProduct::forceCreate([
+                if (! $bundleProduct) {
+                    $bundleProduct = (new BundleProduct)->forceFill([
                         'id_bundle' => request('bundle_id'),
-                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
                         'id_bundleCategory' => $bundleCategory->id,
-                        'id_product' => $productsId[$i],
-                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                        'id_product' => $productIds[$i],
                     ]);
                 }
-            }
 
+                $bundleProduct->forceFill([
+                    'is_default' => $productIds[$i] == request('default'),
+                    'quantity' => isset($quantity[$i]) ? $quantity[$i] : 0
+                ])->save();
+            }
         }
 
         flash()->success('Success!', 'Bundle Category successfully updated.');
@@ -162,7 +155,4 @@ class BundleCategoriesController extends Controller
     {
         return BundleCategory::getDatatables();
     }
-
-
-
 }

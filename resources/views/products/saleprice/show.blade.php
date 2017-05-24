@@ -109,7 +109,8 @@
                     <th>STT</th>
                     <th>Nhà cung cấp</th>
                     <th>Số lượng</th>
-                    <th>Giá</th>
+                    <th>Giá nhập</th>
+                    <th>Giá bán khuyến nghị</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -119,6 +120,7 @@
                         <td>{{ $v->supplier->name }}</td>
                         <td>{{ $v->quantity }}</td>
                         <td>{{  number_format (  $v->import_price , 0 , "." , "," )}}</td>
+                        <td>{{  number_format (  $v->price_recommend , 0 , "." , "," )}}</td>
                     </tr>
                 @endforeach
                 </tbody>

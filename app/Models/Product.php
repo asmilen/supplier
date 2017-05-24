@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Datatables;
 use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;

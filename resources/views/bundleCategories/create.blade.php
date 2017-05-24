@@ -45,7 +45,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhóm sản phẩm</label>
                     <div class="col-sm-6">
-                        <select name="bundle_id" class="form-control">
+                        <select name="bundle_id" class="form-control" id = "bundleId">
                             <option value="">--Chọn nhóm sản phẩm--</option>
                             @foreach ($bundlesList as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
@@ -115,29 +115,13 @@
                                                 <th >ID</th>
                                                 <th >Tên</th>
                                                 <th >SKU</th>
-                                                <th >Trạng thái </th>
                                                 <th >Chọn </th>
                                                 <th >Số Lượng</th>
                                                 <th >Mặc định</th>
                                             </tr>
                                             </thead>
-                                            <tbody>
-                                            @foreach($products as $key => $value)
-                                                <tr>
-                                                    <td>{{ $value->id }}</td>
-                                                    <td class="productName">{{ $value->name }}</td>
-                                                    <td class="productSku">{{ $value->sku }}</td>
-                                                    <td>@if (!! $value->status)
-                                                            <i class="ace-icon fa bigger-130 fa-check-circle-o green"></i>
-                                                        @else
-                                                            <i class="ace-icon fa bigger-130 fa-times-circle-o red"></i>
-                                                        @endif
-                                                    </td>
-                                                    <td><input  type="checkbox" value="{{ $value->id }}" class="checkbox"/></td>
-                                                    <td><input  class="qty"  type="number" min = 0/></td>
-                                                    <td><input  class="radio" type="radio"  value="{{ $value->id }}" name="default"/></td>
-                                                </tr>
-                                            @endforeach
+                                            <tbody id="productsRegion">
+
                                             </tbody>
                                         </table>
                                         <br>
@@ -173,12 +157,37 @@
     <script type="text/javascript">
 
         $(document).ready(function() {
-
-            var table = $("#tableproducts").DataTable({
-                autoWidth: false
+            var table = '';
+            $('#bundleId').on('change', function (e) {
+                loadProduct(this.value);
             });
 
-            $('#btnChooseProduct').click( function () {
+            function loadProduct(bundleId) {
+                $.ajax({
+                    url: "/region/" + bundleId + "/products",
+                    success: function(products) {
+                        $("#productsRegion").html('');
+                        $.each(products, function(key, product) {
+                            $("#productsRegion").append('<tr>' +
+                                '<td>' + product.id + '</td>' +
+                                '<td class="productName">' + product.name + '</td>' +
+                                '<td class="productSku">'+ product.sku +'</td>' +
+                                '<td><input  type="checkbox" value="' + product.id + '" class="checkbox"/></td>' +
+                                '<td><input  class="qty"  type="number" min = 0/></td>' +
+                                '<td><input  class="radio" type="radio"  value="' + product.id + '" name="default"/></td>'
+                                + '</tr>');
+                        });
+                        table = $("#tableproducts").DataTable({
+                            autoWidth: false
+                        });
+                    },
+                    error: function() {
+
+                    }
+                });
+            }
+
+            $(document).on('click', '#btnChooseProduct', function(e) {
                 var productNames = [];
                 var productIds = [];
                 var productSkus = [];
@@ -193,11 +202,12 @@
                     productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
                     productDefaults.push($(rowcollection[i]).closest('tr').find('.radio').val());
                 }
+
                 $("#bundleProducts").html('');
 
                 for(var i = 0; i < productNames.length; i++) {
                     var checked = '';
-                    if(productDefaults[i] == 1) {
+                    if(productDefaults[i] == productIds[i]) {
                         checked = 'checked';
                     }
                     $("#bundleProducts").append('<tr>' +
@@ -218,7 +228,11 @@
                 e.preventDefault();
                 $(this).closest('tr').remove();
             });
+
+
         });
+
+
 
     </script>
 @endsection

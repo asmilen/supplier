@@ -58,7 +58,7 @@ class BundleCategory extends Model
             ->where('id_bundleCategory', $this->id)
             ->get();
 
-        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds) {
+        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds, $regionId) {
             return $bundleProduct->getProduct($supplierIds, $regionId);
         });
     }

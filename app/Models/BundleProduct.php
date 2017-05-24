@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
 

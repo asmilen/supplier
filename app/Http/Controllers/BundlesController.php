@@ -36,19 +36,22 @@ class BundlesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
-            'price' => 'required|max:255',
+            'label' => 'required',
+            'region_id' => 'required',
         ], [
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
-            'price.required' => 'Hãy nhập giá nhóm sản phẩm.',
+            'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
+            'region_id.required' => 'Hãy chọn vùng miền.',
         ]);
 
         $bundle = Bundle::forceCreate([
             'name' => request('name'),
-            'price' => request('price'),
+            'price' => request('price', 0),
             'region_id' => request('region_id'),
+            'label' => request('label'),
         ]);
 
-        flash()->success('Success!', 'Color successfully created.');
+        flash()->success('Success!', 'Bundle successfully created.');
 
         return redirect()->route('bundles.index');
     }
@@ -86,18 +89,23 @@ class BundlesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255',
             'price' => 'required|max:255',
+            'label' => 'required',
+            'region_id' => 'required',
         ], [
             'name.unique' => 'Hãy nhập tên nhóm sản phẩm.',
             'price.unique' => 'Hãy nhập giá nhóm sản phẩm.',
+            'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
+            'region_id.required' => 'Hãy chọn vùng miền.',
         ]);
 
         $bundle->forceFill([
             'name' => request('name'),
-            'price' => request('price'),
+            'price' => request('price', 0),
             'region_id' => request('region_id'),
+            'label' => request('label'),
         ])->save();
 
-        flash()->success('Success!', 'Color successfully updated.');
+        flash()->success('Success!', 'Bundle successfully updated.');
 
         return redirect()->route('bundles.index');
     }

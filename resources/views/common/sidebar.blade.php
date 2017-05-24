@@ -94,9 +94,6 @@
                         <a href="{{ url('/bundleCategories') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách danh mục theo nhóm sản phẩm </span></a>
                     </li>
 
-                    <li class="{{ (Request::is('bundleProducts') || Request::is('bundleProducts/*')) ? 'active' : '' }}">
-                        <a href="{{ url('/bundleProducts') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách sản phẩm </span></a>
-                    </li>
                 </ul>
             </li>
 

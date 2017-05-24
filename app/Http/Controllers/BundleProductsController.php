@@ -112,4 +112,9 @@ class BundleProductsController extends Controller
         return BundleProduct::getDatatables();
     }
 
+    public function destroy()
+    {
+       BundleProduct::where('id_product',request('productId'))->where('id_bundle',request('bundleId'))->delete();
+    }
+
 }

@@ -19,11 +19,16 @@ class BundleCategory extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class,'bundle_product','id_bundleCategory','id_product')->withPivot('is_default', 'quantity','id_bundle');
+    }
+
     public static function getDatatables()
     {
         $model = static::select([
-            'id', 'name','id_bundle','category','isRequired'
-        ])->with('bundle', 'category');
+            'id', 'name','id_bundle','isRequired'
+        ])->with('bundle');
 
         return Datatables::eloquent($model)
             ->editColumn('price', function ($bundle) {
@@ -31,11 +36,6 @@ class BundleCategory extends Model
             })
             ->editColumn('nameBundle', function ($model) {
                 return $model->bundle ? $model->bundle->name : '';
-            })
-            ->editColumn('category', function ($model) {
-                $categoriesId = json_decode($model->category);
-                $categoriesName = Category::whereIn('id',$categoriesId)->pluck('name')->all();
-                return implode(" , ",$categoriesName);
             })
             ->addColumn('action', 'bundleCategories.datatables.action')
             ->rawColumns(['action'])
@@ -45,5 +45,21 @@ class BundleCategory extends Model
     public static function getActiveList()
     {
         return static::pluck('name', 'id')->all();
+    }
+
+    public static function getListByBundleId($bundleId)
+    {
+        return static::where('id_bundle', $bundleId)->get();
+    }
+
+    public function getBundleProducts($supplierIds, $regionId)
+    {
+        $bundleProducts = BundleProduct::where('id_bundle', $this->id_bundle)
+            ->where('id_bundleCategory', $this->id)
+            ->get();
+
+        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds) {
+            return $bundleProduct->getProduct($supplierIds, $regionId);
+        });
     }
 }

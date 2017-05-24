@@ -70,6 +70,7 @@ Route::group(['middleware' => 'auth'], function () {
         // BundleProducts
         Route::get('bundleProducts/datatables', 'BundleProductsController@getDatatables')->name('bundleProducts.datatables');
         Route::resource('bundleProducts', 'BundleProductsController', ['except' => ['destroy','create','store']]);
+        Route::post('bundleProducts/destroy', 'BundleProductsController@destroy');
 
         // For supplier
         Route::get('supplier/supplier_datatables', 'ForSupplierController@getDatatables')->name('supplier.supplier_datatables');

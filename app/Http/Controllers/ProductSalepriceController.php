@@ -6,25 +6,30 @@ use App\Models\ProductSupplier;
 use Validator;
 use App\Models\Product;
 use App\Models\Saleprice;
+use DB;
+use App\Models\Province;
+use App\Models\SupplierSupportedProvince;
+use App\Models\MarginRegionCategory;
 
 class ProductSalepriceController extends Controller
 {
     public function show(Product $product)
     {
         $productSuppliers = ProductSupplier::where('product_id', $product->id)
-                                ->orderBy('import_price')
-                                ->take(5)
-                                ->get();
+            ->orderBy('import_price')
+            ->take(5)
+            ->get();
 
         return view('products.saleprice.show', compact('product', 'productSuppliers'));
     }
 
     public function update(Product $product)
     {
+
         Validator::make(request()->all(), [
             'price' => 'required|numeric',
             'stores.*' => 'required',
-        ])->after(function ($validator) {
+        ])->after(function ($validator) use ($product) {
             if (request('price') <= 0) {
                 $validator->errors()->add('price', 'Giá bán phải > 0.');
             }
@@ -33,6 +38,31 @@ class ProductSalepriceController extends Controller
             }
             if (!in_array(true,request('regions'))) {
                 $validator->errors()->add('regions', 'Bạn phải chọn ít nhất 1 miền.');
+            }
+            foreach (request('regions') as $regionId => $flagRegion) {
+                if ($flagRegion) {
+                    $provinceIds = Province::where('region_id', $regionId)->pluck('id');
+
+                    $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
+                        ->get()
+                        ->pluck('supplier_id');
+
+                    $margin = MarginRegionCategory::where('category_id', $product->category_id)
+                        ->where('region_id', $regionId)->first();
+
+                    if ($margin) {
+                        $productMargin = 1 + 0.01 * $margin->margin;
+                    } else {
+                        $productMargin = 1.05;
+                    }
+
+                    $minPrice = ProductSupplier::where('product_id', $product->id)
+                        ->whereIn('product_supplier.supplier_id', $supplierIds)
+                        ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
+                    if (request('price') < $minPrice) {
+                        $validator->errors()->add('price', 'Giá bán không hợp lệ cho ' . config('teko.regions')[$regionId]);
+                    }
+                }
             }
         })->validate();
 

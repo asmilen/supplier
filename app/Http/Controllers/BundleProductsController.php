@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Request;
 use App\Models\Bundle;
 use App\Models\Category;
 use App\Models\BundleProduct;
@@ -110,6 +111,11 @@ class BundleProductsController extends Controller
     public function getDatatables()
     {
         return BundleProduct::getDatatables();
+    }
+
+    public function destroy()
+    {
+      // BundleProduct::where('id_product',request('productId'))->where('id_bundle',request('bundleId'))->delete();
     }
 
 }

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bundle;
+use App\Models\Product;
+use App\Models\BundleProduct;
+use GuzzleHttp\Psr7\Request;
 
 class BundlesController extends Controller
 {
@@ -24,7 +27,8 @@ class BundlesController extends Controller
     public function create()
     {
         $bundle = new Bundle;
-        return view('bundles.create',compact('bundle'));
+        $products = Product::where('status',1)->get();
+        return view('bundles.create',compact('bundle','products'));
     }
 
     /**
@@ -36,19 +40,38 @@ class BundlesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
-            'price' => 'required|max:255',
+            'label' => 'required',
         ], [
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
-            'price.required' => 'Hãy nhập giá nhóm sản phẩm.',
+            'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
         ]);
 
         $bundle = Bundle::forceCreate([
             'name' => request('name'),
-            'price' => request('price'),
+            'price' => (request('price')) ? request('price') : 0,
             'region_id' => request('region_id'),
+            'label' => request('label'),
         ]);
 
-        flash()->success('Success!', 'Color successfully created.');
+        if (request()->has('productIds')) {
+
+            $productsId = request('productIds');
+            $quantity = request('quantity');
+
+            for ($i = 0 ; $i< count($productsId); $i++)
+            {
+                $bundleProduct = BundleProduct::forceCreate([
+                    'id_bundle' => $bundle->id,
+                    'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
+                    'id_product' => $productsId[$i],
+                    'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                ]);
+
+            }
+
+        }
+
+        flash()->success('Success!', 'Bundle successfully created.');
 
         return redirect()->route('bundles.index');
     }
@@ -72,7 +95,10 @@ class BundlesController extends Controller
      */
     public function edit(Bundle $bundle)
     {
-        return view('bundles.edit', compact('bundle'));
+        $bundleProducts = $bundle->products()->get();
+        $productIds = $bundle->products()->pluck('products.id');
+        $products = Product::where('status',1)->whereNotIn('id',$productIds)->get();
+        return view('bundles.edit', compact('bundle','bundleProducts','products'));
     }
 
     /**
@@ -86,18 +112,48 @@ class BundlesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255',
             'price' => 'required|max:255',
+            'label' => 'required',
         ], [
             'name.unique' => 'Hãy nhập tên nhóm sản phẩm.',
             'price.unique' => 'Hãy nhập giá nhóm sản phẩm.',
+            'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
         ]);
 
         $bundle->forceFill([
             'name' => request('name'),
-            'price' => request('price'),
+            'price' => (request('price')) ? request('price') : 0,
             'region_id' => request('region_id'),
+            'label' => request('label'),
         ])->save();
 
-        flash()->success('Success!', 'Color successfully updated.');
+        if (request()->has('productIds')) {
+
+            $productsId = request('productIds');
+            $quantity = request('quantity');
+            for ($i = 0 ; $i< count($productsId); $i++)
+            {
+                $bundleProduct = BundleProduct::where('id_bundle',$bundle->id)->where('id_product',$productsId[$i])->first();
+
+                if(count($bundleProduct) > 0)
+                {
+                    $bundleProduct->forceFill([
+                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
+                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                    ])->save();
+                } else
+                {
+                    $bundleProduct = BundleProduct::forceCreate([
+                        'id_bundle' => $bundle->id,
+                        'is_default' => ($productsId[$i] == request('default')) ? 1 : 0,
+                        'id_product' => $productsId[$i],
+                        'quantity' =>  isset($quantity[$i]) ? $quantity[$i] : 0
+                    ]);
+                }
+            }
+
+        }
+
+        flash()->success('Success!', 'Bundle successfully updated.');
 
         return redirect()->route('bundles.index');
     }

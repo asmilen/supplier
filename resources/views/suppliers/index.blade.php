@@ -261,8 +261,8 @@
                                     <input type="file" name="file">
                                 </div>
 
-
                             </form>
+                            @include('common.errors')
                         </div>
 
 
@@ -413,21 +413,7 @@
 </div><!-- /.page-content -->
 @endsection
 
-@section('scripts')
-    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/datatables.cellEdit.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
-    <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-    {{--<script type="text/javascript" src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>--}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
-    <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 
-@endsection
 
 @section('inline_scripts')
 

@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use DB;
 use App\Models\Bundle;
+use App\Models\Product;
+use App\Models\Province;
+use App\Models\SupplierSupportedProvince;
 
 class BundlesController extends Controller
 {
@@ -113,6 +117,15 @@ class BundlesController extends Controller
     public function getDatatables()
     {
         return Bundle::getDatatables();
+    }
+
+    public function listProductByRegion(Bundle $bundle)
+    {
+        $supplierIds = SupplierSupportedProvince::whereIn(
+            'province_id', Province::getListByRegion($bundle->region_id)
+        )->pluck('supplier_id')->all();
+
+       return $bundle->listProductBySuppliers($supplierIds);
     }
 
 }

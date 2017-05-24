@@ -55,9 +55,6 @@
                                     <option value="active">Kích hoạt</option>
                                     <option value="inactive">Không kích hoạt</option>
                                 </select>
-                                <select class="form-control" name="province">
-                                    <option value="">--Chọn Khu Vực--</option>
-                                </select>
                                 <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
                                 <button type="submit" class="btn btn-purple btn-sm">
                                     <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search

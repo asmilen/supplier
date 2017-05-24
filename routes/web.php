@@ -10,6 +10,7 @@ Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback')
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
 Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index');
 Route::get('provinces/{province}/addressCode', 'ProvinceDistrictsController@addressCode');
+Route::get('region/{bundle}/products', 'BundlesController@listProductByRegion');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 

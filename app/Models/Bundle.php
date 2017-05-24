@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,4 +32,16 @@ class Bundle extends Model
     {
         return static::pluck('name', 'id')->all();
     }
+
+    public function listProductBySuppliers($supplierIds)
+    {
+        return Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`"))
+            ->join('product_supplier', function ($q) use ($supplierIds) {
+                $q->on('product_supplier.product_id', '=', 'products.id')
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1);
+            })->get();
+    }
+
+
 }

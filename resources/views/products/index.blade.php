@@ -1,5 +1,22 @@
 @extends('layouts.app')
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+    <style>
+        .select2-container, .select2-drop, .select2-search, .select2-container .select2-search input{vertical-align: middle;}
+        .select2-search:after {
+            font-family: FontAwesome;
+            font-size: 14px;
+            display: inline;
+            content: "" !important;
+            color: #777;
+            position: relative;
+            top: 0;
+            left: -20px;
+            z-index: 0;
+        }
+    </style>
 
+@endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
@@ -45,14 +62,14 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
-                            <select class="form-control" name="category_id">
-                                <option value="">--Chọn danh mục--</option>
+                            <select class="categories" name="category_id">
+                                <option value=""></option>
                                 @foreach ($categoriesList as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
                             </select>
-                            <select class="form-control" name="manufacturer_id">
-                                <option value="">--Chọn nhà SX--</option>
+                            <select class="manufactures" name="manufacturer_id">
+                                <option value=""></option>
                                 @foreach ($manufacturersList as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
                                 @endforeach
@@ -97,11 +114,23 @@
 @section('scripts')
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
 @endsection
 
 @section('inline_scripts')
 <script>
 $(function () {
+    $(".categories").select2({
+        placeholder: "-- Chọn danh mục --",
+        allowClear: true,
+        width:'10%',
+    });
+    $(".manufactures").select2({
+        placeholder: "-- Chọn nhà sản xuất --",
+        allowClear: true,
+        width:'11%',
+    });
+
     var datatable = $("#dataTables-products").DataTable({
         searching: false,
         autoWidth: false,
@@ -137,3 +166,4 @@ $(function () {
 });
 </script>
 @endsection
+

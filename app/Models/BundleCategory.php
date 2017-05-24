@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
 
@@ -61,5 +62,16 @@ class BundleCategory extends Model
         return $bundleProducts->map(function ($bundleProduct) use ($supplierIds, $regionId) {
             return $bundleProduct->getProduct($supplierIds, $regionId);
         });
+    }
+
+    public function listProductBySuppliersNotExist($supplierIds,$productIds)
+    {
+        return Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`"))
+            ->join('product_supplier', function ($q) use ($supplierIds) {
+                $q->on('product_supplier.product_id', '=', 'products.id')
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1);
+            })
+            ->whereNotIn('products.id',$productIds)->get();
     }
 }

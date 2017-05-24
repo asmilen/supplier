@@ -25,7 +25,7 @@ class BundlesController extends Controller
             return $bundles;
         }
         catch (\Exception $e) {
-            return api_response(['message' => $e->getMessage()], 500);
+            return api_response()->errorInternalError();
         }
 
     }
@@ -91,7 +91,7 @@ class BundlesController extends Controller
             }
             return $response;
         } catch (\Exception $e) {
-            return api_response(['message' => $e->getMessage()], 500);
+            return api_response()->errorInternalError();
         }
 
     }

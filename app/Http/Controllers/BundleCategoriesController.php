@@ -36,7 +36,9 @@ class BundleCategoriesController extends Controller
         $bundleCategory = (new BundleCategory)->forceFill([
             'isRequired' => true,
         ]);
-        $products = Product::where('status',1)->get();
+
+        $products = Product::getActiveList();
+
         return view('bundleCategories.create',compact('bundleCategory','products'));
     }
 
@@ -96,7 +98,7 @@ class BundleCategoriesController extends Controller
 
         $productIds = $bundleCategory->products()->pluck('products.id');
 
-        $products = Product::where('status',1)->whereNotIn('id',$productIds)->get();
+        $products = Product::where('status',true)->whereNotIn('id',$productIds)->get();
 
         return view('bundleCategories.edit', compact('bundleCategory','bundleProducts','products'));
     }

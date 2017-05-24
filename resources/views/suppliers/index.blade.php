@@ -70,6 +70,9 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .js-example-basic-single{
+            font-size: 14px;
+        }
 
     </style>
 @endsection
@@ -120,12 +123,12 @@
                                     <label class="col-sm-3 control-label no-padding-left">Sản phẩm</label>
                                     <div class="col-sm-9">
                                         <select name="product_id" class="js-example-basic-single" id="js-example-basic-single">
-                                            <option value="">-- Chọn sản phẩm --</option>
+                                            <option value=""></option>
                                             @foreach($products as $key => $value)
-                                                <option value="{{  $value->id }}">{{ $value->sku }} - {{  $value->name }}</option>
+                                                <option value="{{  $value->id }}" style="font-size: 14px;">{{ $value->sku }} - {{  $value->name }}</option>
                                             @endforeach
                                         </select>
-                                        <p style="color:red;text-align: left;" id="product_id">{{$errors->first('product_id')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="product_id">{{$errors->first('product_id')}}</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -137,7 +140,7 @@
                                                 <option value="{{  $value->supplier_id }}">{{  $value->supplier_name }}</option>
                                             @endforeach
                                         </select>
-                                        <p style="color:red;text-align: left;" id="supplier_id">{{$errors->first('supplier_id')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="supplier_id">{{$errors->first('supplier_id')}}</p>
                                     </div>
                                 </div>
 
@@ -152,7 +155,7 @@
                                             {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
                                             <option value="4">Không ưu tiên lấy hàng</option>
                                         </select>
-                                        <p style="color:red;text-align: left;" id="status">{{$errors->first('status')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="status">{{$errors->first('status')}}</p>
                                     </div>
                                 </div>
 
@@ -162,7 +165,7 @@
                                         <select name="state"  class="form-control">
                                             <option value="1" selected>Còn hàng</option>
                                         </select>
-                                        <p style="color:red;text-align: left;" id="state">{{$errors->first('state')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="state">{{$errors->first('state')}}</p>
                                     </div>
                                 </div>
 
@@ -170,7 +173,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Giá nhập (có VAT)</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="import_price" placeholder="Nhập giá" >
-                                        <p style="color:red;text-align: left;" id="import_price">{{$errors->first('import_price')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="import_price">{{$errors->first('import_price')}}</p>
                                     </div>
                                 </div>
 
@@ -178,7 +181,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">VAT</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="vat" placeholder="Nhập VAT" >
-                                        <p style="color:red;text-align: left;" id="vat">{{$errors->first('vat')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="vat">{{$errors->first('vat')}}</p>
                                     </div>
                                 </div>
 
@@ -186,7 +189,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Giá bán khuyến nghị</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="price_recommend" placeholder="Nhập giá bán khuyến nghị" >
-                                        <p style="color:red;text-align: left;" id="price_recommend">{{$errors->first('price_recommend')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="price_recommend">{{$errors->first('price_recommend')}}</p>
                                     </div>
                                 </div>
 
@@ -194,7 +197,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Số lượng</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="quantity"  placeholder="Nhập số lượng" >
-                                        <p style="color:red;text-align: left;" id="quantity">{{$errors->first('quantity')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="quantity">{{$errors->first('quantity')}}</p>
                                     </div>
                                 </div>
 
@@ -202,7 +205,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Ảnh</label>
                                     <div class="col-sm-9">
                                         <input type="file" class="form-control" name="image"  >
-                                        <p style="color:red;text-align: left;" id="image">{{$errors->first('image')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="image">{{$errors->first('image')}}</p>
                                     </div>
 
                                 </div>
@@ -211,7 +214,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Mô tả</label>
                                     <div class="col-sm-9">
                                         <textarea class="form-control" name="description" id = "_description"></textarea>
-                                        <p style="color:red;text-align: left;" id="description">{{$errors->first('description')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="description">{{$errors->first('description')}}</p>
                                     </div>
 
                                 </div>
@@ -241,30 +244,30 @@
                 </div>
 
                 <div class="widget-body">
-                    <div class="widget-main" style="overflow:hidden;">
-                           <div style="float: left; margin-right: 15px">
+                        <div class="widget-main" style="overflow:hidden;">
+                            <div style="float: left; margin-right: 15px">
                                <form class="form-inline" id="export-form" action="{{ url('suppliers/exportExcel') }}" method="post">
                                    <button type="submit" class="btn btn-sm">
                                        Export
                                    </button>
                                </form>
-                           </div>
-                        <div style="float: left; margin-right: 15px">
-                            <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
-                                <div class="form-group">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                </div>
-                                <button type="submit" class="btn btn-purple btn-sm">
-                                    Import
-                                </button>
-                                <div class="form-group">
-                                    <input type="file" name="file">
-                                </div>
+                            </div>
+                            <div style="float: left; margin-right: 15px">
+                                <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
+                                    {{ csrf_field() }}
+                                    <button type="submit" class="btn btn-purple btn-sm">
+                                        Import
+                                    </button>
 
-                            </form>
-                            @include('common.errors')
-                        </div>
+                                    <div class="form-group">
+                                        <input type="file" name="file">
+                                    </div>
 
+                                </form>
+                            </div>
+                            <div style="float: left; margin-right: 15px">
+                                @include('common.errors')
+                            </div>
 
                     </div>
 
@@ -413,7 +416,21 @@
 </div><!-- /.page-content -->
 @endsection
 
+@section('scripts')
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/datatables.cellEdit.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js"></script>
+    <script src="//cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+    {{--<script type="text/javascript" src="https://cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js"></script>--}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
+    <script src="//cdn.ckeditor.com/4.5.7/standard/ckeditor.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 
+@endsection
 
 @section('inline_scripts')
 
@@ -422,7 +439,7 @@
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
             });
 
             $(document).on("click",".checkStatus",function() {

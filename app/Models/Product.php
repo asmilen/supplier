@@ -45,6 +45,11 @@ class Product extends Model
         return $this->hasMany(Saleprice::class);
     }
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     public static function getDatatables()
     {
         $model = static::select([
@@ -113,5 +118,10 @@ class Product extends Model
         ])));
 
         return $this;
+    }
+
+    public static function getActiveList()
+    {
+        return static::active()->get();
     }
 }

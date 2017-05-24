@@ -200,7 +200,7 @@ class SuppliersController extends Controller
 //                }
 
                 if (request()->has('recommend_price')) {
-                    $query->where('product_supplier.price_recommend', request('recommend_price'));
+                    $query->where('product_supplier.price_recommend', 'like', '%' .request('recommend_price'). '%');
                 }
 
                 if (request()->has('status')) {

@@ -21,7 +21,7 @@ class BundlesController extends Controller
 
         $bundles = Bundle::where(
             'region_id', Province::getRegionIdsByCode($codeProvince)
-        )->whereIn('label', array_keys(config('teko.bundleLabels')))->get()->groupBy('label');
+        )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
         $response = [];
 

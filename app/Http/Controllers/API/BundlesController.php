@@ -30,7 +30,7 @@ class BundlesController extends Controller
                 'title' => $labels[$key],
                 'data' => $bundle
             ];
-        array_push($response,$data);
+        array_push($response, $data);
         }
 
        return $response;

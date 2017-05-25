@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice']);
+var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -80,6 +80,7 @@ __webpack_require__(2);
 __webpack_require__(3);
 __webpack_require__(4);
 __webpack_require__(5);
+__webpack_require__(6);
 
 /***/ }),
 /* 1 */
@@ -373,6 +374,30 @@ function ProductSalepriceController($scope, $http, $window) {
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
+
+TransportFeeIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function TransportFeeIndexController($scope, $http) {
+    console.log('Transport Fee Index Controller');
+
+    $scope.transportFeesLoaded = false;
+
+    $scope.refreshData = function () {
+        $http.get('/api/transport-fees').then(function (response) {
+            $scope.transportFees = response.data;
+            $scope.transportFeesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+}
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

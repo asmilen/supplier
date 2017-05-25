@@ -116,6 +116,12 @@
                 <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Cập nhật giá </span></a>
             </li>
         @endif
+
+        @if ($currentUser->hasAccess('transport-fees.index'))
+            <li class="{{ (Request::is('transport-fees') || Request::is('transport-fees/index')) ? 'active' : '' }}">
+                <a href="{{ url('/transport-fees') }}"><i class="menu-icon fa fa-truck"></i> <span class="menu-text"> Phí vận chuyển</span></a>
+            </li>
+        @endif
     </ul><!-- /.nav-list -->
 
     <!-- #section:basics/sidebar.layout.minimize -->

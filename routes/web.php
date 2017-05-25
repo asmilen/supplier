@@ -93,5 +93,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::resource('suppliers', 'SuppliersController');
 
+        Route::resource('transport-fees', 'TransportFeesController', ['except' => 'destroy']);
     });
 });

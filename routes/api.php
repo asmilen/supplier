@@ -12,6 +12,9 @@ Route::get('listSupplierByProductId', 'SuppliersController@getListSupplierByProd
 Route::get('listBundleByProvinceCode/{codeProvince}', 'BundlesController@listBundleByProvinceCode');
 Route::get('listBundleProduct/{bundleId}', 'BundlesController@getBundleProduct');
 
+// Transport Fees
+Route::get('transport-fees', 'TransportFeesController@index');
+
 Route::group(['middleware' => 'auth:api'], function () {
     //
 });

@@ -23,9 +23,17 @@ class BundlesController extends Controller
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys(config('teko.bundleLabels')))->get()->groupBy('label');
 
-        return $bundles->mapWithKeys(function ($bundle, $key) use ($labels) {
-            return [$labels[$key] => $bundle];
-        });
+        $response = [];
+
+        foreach ($bundles as $key => $bundle) {
+            $data = [
+                'title' => $labels[$key],
+                'data' => $bundle
+            ];
+        array_push($response,$data);
+        }
+
+       return $response;
     }
 
     public function getBundleProduct($bundleId)

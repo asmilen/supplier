@@ -73,6 +73,9 @@
         .js-example-basic-single{
             font-size: 14px;
         }
+        .suppliers{
+            font-size: 14px;
+        }
 
     </style>
 @endsection
@@ -134,8 +137,8 @@
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-left">Nhà cung cấp</label>
                                     <div class="col-sm-9">
-                                        <select name="supplier_id" class="form-control">
-                                            <option value="">-- Chọn nhà cung cấp --</option>
+                                        <select name="supplier_id" class="suppliers">
+                                            <option value=""></option>
                                             @foreach($suppliers as $key => $value)
                                                 <option value="{{  $value->supplier_id }}">{{  $value->supplier_name }}</option>
                                             @endforeach
@@ -440,6 +443,12 @@
         $( document ).ready(function() {
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
+                allowClear: true,
+                width: '100%',
+            });
+
+            $(".suppliers").select2({
+                placeholder: "-- Chọn nhà cung cấp --",
                 allowClear: true,
                 width: '100%',
             });

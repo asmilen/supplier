@@ -15,11 +15,17 @@ use App\Models\SupplierSupportedProvince;
 
 class BundlesController extends Controller
 {
-    public function listBundleByProvinceCode($codeProvince, $labelId)
+    public function listBundleByProvinceCode($codeProvince)
     {
-        return Bundle::whereIn(
+        $labels = config('teko.bundleLabels');
+
+        $bundles = Bundle::where(
             'region_id', Province::getRegionIdsByCode($codeProvince)
-        )->where('label', $labelId)->get();
+        )->whereIn('label', array_keys($labels))->get()->groupBy('label');
+
+        return $bundles->mapWithKeys(function ($bundle, $key) use ($labels) {
+            return [$labels[$key] => $bundle];
+        });
     }
 
     public function getBundleProduct($bundleId)

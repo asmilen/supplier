@@ -23,17 +23,12 @@ class BundlesController extends Controller
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
-        $response = [];
-
-        foreach ($bundles as $key => $bundle) {
-            $data = [
+        return $bundles->map(function ($bundle, $key) use ($labels) {
+            return [
                 'title' => $labels[$key],
                 'data' => $bundle
             ];
-        array_push($response, $data);
-        }
-
-       return $response;
+        });
     }
 
     public function getBundleProduct($bundleId)

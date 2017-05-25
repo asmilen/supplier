@@ -62,7 +62,7 @@ class BundleCategoriesController extends Controller
         $bundleCategory = BundleCategory::forceCreate([
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
-            'isRequired' => request('isRequired',0),
+            'isRequired' => request('isRequired', 0),
         ]);
 
         if (request()->has('productIds')) {
@@ -124,7 +124,7 @@ class BundleCategoriesController extends Controller
         $bundleCategory->forceFill([
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
-            'isRequired' => request('isRequired',0),
+            'isRequired' => request('isRequired', 0),
         ])->save();
 
         if (request()->has('productIds')) {

@@ -131,7 +131,7 @@
                                                 <option value="{{  $value->id }}" style="font-size: 14px;">{{ $value->sku }} - {{  $value->name }}</option>
                                             @endforeach
                                         </select>
-                                        <p style="color:red;text-align: leftfont-size:14px;" id="product_id">{{$errors->first('product_id')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="product_id">{{$errors->first('product_id')}}</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -631,11 +631,7 @@
                             swal("Thành công!", "Tạo thành công sản phẩm cho nhà cung cấp!", "success");
                             window.location.reload();
                         } else if (res.status == 'exists') {
-                            swal({
-                                title: "Không thành công?",
-                                text: "Sản phẩm này đã có trong hệ thống!",
-                                type: "warning",
-                            })
+                            $("#supplier_id").text('Sản phẩm này đã có cho nhà cung cấp trong hệ thống! ');
                         }
                         else {
                             $.each(res.errors,function(index, value) {

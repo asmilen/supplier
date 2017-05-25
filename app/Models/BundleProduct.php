@@ -69,7 +69,11 @@ class BundleProduct extends Model
 
         $product->best_price = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)
-            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * ' . $productMargin . '))'));
+            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
+
+        $product->import_price = ProductSupplier::where('product_id', $product->id)
+            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->min(DB::raw('(ceil(product_supplier.import_price/1000) * 1000)'));
 
         $product->quantity = $this->quantity;
 

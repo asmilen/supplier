@@ -104,7 +104,6 @@ class SuppliersController extends Controller
         } else {
             $product_supplier = ProductSupplier::where('product_id', $request->input('product_id'))->where('supplier_id', $request->input('supplier_id'))->get();
             if (count($product_supplier) > 0) {
-                flash()->warning('Warning Title!', 'Existed.');
                 $response['status'] = 'exists';
             } else {
                 $filename = '';
@@ -113,7 +112,6 @@ class SuppliersController extends Controller
                     $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
                     Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
                 }
-
 
                 $data = [
                     'product_id' => $request->input('product_id'),
@@ -126,7 +124,6 @@ class SuppliersController extends Controller
                     'state' => $request->input('state'),
                     'quantity' => $request->input('quantity') ? $request->input('quantity') : 0,
                     'description' => $request->input('description') ? $request->input('description') : ''
-
                 ];
 
                 $product = Product::find($data['product_id']);
@@ -142,13 +139,12 @@ class SuppliersController extends Controller
                     $product->best_price = $data['import_price'];
                     $product->save();
                 }
-                flash()->success('Success!', 'Product Supplier successfully created.');
+
                 $response['status'] = 'success';
             }
         }
 
         return response()->json($response);
-
     }
 
     public function getDatatables()
@@ -792,27 +788,28 @@ class SuppliersController extends Controller
         ]);
 
         $file = request()->file('file');
-          Excel::load($file,function($reader) {
+        Excel::load($file,function($reader) {
               $reader->each(function ($sheet){
                   $supplier_product = ProductSupplier::where('product_id', $sheet->id_product)->where('supplier_id', $sheet->id_supplier)->first();
                   if(count($supplier_product) > 0) {
                       $supplier_product->forceFill([
-                          'name' => $sheet->product_name,
-                          'code' => request('code'),
-                          'import_price' => $sheet->import_price,
-                          'price_recommend' => $sheet->recommend_price,
-                          'state' => $sheet->status_product,
+                          'name' => $sheet->product_name ? $sheet->product_name : '',
+                          'code' => request('code',''),
+                          'import_price' => $sheet->import_price ? $sheet->import_price : 0,
+                          'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : 0,
+                          'state' => $sheet->status_product ? $sheet->status_product : 1,
+                          'updated_by' => Sentinel::getUser()->id,
                       ])->save();
-
                   } else {
                       ProductSupplier::forceCreate([
-                          'product_id' => $sheet->id_product,
-                          'supplier_id' =>  $sheet->id_supplier,
-                          'name' => $sheet->product_name,
-                          'code' => request('code'),
-                          'import_price' => $sheet->import_price,
-                          'price_recommend' => $sheet->recommend_price,
-                          'state' => $sheet->status_product,
+                          'product_id' => $sheet->id_product ? $sheet->id_product : 0,
+                          'supplier_id' =>  $sheet->id_supplier ? $sheet->id_supplier : 0,
+                          'name' => $sheet->product_name ? $sheet->product_name : '',
+                          'code' => request('code',''),
+                          'import_price' => $sheet->import_price ? $sheet->import_price : 0,
+                          'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : 0,
+                          'state' => $sheet->status_product ? $sheet->status_product : 1,
+                          'created_by' => Sentinel::getUser()->id,
                       ]);
                   }
               });

@@ -128,7 +128,7 @@
                                                 <option value="{{  $value->id }}" style="font-size: 14px;">{{ $value->sku }} - {{  $value->name }}</option>
                                             @endforeach
                                         </select>
-                                        <p style="color:red;text-align: left;font-size:14px;" id="product_id">{{$errors->first('product_id')}}</p>
+                                        <p style="color:red;text-align: leftfont-size:14px;" id="product_id">{{$errors->first('product_id')}}</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -255,17 +255,18 @@
                             <div style="float: left; margin-right: 15px">
                                 <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
                                     {{ csrf_field() }}
-                                    <button type="submit" class="btn btn-purple btn-sm">
+                                    <button type="submit" class="btn btn-purple btn-sm" id = "btn_import">
                                         Import
                                     </button>
 
                                     <div class="form-group">
-                                        <input type="file" name="file">
+                                        <input type="file" name="file" id = "fileUpload">
                                     </div>
 
                                 </form>
                             </div>
                             <div style="float: left; margin-right: 15px">
+                                <span id="lblError" style="color: red;"></span>
                                 @include('common.errors')
                             </div>
 
@@ -407,6 +408,7 @@
                             </select></th>
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>
+                        <th ></th>
                     </tr>
                 </tfoot>
 
@@ -510,23 +512,7 @@
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
-//                "dom": 'T<"clear">lfrtip',
-//                tableTools: {
-//                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
-//                    "aButtons": [{
-//                    "sExtends": "xls",
-//                    "oSelectorOpts": { filter: 'applied',order: 'applied',search: 'applied'},
-//                    "sButtonText": "Export Excel",
-//                        "mColumns": [ 0, 1, 2 , 3 , 4, 5 , 6 , 7 , 8 , 9 ],
-//                        "bFooter": false
-//                }]},
-//                dom: 'Bfrtip',
-//                buttons: [
-//
-//                    'excelHtml5',
-//                    'csvHtml5',
-//                    'pdfHtml5'
-//                ]
+
             });
 
             datatable.MakeCellsEditable({
@@ -602,6 +588,20 @@
 
             CKEDITOR.replace('_description');
 
+            $("#btn_import").on("click", function () {
+                var allowedFiles = [".xlsx"];
+                var fileUpload = $("#fileUpload");
+                var lblError = $("#lblError");
+                var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+                if (!regex.test(fileUpload.val().toLowerCase())) {
+                    lblError.html("Please upload files having extensions: <b>" + allowedFiles.join(', ') + "</b> only.");
+                    return false;
+                } else {
+                    lblError.html('');
+                    return true;
+                }
+            });
+
             $("#btn_save").on("click", function () {
                 for ( instance in CKEDITOR.instances )
                     CKEDITOR.instances[instance].updateElement();
@@ -618,8 +618,15 @@
                     dataType: 'JSON',
                     success: function (res){
                         $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
-                        if(res.status == 'success' || res.status == 'exists'){
+                        if (res.status == 'success'){
+                            swal("Thành công!", "Tạo thành công sản phẩm cho nhà cung cấp!", "success");
                             window.location.reload();
+                        } else if (res.status == 'exists') {
+                            swal({
+                                title: "Không thành công?",
+                                text: "Sản phẩm này đã có trong hệ thống!",
+                                type: "warning",
+                            })
                         }
                         else {
                             $.each(res.errors,function(index, value) {
@@ -706,6 +713,7 @@
 
             @include('scripts.click-datatable-delete-button')
         });
+
 
     </script>
 @endsection

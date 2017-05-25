@@ -23,8 +23,11 @@ class BundlesController extends Controller
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
-        return $bundles->mapWithKeys(function ($bundle, $key) use ($labels) {
-            return [$labels[$key] => $bundle];
+        return $bundles->map(function ($bundle, $key) use ($labels) {
+            return [
+                'title' => $labels[$key],
+                'data' => $bundle
+            ];
         });
     }
 

@@ -46,7 +46,7 @@ class BundlesController extends Controller
         ], [
             'name.required' => 'Hãy nhập tên nhóm sản phẩm.',
             'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
-            'price.unique' => 'Hãy nhập giá nhóm sản phẩm.',
+            'price.required' => 'Hãy nhập giá nhóm sản phẩm.',
             'region_id.required' => 'Hãy chọn vùng miền.',
         ]);
 
@@ -99,7 +99,7 @@ class BundlesController extends Controller
             'region_id' => 'required',
         ], [
             'name.unique' => 'Hãy nhập tên nhóm sản phẩm.',
-            'price.unique' => 'Hãy nhập giá nhóm sản phẩm.',
+            'price.required' => 'Hãy nhập giá nhóm sản phẩm.',
             'label.required' => 'Hãy chọn nhãn của nhóm sản phẩm.',
             'region_id.required' => 'Hãy chọn vùng miền.',
         ]);

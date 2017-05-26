@@ -16,7 +16,7 @@ class Bundle extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id', 'name','price','region_id','label'
+            'id', 'name', 'price', 'region_id', 'label'
         ]);
 
         return Datatables::eloquent($model)

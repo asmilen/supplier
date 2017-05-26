@@ -10,7 +10,7 @@ class Margin extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id', 'label','value'
+            'id', 'label', 'value'
         ]);
 
         return Datatables::eloquent($model)

@@ -112,13 +112,13 @@
 
         @if ($currentUser->hasAccess('supplier.updatePrice'))
             <li class="{{ (Request::is('supplier') || Request::is('supplier/updatePrice')) ? 'active' : '' }}">
-                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Cập nhật giá </span></a>
+                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-wrench"></i> <span class="menu-text"> Cập nhật giá </span></a>
             </li>
         @endif
 
         @if ($currentUser->hasAccess('margins.index'))
             <li class="{{ (Request::is('margins') || Request::is('margins/*')) ? 'active' : '' }}">
-                <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Margin trên đơn hàng </span></a>
+                <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-percent"></i> <span class="menu-text"> Margin Order </span></a>
             </li>
         @endif
     </ul><!-- /.nav-list -->

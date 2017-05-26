@@ -121,6 +121,12 @@
                 <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-percent"></i> <span class="menu-text"> Margin Order </span></a>
             </li>
         @endif
+
+        @if ($currentUser->hasAccess('transport-fees.index'))
+            <li class="{{ (Request::is('transport-fees') || Request::is('transport-fees/index')) ? 'active' : '' }}">
+                <a href="{{ url('/transport-fees') }}"><i class="menu-icon fa fa-truck"></i> <span class="menu-text"> Phí vận chuyển</span></a>
+            </li>
+        @endif
     </ul><!-- /.nav-list -->
 
     <!-- #section:basics/sidebar.layout.minimize -->

@@ -92,6 +92,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::resource('suppliers', 'SuppliersController');
 
+        // Transport Fees
+        Route::resource('transport-fees', 'TransportFeesController', ['except' => 'destroy']);
+
         // Margins for Orders
         Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
         Route::resource('margins', 'MarginsController', ['except' => 'destroy']);

@@ -4,13 +4,9 @@ namespace App\Http\Controllers\API;
 
 use DB;
 use App\Models\Bundle;
-use App\Models\Product;
 use App\Models\Province;
-use App\Models\BundleProduct;
 use App\Models\BundleCategory;
-use App\Models\ProductSupplier;
 use App\Http\Controllers\Controller;
-use App\Models\MarginRegionCategory;
 use App\Models\SupplierSupportedProvince;
 
 class BundlesController extends Controller

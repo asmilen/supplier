@@ -24,6 +24,7 @@ class MarginsController extends Controller
     public function create()
     {
         $margin = new Margin;
+        
         return view('margins.create',compact('margin'));
     }
 

@@ -57,7 +57,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
 
-
         // Bundles
         Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
         Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);
@@ -93,6 +92,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::resource('suppliers', 'SuppliersController');
 
+        // Transport Fees
         Route::resource('transport-fees', 'TransportFeesController', ['except' => 'destroy']);
+
+        // Margins for Orders
+        Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
+        Route::resource('margins', 'MarginsController', ['except' => 'destroy']);
     });
 });

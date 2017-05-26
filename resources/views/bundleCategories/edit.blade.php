@@ -46,10 +46,11 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhóm sản phẩm</label>
                     <div class="col-sm-6">
-                        <select name="bundle_id" class="form-control" id = "bundleId">
+                        <input type="hidden" name="bundle_id" id="bundle_id" value="{{ $bundleCategory->id_bundle }}" />
+                        <select name="bundle_id" class="form-control" id = "bundleId" {{ $bundleProducts ?  'disabled=disabled' : ''}}>
                             <option value="">--Chọn nhóm sản phẩm--</option>
                             @foreach ($bundlesList as $id => $name)
-                                <option value="{{ $id }}" {{ $id == $bundleCategory->id_bundle ? ' selected=selected' : '' }}>{{ $name }}</option>
+                                <option value="{{ $id }}" {{ $id == $bundleCategory->id_bundle ? 'selected=selected' : '' }}>{{ $name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -84,7 +85,7 @@
                                     <td>{{ $bundleProduct->sku }}</td>
                                     <td><input name="quantity[]" type="number" min = 0 value="{{ $bundleProduct->pivot->quantity }}"/></td>
                                     <td><input type="radio" name="default" value="{{ $bundleProduct->id }}" {{ $bundleProduct->pivot->is_default == 1 ? ' checked=checked' : '' }}/></td>
-                                    <td><a class="deleteProduct" data-productId ="{{ $bundleProduct->id }}" data-bundleId = "{{  $bundleProduct->pivot->id_bundle  }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+                                    <td><a class="deleteProduct" data-categoryId ="{{ $bundleCategory->id }}" data-productId ="{{ $bundleProduct->id }}" data-bundleId = "{{  $bundleProduct->pivot->id_bundle  }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
                                 </tr>
                             @endforeach
                         @endif
@@ -174,6 +175,7 @@
             });
 
             $('#bundleId').on('change', function (e) {
+                $("#bundle_id").val(this.value);
                 loadProduct(this.value);
             });
 
@@ -207,6 +209,7 @@
                 e.preventDefault();
                 var bundleId = $(this).attr('data-bundleId');
                 var productId = $(this).attr('data-productId');
+                var categoryId = $(this).attr('data-categoryId');
                 var r = confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi nhóm sản phẩm!");
                 if (r == true) {
                     $(this).closest('tr').remove();
@@ -217,9 +220,13 @@
                             _token: "{{ csrf_token() }}",
                             productId : productId,
                             bundleId : bundleId,
+                            categoryId : categoryId,
                         },
-                        success: function(){
-
+                        dataType: "json",
+                        success: function(response){
+                            if (response.countProduct == 0) {
+                                $("#bundleId").removeAttr("disabled");
+                            }
                         }
                     });
                 }

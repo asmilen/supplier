@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+@endsection
 @section('content')
     <!-- #section:basics/content.breadcrumbs -->
     <div class="breadcrumbs" id="breadcrumbs">
@@ -48,6 +50,11 @@
         </div>
     </div><!-- /.page-content -->
 @endsection
+
+@section('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
+@endsection
+
 @section('inline_scripts')
     <script type="application/javascript">
         $( document ).ready(function() {
@@ -55,6 +62,18 @@
                 loadDistrictsByProvince(this.value);
                 loadAddressCode(this.value);
             });
+
+            $(".provinces").select2({
+                placeholder: "-- Chọn tỉnh --",
+                allowClear: true,
+                width:'100%',
+            });
+            $(".districts").select2({
+                placeholder: "-- Chọn huyện --",
+                allowClear: true,
+                width:'100%',
+            });
+
         });
 
         function loadDistrictsByProvince(provinceId) {
@@ -64,7 +83,12 @@
                 success: function(districts) {
                     $.each(districts, function(key, district) {
                         $("#district_id").append('<option value="' + district.district_id + '">' + district.name + '</option>')
-                    })
+                    });
+
+                    $(".districts").select2({
+                        allowClear: true,
+                        width:'100%',
+                    });
                 },
                 error: function() {
 

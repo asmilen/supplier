@@ -38,6 +38,9 @@ class BundleCategory extends Model
             ->editColumn('nameBundle', function ($model) {
                 return $model->bundle ? $model->bundle->name : '';
             })
+            ->editColumn('totalProduct', function ($model) {
+                return count($model->products) ? count($model->products) : 0;
+            })
             ->addColumn('action', 'bundleCategories.datatables.action')
             ->rawColumns(['action'])
             ->make(true);
@@ -74,4 +77,5 @@ class BundleCategory extends Model
             })
             ->whereNotIn('products.id',$productIds)->get();
     }
+
 }

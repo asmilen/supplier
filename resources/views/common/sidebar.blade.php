@@ -116,6 +116,12 @@
                 <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Cập nhật giá </span></a>
             </li>
         @endif
+
+        @if ($currentUser->hasAccess('margins.index'))
+            <li class="{{ (Request::is('margins') || Request::is('margins/*')) ? 'active' : '' }}">
+                <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Margin trên đơn hàng </span></a>
+            </li>
+        @endif
     </ul><!-- /.nav-list -->
 
     <!-- #section:basics/sidebar.layout.minimize -->

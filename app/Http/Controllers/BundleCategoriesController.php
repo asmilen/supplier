@@ -147,7 +147,7 @@ class BundleCategoriesController extends Controller
 
                 $bundleProduct->forceFill([
                     'is_default' => $productId == request('default'),
-                    'quantity' => isset($quantity[$key]) ? $quantity[$key] : 0
+                    'quantity' => isset($quantity[$key]) ? $quantity[$key] : 1
                 ])->save();
             }
         }

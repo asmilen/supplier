@@ -12,6 +12,7 @@ Route::get('listSupplierByProductId', 'SuppliersController@getListSupplierByProd
 Route::get('listBundleByProvinceCode/{codeProvince}', 'BundlesController@listBundleByProvinceCode');
 Route::get('listBundleProduct/{bundleId}', 'BundlesController@getBundleProduct');
 Route::get('version', 'VersionController@index');
+Route::get('marginOrders', 'MarginsController@index');
 
 Route::group(['middleware' => 'auth:api'], function () {
     //

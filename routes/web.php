@@ -93,7 +93,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('suppliers', 'SuppliersController');
 
         // Margins for Orders
-        Route::get('margins/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
-        Route::resource('margins', 'BundlesController', ['except' => 'destroy']);
+        Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
+        Route::resource('margins', 'MarginsController', ['except' => 'destroy']);
     });
 });

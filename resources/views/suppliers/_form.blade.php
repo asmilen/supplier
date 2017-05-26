@@ -85,7 +85,7 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Chọn Tỉnh</label>
     <div class="col-sm-6">
-        <select name="province_id" id = "province_id" class="provinces">
+        <select name="province_id" id="province_id" class="provinces">
             <option value=""></option>
             @foreach ($provincesList as $id => $name)
                 <option value="{{ $id }}" {{ $id == $address->province_id ? ' selected=selected' : '' }}>{{  $name }}</option>

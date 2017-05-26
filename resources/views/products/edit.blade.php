@@ -160,5 +160,6 @@
 @section('inline_scripts')
 <script>
 var PRODUCT_ID = {{ $product->id }};
+
 </script>
 @endsection

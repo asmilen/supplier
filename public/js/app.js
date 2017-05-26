@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 6);
+/******/ 	return __webpack_require__(__webpack_require__.s = 7);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice']);
+var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -80,6 +80,7 @@ __webpack_require__(2);
 __webpack_require__(3);
 __webpack_require__(4);
 __webpack_require__(5);
+__webpack_require__(6);
 
 /***/ }),
 /* 1 */
@@ -373,6 +374,61 @@ function ProductSalepriceController($scope, $http, $window) {
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
+
+TransportFeeIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function TransportFeeIndexController($scope, $http) {
+    $scope.transportFeesLoaded = false;
+
+    function transportFeeForm() {
+        this.percentFees = {};
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    }
+
+    $scope.transportFeeForm = new transportFeeForm();
+
+    $scope.refreshData = function () {
+        $http.get('/api/transport-fees').then(function (response) {
+            $scope.transportFees = response.data;
+            $scope.transportFeesLoaded = true;
+
+            _.each($scope.transportFees, function (transportFee) {
+                $scope.transportFeeForm.percentFees[transportFee.province_id] = transportFee.percent_fee;
+            });
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updatePercentFee = function (provinceId) {
+        $scope.transportFeeForm.errors = [];
+        $scope.transportFeeForm.disabled = true;
+        $scope.transportFeeForm.successful = false;
+
+        $http.put('/api/provinces/' + provinceId + '/transport-fee', { percent_fee: $scope.transportFeeForm.percentFees[provinceId] }).then(function () {
+            $scope.transportFeeForm.successful = true;
+            $scope.transportFeeForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.transportFeeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.transportFeeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.transportFeeForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

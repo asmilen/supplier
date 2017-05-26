@@ -13,7 +13,7 @@
             <a href="{{ url('/dashboard') }}">Dashboard</a>
         </li>
         <li>
-            <a href="{{ route('colors.index') }}">Nhóm sản phẩm</a>
+            <a href="{{ route('bundles.index') }}">Nhóm sản phẩm</a>
         </li>
         <li class="active">Danh sách</li>
     </ul><!-- /.breadcrumb -->
@@ -42,6 +42,8 @@
                 <thead>
                     <tr>
                         <th>Tên</th>
+                        <th>Miền</th>
+                        <th>Label</th>
                         <th>Giá</th>
                         <th></th>
                     </tr>
@@ -73,6 +75,8 @@ $(function () {
         },
         columns: [
             {data: 'name', name: 'name'},
+            {data: 'region_id', name: 'region_id'},
+            {data: 'label', name: 'label'},
             {data: 'price', name: 'price'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]

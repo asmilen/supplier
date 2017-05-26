@@ -16,10 +16,12 @@ class Bundle extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id', 'name','price'
+            'id', 'name','price','region_id','label'
         ]);
 
         return Datatables::eloquent($model)
+            ->editColumn('region_id', 'bundles.datatables.region')
+            ->editColumn('label', 'bundles.datatables.label')
             ->editColumn('price', function ($bundle) {
                 return number_format($bundle->price);
             })

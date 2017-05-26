@@ -43,6 +43,7 @@
                     <tr>
                         <th>Tên</th>
                         <th>Tên nhóm sản phẩm</th>
+                        <th>Số sản phẩm</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -74,6 +75,7 @@ $(function () {
         columns: [
             {data: 'name', name: 'name'},
             {data: 'nameBundle', name: 'nameBundle'},
+            {data: 'totalProduct', name: 'totalProduct'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
     });

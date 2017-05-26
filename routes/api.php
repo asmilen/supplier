@@ -14,6 +14,7 @@ Route::get('listBundleProduct/{bundleId}', 'BundlesController@getBundleProduct')
 
 // Transport Fees
 Route::get('transport-fees', 'TransportFeesController@index');
+Route::put('provinces/{province}/transport-fee', 'ProvinceTransportFeeController@update');
 
 Route::group(['middleware' => 'auth:api'], function () {
     //

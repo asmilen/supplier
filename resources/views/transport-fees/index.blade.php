@@ -26,6 +26,16 @@
     </div><!-- /.page-header -->
     <div class="row" ng-if="transportFeesLoaded">
         <div class="col-xs-12">
+            <div class="alert alert-success" ng-show="transportFeeForm.successful">
+                Cập nhật phí vận chuyển thành công.
+            </div>
+
+            <div class="alert alert-danger" ng-show="transportFeeForm.errors.length > 0">
+                <ul>
+                    <li ng-repeat="error in transportFeeForm.errors">@{{ error }}</li>
+                </ul>
+            </div>
+
             <table class="table table-bordered table-hover">
                 <thead>
                     <tr>
@@ -35,9 +45,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td></td>
-                        <td></td>
+                    <tr ng-repeat="transportFee in transportFees">
+                        <td>@{{ ::transportFee.province_name }}</td>
+                        <td width="30%">
+                            <input type="text" class="form-control" ng-model="transportFeeForm.percentFees[transportFee.province_id]" ng-keyup="$event.keyCode == 13 ? updatePercentFee(transportFee.province_id) : null">
+                        </td>
                         <td></td>
                     </tr>
                 </tbody>

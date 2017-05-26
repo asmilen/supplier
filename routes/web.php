@@ -95,6 +95,5 @@ Route::group(['middleware' => 'auth'], function () {
         // Margins for Orders
         Route::get('margins/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
         Route::resource('margins', 'BundlesController', ['except' => 'destroy']);
-
     });
 });

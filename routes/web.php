@@ -57,7 +57,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
 
-
         // Bundles
         Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
         Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);
@@ -92,6 +91,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/exportExcel', 'SuppliersController@exportExcel')->name('suppliers.exportExcel');
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::resource('suppliers', 'SuppliersController');
+
+        // Margins for Orders
+        Route::get('margins/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
+        Route::resource('margins', 'BundlesController', ['except' => 'destroy']);
 
     });
 });

@@ -46,6 +46,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhóm sản phẩm</label>
                     <div class="col-sm-6">
+                        <input type="hidden" name="bundle_id" id="bundle_id" value="{{ $bundleCategory->id_bundle }}" />
                         <select name="bundle_id" class="form-control" id = "bundleId" {{ $bundleProducts ?  'disabled=disabled' : ''}}>
                             <option value="">--Chọn nhóm sản phẩm--</option>
                             @foreach ($bundlesList as $id => $name)
@@ -174,6 +175,7 @@
             });
 
             $('#bundleId').on('change', function (e) {
+                $("#bundle_id").val(this.value);
                 loadProduct(this.value);
             });
 

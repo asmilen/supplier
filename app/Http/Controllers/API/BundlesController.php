@@ -19,10 +19,19 @@ class BundlesController extends Controller
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
-        return $bundles->map(function ($bundle, $key) use ($labels) {
+
+       return $bundles->map(function ($bundle, $key) use ($labels) {
+            $data = [];
+            foreach ($bundle as $value) {
+                $temp = clone $value;
+                $count = $value->products->count();
+                if ($count > 0) {
+                    array_push($data,$temp);
+                }
+            }
             return [
                 'title' => $labels[$key],
-                'data' => $bundle
+                'data' => $data
             ];
         });
     }

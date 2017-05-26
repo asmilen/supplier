@@ -19,7 +19,6 @@ class BundlesController extends Controller
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
-
        return $bundles->map(function ($bundle, $key) use ($labels) {
             $data = [];
             foreach ($bundle as $value) {

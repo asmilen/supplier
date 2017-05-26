@@ -9,7 +9,7 @@ class MarginsController extends Controller
 {
     public function index()
     {
-        return Margin::all('label','value');
+        return Margin::all('label', 'value');
     }
 }
 

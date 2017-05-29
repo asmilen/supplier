@@ -15,19 +15,16 @@ class BundlesController extends Controller
     {
         $labels = config('teko.bundleLabels');
 
-        $bundles = Bundle::where(
+        $bundles = Bundle::withCount('products')->where(
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
-       return $bundles->map(function ($bundle, $key) use ($labels) {
-            $data = [];
-            foreach ($bundle as $value) {
-                $temp = clone $value;
-                $count = $value->products->count();
-                if ($count > 0) {
-                    array_push($data,$temp);
+        return $bundles->map(function ($bundle, $key) use ($labels) {
+            $data = $bundle->map(function ($value){
+                if ($value->products_count > 0) {
+                    return $value;
                 }
-            }
+            });
             return [
                 'title' => $labels[$key],
                 'data' => $data

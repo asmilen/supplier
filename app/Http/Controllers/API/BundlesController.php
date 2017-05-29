@@ -24,8 +24,7 @@ class BundlesController extends Controller
                 if ($value->products_count > 0) {
                     return $value;
                 }
-            })->filter(function($bundle)
-            {
+            })->filter(function($bundle){
                 return $bundle;
             });
 

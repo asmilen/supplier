@@ -33,6 +33,21 @@
 
     @yield('inline_styles')
 
+    <!-- basic scripts -->
+
+    <!--[if !IE]> -->
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='/vendor/ace/assets/js/jquery.js'>"+"<"+"/script>");
+    </script>
+
+    <!-- <![endif]-->
+
+    <!--[if IE]>
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='/vendor/ace/assets/js/jquery1x.js'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
@@ -70,20 +85,7 @@
         </div>
     </div>
 
-    <!-- basic scripts -->
 
-    <!--[if !IE]> -->
-    <script type="text/javascript">
-        window.jQuery || document.write("<script src='/vendor/ace/assets/js/jquery.js'>"+"<"+"/script>");
-    </script>
-
-    <!-- <![endif]-->
-
-    <!--[if IE]>
-    <script type="text/javascript">
-    window.jQuery || document.write("<script src='/vendor/ace/assets/js/jquery1x.js'>"+"<"+"/script>");
-    </script>
-    <![endif]-->
     <script type="text/javascript">
         if('ontouchstart' in document.documentElement) document.write("<script src='/vendor/ace/assets/js/jquery.mobile.custom.js'>"+"<"+"/script>");
     </script>

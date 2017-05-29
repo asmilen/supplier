@@ -1,7 +1,8 @@
 @extends('layouts.app')
-
-@section('content')
+@section('inline_styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+@endsection
+@section('content')
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
     <script type="text/javascript">
@@ -66,7 +67,7 @@
                 <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
                 <br>
                 <div>
-                    <table class="table">
+                    <table class="table hoverTable">
                         <thead>
                         <th>ID</th>
                         <th>Tên sản phẩm</th>

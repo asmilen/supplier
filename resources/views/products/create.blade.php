@@ -149,19 +149,3 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
 @endsection
 
-@section('inline_scripts')
-    <script>
-        $(function () {
-            $(".categories").select2({
-                placeholder: "-- Chọn danh mục --",
-                allowClear: true,
-                width:'100%',
-            });
-            $(".manufactures").select2({
-                placeholder: "-- Chọn nhà sản xuất --",
-                allowClear: true,
-                width:'100%',
-            });
-        });
-    </script>
-@endsection

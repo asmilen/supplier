@@ -50,7 +50,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
-                        <select name="category_id" class="categories" ng-model="productForm.category_id" ng-change="refreshData()">
+                        <select name="category_id" class="categories" ng-model="productForm.category_id" ng-change="refreshData()" placeholder="-- Chọn danh mục --" ng-disabled="disabled" select2>
                             <option value=""></option>
                             <option ng-repeat="category in categories" value="@{{ category.id }}">@{{ category.name }}</option>
                         </select>
@@ -60,7 +60,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhà SX</label>
                     <div class="col-sm-6">
-                        <select name="manufacturer_id" class="manufactures" ng-model="productForm.manufacturer_id">
+                        <select name="manufacturer_id" class="manufactures" ng-model="productForm.manufacturer_id" placeholder="-- Chọn nhà sản xuất --" ng-disabled="disabled" select2>
                             <option value=""></option>
                             <option ng-repeat="manufacturer in manufacturers" value="@{{ manufacturer.id }}">@{{ manufacturer.name }}</option>
                         </select>

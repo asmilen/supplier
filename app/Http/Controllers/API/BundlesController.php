@@ -20,11 +20,11 @@ class BundlesController extends Controller
         )->whereIn('label', array_keys($labels))->get()->groupBy('label');
 
         return $bundles->map(function ($bundle, $key) use ($labels) {
-            $data = $bundle->map(function ($value){
+            $data = $bundle->map(function ($value) {
                 if ($value->products_count > 0) {
                     return $value;
                 }
-            })->filter(function ($bundle){
+            })->filter(function ($bundle) {
                 return $bundle;
             });
 

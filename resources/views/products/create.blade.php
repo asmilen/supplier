@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.css">
 @endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
@@ -50,7 +50,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
-                        <select name="category_id" class="categories" ng-model="productForm.category_id" ng-change="refreshData()">
+                        <select name="category_id" class="categories" ng-model="productForm.category_id" ng-change="refreshData()" sc-single-select>
                             <option value=""></option>
                             <option ng-repeat="category in categories" value="@{{ category.id }}">@{{ category.name }}</option>
                         </select>
@@ -146,17 +146,17 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/3.5.2/select2.min.js"></script>
 @endsection
 
 @section('inline_scripts')
     <script>
         $(function () {
-            $(".categories").select2({
-                placeholder: "-- Chọn danh mục --",
-                allowClear: true,
-                width:'100%',
-            });
+//            $(".categories").select2({
+//                placeholder: "-- Chọn danh mục --",
+//                allowClear: true,
+//                width:'100%',
+//            });
             $(".manufactures").select2({
                 placeholder: "-- Chọn nhà sản xuất --",
                 allowClear: true,

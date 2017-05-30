@@ -67,7 +67,7 @@
                 <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
                 <br>
                 <div>
-                    <table class="table hoverTable">
+                    <table class="table hoverTable" id="products-table">
                         <thead>
                         <th>ID</th>
                         <th>Tên sản phẩm</th>
@@ -149,7 +149,10 @@
     <script type="text/javascript">
 
         $(document).ready(function() {
-            var table = '';
+            var productsTable = '';
+            productsTable = $("#products-table").DataTable({
+                autoWidth: false
+            });
             $('#bundleId').on('change', function (e) {
                 loadProduct(this.value);
             });
@@ -165,7 +168,7 @@
                                 '<td class="productName">' + product.name + '</td>' +
                                 '<td class="productSku">'+ product.sku +'</td>' +
                                 '<td><input  type="checkbox" value="' + product.id + '" class="checkbox"/></td>' +
-                                '<td><input  class="qty"  type="number" min = 0/></td>' +
+                                '<td><input  class="qty"  type="number" min = 0 value="1"/></td>' +
                                 '<td><input  class="radio" type="radio"  value="' + product.id + '" name="default"/></td>'
                                 + '</tr>');
                         });
@@ -180,6 +183,7 @@
             }
 
             $(document).on('click', '#btnChooseProduct', function(e) {
+                productsTable.destroy();
                 var productNames = [];
                 var productIds = [];
                 var productSkus = [];
@@ -212,8 +216,12 @@
                         '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
                         + '</tr>');
                 }
-
                 $("#myModalProduct").hide();
+                $("body").removeClass("modal-open");
+                productsTable = $("#products-table").DataTable({
+                    autoWidth: false
+                });
+
             });
 
             $(document).on('click', '.deleteProduct', function(e) {

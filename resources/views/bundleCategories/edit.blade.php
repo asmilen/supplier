@@ -67,7 +67,7 @@
                 <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
                 <br>
                 <div>
-                    <table class="table hoverTable">
+                    <table class="table hoverTable" id="products-table">
                         <thead>
                         <th>ID</th>
                         <th>Tên sản phẩm</th>
@@ -76,7 +76,7 @@
                         <th>Mặc định</th>
                         <th>Thao tác</th>
                         </thead>
-                        <tbody>
+                        <tbody id = "bundleProducts">
                         @if($bundleProducts)
                             @foreach($bundleProducts as $key => $bundleProduct)
                                 <tr>
@@ -91,7 +91,7 @@
                             @endforeach
                         @endif
                         </tbody>
-                        <tfoot id = "bundleProducts">
+                        <tfoot >
                         </tfoot>
                     </table>
                 </div>
@@ -134,7 +134,7 @@
                                                     <td class="productName">{{ $value->name }}</td>
                                                     <td class="productSku">{{ $value->sku }}</td>
                                                     <td><input  type="checkbox" value="{{ $value->id }}" class="checkbox"/></td>
-                                                    <td><input  class="qty"  type="number" min = 0/></td>
+                                                    <td><input  class="qty"  type="number" min = 0  value="1"/></td>
                                                     <td><input  class="radio" type="radio"  value="{{ $value->id }}" name="default"/></td>
                                                 </tr>
                                             @endforeach
@@ -170,6 +170,10 @@
     <script type="text/javascript">
 
         $(document).ready(function() {
+            var productsTable = '';
+            productsTable = $("#products-table").DataTable({
+                autoWidth: false
+            });
             var table = '';
             table = $("#tableproducts").DataTable({
                 autoWidth: false
@@ -192,7 +196,7 @@
                                 '<td class="productName">' + product.name + '</td>' +
                                 '<td class="productSku">'+ product.sku +'</td>' +
                                 '<td><input  type="checkbox" value="' + product.id + '" class="checkbox"/></td>' +
-                                '<td><input  class="qty"  type="number" min = 0/></td>' +
+                                '<td><input  class="qty"  type="number" min = 0 value="1"/></td>' +
                                 '<td><input  class="radio" type="radio"  value="' + product.id + '" name="default"/></td>'
                                 + '</tr>');
                         });
@@ -234,6 +238,7 @@
             });
 
             $(document).on('click', '#btnChooseProduct', function(e) {
+                productsTable.destroy();
                 var productNames = [];
                 var productIds = [];
                 var productSkus = [];
@@ -249,7 +254,6 @@
                     productDefaults.push($(rowcollection[i]).closest('tr').find('.radio').val());
                 }
 
-                $("#bundleProducts").html('');
 
                 for(var i = 0; i < productNames.length; i++) {
                     var checked = '';
@@ -266,8 +270,11 @@
                         '<td><a class="removeProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
                         + '</tr>');
                 }
-
                 $("#myModalProduct").hide();
+                $("body").removeClass("modal-open");
+                productsTable = $("#products-table").DataTable({
+                    autoWidth: false
+                });
             });
 
             $(document).on('click', '.removeProduct', function(e) {

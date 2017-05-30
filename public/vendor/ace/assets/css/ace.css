@@ -2082,7 +2082,7 @@ pre.prettyprint {
   box-shadow: none;
 }
 .nav-list > li.active .submenu {
-  display: block;
+  display: block !important;
 }
 .nav-list > li .submenu {
   display: none;
@@ -2155,8 +2155,8 @@ pre.prettyprint {
 .nav-list li.open > a > .arrow {
   color: inherit;
 }
-.nav-list li.open > .submenu {
-  display: block;
+nav-list li.open > .submenu {
+  display: block !important;
 }
 no_such_element:-o-prefocus,
 .nav-list > li > a > .menu-icon {
@@ -14279,7 +14279,7 @@ ul.attachment-list > li {
 .dataTables_wrapper .row:first-child {
   padding-top: 12px;
   padding-bottom: 12px;
-  background-color: #EFF3F8;
+  background-color: #FFF;
 }
 .dataTables_wrapper .row:first-child + .dataTable {
   border-top: 1px solid #dddddd;

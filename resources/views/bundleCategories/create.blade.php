@@ -160,31 +160,65 @@
 
             var product_ids = [];
 
-            function loadProduct(bundleId) {
-                table.destroy();
-                table = $("#tableproducts").DataTable({
-                    "searching": false,
-                    autoWidth: false,
-                    processing: true,
-                    serverSide: true,
-                    pageLength: 10,
-                    ajax: {
-                        url: "/region/" + bundleId + "/products",
-                        data: function (d) {
-                        },
-                    },
-                    columns: [
-                        {data: 'id', name: 'id'},
-                        {data: 'name', name: 'name', className:'productName'},
-                        {data: 'sku', name: 'sku', className:'productSku'},
-                        {data: 'check', name: 'check', orderable: false, searchable: false},
-                        {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
-                        {data: 'default', name: 'default', orderable: false, searchable: false}
-                    ],
-                });
-            }
+            $(document).on('click', '#btnChooseProduct', function(e) {
+                productsTable.destroy();
+                var productNames = [];
+                var productIds = [];
+                var productSkus = [];
+                var productQtys = [];
+                var productDefault;
+                var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
+                for(var i = 0; i < rowcollection.length; i++)
+                {
+                    productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
+                    productIds.push(parseInt($(rowcollection[i]).val()));
+                    product_ids.push(parseInt($(rowcollection[i]).val()));
+                    productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
+                    productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
+                    if($(rowcollection[i]).closest('tr').find('.radio').is(':checked')) {
+                        productDefault = $(rowcollection[i]).closest('tr').find('.radio').val();
+                    }
+                }
 
-            function reloadProduct(bundleId, productIds) {
+                for(var i = 0; i < productNames.length; i++) {
+                    var checked = '';
+                    if(productDefault == productIds[i]) {
+                        checked = 'checked';
+                    }
+                    $("#bundleProducts").append('<tr>' +
+                        '<input type ="hidden" name= "productIds[]" value="' +productIds[i] + '"/>' +
+                        '<td class="id">' + productIds[i] + '</td>'   +
+                        '<td class="name">' + productNames[i] + '</td>' +
+                        '<td class="sku">' + productSkus[i] + '</td>'  +
+                        '<td><input type = "number" name = "quantity[]" min = 0 value="' + productQtys[i] + '"/></td>'  +
+                        '<td><input type="radio" name="default" value="' + productIds[i] + '"' + checked + '/></td>'  +
+                        '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
+                        + '</tr>');
+                }
+                $("#myModalProduct").hide();
+                $("body").removeClass("modal-open");
+                productsTable = $("#products-table").DataTable({
+                    autoWidth: false
+                });
+
+                $bundleId = $("#bundleId").val();
+                loadProduct($bundleId, product_ids);
+            });
+
+            $(document).on('click', '.deleteProduct', function(e) {
+                e.preventDefault();
+                productsTable.row( $(this).parents('tr') ).remove().draw();
+                var dataRows = productsTable.rows().data();
+                var productIds = [];
+                for (var i = 0; i< dataRows.length; i++) {
+                    productIds.push(parseInt(dataRows[i][0]));
+                }
+                $bundleId = $("#bundleId").val();
+                loadProduct($bundleId, productIds);
+            });
+
+            function loadProduct(bundleId,productIds) {
+                productIds = typeof productIds !== 'undefined' ? productIds : [];
                 table.destroy();
                 table = $("#tableproducts").DataTable({
                     "searching": false,
@@ -208,64 +242,6 @@
                     ],
                 });
             }
-
-            $(document).on('click', '#btnChooseProduct', function(e) {
-                productsTable.destroy();
-                var productNames = [];
-                var productIds = [];
-                var productSkus = [];
-                var productQtys = [];
-                var productDefault;
-                var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
-                for(var i = 0; i < rowcollection.length; i++)
-                {
-                    productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
-                    productIds.push(parseInt($(rowcollection[i]).val()));
-                    product_ids.push(parseInt($(rowcollection[i]).val()));
-                    productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
-                    productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
-                    if($(rowcollection[i]).closest('tr').find('.radio').is(':checked')) {
-                        productDefault = $(rowcollection[i]).closest('tr').find('.radio').val();
-                    }
-                    $(rowcollection[i]).closest('tr').remove();
-                }
-
-                for(var i = 0; i < productNames.length; i++) {
-                    var checked = '';
-                    if(productDefault == productIds[i]) {
-                        checked = 'checked';
-                    }
-                    $("#bundleProducts").append('<tr>' +
-                        '<input type ="hidden" name= "productIds[]" value="' +productIds[i] + '"/>' +
-                        '<td class="id">' + productIds[i] + '</td>'   +
-                        '<td class="name">' + productNames[i] + '</td>' +
-                        '<td class="sku">' + productSkus[i] + '</td>'  +
-                        '<td><input type = "number" name = "quantity[]" min = 0 value="' + productQtys[i] + '"/></td>'  +
-                        '<td><input type="radio" name="default" value="' + productIds[i] + '"' + checked + '/></td>'  +
-                        '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
-                        + '</tr>');
-                }
-                $("#myModalProduct").hide();
-                $("body").removeClass("modal-open");
-                productsTable = $("#products-table").DataTable({
-                    autoWidth: false
-                });
-                console.log(product_ids);
-                $bundleId = $("#bundleId").val();
-                reloadProduct($bundleId, product_ids);
-            });
-
-            $(document).on('click', '.deleteProduct', function(e) {
-                e.preventDefault();
-                productsTable.row( $(this).parents('tr') ).remove().draw();
-                var dataRows = productsTable.rows().data();
-                var productIds = [];
-                for (var i = 0; i< dataRows.length; i++) {
-                    productIds.push(parseInt(dataRows[i][0]));
-                }
-                $bundleId = $("#bundleId").val();
-                reloadProduct($bundleId, productIds);
-            });
 
         });
 

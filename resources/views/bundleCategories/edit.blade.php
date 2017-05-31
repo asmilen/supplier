@@ -178,61 +178,10 @@
                 autoWidth: false
             });
 
-            var product_ids = [];
-
             $('#bundleId').on('change', function (e) {
                 $("#bundle_id").val(this.value);
                 loadProduct(this.value);
             });
-
-            function loadProduct(bundleId) {
-                table.destroy();
-                table = $("#tableproducts").DataTable({
-                    "searching": false,
-                    autoWidth: false,
-                    processing: true,
-                    serverSide: true,
-                    pageLength: 10,
-                    ajax: {
-                        url: "/region/" + bundleId + "/products",
-                        data: function (d) {
-                        },
-                    },
-                    columns: [
-                        {data: 'id', name: 'id'},
-                        {data: 'name', name: 'name', className:'productName'},
-                        {data: 'sku', name: 'sku', className:'productSku'},
-                        {data: 'check', name: 'check', orderable: false, searchable: false},
-                        {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
-                        {data: 'default', name: 'default', orderable: false, searchable: false}
-                    ],
-                });
-            }
-
-            function reloadProduct(bundleId, productIds) {
-                table.destroy();
-                table = $("#tableproducts").DataTable({
-                    "searching": false,
-                    autoWidth: false,
-                    processing: true,
-                    serverSide: true,
-                    pageLength: 10,
-                    ajax: {
-                        url: "/region/" + bundleId + "/products",
-                        data: function (d) {
-                            d.productIds = productIds
-                        },
-                    },
-                    columns: [
-                        {data: 'id', name: 'id'},
-                        {data: 'name', name: 'name', className:'productName'},
-                        {data: 'sku', name: 'sku', className:'productSku'},
-                        {data: 'check', name: 'check', orderable: false, searchable: false},
-                        {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
-                        {data: 'default', name: 'default', orderable: false, searchable: false}
-                    ],
-                });
-            }
 
             $('.deleteProduct').click( function (e) {
                 e.preventDefault();
@@ -241,30 +190,9 @@
                 var categoryId = $(this).attr('data-categoryId');
                 var r = confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi nhóm sản phẩm!");
                 if (r == true) {
-                    $.ajax({
-                        url: "{{ url('bundleProducts/destroy') }}",
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            productId : productId,
-                            bundleId : bundleId,
-                            categoryId : categoryId,
-                        },
-                        dataType: "json",
-                        success: function(response){
-                            if (response.countProduct == 0) {
-                                $("#bundleId").removeAttr("disabled");
-                            }
-                            productsTable.row( $(this).parents('tr') ).remove().draw();
-                            var dataRows = productsTable.rows().data();
-                            var productIds = [];
-                            for (var i = 0; i< dataRows.length; i++) {
-                                productIds.push(parseInt(dataRows[i][0]));
-                            }
-                            $bundleId = $("#bundleId").val();
-                            reloadProduct($bundleId, productIds);
-                        }
-                    });
+                    destroyProduct(bundleId, productId, categoryId);
+                } else {
+                    return false;
                 }
             });
 
@@ -280,7 +208,6 @@
                 {
                     productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
                     productIds.push(parseInt($(rowcollection[i]).val()));
-                    product_ids.push(parseInt($(rowcollection[i]).val()));
                     productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
                     productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
                     if($(rowcollection[i]).closest('tr').find('.radio').is(':checked')) {
@@ -309,9 +236,13 @@
                 productsTable = $("#products-table").DataTable({
                     autoWidth: false
                 });
-                console.log(product_ids);
+                var dataRows = productsTable.rows().data();
+                var productIds = [];
+                for (var i = 0; i< dataRows.length; i++) {
+                    productIds.push(parseInt(dataRows[i][0]));
+                }
                 $bundleId = $("#bundleId").val();
-                reloadProduct($bundleId, product_ids);
+                loadProduct($bundleId, productIds);
             });
 
             $(document).on('click', '.deleteProduct', function(e) {
@@ -323,8 +254,61 @@
                     productIds.push(parseInt(dataRows[i][0]));
                 }
                 $bundleId = $("#bundleId").val();
-                reloadProduct($bundleId, productIds);
+                loadProduct($bundleId, productIds);
             });
+
+            function loadProduct(bundleId,productIds) {
+                productIds = typeof productIds !== 'undefined' ? productIds : [];
+                table.destroy();
+                table = $("#tableproducts").DataTable({
+                    "searching": false,
+                    autoWidth: false,
+                    processing: true,
+                    serverSide: true,
+                    pageLength: 10,
+                    ajax: {
+                        url: "/region/" + bundleId + "/products",
+                        data: function (d) {
+                            d.productIds = productIds
+                        },
+                    },
+                    columns: [
+                        {data: 'id', name: 'id'},
+                        {data: 'name', name: 'name', className:'productName'},
+                        {data: 'sku', name: 'sku', className:'productSku'},
+                        {data: 'check', name: 'check', orderable: false, searchable: false},
+                        {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
+                        {data: 'default', name: 'default', orderable: false, searchable: false}
+                    ],
+                });
+            }
+
+            function destroyProduct(bundleId, productId, categoryId) {
+                $.ajax({
+                    url: "{{ url('bundleProducts/destroy') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        productId : productId,
+                        bundleId : bundleId,
+                        categoryId : categoryId,
+                    },
+                    dataType: "json",
+                    success: function(response){
+                        if (response.countProduct == 0) {
+                            $("#bundleId").removeAttr("disabled");
+                        }
+                        productsTable.row( $(this).parents('tr') ).remove().draw();
+                        var dataRows = productsTable.rows().data();
+                        var productIds = [];
+                        for (var i = 0; i< dataRows.length; i++) {
+                            productIds.push(parseInt(dataRows[i][0]));
+                        }
+                        $bundleId = $("#bundleId").val();
+                        loadProduct($bundleId, productIds);
+                    }
+                });
+            }
         });
 
     </script>

@@ -7,6 +7,7 @@ use App\Models\Bundle;
 use App\Models\Product;
 use App\Models\Province;
 use App\Models\SupplierSupportedProvince;
+use GuzzleHttp\Psr7\Request;
 
 class BundlesController extends Controller
 {
@@ -123,11 +124,14 @@ class BundlesController extends Controller
 
     public function listProductByRegion(Bundle $bundle)
     {
+        $productIds = [];
         $supplierIds = SupplierSupportedProvince::whereIn(
             'province_id', Province::getListByRegion($bundle->region_id)
         )->pluck('supplier_id')->all();
 
-       return $bundle->listProductBySuppliers($supplierIds);
+        if (request()->has('productIds')){
+            $productIds = request('productIds');
+        }
+       return $bundle->listProductBySuppliers($supplierIds, $productIds);
     }
-
 }

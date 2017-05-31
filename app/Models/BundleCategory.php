@@ -69,7 +69,7 @@ class BundleCategory extends Model
 
     public function listProductBySuppliersNotExist($supplierIds,$productIds)
     {
-        return Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`"))
+        return Product::select(DB::raw("distinct products.id, products.name , products.sku"))
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds)

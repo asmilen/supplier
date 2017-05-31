@@ -104,12 +104,12 @@
                                         <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                                             <thead>
                                                 <tr>
-                                                    <th >ID</th>
-                                                    <th >Tên</th>
-                                                    <th >SKU</th>
-                                                    <th >Chọn </th>
-                                                    <th >Số Lượng</th>
-                                                    <th >Mặc định</th>
+                                                    <th>ID</th>
+                                                    <th>Tên</th>
+                                                    <th>SKU</th>
+                                                    <th>Chọn </th>
+                                                    <th>Số Lượng</th>
+                                                    <th>Mặc định</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="productsRegion">

@@ -7,7 +7,6 @@ use App\Models\Bundle;
 use App\Models\Product;
 use App\Models\Province;
 use App\Models\SupplierSupportedProvince;
-use GuzzleHttp\Psr7\Request;
 
 class BundlesController extends Controller
 {
@@ -132,6 +131,7 @@ class BundlesController extends Controller
         if (request()->has('productIds')){
             $productIds = request('productIds');
         }
-       return $bundle->listProductBySuppliers($supplierIds, $productIds);
+        
+        return $bundle->listProductBySuppliers($supplierIds, $productIds);
     }
 }

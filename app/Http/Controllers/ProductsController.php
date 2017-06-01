@@ -52,7 +52,7 @@ class ProductsController extends Controller
         if (empty(request('code'))) {
             $code = Product::where('category_id', request('category_id'))
                 ->where('manufacturer_id', request('manufacturer_id'))
-                ->count() + 1;
+                ->count() + 1001;
         } else {
             $code = strtoupper(request('code'));
         }
@@ -142,7 +142,7 @@ class ProductsController extends Controller
         if (empty(request('code'))) {
             $code = Product::where('category_id', request('category_id'))
                 ->where('manufacturer_id', request('manufacturer_id'))
-                ->count();
+                ->count() + 1001;
         } else {
             $code = strtoupper(request('code'));
         }

@@ -43,7 +43,7 @@ class ProductsController extends Controller
 
         $model = Product::select([
             'products.id', 'products.name', 'products.code',
-            'products.sku', 'products.source_url', 'products.best_price',
+            'products.sku', 'products.source_url', 'products.best_price','products.manufacturer_id',
             'products.category_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
             'product_supplier.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
@@ -77,6 +77,14 @@ class ProductsController extends Controller
 
                 if (request()->has('manufacturer_id') && request('manufacturer_id')) {
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
+                }
+
+                if (request()->has('from_price') && request('from_price')) {
+                    $query->having('price', '>=', request('from_price'));
+                }
+
+                if (request()->has('to_price') && request('to_price')) {
+                    $query->having('price', '<=', request('to_price'));
                 }
             })
             // ->addColumn('price', function ($model) use ($regions) {

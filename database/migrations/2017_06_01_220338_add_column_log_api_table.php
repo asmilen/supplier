@@ -14,7 +14,7 @@ class AddColumnLogApiTable extends Migration
     public function up()
     {
         Schema::table('log_api', function (Blueprint $table) {
-            $table->text('devide')->nullable();
+            $table->text('device')->nullable();
             $table->text('url')->nullable();
             $table->text('method')->nullable();
             $table->text('ip_address')->nullable();

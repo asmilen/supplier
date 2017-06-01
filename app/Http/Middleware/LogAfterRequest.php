@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Log;
 use Closure;
-use Carbon\Carbon;
+use App\Models\LogApi;
 
 class LogAfterRequest
 {
@@ -22,23 +22,21 @@ class LogAfterRequest
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
-    {
+     public function handle($request, Closure $next)
+     {
         return $next($request);
-    }
+     }
 
-    public function terminate($request, $response)
-    {
-        $endtime = microtime(true);
-        Log::info('ApiLog done===========================');
-        Log::info('timeStart: '.$this->startTime);
-        Log::info('timeEnd: '. $endtime);
-        Log::info('responseTime: '. ($endtime - $this->startTime));
-        Log::info('device: '.$request->header('User-Agent'));
-        Log::info('URL: '.$request->fullUrl());
-        Log::info('Method: '.$request->getMethod());
-        Log::info('IP Address: '.$request->getClientIp());
-        Log::info('Status Code: '.$response->getStatusCode());
-        Log::info('Response: '.$response->getContent());
-    }
+     public function terminate($request, $response)
+     {
+         LogApi::forceCreate([
+            'request' => $request,
+            'response' => response()->json($response->getContent()),
+            'devide' => $request->header('User-Agent'),
+            'url' => $request->fullUrl(),
+            'method' => $request->getMethod(),
+            'ip_address' => $request->getClientIp(),
+            'status' => $response->getStatusCode(),
+         ]);
+     }
 }

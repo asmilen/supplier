@@ -31,7 +31,7 @@ class LogAfterRequest
      {
          LogApi::forceCreate([
             'request' => $request,
-            'response' => response()->json($response->getContent()),
+            'response' => $response->getContent(),
             'device' => $request->header('User-Agent'),
             'url' => $request->fullUrl(),
             'method' => $request->getMethod(),

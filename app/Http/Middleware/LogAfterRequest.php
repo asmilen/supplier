@@ -36,7 +36,7 @@ class LogAfterRequest
             'url' => $request->fullUrl(),
             'method' => $request->getMethod(),
             'ip_address' => $request->getClientIp(),
-            'status' => $response->getStatusCode(),
+            'status' => $response->getStatusCode()
          ]);
      }
 }

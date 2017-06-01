@@ -32,7 +32,7 @@ class LogAfterRequest
          LogApi::forceCreate([
             'request' => $request,
             'response' => response()->json($response->getContent()),
-            'devide' => $request->header('User-Agent'),
+            'device' => $request->header('User-Agent'),
             'url' => $request->fullUrl(),
             'method' => $request->getMethod(),
             'ip_address' => $request->getClientIp(),

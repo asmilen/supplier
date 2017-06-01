@@ -13,8 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        Commands\ImportProductsFromCsv::class,
+        Commands\InitProductsFromCsv::class,
         Commands\ConsumeMessage::class,
+        Commands\ImportProducts::class,
     ];
 
     /**

@@ -18,6 +18,10 @@ Route::get('marginOrders', 'MarginsController@index');
 Route::get('transport-fees', 'TransportFeesController@index');
 Route::put('provinces/{province}/transport-fee', 'ProvinceTransportFeeController@update');
 
+Route::post('products/create-from-google-sheet', 'ProductsController@createFromGoogleSheet');
+Route::get('suppliers', 'SuppliersController@index');
+Route::post('products/imports/import-from-google-sheet', 'ProductImportsController@importFromGoogleSheet');
+
 Route::group(['middleware' => 'auth:api'], function () {
     //
 });

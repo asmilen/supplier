@@ -58,7 +58,7 @@
 
         @if ($currentUser->hasAccess('colors.index'))
             <li class="{{ (Request::is('colors') || Request::is('colors/*')) ? 'active' : '' }}">
-                <a href="{{ url('/colors') }}"><i class="menu-icon fa fa-cube"></i> <span class="menu-text"> Màu sắc </span></a>
+                <a href="{{ url('/colors') }}"><i class="menu-icon fa fa-paint-brush"></i> <span class="menu-text"> Màu sắc </span></a>
             </li>
         @endif
 
@@ -75,7 +75,7 @@
         @endif
 
         @if ($currentUser->hasAccess('bundles.index'))
-            <li class="">
+            <li class="{{ (Request::is('bundles') || Request::is('bundles/*') || Request::is('bundleCategories') || Request::is('bundleCategories/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-list"></i>
                     <span class="menu-text"> Nhóm sản phẩm </span>
@@ -87,15 +87,11 @@
 
                 <ul class="submenu nav-show" style="display: none;">
                     <li class="{{ (Request::is('bundles') || Request::is('bundles/*')) ? 'active' : '' }}">
-                        <a href="{{ url('/bundles') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách nhóm sản phẩm </span></a>
+                        <a href="{{ url('/bundles') }}"><i class="menu-icon fa fa-caret-right"></i> <span class="menu-text">Danh sách nhóm sản phẩm </span></a>
                     </li>
 
                     <li class="{{ (Request::is('bundleCategories') || Request::is('bundleCategories/*')) ? 'active' : '' }}">
-                        <a href="{{ url('/bundleCategories') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách danh mục theo nhóm sản phẩm </span></a>
-                    </li>
-
-                    <li class="{{ (Request::is('bundleProducts') || Request::is('bundleProducts/*')) ? 'active' : '' }}">
-                        <a href="{{ url('/bundleProducts') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text">Danh sách sản phẩm </span></a>
+                        <a href="{{ url('/bundleCategories') }}"><i class="menu-icon fa fa-caret-right"></i> <span class="menu-text">Danh sách danh mục theo nhóm sản phẩm </span></a>
                     </li>
                 </ul>
             </li>
@@ -103,8 +99,8 @@
         @endif
 
         @if ($currentUser->hasAccess('suppliers.getList'))
-            <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/getList')) ? 'active' : '' }}">
-                <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Nhà cung cấp </span></a>
+            <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active' : '' }}">
+                <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-users"></i> <span class="menu-text"> Nhà cung cấp </span></a>
             </li>
         @endif
 
@@ -116,7 +112,19 @@
 
         @if ($currentUser->hasAccess('supplier.updatePrice'))
             <li class="{{ (Request::is('supplier') || Request::is('supplier/updatePrice')) ? 'active' : '' }}">
-                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Cập nhật giá </span></a>
+                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-wrench"></i> <span class="menu-text"> Cập nhật giá </span></a>
+            </li>
+        @endif
+
+        @if ($currentUser->hasAccess('margins.index'))
+            <li class="{{ (Request::is('margins') || Request::is('margins/*')) ? 'active' : '' }}">
+                <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-percent"></i> <span class="menu-text"> Margin Order </span></a>
+            </li>
+        @endif
+
+        @if ($currentUser->hasAccess('transport-fees.index'))
+            <li class="{{ (Request::is('transport-fees') || Request::is('transport-fees/index')) ? 'active' : '' }}">
+                <a href="{{ url('/transport-fees') }}"><i class="menu-icon fa fa-truck"></i> <span class="menu-text"> Phí vận chuyển</span></a>
             </li>
         @endif
     </ul><!-- /.nav-list -->

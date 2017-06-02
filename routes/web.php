@@ -10,6 +10,7 @@ Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback')
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
 Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index');
 Route::get('provinces/{province}/addressCode', 'ProvinceDistrictsController@addressCode');
+Route::get('region/{bundle}/products', 'BundlesController@listProductByRegion');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
@@ -56,7 +57,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
 
-
         // Bundles
         Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
         Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);
@@ -70,6 +70,7 @@ Route::group(['middleware' => 'auth'], function () {
         // BundleProducts
         Route::get('bundleProducts/datatables', 'BundleProductsController@getDatatables')->name('bundleProducts.datatables');
         Route::resource('bundleProducts', 'BundleProductsController', ['except' => ['destroy','create','store']]);
+        Route::post('bundleProducts/destroy', 'BundleProductsController@destroy');
 
         // For supplier
         Route::get('supplier/supplier_datatables', 'ForSupplierController@getDatatables')->name('supplier.supplier_datatables');
@@ -91,5 +92,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::resource('suppliers', 'SuppliersController');
 
+        // Transport Fees
+        Route::resource('transport-fees', 'TransportFeesController', ['except' => 'destroy']);
+
+        // Margins for Orders
+        Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
+        Route::resource('margins', 'MarginsController', ['except' => 'destroy']);
     });
 });

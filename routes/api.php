@@ -11,6 +11,12 @@ Route::get('listProductSku', 'ProductsController@getListProductSku');
 Route::get('listSupplierByProductId', 'SuppliersController@getListSupplierByProductId');
 Route::get('listBundleByProvinceCode/{codeProvince}', 'BundlesController@listBundleByProvinceCode');
 Route::get('listBundleProduct/{bundleId}', 'BundlesController@getBundleProduct');
+Route::get('version', 'VersionController@index');
+Route::get('marginOrders', 'MarginsController@index');
+
+// Transport Fees
+Route::get('transport-fees', 'TransportFeesController@index');
+Route::put('provinces/{province}/transport-fee', 'ProvinceTransportFeeController@update');
 
 Route::group(['middleware' => 'auth:api'], function () {
     //

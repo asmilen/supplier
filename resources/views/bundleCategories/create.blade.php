@@ -1,6 +1,8 @@
 @extends('layouts.app')
+@section('inline_styles')
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+@endsection
 @section('content')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
     <script type="text/javascript">
@@ -45,25 +47,12 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhóm sản phẩm</label>
                     <div class="col-sm-6">
-                        <select name="bundle_id" class="form-control">
+                        <select name="bundle_id" class="form-control" id = "bundleId">
                             <option value="">--Chọn nhóm sản phẩm--</option>
                             @foreach ($bundlesList as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
                             @endforeach
                         </select>
-                    </div>
-                </div>
-
-                <div class="category">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label no-padding-right">Danh mục từ hệ thống</label>
-                        <div class="col-sm-6">
-                            <select name="category_id[]" class="multiple" multiple="multiple">
-                                @foreach ($categoriesList as $id => $name)
-                                    <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
                     </div>
                 </div>
 
@@ -74,15 +63,23 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">Bắt buộc</label>
-                    <div class="col-sm-6">
-                        <label>
-                            <input type="checkbox" name="isRequired" value="1"
-                                   class="ace ace-switch ace-switch-6"{{ old('isRequired', !! $bundleCategory->isRequired) ? ' checked=checked' : '' }}>
-                            <span class="lbl"></span>
-                        </label>
-                    </div>
+
+                <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
+                <br>
+                <div>
+                    <table class="table hoverTable">
+                        <thead>
+                        <th>ID</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Sku</th>
+                        <th>Số lượng</th>
+                        <th>Mặc định</th>
+                        <th>Thao tác</th>
+                        </thead>
+                        <tbody id = "bundleProducts">
+
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="clearfix form-actions">
@@ -90,6 +87,49 @@
                         <button type="submit" class="btn btn-success">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                         </button>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct">
+                            <i class="ace-icon fa fa-save bigger-110"></i>Thêm sản phẩm
+                        </button>
+
+                        <!-- Modal Product to Connect -->
+                        <div class="modal fade" id="myModalProduct" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Chọn sản phẩm cho nhóm sản phẩm</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                                            <thead>
+                                            <tr>
+                                                <th >ID</th>
+                                                <th >Tên</th>
+                                                <th >SKU</th>
+                                                <th >Chọn </th>
+                                                <th >Số Lượng</th>
+                                                <th >Mặc định</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="productsRegion">
+
+                                            </tbody>
+                                        </table>
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="col-sm-4 control-label no-padding-left"></label>
+                                            <button type="button" class="btn btn-success" id = "btnChooseProduct">
+                                                <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm
+                                            </button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -98,15 +138,93 @@
     </div>
 </div><!-- /.page-content -->
 @endsection
+
+@section('scripts')
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+@endsection
+
 @section('inline_scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
-<script type="application/javascript">
-    $(document).ready(function() {
-        $(".multiple").select2({
-            width: '100%'
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            var table = '';
+            $('#bundleId').on('change', function (e) {
+                loadProduct(this.value);
+            });
+
+            function loadProduct(bundleId) {
+                $.ajax({
+                    url: "/region/" + bundleId + "/products",
+                    success: function(products) {
+                        $("#productsRegion").html('');
+                        $.each(products, function(key, product) {
+                            $("#productsRegion").append('<tr>' +
+                                '<td>' + product.id + '</td>' +
+                                '<td class="productName">' + product.name + '</td>' +
+                                '<td class="productSku">'+ product.sku +'</td>' +
+                                '<td><input  type="checkbox" value="' + product.id + '" class="checkbox"/></td>' +
+                                '<td><input  class="qty"  type="number" min = 0/></td>' +
+                                '<td><input  class="radio" type="radio"  value="' + product.id + '" name="default"/></td>'
+                                + '</tr>');
+                        });
+                        table = $("#tableproducts").DataTable({
+                            autoWidth: false
+                        });
+                    },
+                    error: function() {
+
+                    }
+                });
+            }
+
+            $(document).on('click', '#btnChooseProduct', function(e) {
+                var productNames = [];
+                var productIds = [];
+                var productSkus = [];
+                var productQtys = [];
+                var productDefaults = [];
+                var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
+                for(var i = 0; i < rowcollection.length; i++)
+                {
+                    productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
+                    productIds.push($(rowcollection[i]).val());
+                    productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
+                    productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
+                    productDefaults.push($(rowcollection[i]).closest('tr').find('.radio').val());
+                }
+
+                $("#bundleProducts").html('');
+
+                for(var i = 0; i < productNames.length; i++) {
+                    var checked = '';
+                    if(productDefaults[i] == productIds[i]) {
+                        checked = 'checked';
+                    }
+                    $("#bundleProducts").append('<tr>' +
+                        '<input type ="hidden" name= "productIds[]" value="' +productIds[i] + '"/>' +
+                        '<td>' + productIds[i] + '</td>'   +
+                        '<td>' + productNames[i] + '</td>' +
+                        '<td>' + productSkus[i] + '</td>'  +
+                        '<td><input type = "number" name = "quantity[]" min = 0 value="' + productQtys[i] + '"/></td>'  +
+                        '<td><input type="radio" name="default" value="' + productIds[i] + '"' + checked + '/></td>'  +
+                        '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
+                        + '</tr>');
+                }
+
+                $("#myModalProduct").hide();
+            });
+
+            $(document).on('click', '.deleteProduct', function(e) {
+                e.preventDefault();
+                $(this).closest('tr').remove();
+            });
+
+
         });
-    });
 
 
-</script>
+
+    </script>
 @endsection

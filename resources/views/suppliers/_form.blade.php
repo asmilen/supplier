@@ -85,8 +85,8 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Chọn Tỉnh</label>
     <div class="col-sm-6">
-        <select name="province_id" id = "province_id" class="form-control">
-            <option value="">--Chọn Tỉnh--</option>
+        <select name="province_id" id="province_id" class="provinces">
+            <option value=""></option>
             @foreach ($provincesList as $id => $name)
                 <option value="{{ $id }}" {{ $id == $address->province_id ? ' selected=selected' : '' }}>{{  $name }}</option>
             @endforeach
@@ -97,8 +97,8 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Chọn Huyện</label>
     <div class="col-sm-6">
-        <select name="district_id" id="district_id" class="form-control">
-            <option value="">--Chọn Huyện--</option>
+        <select name="district_id" id="district_id" class="districts">
+            <option value=""></option>
             @if(isset($distristList))
                 @foreach($distristList as $district)
                     <option value="{{ $district->district_id }}" {{ $district->district_id == $address->district_id ? ' selected=selected' : '' }}>{{  $district->name }}</option>

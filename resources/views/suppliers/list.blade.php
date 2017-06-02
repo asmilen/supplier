@@ -45,6 +45,16 @@
                     <div class="widget-body">
                         <div class="widget-main">
                             <form class="form-inline" id="search-form">
+                                <select class="form-control" name="typeId">
+                                    <option value="">--Chọn loại hóa đơn--</option>
+                                    <option value="0">Thanh toán trực tiếp</option>
+                                    <option value="1">Thanh toán gián tiếp</option>
+                                </select>
+                                <select class="form-control" name="status">
+                                    <option value="">--Chọn Trạng thái--</option>
+                                    <option value="active">Kích hoạt</option>
+                                    <option value="inactive">Không kích hoạt</option>
+                                </select>
                                 <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
                                 <button type="submit" class="btn btn-purple btn-sm">
                                     <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
@@ -93,6 +103,8 @@
                     url: '{!! route('suppliers.suppliersDatables') !!}',
                     data: function (d) {
                         d.keyword = $('input[name=keyword]').val();
+                        d.typeId = $('select[name=typeId]').val();
+                        d.status = $('select[name=status]').val();
                     }
                 },
                 columns: [

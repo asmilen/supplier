@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
+@endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
@@ -48,8 +50,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
-                        <select name="category_id" class="form-control" ng-model="productForm.category_id" ng-change="refreshData()">
-                            <option value="">--Chọn Danh mục--</option>
+                        <select name="category_id" class="categories" ng-model="productForm.category_id" ng-change="refreshData()" placeholder="-- Chọn danh mục --" ng-disabled="disabled" select2>
+                            <option value=""></option>
                             <option ng-repeat="category in categories" value="@{{ category.id }}">@{{ category.name }}</option>
                         </select>
                     </div>
@@ -58,8 +60,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhà SX</label>
                     <div class="col-sm-6">
-                        <select name="manufacturer_id" class="form-control" ng-model="productForm.manufacturer_id">
-                            <option value="">--Chọn Nhà SX--</option>
+                        <select name="manufacturer_id" class="manufactures" ng-model="productForm.manufacturer_id" placeholder="-- Chọn nhà sản xuất --" ng-disabled="disabled" select2>
+                            <option value=""></option>
                             <option ng-repeat="manufacturer in manufacturers" value="@{{ manufacturer.id }}">@{{ manufacturer.name }}</option>
                         </select>
                     </div>
@@ -141,4 +143,25 @@
         </div>
     </div>
 </div><!-- /.page-content -->
+@endsection
+
+@section('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
+@endsection
+
+@section('inline_scripts')
+    <script>
+        $(function () {
+            $(".categories").select2({
+                placeholder: "-- Chọn danh mục --",
+                allowClear: true,
+                width:'100%',
+            });
+            $(".manufactures").select2({
+                placeholder: "-- Chọn nhà sản xuất --",
+                allowClear: true,
+                width:'100%',
+            });
+        });
+    </script>
 @endsection

@@ -18,7 +18,7 @@ class CreateBundleProductTables extends Migration
             $table->integer('id_product');
             $table->integer('id_bundleCategory');
             $table->integer('id_bundle');
-            $table->integer('is_default')->default(0);
+            $table->boolean('is_default')->default(0);
             $table->timestamps();
         });
     }

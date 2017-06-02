@@ -70,6 +70,12 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .js-example-basic-single{
+            font-size: 14px;
+        }
+        .suppliers{
+            font-size: 14px;
+        }
 
     </style>
 @endsection
@@ -111,7 +117,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal">&times;</button>
-                            <h4 class="modal-title">Thêm mới nhà sản phẩm cho nhà cung cấp</h4>
+                            <h4 class="modal-title">Thêm mới sản phẩm cho nhà cung cấp</h4>
                         </div>
                         <div class="modal-body">
                             <form class="form-horizontal" role="form" id="supplier_form" action="{{ url('suppliers/map-suppliers') }}" method="POST" enctype="multipart/form-data" >
@@ -120,24 +126,24 @@
                                     <label class="col-sm-3 control-label no-padding-left">Sản phẩm</label>
                                     <div class="col-sm-9">
                                         <select name="product_id" class="js-example-basic-single" id="js-example-basic-single">
-                                            <option value="">-- Chọn sản phẩm --</option>
+                                            <option value=""></option>
                                             @foreach($products as $key => $value)
-                                                <option value="{{  $value->id }}">{{ $value->sku }} - {{  $value->name }}</option>
+                                                <option value="{{  $value->id }}" style="font-size: 14px;">{{ $value->sku }} - {{  $value->name }}</option>
                                             @endforeach
                                         </select>
-                                        <p style="color:red;text-align: left;" id="product_id">{{$errors->first('product_id')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="product_id">{{$errors->first('product_id')}}</p>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-sm-3 control-label no-padding-left">Nhà cung cấp</label>
                                     <div class="col-sm-9">
-                                        <select name="supplier_id" class="form-control">
-                                            <option value="">-- Chọn nhà cung cấp --</option>
+                                        <select name="supplier_id" class="suppliers">
+                                            <option value=""></option>
                                             @foreach($suppliers as $key => $value)
                                                 <option value="{{  $value->supplier_id }}">{{  $value->supplier_name }}</option>
                                             @endforeach
                                         </select>
-                                        <p style="color:red;text-align: left;" id="supplier_id">{{$errors->first('supplier_id')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="supplier_id">{{$errors->first('supplier_id')}}</p>
                                     </div>
                                 </div>
 
@@ -152,7 +158,7 @@
                                             {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
                                             <option value="4">Không ưu tiên lấy hàng</option>
                                         </select>
-                                        <p style="color:red;text-align: left;" id="status">{{$errors->first('status')}}</p>
+                                        <p style="color:red;text-align: left;font-size:14px;" id="status">{{$errors->first('status')}}</p>
                                     </div>
                                 </div>
 
@@ -162,7 +168,7 @@
                                         <select name="state"  class="form-control">
                                             <option value="1" selected>Còn hàng</option>
                                         </select>
-                                        <p style="color:red;text-align: left;" id="state">{{$errors->first('state')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="state">{{$errors->first('state')}}</p>
                                     </div>
                                 </div>
 
@@ -170,7 +176,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Giá nhập (có VAT)</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="import_price" placeholder="Nhập giá" >
-                                        <p style="color:red;text-align: left;" id="import_price">{{$errors->first('import_price')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="import_price">{{$errors->first('import_price')}}</p>
                                     </div>
                                 </div>
 
@@ -178,7 +184,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">VAT</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="vat" placeholder="Nhập VAT" >
-                                        <p style="color:red;text-align: left;" id="vat">{{$errors->first('vat')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="vat">{{$errors->first('vat')}}</p>
                                     </div>
                                 </div>
 
@@ -186,7 +192,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Giá bán khuyến nghị</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="price_recommend" placeholder="Nhập giá bán khuyến nghị" >
-                                        <p style="color:red;text-align: left;" id="price_recommend">{{$errors->first('price_recommend')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="price_recommend">{{$errors->first('price_recommend')}}</p>
                                     </div>
                                 </div>
 
@@ -194,7 +200,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Số lượng</label>
                                     <div class="col-sm-9">
                                         <input type="number" min = "0" class="form-control" name="quantity"  placeholder="Nhập số lượng" >
-                                        <p style="color:red;text-align: left;" id="quantity">{{$errors->first('quantity')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="quantity">{{$errors->first('quantity')}}</p>
                                     </div>
                                 </div>
 
@@ -202,7 +208,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Ảnh</label>
                                     <div class="col-sm-9">
                                         <input type="file" class="form-control" name="image"  >
-                                        <p style="color:red;text-align: left;" id="image">{{$errors->first('image')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="image">{{$errors->first('image')}}</p>
                                     </div>
 
                                 </div>
@@ -211,7 +217,7 @@
                                     <label class="col-sm-3 control-label no-padding-left">Mô tả</label>
                                     <div class="col-sm-9">
                                         <textarea class="form-control" name="description" id = "_description"></textarea>
-                                        <p style="color:red;text-align: left;" id="description">{{$errors->first('description')}}</p>
+                                        <p style="color:red;text-align: left; font-size: 14px" id="description">{{$errors->first('description')}}</p>
                                     </div>
 
                                 </div>
@@ -241,22 +247,34 @@
                 </div>
 
                 <div class="widget-body">
-                    <div class="widget-main">
-                            <form class="form-inline" id="export-form" action="{{ url('suppliers/exportExcel') }}" method="post">
-                                <button type="submit" class="btn btn-sm">
-                                    Export
-                                </button>
-                            </form>
+                        <div class="widget-main" style="overflow:hidden;">
+                            <div style="float: left; margin-right: 15px">
+                               <form class="form-inline" id="export-form" action="{{ url('suppliers/exportExcel') }}" method="post">
+                                   <button type="submit" class="btn btn-sm">
+                                       Export
+                                   </button>
+                               </form>
+                            </div>
+                            <div style="float: left; margin-right: 15px">
+                                <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
+                                    {{ csrf_field() }}
+                                    <button type="submit" class="btn btn-purple btn-sm" id = "btn_import">
+                                        Import
+                                    </button>
+
+                                    <div class="form-group">
+                                        <input type="file" name="file" id = "fileUpload">
+                                    </div>
+
+                                </form>
+                            </div>
+                            <div style="float: left; margin-right: 15px">
+                                <span id="lblError" style="color: red;"></span>
+                                @include('common.errors')
+                            </div>
+
                     </div>
-                    <div class="widget-main">
-                        <form class="form-inline" action="{{ url('suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                            <input type="file" name="file">
-                            <button type="submit" class="btn btn-purple btn-sm">
-                                Import
-                            </button>
-                        </form>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -393,6 +411,7 @@
                             </select></th>
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>
+                        <th ></th>
                     </tr>
                 </tfoot>
 
@@ -425,7 +444,13 @@
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
-                width: '100%'
+                width: '100%',
+            });
+
+            $(".suppliers").select2({
+                placeholder: "-- Chọn nhà cung cấp --",
+                allowClear: true,
+                width: '100%',
             });
 
             $(document).on("click",".checkStatus",function() {
@@ -496,23 +521,7 @@
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
-//                "dom": 'T<"clear">lfrtip',
-//                tableTools: {
-//                "sSwfPath": "http://cdn.datatables.net/tabletools/2.2.2/swf/copy_csv_xls_pdf.swf",
-//                    "aButtons": [{
-//                    "sExtends": "xls",
-//                    "oSelectorOpts": { filter: 'applied',order: 'applied',search: 'applied'},
-//                    "sButtonText": "Export Excel",
-//                        "mColumns": [ 0, 1, 2 , 3 , 4, 5 , 6 , 7 , 8 , 9 ],
-//                        "bFooter": false
-//                }]},
-//                dom: 'Bfrtip',
-//                buttons: [
-//
-//                    'excelHtml5',
-//                    'csvHtml5',
-//                    'pdfHtml5'
-//                ]
+
             });
 
             datatable.MakeCellsEditable({
@@ -588,6 +597,20 @@
 
             CKEDITOR.replace('_description');
 
+            $("#btn_import").on("click", function () {
+                var allowedFiles = [".xlsx"];
+                var fileUpload = $("#fileUpload");
+                var lblError = $("#lblError");
+                var regex = new RegExp("([a-zA-Z0-9\s_\\.\-:])+(" + allowedFiles.join('|') + ")$");
+                if (!regex.test(fileUpload.val().toLowerCase())) {
+                    lblError.html("Please upload files having extensions: <b>" + allowedFiles.join(', ') + "</b> only.");
+                    return false;
+                } else {
+                    lblError.html('');
+                    return true;
+                }
+            });
+
             $("#btn_save").on("click", function () {
                 for ( instance in CKEDITOR.instances )
                     CKEDITOR.instances[instance].updateElement();
@@ -604,8 +627,11 @@
                     dataType: 'JSON',
                     success: function (res){
                         $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
-                        if(res.status == 'success' || res.status == 'exists'){
+                        if (res.status == 'success'){
+                            swal("Thành công!", "Tạo thành công sản phẩm cho nhà cung cấp!", "success");
                             window.location.reload();
+                        } else if (res.status == 'exists') {
+                            $("#supplier_id").text('Sản phẩm này đã có cho nhà cung cấp trong hệ thống! ');
                         }
                         else {
                             $.each(res.errors,function(index, value) {
@@ -692,6 +718,7 @@
 
             @include('scripts.click-datatable-delete-button')
         });
+
 
     </script>
 @endsection

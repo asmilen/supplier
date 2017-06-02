@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Datatables;
 use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,11 @@ class Product extends Model
     public function saleprices()
     {
         return $this->hasMany(Saleprice::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
     }
 
     public static function getDatatables()

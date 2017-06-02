@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API;
 use DB;
 use Validator;
 use Datatables;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Province;
+use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
 use App\Models\MarginRegionCategory;
 use App\Http\Controllers\Controller;
@@ -187,5 +190,67 @@ class ProductsController extends Controller
     public function show(Product $product)
     {
         return $product;
+    }
+
+    public function createFromGoogleSheet()
+    {
+        $results = [];
+
+        foreach (request()->all() as $productData) {
+            try {
+                $this->createProductFromGoogleSheetData($productData);
+
+                array_push($results, ['Nhập thành công.']);
+            } catch (\Exception $e) {
+                array_push($results, ['Lỗi: '.$e->getMessage()]);
+            }
+        }
+
+        return response()->json($results);
+    }
+
+    protected function createProductFromGoogleSheetData($productData)
+    {
+        $category = Category::where('name', $productData['category_name'])->firstOrFail();
+
+        $manufacturer = Manufacturer::where('name', $productData['manufacturer_name'])->firstOrFail();
+
+        $color = Color::where('name', $productData['color'])->first();
+
+        $product = Product::where('name', $productData['name'])->first();
+
+        if ($product) {
+            throw new \Exception('Sản phẩm đã tồn tại.');
+        }
+
+        if (! empty($productData['code'])) {
+            $check = Product::where('category_id', $category->id)
+                ->where('manufacturer_id', $manufacturer->id)
+                ->where('code', $productCode)
+                ->first();
+
+            if ($check) {
+                throw new \Exception('Mã sản phẩm đã tồn tại.');
+            }
+        }
+
+        $product = Product::forceCreate([
+            'category_id' => $category->id,
+            'manufacturer_id' => $manufacturer->id,
+            'color_id' => $color ? $color->id : 0,
+            'name' => $productData['name'],
+            'status' => 0,
+        ]);
+
+        if (empty($productCode)) {
+            $productCode = $product->id;
+        }
+
+        $product->forceFill([
+            'code' => $productCode,
+            'sku' => generate_sku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
+        ])->save();
+
+        return true;
     }
 }

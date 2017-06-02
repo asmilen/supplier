@@ -12,7 +12,11 @@ use App\Models\SupplierSupportedProvince;
 
 class SuppliersController extends Controller
 {
-    //
+    public function index()
+    {
+        return Supplier::all();
+    }
+
     public function getListSupplierByProductId()
     {
         $validator = Validator::make(request()->all(), [

@@ -487,7 +487,7 @@
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
-                pageLength: 50,
+                pageLength: 10,
                 "bDestroy": true,
                 ajax: {
                     url: '{!! route('suppliers.datatables') !!}',

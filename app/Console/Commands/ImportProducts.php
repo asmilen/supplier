@@ -105,11 +105,7 @@ class ImportProducts extends Command
                 continue;
             }
 
-            if (empty($row[4])) {
-                $productCode = Product::where('category_id', $category->id)
-                    ->where('manufacturer_id', $manufacturer->id)
-                    ->count() + 1001;
-            } else {
+            if (! empty($row[4])) {
                 $productCode = strtoupper($row[4]);
             }
 
@@ -122,15 +118,22 @@ class ImportProducts extends Command
                 array_push($failed, $row[3]);
             }
 
-            Product::forceCreate([
+            $product = Product::forceCreate([
                 'category_id' => $category->id,
                 'manufacturer_id' => $manufacturer->id,
                 'color_id' => $color ? $color->id : 0,
                 'name' => $row[3],
-                'code' => $productCode,
-                'sku' => $this->generateSku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
                 'status' => 0,
             ]);
+
+            if (empty($productCode)) {
+                $productCode = $product->id;
+            }
+
+            $product->forceFill([
+                'code' => $productCode,
+                'sku' => $this->generateSku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
+            ])->save();
 
             ++$count;
         }

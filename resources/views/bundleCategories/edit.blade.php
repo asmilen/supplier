@@ -261,7 +261,7 @@
                 productIds = typeof productIds !== 'undefined' ? productIds : [];
                 table.destroy();
                 table = $("#tableproducts").DataTable({
-                    "searching": false,
+                    searching: true,
                     autoWidth: false,
                     processing: true,
                     serverSide: true,

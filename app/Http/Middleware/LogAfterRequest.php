@@ -33,6 +33,7 @@ class LogAfterRequest
             'request' => $request,
             'response' => $response->getContent(),
             'device' => $request->header('User-Agent'),
+            'uid' => $request->header('uid', 0),
             'url' => $request->fullUrl(),
             'method' => $request->getMethod(),
             'ip_address' => $request->getClientIp(),

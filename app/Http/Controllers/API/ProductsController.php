@@ -198,11 +198,11 @@ class ProductsController extends Controller
 
         foreach (request()->all() as $productData) {
             try {
-                $this->createProductFromGoogleSheetData($productData);
+                $product = $this->createProductFromGoogleSheetData($productData);
 
-                array_push($results, ['Nhập thành công.']);
+                array_push($results, [$product->sku, 'Nhập thành công.']);
             } catch (\Exception $e) {
-                array_push($results, ['Lỗi: '.$e->getMessage()]);
+                array_push($results, ['', 'Lỗi: '.$e->getMessage()]);
             }
         }
 
@@ -220,13 +220,13 @@ class ProductsController extends Controller
         $product = Product::where('name', $productData['name'])->first();
 
         if ($product) {
-            throw new \Exception('Sản phẩm đã tồn tại.');
+            return $product;
         }
 
         if (! empty($productData['code'])) {
             $check = Product::where('category_id', $category->id)
                 ->where('manufacturer_id', $manufacturer->id)
-                ->where('code', $productCode)
+                ->where('code', $productData['code'])
                 ->first();
 
             if ($check) {
@@ -251,6 +251,6 @@ class ProductsController extends Controller
             'sku' => generate_sku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
         ])->save();
 
-        return true;
+        return $product;
     }
 }

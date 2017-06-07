@@ -25,6 +25,18 @@
     </div>
 </div>
 
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Label</label>
+    <div class="col-sm-6">
+        <select name="region_id" class="form-control">
+            @php $bundleLabels = config('teko.bundleLabels') @endphp
+          @foreach($bundleLabels as $key => $bundleLabel)
+                    <option value="{{ $key }}">{{ $bundleLabel }}</option>
+              @endforeach
+        </select>
+    </div>
+</div>
+
 <div class="clearfix form-actions">
     <div class="col-md-offset-3 col-md-9">
         <button type="submit" class="btn btn-success">

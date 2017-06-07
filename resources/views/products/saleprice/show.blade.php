@@ -75,6 +75,21 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right">Áp dụng cho</label>
+
+                    <div class="col-xs-12 col-sm-9">
+                        @foreach (config('teko.regions') as $k => $v)
+                            <div class="checkbox">
+                                <label>
+                                    <input name="form-field-checkbox" type="checkbox" class="ace" ng-model="productSalepriceForm.regions[{{ $k }}]" value="{{ $k }}" />
+                                    <span class="lbl"> {{ $v }}</span>
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
                         <button type="submit" class="btn btn-success" ng-click="update()" ng-disabled="productSalepriceForm.disabled">
@@ -94,7 +109,8 @@
                     <th>STT</th>
                     <th>Nhà cung cấp</th>
                     <th>Số lượng</th>
-                    <th>Giá</th>
+                    <th>Giá nhập</th>
+                    <th>Giá bán khuyến nghị</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -104,6 +120,7 @@
                         <td>{{ $v->supplier->name }}</td>
                         <td>{{ $v->quantity }}</td>
                         <td>{{  number_format (  $v->import_price , 0 , "." , "," )}}</td>
+                        <td>{{  number_format (  $v->price_recommend , 0 , "." , "," )}}</td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -119,6 +136,7 @@
                 <tr>
                     <th>STT</th>
                     <th>Store</th>
+                    <th>Miền</th>
                     <th>Price</th>
                     <th>Cập nhật</th>
                 </tr>
@@ -128,8 +146,9 @@
                     <tr>
                         <td>{{ $k + 1 }}</td>
                         <td>{{ config('teko.stores')[$v->store_id] }}</td>
-                        <td>{{ $v->price }}</td>
-                        <td>{{ $v->created_at }}</td>
+                        <td>{{ config('teko.regions')[$v->region_id] }}</td>
+                        <td>{{  number_format (  $v->price , 0 , "." , "," )}}</td>
+                        <td>{{ convert_time($v->created_at) }}</td>
                     </tr>
                 @endforeach
                 </tbody>

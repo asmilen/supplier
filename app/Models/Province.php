@@ -15,5 +15,15 @@ class Province extends Model
     {
         return $this->hasMany(District::class);
     }
+
+    public static function getRegionIdsByCode($codeProvince)
+    {
+        return static::where('code', $codeProvince)->pluck('region_id')->all();
+    }
+
+    public static function getListByRegion($regionId)
+    {
+        return static::where('region_id', $regionId)->pluck('id')->all();
+    }
 }
 

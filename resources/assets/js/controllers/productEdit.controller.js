@@ -43,7 +43,7 @@ function ProductEditController($scope, $http, $window) {
     $scope.populateProductForm = function () {
         $scope.productForm.category_id = $scope.product.category_id;
         $scope.productForm.manufacturer_id = $scope.product.manufacturer_id;
-        $scope.productForm.color_id = $scope.product.color_id;
+        $scope.productForm.color_id = $scope.product.color_id ;
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;

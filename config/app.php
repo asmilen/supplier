@@ -12,7 +12,8 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'Supplier Tools',
+    //'name' => 'Supplier Tools',
+    'name' => env('APP_NAME', 'Supplier Tools'),
 
     /*
     |--------------------------------------------------------------------------
@@ -244,8 +245,6 @@ return [
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Image' => Intervention\Image\Facades\Image::class,
-        'Carbon' => 'Carbon\Carbon'
-
     ],
 
 ];

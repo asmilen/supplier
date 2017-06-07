@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Datatables;
 use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +44,11 @@ class Product extends Model
     public function saleprices()
     {
         return $this->hasMany(Saleprice::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
     }
 
     public static function getDatatables()
@@ -93,6 +99,10 @@ class Product extends Model
             throw new \Exception('Store không tồn tại.');
         }
 
+        if (! isset(config('teko.regions')[$data['region_id']])) {
+            throw new \Exception('Miền không tồn tại.');
+        }
+
         $saleprice = (new Saleprice)->forceFill($data);
 
         $this->saleprices()->save($saleprice);
@@ -100,6 +110,8 @@ class Product extends Model
         dispatch(new PublishMessage('teko.sale', 'sale.price.update', json_encode([
             'storeId' => $saleprice->store_id,
             'storeName' => config('teko.stores')[$saleprice->store_id],
+            'regionId' => $saleprice->region_id,
+            'regionName' => config('teko.regions')[$saleprice->region_id],
             'productId' => $this->id,
             'sku' => $this->sku,
             'price' => $saleprice->price,

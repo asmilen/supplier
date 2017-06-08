@@ -203,6 +203,17 @@ class ProductsController extends Controller
         return Product::getDatatables();
     }
 
+    public function getProductInCombo()
+    {
+        $productIds = [];
+
+        if (request()->has('productIds')){
+            $productIds = request('productIds');
+        }
+
+        return Product::getProductInCombo($productIds);
+    }
+
     protected function generateSku($categoryId, $manufacturerId, $code, $colorId = null)
     {
         $category = Category::findOrFail($categoryId);
@@ -219,4 +230,6 @@ class ProductsController extends Controller
 
         return $sku;
     }
+
+
 }

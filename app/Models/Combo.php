@@ -19,9 +19,6 @@ class Combo extends Model
         ])->with('products');
 
         return Datatables::eloquent($model)
-            ->filter(function ($query) {
-
-            })
             ->editColumn('quantity', function ($model) {
                 return count($model->products) ? count($model->products) : 0;
             })

@@ -9,21 +9,21 @@ use App\Models\Manufacturer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 
-class ImportProductsFromCsv extends Command
+class InitProductsFromCsv extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'import:products';
+    protected $signature = 'product:init';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Import products from CSV';
+    protected $description = 'Init products from CSV';
 
     /**
      * Create a new command instance.

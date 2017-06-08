@@ -11,6 +11,4 @@ class ProductCombo extends Model
     {
         return $this->belongsTo(Combo::class);
     }
-
-
 }

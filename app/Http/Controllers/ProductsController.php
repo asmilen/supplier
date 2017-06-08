@@ -201,11 +201,7 @@ class ProductsController extends Controller
 
     public function getProductInCombo()
     {
-        $productIds = [];
-
-        if (request()->has('productIds')){
-            $productIds = request('productIds');
-        }
+        $productIds = request('productIds', []);
 
         return Product::getProductInCombo($productIds);
     }

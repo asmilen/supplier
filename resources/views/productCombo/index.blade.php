@@ -15,7 +15,6 @@
             z-index: 0;
         }
     </style>
-
 @endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->

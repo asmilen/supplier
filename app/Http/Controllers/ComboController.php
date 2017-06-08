@@ -139,7 +139,6 @@ class ComboController extends Controller
         flash()->success('Success!', 'Combo successfully updated.');
 
         return redirect()->route('combo.index');
-
     }
 
     /**

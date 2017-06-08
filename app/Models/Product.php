@@ -137,6 +137,5 @@ class Product extends Model
             })
             ->rawColumns(['status','check', 'quantity'])
             ->make(true);
-
     }
 }

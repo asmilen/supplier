@@ -120,4 +120,22 @@ class Product extends Model
 
         return $this;
     }
+
+    public static function getProductInCombo($productIds)
+    {
+        $model = static::select([
+            'id', 'name', 'code', 'source_url', 'sku', 'status',
+        ])->whereNotIn('products.id',$productIds);
+
+        return Datatables::of($model)
+            ->editColumn('status', 'products.datatables.status')
+            ->addColumn('check', function ($product) {
+                return '<input  type="checkbox" value="' . $product->id . '" class="checkbox"/>';
+            })
+            ->addColumn('quantity', function () {
+                return '<input  class="qty"  type="number" min = 0 value="1"/>';
+            })
+            ->rawColumns(['status','check', 'quantity'])
+            ->make(true);
+    }
 }

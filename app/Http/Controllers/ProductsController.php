@@ -199,6 +199,13 @@ class ProductsController extends Controller
         return Product::getDatatables();
     }
 
+    public function getProductInCombo()
+    {
+        $productIds = request('productIds', []);
+
+        return Product::getProductInCombo($productIds);
+    }
+
     protected function generateSku($categoryId, $manufacturerId, $code, $colorId = null)
     {
         $category = Category::findOrFail($categoryId);

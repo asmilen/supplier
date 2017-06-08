@@ -95,7 +95,6 @@ class BundleCategoriesController extends Controller
     public function edit(BundleCategory $bundleCategory)
     {
         $bundleProducts = $bundleCategory->products()->get();
-
         $supplierIds = SupplierSupportedProvince::whereIn(
             'province_id', Province::getListByRegion($bundleCategory->bundle()->pluck('region_id'))
         )->pluck('supplier_id')->all();

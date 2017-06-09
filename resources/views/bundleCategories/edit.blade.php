@@ -285,7 +285,7 @@
 
             function destroyProduct(bundleId, productId, categoryId) {
                 $.ajax({
-                    url: "{{ url('bundleProducts/destroy') }}",
+                    url: "{{ route('bundleProducts.destroy') }}",
                     type: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",

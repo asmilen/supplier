@@ -215,7 +215,7 @@
                 if (r == true) {
                     $(this).closest('tr').remove();
                     $.ajax({
-                        url: "{{ url('bundleProducts/destroy') }}",
+                        url: "{{ route('bundleProducts.destroy') }}",
                         type: "POST",
                         data: {
                             _token: "{{ csrf_token() }}",

@@ -123,11 +123,15 @@ class BundlesController extends Controller
 
     public function listProductByRegion(Bundle $bundle)
     {
+        $productIds = [];
         $supplierIds = SupplierSupportedProvince::whereIn(
             'province_id', Province::getListByRegion($bundle->region_id)
         )->pluck('supplier_id')->all();
 
-       return $bundle->listProductBySuppliers($supplierIds);
+        if (request()->has('productIds')){
+            $productIds = request('productIds');
+        }
+        
+        return $bundle->listProductBySuppliers($supplierIds, $productIds);
     }
-
 }

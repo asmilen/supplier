@@ -13,7 +13,7 @@
                 <a href="{{ url('/dashboard') }}">Dashboard</a>
             </li>
             <li>
-                <a href="{{ route('products.index') }}">Nhà cung cấp</a>
+                <a href="{{ route('suppliers.getList') }}">Nhà cung cấp</a>
             </li>
             <li class="active">Danh sách</li>
         </ul><!-- /.breadcrumb -->

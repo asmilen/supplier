@@ -67,7 +67,7 @@
                 <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
                 <br>
                 <div>
-                    <table class="table hoverTable">
+                    <table class="table hoverTable" id="products-table">
                         <thead>
                         <th>ID</th>
                         <th>Tên sản phẩm</th>
@@ -103,14 +103,14 @@
                                     <div class="modal-body">
                                         <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                                             <thead>
-                                            <tr>
-                                                <th >ID</th>
-                                                <th >Tên</th>
-                                                <th >SKU</th>
-                                                <th >Chọn </th>
-                                                <th >Số Lượng</th>
-                                                <th >Mặc định</th>
-                                            </tr>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Tên</th>
+                                                    <th>SKU</th>
+                                                    <th>Chọn </th>
+                                                    <th>Số Lượng</th>
+                                                    <th>Mặc định</th>
+                                                </tr>
                                             </thead>
                                             <tbody id="productsRegion">
 
@@ -147,84 +147,103 @@
 
 @section('inline_scripts')
     <script type="text/javascript">
-
         $(document).ready(function() {
-            var table = '';
+            var productsTable = '';
+            productsTable = $("#products-table").DataTable({
+                autoWidth: false
+            });
+            var table = $("#tableproducts").DataTable({});
+
             $('#bundleId').on('change', function (e) {
                 loadProduct(this.value);
             });
 
-            function loadProduct(bundleId) {
-                $.ajax({
-                    url: "/region/" + bundleId + "/products",
-                    success: function(products) {
-                        $("#productsRegion").html('');
-                        $.each(products, function(key, product) {
-                            $("#productsRegion").append('<tr>' +
-                                '<td>' + product.id + '</td>' +
-                                '<td class="productName">' + product.name + '</td>' +
-                                '<td class="productSku">'+ product.sku +'</td>' +
-                                '<td><input  type="checkbox" value="' + product.id + '" class="checkbox"/></td>' +
-                                '<td><input  class="qty"  type="number" min = 0/></td>' +
-                                '<td><input  class="radio" type="radio"  value="' + product.id + '" name="default"/></td>'
-                                + '</tr>');
-                        });
-                        table = $("#tableproducts").DataTable({
-                            autoWidth: false
-                        });
-                    },
-                    error: function() {
-
-                    }
-                });
-            }
+            var product_ids = [];
 
             $(document).on('click', '#btnChooseProduct', function(e) {
+                productsTable.destroy();
                 var productNames = [];
                 var productIds = [];
                 var productSkus = [];
                 var productQtys = [];
-                var productDefaults = [];
+                var productDefault;
                 var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
                 for(var i = 0; i < rowcollection.length; i++)
                 {
                     productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
-                    productIds.push($(rowcollection[i]).val());
+                    productIds.push(parseInt($(rowcollection[i]).val()));
+                    product_ids.push(parseInt($(rowcollection[i]).val()));
                     productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
                     productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
-                    productDefaults.push($(rowcollection[i]).closest('tr').find('.radio').val());
+                    if($(rowcollection[i]).closest('tr').find('.radio').is(':checked')) {
+                        productDefault = $(rowcollection[i]).closest('tr').find('.radio').val();
+                    }
                 }
-
-                $("#bundleProducts").html('');
 
                 for(var i = 0; i < productNames.length; i++) {
                     var checked = '';
-                    if(productDefaults[i] == productIds[i]) {
+                    if(productDefault == productIds[i]) {
                         checked = 'checked';
                     }
                     $("#bundleProducts").append('<tr>' +
                         '<input type ="hidden" name= "productIds[]" value="' +productIds[i] + '"/>' +
-                        '<td>' + productIds[i] + '</td>'   +
-                        '<td>' + productNames[i] + '</td>' +
-                        '<td>' + productSkus[i] + '</td>'  +
+                        '<td class="id">' + productIds[i] + '</td>'   +
+                        '<td class="name">' + productNames[i] + '</td>' +
+                        '<td class="sku">' + productSkus[i] + '</td>'  +
                         '<td><input type = "number" name = "quantity[]" min = 0 value="' + productQtys[i] + '"/></td>'  +
                         '<td><input type="radio" name="default" value="' + productIds[i] + '"' + checked + '/></td>'  +
                         '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
                         + '</tr>');
                 }
-
                 $("#myModalProduct").hide();
+                $("body").removeClass("modal-open");
+                productsTable = $("#products-table").DataTable({
+                    autoWidth: false
+                });
+
+                $bundleId = $("#bundleId").val();
+                loadProduct($bundleId, product_ids);
             });
 
             $(document).on('click', '.deleteProduct', function(e) {
                 e.preventDefault();
-                $(this).closest('tr').remove();
+                productsTable.row( $(this).parents('tr') ).remove().draw();
+                var dataRows = productsTable.rows().data();
+                var productIds = [];
+                for (var i = 0; i< dataRows.length; i++) {
+                    productIds.push(parseInt(dataRows[i][0]));
+                }
+                $bundleId = $("#bundleId").val();
+                loadProduct($bundleId, productIds);
             });
 
+            function loadProduct(bundleId,productIds) {
+                productIds = typeof productIds !== 'undefined' ? productIds : [];
+                table.destroy();
+                table = $("#tableproducts").DataTable({
+                    searching: true,
+                    autoWidth: false,
+                    processing: true,
+                    serverSide: true,
+                    pageLength: 10,
+                    ajax: {
+                        url: "/region/" + bundleId + "/products",
+                        data: function (d) {
+                            d.productIds = productIds
+                        },
+                    },
+                    columns: [
+                        {data: 'id', name: 'id'},
+                        {data: 'name', name: 'name', className:'productName'},
+                        {data: 'sku', name: 'sku', className:'productSku'},
+                        {data: 'check', name: 'check', orderable: false, searchable: false},
+                        {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
+                        {data: 'default', name: 'default', orderable: false, searchable: false}
+                    ],
+                });
+            }
 
         });
-
-
 
     </script>
 @endsection

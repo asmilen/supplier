@@ -11,6 +11,7 @@ Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
 Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index');
 Route::get('provinces/{province}/addressCode', 'ProvinceDistrictsController@addressCode');
 Route::get('region/{bundle}/products', 'BundlesController@listProductByRegion');
+Route::get('products/getProductInCombo', 'ProductsController@getProductInCombo')->name('products.getProductInCombo');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
@@ -56,6 +57,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
+
+        // ProductCombos
+        Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');
+        Route::resource('combo', 'ComboController', ['except' => 'destroy']);
+        Route::post('combo/destroyProduct', 'ComboController@destroyProduct')->name('combo.destroyProduct');
 
         // Bundles
         Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');

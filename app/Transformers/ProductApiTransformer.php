@@ -18,6 +18,7 @@ class ProductApiTransformer extends TransformerAbstract
             'import_price' => $data['import_price'],
             'source_url' => $data['image'],
             'sku' => $data['sku'],
+            'recommended_price' => $data['recommended_price']
         ];
     }
 }

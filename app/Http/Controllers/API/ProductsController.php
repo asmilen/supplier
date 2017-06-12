@@ -188,6 +188,12 @@ class ProductsController extends Controller
                 ->where('product_supplier.state', '=', 1)
                 ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000'));
 
+            $product->recommended_price = ProductSupplier::where('product_id', $id)
+                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->where('product_supplier.state', '=', 1)
+                ->where('price_recommend', $product->best_price)
+                ->min('product_supplier.price_recommend');
+
             return $product;
         } catch (\Exception $e) {
 

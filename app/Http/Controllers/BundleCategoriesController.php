@@ -94,13 +94,13 @@ class BundleCategoriesController extends Controller
      */
     public function edit(BundleCategory $bundleCategory)
     {
-        $bundleProducts = $bundleCategory->products()->get();
-
         $supplierIds = SupplierSupportedProvince::whereIn(
             'province_id', Province::getListByRegion($bundleCategory->bundle()->pluck('region_id'))
         )->pluck('supplier_id')->all();
 
-        $products = $bundleCategory->listProductBySuppliersNotExist($supplierIds,$bundleCategory->products()->pluck('products.id'));
+        $bundleProducts = $bundleCategory->listProducts($supplierIds, $bundleCategory->id, $bundleCategory->bundle()->pluck('region_id'));
+
+        $products = $bundleCategory->listProductBySuppliersNotExist($supplierIds, $bundleCategory->products()->pluck('products.id'), $bundleCategory->bundle()->pluck('region_id'));
 
         return view('bundleCategories.edit', compact('bundleCategory', 'bundleProducts', 'products'));
     }

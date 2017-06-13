@@ -72,6 +72,7 @@
                         <th>ID</th>
                         <th>Tên sản phẩm</th>
                         <th>Sku</th>
+                        <th>Giá</th>
                         <th>Số lượng</th>
                         <th>Mặc định</th>
                         <th>Thao tác</th>
@@ -84,9 +85,10 @@
                                     <td class="id">{{ $bundleProduct->id }}</td>
                                     <td class="name">{{ $bundleProduct->name }}</td>
                                     <td class="sku">{{ $bundleProduct->sku }}</td>
-                                    <td><input name="quantity[]" type="number" min = 0 value="{{ $bundleProduct->pivot->quantity }}"/></td>
-                                    <td><input type="radio" name="default" value="{{ $bundleProduct->id }}" {{ $bundleProduct->pivot->is_default == 1 ? ' checked=checked' : '' }}/></td>
-                                    <td><a class="deleteProduct" data-categoryId ="{{ $bundleCategory->id }}" data-productId ="{{ $bundleProduct->id }}" data-bundleId = "{{  $bundleProduct->pivot->id_bundle  }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+                                    <td class="price">{{ $bundleProduct->price }}</td>
+                                    <td><input name="quantity[]" type="number" min = 0 value="{{ $bundleProduct->quantity }}"/></td>
+                                    <td><input type="radio" name="default"  {{ $bundleProduct->is_default == 1 ? ' checked=checked' : '' }}/></td>
+                                    <td><a class="deleteProduct" data-categoryId ="{{ $bundleCategory->id }}" data-productId ="{{ $bundleProduct->id }}" data-bundleId = "{{  $bundleProduct->id_bundle  }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
                                 </tr>
                             @endforeach
                         @endif
@@ -122,6 +124,7 @@
                                                 <th >ID</th>
                                                 <th >Tên</th>
                                                 <th >SKU</th>
+                                                <th >Giá</th>
                                                 <th >Chọn </th>
                                                 <th >Số Lượng</th>
                                                 <th >Mặc định</th>
@@ -133,6 +136,7 @@
                                                     <td>{{ $value->id }}</td>
                                                     <td class="productName">{{ $value->name }}</td>
                                                     <td class="productSku">{{ $value->sku }}</td>
+                                                    <td class="productPrice">{{ $value->price }}</td>
                                                     <td><input  type="checkbox" value="{{ $value->id }}" class="checkbox"/></td>
                                                     <td><input  class="qty"  type="number" min = 0  value="1"/></td>
                                                     <td><input  class="radio" type="radio"  value="{{ $value->id }}" name="default"/></td>
@@ -201,6 +205,7 @@
                 var productNames = [];
                 var productIds = [];
                 var productSkus = [];
+                var productPrices = [];
                 var productQtys = [];
                 var productDefault;
                 var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
@@ -209,6 +214,7 @@
                     productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
                     productIds.push(parseInt($(rowcollection[i]).val()));
                     productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
+                    productPrices.push($(rowcollection[i]).closest('tr').find('.productPrice').text());
                     productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
                     if($(rowcollection[i]).closest('tr').find('.radio').is(':checked')) {
                         productDefault = $(rowcollection[i]).closest('tr').find('.radio').val();
@@ -226,6 +232,7 @@
                         '<td class="id">' + productIds[i] + '</td>'   +
                         '<td class="name">' + productNames[i] + '</td>' +
                         '<td class="sku">' + productSkus[i] + '</td>'  +
+                        '<td class="price">' + productPrices[i] + '</td>'  +
                         '<td><input type = "number" name = "quantity[]" min = 0 value="' + productQtys[i] + '"/></td>'  +
                         '<td><input type="radio" name="default" value="' + productIds[i] + '"' + checked + '/></td>'  +
                         '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
@@ -276,6 +283,7 @@
                         {data: 'id', name: 'id'},
                         {data: 'name', name: 'name', className:'productName'},
                         {data: 'sku', name: 'sku', className:'productSku'},
+                        {data: 'price', name: 'price', className:'productPrice'},
                         {data: 'check', name: 'check', orderable: false, searchable: false},
                         {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
                         {data: 'default', name: 'default', orderable: false, searchable: false}

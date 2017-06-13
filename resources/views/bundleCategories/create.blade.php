@@ -238,10 +238,10 @@
                         },
                     },
                     columns: [
-                        {data: 'id', name: 'id'},
+                        {data: 'id', name: 'id', searchable: false},
                         {data: 'name', name: 'name', className:'productName'},
                         {data: 'sku', name: 'sku', className:'productSku'},
-                        {data: 'price', name: 'price', className:'productPrice'},
+                        {data: 'price', name: 'price', className:'productPrice', searchable: false},
                         {data: 'check', name: 'check', orderable: false, searchable: false},
                         {data: 'quantity',name: 'quantity', orderable: false, searchable: false},
                         {data: 'default', name: 'default', orderable: false, searchable: false}

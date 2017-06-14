@@ -78,6 +78,16 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Loại sản phẩm</label>
+                        <div class="col-sm-6">
+                            <select name="type" class="form-control" ng-model="productForm.type">
+                                <option value="simple">Simple</option>
+                                <option value="configurable">Configurable</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" ng-model="productForm.name">

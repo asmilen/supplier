@@ -11,6 +11,7 @@ function ProductCreateController($scope, $http, $window) {
         this.category_id = '';
         this.manufacturer_id = '';
         this.color_id = '';
+        this.type = 'simple';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -39,7 +40,6 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.getColors = function () {
-        console.log(10);
         $http.get('/api/colors')
             .then(function (response) {
                 $scope.colors = response.data;

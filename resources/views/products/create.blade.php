@@ -78,6 +78,16 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Loại sản phẩm</label>
+                        <div class="col-sm-6">
+                            <select name="type" class="form-control" ng-model="productForm.type">
+                                <option value="simple">Simple</option>
+                                <option value="configurable">Configurable</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" ng-model="productForm.name">
@@ -152,16 +162,16 @@
 @section('inline_scripts')
     <script>
         $(function () {
-//            $(".categories").select2({
-//                placeholder: "-- Chọn danh mục --",
-//                allowClear: true,
-//                width:'100%',
-//            });
-//            $(".manufactures").select2({
-//                placeholder: "-- Chọn nhà sản xuất --",
-//                allowClear: true,
-//                width:'100%',
-//            });
+            $(".categories").select2({
+                placeholder: "-- Chọn danh mục --",
+                allowClear: true,
+                width:'300px',
+            });
+            $(".manufactures").select2({
+                placeholder: "-- Chọn nhà sản xuất --",
+                allowClear: true,
+                width:'100%',
+            });
         });
     </script>
 @endsection

@@ -125,7 +125,7 @@ class Product extends Model
     {
         $model = static::select([
             'id', 'name', 'code', 'source_url', 'sku', 'status',
-        ])->whereNotIn('products.id',$productIds);
+        ])->where('products.type',0)->whereNotIn('products.id',$productIds);
 
         return Datatables::of($model)
             ->editColumn('status', 'products.datatables.status')

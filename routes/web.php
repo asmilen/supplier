@@ -57,6 +57,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
+        Route::post('products/configurable/addChild', 'ProductsController@addChilds')->name('products.configurable.addChild');
+        Route::post('products/configurable/destroyChild', 'ProductsController@destroyChilds')->name('products.configurable.destroyChild');
 
         // ProductCombos
         Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');

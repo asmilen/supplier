@@ -54,13 +54,6 @@ function ProductCreateController($scope, $http, $window) {
             });
     };
 
-    $scope.getProductSimples = function () {
-        $http.get('/api/products/simple')
-            .then(function (response) {
-                $scope.productSimples = response.data;
-            });
-    };
-
     $scope.refreshData = function () {
         categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
 
@@ -78,7 +71,6 @@ function ProductCreateController($scope, $http, $window) {
     $scope.getManufacturers();
     $scope.getColors();
     $scope.getProductConfigurables();
-    $scope.getProductSimples();
     $scope.refreshData();
 
     $scope.addProduct = function () {

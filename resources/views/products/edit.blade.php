@@ -75,6 +75,18 @@
                     </div>
                 </div>
 
+                @if($product->type == 0)
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Sản phẩm cha</label>
+                    <div class="col-sm-6">
+                        <select name="parent_id" class="form-control" ng-model="productForm.parent_id">
+                            <option value="">--Chọn Sản Phẩm Cha--</option>
+                            <option ng-repeat="product in productConfigurables" value="@{{ product.id }}">@{{ product.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                @endif
+
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                     <div class="col-sm-6">
@@ -149,16 +161,182 @@
                         <button type="submit" class="btn btn-success" ng-click="updateProduct()" ng-disabled="productForm.disabled">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                         </button>
+                        @if(count($productChilds))
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct">
+                                <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm con
+                            </button>
+                        @endif
+                            <!-- Modal Product to Connect -->
+
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal Product to Connect -->
+    <div class="modal fade" id="myModalProduct" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Chọn sản phẩm cho nhóm sản phẩm</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="product-childs" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>SKU</th>
+                            <th>Trạng thái</th>
+                            <th>Chọn </th>
+                            <th>Số Lượng</th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label no-padding-left"></label>
+                        <button type="button" class="btn btn-success" id = "btnChooseProduct">
+                            <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @if(count($productChilds))
+    <div class="row">
+        <h3>Sản phẩm con </h3>
+        <div class="col-xs-12">
+            <table id="products-table" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sản phẩm</th>
+                    <th>SKU</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($productChilds as $key => $value)
+                    <tr>
+                        <td>{{ $value->id }}</td>
+                        <td>{{ $value->name }}</td>
+                        <td>{{ $value->sku }}</td>
+                        <td><a class="deleteProduct"  data-productId ="{{ $product->id }}" data-productChild ="{{ $value->id }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
 </div><!-- /.page-content -->
 @endsection
 
+@section('scripts')
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+@endsection
+
 @section('inline_scripts')
-<script>
-var PRODUCT_ID = {{ $product->id }};
+<script type="text/javascript">
+    var PRODUCT_ID = '{{ $product->id }}';
+    $(function ()  {
+
+        productsTable = $("#products-table").DataTable({
+            autoWidth: false,
+            pageLength: 10,
+            searching: false
+        });
+
+        var dataRows = productsTable.rows().data();
+        var productIds = [];
+        for (var i = 0; i< dataRows.length; i++) {
+            productIds.push(parseInt(dataRows[i][0]));
+        }
+
+        var table = $("#product-childs").DataTable({
+            searching: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            ajax: {
+                url: "{!! route('products.getProductInCombo') !!}",
+                data: function (d) {
+                    d.productIds = productIds
+                },
+            },
+            columns: [
+                {data: 'id', name: 'id'},
+                {data: 'name', name: 'name', className:'productName', "searchable": true},
+                {data: 'sku', name: 'sku', className:'productSku', "searchable": true},
+                {data: 'status', name: 'status'},
+                {data: 'check', name: 'check', orderable: false, searchable: false},
+                {data: 'quantity',name: 'quantity', orderable: false, searchable: false, visible:false},
+            ],
+        });
+
+        $(document).on('click', '#btnChooseProduct', function(e) {
+            var productIds = [];
+            var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
+            for(var i = 0; i < rowcollection.length; i++)
+            {
+                productIds.push(parseInt($(rowcollection[i]).val()));
+            }
+            $.ajax({
+                url: "{{ route('products.configurable.addChild') }}",
+                type: "post",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    productIds: productIds,
+                    productId: '{{ $product->id }}',
+                } ,
+                success: function () {
+                    window.location.reload();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
+
+        $('.deleteProduct').click( function (e) {
+            e.preventDefault();
+            var productId = $(this).attr('data-productChild');
+            var r = confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi nhóm sản phẩm!");
+            if (r == true) {
+                destroyProduct(productId);
+            } else {
+                return false;
+            }
+        });
+
+        function destroyProduct(productId) {
+            $.ajax({
+                url: "{{ route('products.configurable.destroyChild') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    productId : productId,
+                },
+                dataType: "json",
+                success: function(response){
+                    window.location.reload();
+                }
+            });
+        }
+
+});
+
 </script>
 @endsection

@@ -23,6 +23,7 @@ class Product extends Model
         'category_id' => 'string',
         'manufacturer_id' => 'string',
         'color_id' => 'string',
+        'parent_id' => 'string',
         'status' => 'boolean',
     ];
 
@@ -54,7 +55,7 @@ class Product extends Model
     public static function getDatatables()
     {
         $model = static::select([
-                'id', 'category_id', 'manufacturer_id', 'name', 'code', 'source_url', 'sku', 'status',
+                'id', 'category_id', 'manufacturer_id', 'name', 'code', 'source_url', 'sku', 'status', 'type'
             ])->with('category', 'manufacturer');
 
         return Datatables::eloquent($model)
@@ -79,6 +80,10 @@ class Product extends Model
                     $query->where('status', true);
                 } elseif (request('status') == 'inactive') {
                     $query->where('status', false);
+                }
+
+                if (request()->has('type')) {
+                    $query->where('type', request('type'));
                 }
             })
             ->editColumn('category_id', function ($model) {

@@ -152,71 +152,11 @@
                         </div>
                     </div>
 
-                    <div ng-show="productForm.type=='configurable'">
-                        <label class="control-label no-padding-right">Sản phẩm thuộc combo</label>
-                        <br>
-                        <div>
-                            <table class="table hoverTable" id="products-table">
-                                <thead>
-                                <th>ID</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Sku</th>
-                                <th>Thao tác</th>
-                                </thead>
-                                <tbody id = "bundleProducts">
-
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
                             <button type="submit" class="btn btn-success" ng-click="addProduct()" ng-disabled="productForm.disabled">
                                 <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                             </button>
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct" ng-show="productForm.type=='configurable'">
-                                <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm con
-                            </button>
-
-                            <!-- Modal Product to Connect -->
-                            <div class="modal fade" id="myModalProduct" role="dialog">
-                                <div class="modal-dialog">
-                                    <!-- Modal content-->
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                            <h4 class="modal-title">Chọn sản phẩm cho nhóm sản phẩm</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <table id="tableproducts" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
-                                                <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Tên</th>
-                                                    <th>SKU</th>
-                                                    <th>Trạng thái</th>
-                                                    <th>Chọn </th>
-                                                    <th>Số Lượng</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody id="productsRegion">
-
-                                                </tbody>
-                                            </table>
-                                            <br>
-                                            <div class="form-group">
-                                                <label class="col-sm-4 control-label no-padding-left"></label>
-                                                <button type="button" class="btn btn-success" id = "btnChooseProduct">
-                                                    <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm
-                                                </button>
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -250,111 +190,6 @@
                 allowClear: true,
                 width:'100%',
             });
-
-            var productsTable = '';
-
-            productsTable = $("#products-table").DataTable({
-                autoWidth: false,
-                pageLength: 10,
-            });
-
-            var table = $("#tableproducts").DataTable({
-                searching: true,
-                autoWidth: false,
-                processing: true,
-                serverSide: true,
-                pageLength: 10,
-                ajax: {
-                    url: "{!! route('products.getProductInCombo') !!}",
-                    data: function (d) {
-
-                    },
-                },
-                columns: [
-                    {data: 'id', name: 'id'},
-                    {data: 'name', name: 'name', className:'productName', "searchable": true},
-                    {data: 'sku', name: 'sku', className:'productSku', "searchable": true},
-                    {data: 'status', name: 'status'},
-                    {data: 'check', name: 'check', orderable: false, searchable: false},
-                    {data: 'quantity',name: 'quantity', orderable: false, searchable: false, visible:false},
-                ],
-            });
-
-            var product_ids = [];
-
-            $(document).on('click', '#btnChooseProduct', function(e) {
-                productsTable.destroy();
-                var productNames = [];
-                var productIds = [];
-                var productSkus = [];
-                var productQtys = [];
-                var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
-                for(var i = 0; i < rowcollection.length; i++)
-                {
-                    productNames.push($(rowcollection[i]).closest('tr').find('.productName').text());
-                    productIds.push(parseInt($(rowcollection[i]).val()));
-                    product_ids.push(parseInt($(rowcollection[i]).val()));
-                    productSkus.push($(rowcollection[i]).closest('tr').find('.productSku').text());
-                    productQtys.push($(rowcollection[i]).closest('tr').find('.qty').val());
-                }
-
-                for(var i = 0; i < productNames.length; i++) {
-
-                    $("#bundleProducts").append('<tr>' +
-                        '<input type ="hidden" name= "productIds[]" value="' +productIds[i] + '"/>' +
-                        '<td class="id">' + productIds[i] + '</td>'   +
-                        '<td class="name">' + productNames[i] + '</td>' +
-                        '<td class="sku">' + productSkus[i] + '</td>'  +
-                        '<td><input type = "number" name = "quantity[]" min = 0 value="' + productQtys[i] + '"/></td>'  +
-                        '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
-                        + '</tr>');
-                }
-                $("#myModalProduct").hide();
-                $("body").removeClass("modal-open");
-                productsTable = $("#products-table").DataTable({
-                    autoWidth: false
-                });
-
-                loadProduct(product_ids);
-            });
-
-            $(document).on('click', '.deleteProduct', function(e) {
-                e.preventDefault();
-                productsTable.row( $(this).parents('tr') ).remove().draw();
-                var dataRows = productsTable.rows().data();
-                var productIds = [];
-                for (var i = 0; i< dataRows.length; i++) {
-                    productIds.push(parseInt(dataRows[i][0]));
-                }
-                loadProduct(productIds);
-            });
-
-            function loadProduct(productIds) {
-                productIds = typeof productIds !== 'undefined' ? productIds : [];
-                table.destroy();
-                table = $("#tableproducts").DataTable({
-                    searching: true,
-                    autoWidth: false,
-                    processing: true,
-                    serverSide: true,
-                    pageLength: 10,
-                    ajax: {
-                        url: "{!! route('products.getProductInCombo') !!}",
-                        data: function (d) {
-                            d.productIds = productIds
-                        },
-                    },
-                    columns: [
-                        {data: 'id', name: 'id'},
-                        {data: 'name', name: 'name', searchable: true, className:'productName'},
-                        {data: 'sku', name: 'sku', searchable: true, className:'productSku'},
-                        {data: 'status', name: 'status'},
-                        {data: 'check', name: 'check', orderable: false, searchable: false},
-                        {data: 'quantity',name: 'quantity', orderable: false, searchable: false, visible:false},
-                    ],
-                });
-            }
-
         });
     </script>
 @endsection

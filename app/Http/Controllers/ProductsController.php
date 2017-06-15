@@ -131,7 +131,9 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $productChilds = Product::where('parent_id', $product->id)->get();
+
+        return view('products.edit', compact('product', 'productChilds'));
     }
 
     /**
@@ -172,7 +174,8 @@ class ProductsController extends Controller
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id') ? request('color_id') : 0,
+            'color_id' => request('color_id', 0),
+            'parent_id' => request('parent_id', 0),
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
@@ -180,6 +183,7 @@ class ProductsController extends Controller
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ])->save();
+
 
         dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
             'id' => $product->id,
@@ -225,5 +229,22 @@ class ProductsController extends Controller
         }
 
         return $sku;
+    }
+
+    public function addChilds()
+    {
+        if (request()->has('productIds')) {
+            $productIds = request('productIds');
+
+            foreach ($productIds as $key => $productId) {
+                Product::find($productId)->forceFill(['parent_id' => request('productId')])->save();
+            }
+        }
+        return response()->json(['status' => 'success']);
+    }
+
+    public function destroyChilds(){
+        Product::find(request('productId'))->forceFill(['parent_id' => 0])->save();
+        return response()->json(['status' => 'success']);
     }
 }

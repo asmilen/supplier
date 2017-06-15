@@ -13,6 +13,7 @@ function ProductEditController($scope, $http, $window) {
         this.category_id = '';
         this.manufacturer_id = '';
         this.color_id = '';
+        this.parent_id = '';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -45,6 +46,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.category_id = $scope.product.category_id;
         $scope.productForm.manufacturer_id = $scope.product.manufacturer_id;
         $scope.productForm.color_id = $scope.product.color_id ;
+        $scope.productForm.parent_id = $scope.product.parent_id ? $scope.product.parent_id : 0;
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
@@ -74,6 +76,13 @@ function ProductEditController($scope, $http, $window) {
             });
     };
 
+    $scope.getProductConfigurables = function () {
+        $http.get('/api/products/configurable')
+            .then(function (response) {
+                $scope.productConfigurables = response.data;
+            });
+    };
+
     $scope.refreshData = function () {
         categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
 
@@ -97,6 +106,7 @@ function ProductEditController($scope, $http, $window) {
     $scope.getCategories();
     $scope.getManufacturers();
     $scope.getColors();
+    $scope.getProductConfigurables();
     $scope.getProduct();
 
     $scope.updateProduct = function () {

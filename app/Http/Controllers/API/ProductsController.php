@@ -266,9 +266,4 @@ class ProductsController extends Controller
     {
         return Product::where('type', 1)->get();
     }
-
-    public function getSimpleList()
-    {
-        return Product::where('type', 0)->get();
-    }
 }

@@ -35,14 +35,22 @@ class Bundle extends Model
         return static::pluck('name', 'id')->all();
     }
 
-    public function listProductBySuppliers($supplierIds, $productIds)
+    public function listProductBySuppliers($supplierIds, $productIds, $regionId)
     {
-        $products = Product::select(DB::raw("distinct products.id, products.name, products.sku"))
+        $products = Product::select([
+            'products.id', 'products.name', 'products.sku'
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
+        ])
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds)
                     ->where('product_supplier.state', '=', 1);
-            })->whereNotIn('products.id',$productIds)->get();
+            })
+            ->leftJoin('margin_region_category', function ($q) use ($regionId) {
+                $q->on('margin_region_category.category_id', '=', 'products.category_id')
+                    ->where('margin_region_category.region_id', $regionId);
+            })->whereNotIn('products.id',$productIds)
+            ->groupBy('products.id', 'products.name', 'products.sku');
 
         return Datatables::of($products)
             ->addColumn('check', function ($product) {

@@ -75,7 +75,7 @@ class ComboController extends Controller
 
         flash()->success('Success!', 'Combo successfully created.');
 
-        return redirect()->route('productCombo.index');
+        return redirect()->route('combo.index');
     }
 
     /**

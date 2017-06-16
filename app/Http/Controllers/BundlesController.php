@@ -132,6 +132,6 @@ class BundlesController extends Controller
             $productIds = request('productIds');
         }
         
-        return $bundle->listProductBySuppliers($supplierIds, $productIds);
+        return $bundle->listProductBySuppliers($supplierIds, $productIds, $bundle->region_id);
     }
 }

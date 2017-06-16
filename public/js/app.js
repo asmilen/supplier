@@ -338,6 +338,13 @@ function ProductEditController($scope, $http, $window) {
         });
     };
 
+    $scope.removeChild = function (childId) {
+        if (confirm("Are you sure?")) {
+            $http.post('/products/' + PRODUCT_ID + '/removeChild/' + childId).then(function (response) {});
+            $window.location.reload();
+        }
+    };
+
     $scope.getCategories();
     $scope.getManufacturers();
     $scope.getColors();

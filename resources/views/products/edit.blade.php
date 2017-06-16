@@ -161,7 +161,7 @@
                         <button type="submit" class="btn btn-success" ng-click="updateProduct()" ng-disabled="productForm.disabled">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                         </button>
-                        @if(count($productChilds))
+                        @if($product->type == 1)
                             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct">
                                 <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm con
                             </button>
@@ -181,7 +181,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Chọn sản phẩm cho nhóm sản phẩm</h4>
+                    <h4 class="modal-title">Chọn sản phẩm con</h4>
                 </div>
                 <div class="modal-body">
                     <table id="product-childs" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
@@ -191,18 +191,16 @@
                             <th>Tên</th>
                             <th>SKU</th>
                             <th>Trạng thái</th>
-                            <th>Chọn </th>
-                            <th>Số Lượng</th>
+                            <th>Thao tác </th>
                         </tr>
                         </thead>
                     </table>
                     <br>
                     <div class="form-group">
                         <label class="col-sm-4 control-label no-padding-left"></label>
-                        <button type="button" class="btn btn-success" id = "btnChooseProduct">
-                            <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                           Xong
                         </button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Hủy</button>
                     </div>
                 </div>
             </div>
@@ -223,13 +221,13 @@
                     <th>Thao tác</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="productChildren">
                 @foreach($productChilds as $key => $value)
                     <tr>
                         <td>{{ $value->id }}</td>
                         <td>{{ $value->name }}</td>
                         <td>{{ $value->sku }}</td>
-                        <td><a class="deleteProduct"  data-productId ="{{ $product->id }}" data-productChild ="{{ $value->id }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
+                        <td><button ng-click="removeChild({{$value->id}})"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
                     </tr>
                 @endforeach
                 </tbody>
@@ -252,17 +250,9 @@
     var PRODUCT_ID = '{{ $product->id }}';
     $(function ()  {
 
-        productsTable = $("#products-table").DataTable({
-            autoWidth: false,
-            pageLength: 10,
-            searching: false
-        });
-
-        var dataRows = productsTable.rows().data();
-        var productIds = [];
-        for (var i = 0; i< dataRows.length; i++) {
-            productIds.push(parseInt(dataRows[i][0]));
-        }
+        $('#myModalProduct').on('hidden.bs.modal', function () {
+           window.location.reload();
+        })
 
         var table = $("#product-childs").DataTable({
             searching: true,
@@ -271,9 +261,8 @@
             serverSide: true,
             pageLength: 10,
             ajax: {
-                url: "{!! route('products.getProductInCombo') !!}",
+                url: "{!! route('products.getSimpleProduct') !!}",
                 data: function (d) {
-                    d.productIds = productIds
                 },
             },
             columns: [
@@ -281,61 +270,35 @@
                 {data: 'name', name: 'name', className:'productName', "searchable": true},
                 {data: 'sku', name: 'sku', className:'productSku', "searchable": true},
                 {data: 'status', name: 'status'},
-                {data: 'check', name: 'check', orderable: false, searchable: false},
-                {data: 'quantity',name: 'quantity', orderable: false, searchable: false, visible:false},
+                {data: 'add', name: 'add', orderable: false, searchable: false, className:'addChild'},
             ],
         });
 
-        $(document).on('click', '#btnChooseProduct', function(e) {
-            var productIds = [];
-            var rowcollection =  table.$(".checkbox:checked", {"page": "all"});
-            for(var i = 0; i < rowcollection.length; i++)
-            {
-                productIds.push(parseInt($(rowcollection[i]).val()));
-            }
+        $(document).on('click', '.addChild', function(e) {
+            var productChild = table.row( this ).data().id ;
             $.ajax({
-                url: "{{ route('products.configurable.addChild') }}",
-                type: "post",
+                url: "/products/" + PRODUCT_ID + "/addChild",
+                type: "POST",
                 data: {
                     _token: '{{ csrf_token() }}',
-                    productIds: productIds,
-                    productId: '{{ $product->id }}',
+                    productChild: productChild,
                 } ,
-                success: function () {
-                    window.location.reload();
+                success: function (response) {
+                    if (response.status == 'success') {
+                        swal({
+                            title: "Thành công!",
+                            text: "Thêm sản phẩm con thành công",
+                            type: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     console.log(textStatus, errorThrown);
                 }
             });
         });
-
-        $('.deleteProduct').click( function (e) {
-            e.preventDefault();
-            var productId = $(this).attr('data-productChild');
-            var r = confirm("Bạn có chắc chắn muốn xóa sản phẩm này khỏi nhóm sản phẩm!");
-            if (r == true) {
-                destroyProduct(productId);
-            } else {
-                return false;
-            }
-        });
-
-        function destroyProduct(productId) {
-            $.ajax({
-                url: "{{ route('products.configurable.destroyChild') }}",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    productId : productId,
-                },
-                dataType: "json",
-                success: function(response){
-                    window.location.reload();
-                }
-            });
-        }
-
 });
 
 </script>

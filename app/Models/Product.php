@@ -47,6 +47,11 @@ class Product extends Model
         return $this->hasMany(Saleprice::class);
     }
 
+    public function children()
+    {
+        return $this->hasMany(Product::class, 'parent_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', true);
@@ -141,6 +146,21 @@ class Product extends Model
                 return '<input  class="qty"  type="number" min = 0 value="1"/>';
             })
             ->rawColumns(['status','check', 'quantity'])
+            ->make(true);
+    }
+
+    public static function getSimpleProduct()
+    {
+        $model = static::select([
+            'id', 'name', 'code', 'source_url', 'sku', 'status',
+        ])->where('products.type',0);
+
+        return Datatables::of($model)
+            ->editColumn('status', 'products.datatables.status')
+            ->addColumn('add', function ($product) {
+                return '<a href="#"><i class="ace-icon fa fa-plus" aria-hidden="true"></i></a>';
+            })
+            ->rawColumns(['status','add'])
             ->make(true);
     }
 }

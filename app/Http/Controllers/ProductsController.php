@@ -131,7 +131,7 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-        $productChilds = Product::where('parent_id', $product->id)->get();
+        $productChilds = $product->children()->get();
 
         return view('products.edit', compact('product', 'productChilds'));
     }
@@ -231,20 +231,23 @@ class ProductsController extends Controller
         return $sku;
     }
 
-    public function addChilds()
+    public function getSimpleProduct()
     {
-        if (request()->has('productIds')) {
-            $productIds = request('productIds');
+        return Product::getSimpleProduct();
+    }
 
-            foreach ($productIds as $key => $productId) {
-                Product::find($productId)->forceFill(['parent_id' => request('productId')])->save();
-            }
-        }
+    public function addChild(Product $product)
+    {
+        $productChild = Product::findOrFail(request('productChild'));
+        $productChild->forceFill(['parent_id' => $product->id])->save();
+
         return response()->json(['status' => 'success']);
     }
 
-    public function destroyChilds(){
-        Product::find(request('productId'))->forceFill(['parent_id' => 0])->save();
+    public function removeChild(Product $product, $childId){
+        $productChild = Product::findOrFail($childId);
+        $productChild->forceFill(['parent_id' => 0])->save();
+
         return response()->json(['status' => 'success']);
     }
 }

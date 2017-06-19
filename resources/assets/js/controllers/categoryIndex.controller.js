@@ -6,7 +6,6 @@ CategoryIndexController.$inject = ['$scope', '$http'];
 
 /* @ngInject */
 function CategoryIndexController($scope, $http) {
-    console.log('Category Index Controller');
     $scope.categoriesLoaded = false;
 
     function marginsForm() {
@@ -56,7 +55,6 @@ function CategoryIndexController($scope, $http) {
                 'south_region': this.marginsForm.margins[3]
             })
             .then(response => {
-                console.log(response.data);
                 $scope.marginsForm = new marginsForm();
                 $('#modal-edit-margins').modal('hide');
             })

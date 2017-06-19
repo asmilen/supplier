@@ -27,20 +27,11 @@ class CategoryMarginsController extends Controller
         ];
 
         foreach (request()->all() as $regionVar => $value) {
-            $regionId = $mapToRegions[$regionVar];
-
-            $marginRegionCategory = MarginRegionCategory::where('category_id', $category->id)
-                ->where('region_id', $regionId)
-                ->first();
-
-            if (! $marginRegionCategory) {
-                $marginRegionCategory = (new MarginRegionCategory)->forceFill([
-                    'category_id' => $category->id,
-                    'region_id' => $regionId,
-                ]);
-            }
-
-            $marginRegionCategory->forceFill(['margin' => $value])->save();
+            MarginRegionCategory::updateOrCreate([
+                'margin' => $value,
+                'region_id' => $mapToRegions[$regionVar],
+                'category_id' => $category->id,
+            ]);
         }
     }
 }

@@ -43,8 +43,10 @@ class Product extends Model
 
     public function saleprices()
     {
-        return $this->hasMany(Saleprice::class);
+        return $this->hasMany(Saleprice::class)->orderBy('updated_at','desc');
     }
+
+
 
     public function scopeActive($query)
     {

@@ -267,4 +267,9 @@ class ProductsController extends Controller
 
         return $product;
     }
+
+    public function getConfigurableList()
+    {
+        return Product::where('type', 1)->get();
+    }
 }

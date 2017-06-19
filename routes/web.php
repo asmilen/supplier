@@ -38,7 +38,10 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Categories
         Route::get('categories/datatables', 'CategoriesController@getDatatables')->name('categories.datatables');
+        Route::get('categories/all', 'CategoriesController@all')->name('categories.all');
         Route::resource('categories', 'CategoriesController');
+        Route::get('categories/{category}/margins', 'CategoryMarginsController@index')->name('categories.margins.index');
+        Route::put('categories/{category}/margins', 'CategoryMarginsController@update')->name('categories.margins.update');
 
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
@@ -57,7 +60,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
-        
+
         // Bundles
         Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
         Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);

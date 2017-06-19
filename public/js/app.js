@@ -63,24 +63,25 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 8);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex']);
+var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
 
 __webpack_require__(2);
-__webpack_require__(3);
 __webpack_require__(4);
 __webpack_require__(5);
 __webpack_require__(6);
+__webpack_require__(7);
+__webpack_require__(12);
 
 /***/ }),
 /* 1 */
@@ -92,7 +93,7 @@ __webpack_require__(6);
 /* 2 */
 /***/ (function(module, exports) {
 
-angular.module('controllers.app', []).controller('AppController', AppController);
+angular.module('controllers.app', []).controller('AppController', AppController).directive('select2', select2);
 
 AppController.$inject = ['$scope', '$http'];
 
@@ -101,13 +102,54 @@ function AppController($scope, $http) {
     console.log('Booting App Controller');
 }
 
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function link(scope, element, attrs) {
+            $timeout(function () {
+                element.select2();
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function refreshSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function recreateSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+}
+
 /***/ }),
-/* 3 */
+/* 3 */,
+/* 4 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController);
+angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController).directive('select2', select2);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
@@ -187,13 +229,57 @@ function ProductCreateController($scope, $http, $window) {
     };
 }
 
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function link(scope, element, attrs) {
+            $timeout(function () {
+                element.select2({
+                    placeholder: attrs.placeholder,
+                    allowClear: true,
+                    width: '100%'
+                });
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function refreshSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function recreateSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+};
+
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController).directive('select2',select2);
+angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -304,52 +390,8 @@ function ProductEditController($scope, $http, $window) {
     };
 }
 
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function(scope, element, attrs) {
-            $timeout(function() {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width:'100%',
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function() {
-                if (!element.select2Initialized) return;
-                $timeout(function() {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function () {
-                if (!element.select2Initialized) return;
-                $timeout(function() {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
-
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -417,7 +459,7 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -472,12 +514,88 @@ function TransportFeeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);
 module.exports = __webpack_require__(1);
 
+
+/***/ }),
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
+
+CategoryIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function CategoryIndexController($scope, $http) {
+    console.log('Category Index Controller');
+    $scope.categoriesLoaded = false;
+
+    function marginsForm() {
+        this.category_id = '';
+        this.margins = {
+            1: 0,
+            2: 0,
+            3: 0
+        };
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.refreshData = function () {
+        $http.get('/categories/all').then(function (response) {
+            $scope.categories = response.data;
+            $scope.categoriesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.showEditMarginsModal = function (category) {
+        $scope.marginCategoryName = category.name;
+
+        $scope.marginsForm = new marginsForm();
+        $scope.marginsForm.category_id = category.id;
+
+        $http.get('/categories/' + category.id + '/margins').then(function (response) {
+            _.each(response.data, function (margin, regionId) {
+                $scope.marginsForm.margins[regionId] = margin.margin;
+            });
+        });
+
+        $('#modal-edit-margins').modal('show');
+    };
+
+    $scope.updateMargins = function () {
+        $scope.marginsForm.errors = [];
+        $scope.marginsForm.disabled = true;
+
+        $http.put('/categories/' + $scope.marginsForm.category_id + '/margins', {
+            'north_region': this.marginsForm.margins[1],
+            'middle_region': this.marginsForm.margins[2],
+            'south_region': this.marginsForm.margins[3]
+        }).then(function (response) {
+            console.log(response.data);
+            $scope.marginsForm = new marginsForm();
+            $('#modal-edit-margins').modal('hide');
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.marginsForm.disabled = false;
+        });
+    };
+}
 
 /***/ })
 /******/ ]);

@@ -26,7 +26,7 @@ class CategoryMarginsController extends Controller
             'south_region' => 3,
         ];
 
-        foreach (request()->all() as $regionVar => $value) {
+        foreach (request()->only(['north_region', 'middle_region', 'south_region']) as $regionVar => $value) {
             MarginRegionCategory::updateOrCreate([
                 'margin' => $value,
                 'region_id' => $mapToRegions[$regionVar],

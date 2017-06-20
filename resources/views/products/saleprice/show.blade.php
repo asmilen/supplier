@@ -145,9 +145,12 @@
                     @foreach($nowSalePrices as $key => $nowSalePrice)
                         <tr>
                             <td>{{ $regions[$key] }}</td>
-                            <td>{{ $nowSalePrice->keyBy('store_id')[1]['price'] }}</td>
-                            <td>{{ $nowSalePrice->keyBy('store_id')[2]['price'] }}</td>
-                            <td>{{ $nowSalePrice->keyBy('store_id')[3]['price'] }}</td>
+                            @foreach([1,2,3] as $k)
+                            <td>{{ $nowSalePrice->where('store_id', $k)->isEmpty() ?
+                            "N/A" :
+                            $nowSalePrice->where('store_id', $k)->first()->price }}
+                            </td>
+                            @endforeach
                         </tr>
                     @endforeach
                 </tbody>

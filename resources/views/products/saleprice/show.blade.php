@@ -16,7 +16,7 @@
             <a href="{{ route('products.index') }}">Sản phẩm</a>
         </li>
         <li>
-            <a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a>
+            <a href="{{ route('products.edit', $product->id) }}">{{ $product->name }}</a>
         </li>
         <li class="active">Đặt giá bán</li>
     </ul><!-- /.breadcrumb -->
@@ -145,9 +145,9 @@
                     @foreach($nowSalePrices as $key => $nowSalePrice)
                         <tr>
                             <td>{{ $regions[$key] }}</td>
-                            @foreach($nowSalePrice as $v => $k)
-                            <td>{{ $k->price }}</td>
-                            @endforeach
+                            <td>{{ $nowSalePrice->keyBy('store_id')[1]['price'] }}</td>
+                            <td>{{ $nowSalePrice->keyBy('store_id')[2]['price'] }}</td>
+                            <td>{{ $nowSalePrice->keyBy('store_id')[3]['price'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>

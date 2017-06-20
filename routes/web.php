@@ -57,7 +57,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
-        Route::post('products/{product}/editStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
+        Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
 
         // ProductCombos
         Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');

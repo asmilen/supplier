@@ -79,6 +79,11 @@
                                 <option value="active">Kích hoạt</option>
                                 <option value="inactive">Không kích hoạt</option>
                             </select>
+                            <select class="form-control" name="type">
+                                <option value="">--Chọn Loại Sản Phẩm--</option>
+                                <option value="0">Simple</option>
+                                <option value="1">Configurable</option>
+                            </select>
                             <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
                             <button type="submit" class="btn btn-purple btn-sm">
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
@@ -144,6 +149,7 @@ $(function () {
                 d.manufacturer_id = $('select[name=manufacturer_id]').val();
                 d.keyword = $('input[name=keyword]').val();
                 d.status = $('select[name=status]').val();
+                d.type = $('select[name=type]').val();
             }
         },
         columns: [

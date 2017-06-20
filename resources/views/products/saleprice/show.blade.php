@@ -16,7 +16,7 @@
             <a href="{{ route('products.index') }}">Sản phẩm</a>
         </li>
         <li>
-            <a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a>
+            <a href="{{ route('products.edit', $product->id) }}">{{ $product->name }}</a>
         </li>
         <li class="active">Đặt giá bán</li>
     </ul><!-- /.breadcrumb -->

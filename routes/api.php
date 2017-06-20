@@ -5,6 +5,7 @@ Route::get('manufacturers', 'ManufacturersController@index');
 Route::get('colors', 'ColorsController@index');
 Route::get('categories/{category}/attributes', 'CategoryAttributesController@index');
 Route::get('combos', 'CombosController@index');
+Route::get('combos/{combo}/detail', 'CombosController@detail');
 Route::get('products', 'ProductsController@index');
 Route::get('products/{product}', 'ProductsController@show');
 Route::get('products/{id}/detail', 'ProductsController@detail');

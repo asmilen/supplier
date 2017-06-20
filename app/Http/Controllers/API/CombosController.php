@@ -22,4 +22,9 @@ class CombosController extends Controller
             })
             ->make(true);
     }
+
+    public function detail(Combo $combo)
+    {
+        return $combo->products;
+    }
 }

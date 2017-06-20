@@ -1,6 +1,7 @@
 angular
     .module('controllers.productEdit', [])
-    .controller('ProductEditController', ProductEditController);
+    .controller('ProductEditController', ProductEditController)
+    .directive('select2',select2);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -12,6 +13,7 @@ function ProductEditController($scope, $http, $window) {
         this.category_id = '';
         this.manufacturer_id = '';
         this.color_id = '';
+        this.parent_id = '';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -44,6 +46,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.category_id = $scope.product.category_id;
         $scope.productForm.manufacturer_id = $scope.product.manufacturer_id;
         $scope.productForm.color_id = $scope.product.color_id ;
+        $scope.productForm.parent_id = $scope.product.parent_id ? $scope.product.parent_id : 0;
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
@@ -73,6 +76,13 @@ function ProductEditController($scope, $http, $window) {
             });
     };
 
+    $scope.getProductConfigurables = function () {
+        $http.get('/api/products/configurable')
+            .then(function (response) {
+                $scope.productConfigurables = response.data;
+            });
+    };
+
     $scope.refreshData = function () {
         categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
 
@@ -93,9 +103,19 @@ function ProductEditController($scope, $http, $window) {
             });
     };
 
+    $scope.removeChild = function (childId) {
+        if (confirm("Are you sure?")) {
+            $http.post('/products/' + PRODUCT_ID + '/removeChild/' + childId)
+                .then(function (response) {
+                });
+            $window.location.reload();
+        }
+    };
+
     $scope.getCategories();
     $scope.getManufacturers();
     $scope.getColors();
+    $scope.getProductConfigurables();
     $scope.getProduct();
 
     $scope.updateProduct = function () {
@@ -120,3 +140,48 @@ function ProductEditController($scope, $http, $window) {
             });
     };
 }
+
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function(scope, element, attrs) {
+            $timeout(function() {
+                element.select2({
+                    placeholder: attrs.placeholder,
+                    allowClear: true,
+                    width:'100%',
+                });
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function() {
+                if (!element.select2Initialized) return;
+                $timeout(function() {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function () {
+                if (!element.select2Initialized) return;
+                $timeout(function() {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+};
+

@@ -75,6 +75,18 @@
                     </div>
                 </div>
 
+                @if($product->type == 0)
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Sản phẩm cha</label>
+                    <div class="col-sm-6">
+                        <select name="parent_id" class="form-control" ng-model="productForm.parent_id">
+                            <option value="">--Chọn Sản Phẩm Cha--</option>
+                            <option ng-repeat="product in productConfigurables" value="@{{ product.id }}">@{{ product.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                @endif
+
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                     <div class="col-sm-6">
@@ -149,16 +161,145 @@
                         <button type="submit" class="btn btn-success" ng-click="updateProduct()" ng-disabled="productForm.disabled">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                         </button>
+                        @if($product->type == 1)
+                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct">
+                                <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm con
+                            </button>
+                        @endif
+                            <!-- Modal Product to Connect -->
+
                     </div>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal Product to Connect -->
+    <div class="modal fade" id="myModalProduct" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Chọn sản phẩm con</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="product-childs" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên</th>
+                            <th>SKU</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác </th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <br>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label no-padding-left"></label>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">
+                           Xong
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @if(count($productChilds))
+    <div class="row">
+        <h3>Sản phẩm con </h3>
+        <div class="col-xs-12">
+            <table id="products-table" class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sản phẩm</th>
+                    <th>SKU</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="productChildren">
+                @foreach($productChilds as $key => $value)
+                    <tr>
+                        <td>{{ $value->id }}</td>
+                        <td>{{ $value->name }}</td>
+                        <td>{{ $value->sku }}</td>
+                        <td><button ng-click="removeChild({{$value->id}})"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
 </div><!-- /.page-content -->
 @endsection
 
+@section('scripts')
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+@endsection
+
 @section('inline_scripts')
-<script>
-var PRODUCT_ID = {{ $product->id }};
+<script type="text/javascript">
+    var PRODUCT_ID = '{{ $product->id }}';
+    $(function ()  {
+
+        $('#myModalProduct').on('hidden.bs.modal', function () {
+           window.location.reload();
+        })
+
+        var table = $("#product-childs").DataTable({
+            searching: true,
+            autoWidth: false,
+            processing: true,
+            serverSide: true,
+            pageLength: 10,
+            ajax: {
+                url: "{!! route('products.getSimpleProduct') !!}",
+                data: function (d) {
+                },
+            },
+            columns: [
+                {data: 'id', name: 'id'},
+                {data: 'name', name: 'name', className:'productName', "searchable": true},
+                {data: 'sku', name: 'sku', className:'productSku', "searchable": true},
+                {data: 'status', name: 'status'},
+                {data: 'add', name: 'add', orderable: false, searchable: false, className:'addChild'},
+            ],
+        });
+
+        $(document).on('click', '.addChild', function(e) {
+            var productChild = table.row( this ).data().id ;
+            $.ajax({
+                url: "/products/" + PRODUCT_ID + "/addChild",
+                type: "POST",
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    productChild: productChild,
+                } ,
+                success: function (response) {
+                    if (response.status == 'success') {
+                        swal({
+                            title: "Thành công!",
+                            text: "Thêm sản phẩm con thành công",
+                            type: "success",
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log(textStatus, errorThrown);
+                }
+            });
+        });
+});
+
 </script>
 @endsection

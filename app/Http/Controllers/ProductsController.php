@@ -49,13 +49,7 @@ class ProductsController extends Controller
      */
     public function store()
     {
-        if (empty(request('code'))) {
-            $code = Product::where('category_id', request('category_id'))
-                ->where('manufacturer_id', request('manufacturer_id'))
-                ->count() + 1;
-        } else {
-            $code = strtoupper(request('code'));
-        }
+        $code = strtoupper(request('code'));
 
         Validator::make(request()->all(), [
             'category_id' => 'required',
@@ -65,44 +59,53 @@ class ProductsController extends Controller
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($code) {
-            $check = Product::where('category_id', request('category_id'))
-                ->where('manufacturer_id', request('manufacturer_id'))
-                ->where('code', $code)
-                ->first();
+            if (! empty($code)) {
+                $check = Product::where('category_id', request('category_id'))
+                    ->where('manufacturer_id', request('manufacturer_id'))
+                    ->where('code', $code)
+                    ->first();
 
-            if ($check) {
-                $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+                if ($check) {
+                    $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+                }
             }
         })->validate();
 
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id') ? request('color_id') : 0,
+            'color_id' => request('color_id',0),
+            'type' => request('type') == 'simple' ? 0 : 1,
+            'parent_id' => request('parent_id', 0),
             'name' => request('name'),
-            'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
             'status' => !! request('status'),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ]);
 
+        if (empty($code)) {
+            $code = $product->id;
+        }
 
-        $jsonSend = [
-            "id"            => $product->id,
-            "categoryId"      => $product->category_id,
-            "brandId"      => $product->manufacturer_id,
-            "type" => "simple",
-            "sku"      => $product->sku,
-            "name"      => $product->name,
-            "skuIdentifier"      => $product->code,
-            "status"    => $product->status == true ? 'active' : 'inactive',
-            "sourceUrl"      => $product->source_url,
-            "createdAt" => strtotime($product->created_at)
-        ];
-        $messSend = json_encode($jsonSend);
+        $product->forceFill([
+            'code' => $code,
+            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
+        ])->save();
 
-        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', $messSend));
+        if(request('type') == 'simple') {
+            dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+                'id' => $product->id,
+                'categoryId' => $product->category_id,
+                'brandId' => $product->manufacturer_id,
+                'type' => 'simple',
+                'sku' => $product->sku,
+                'name' => $product->name,
+                'skuIdentifier' => $product->code,
+                'status' => $product->status ? 'active' : 'inactive',
+                'sourceUrl' => $product->source_url,
+                'createdAt' => strtotime($product->created_at),
+            ])));
+        }
 
         flash()->success('Success!', 'Product successfully created.');
 
@@ -128,7 +131,9 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $productChilds = $product->children()->get();
+
+        return view('products.edit', compact('product', 'productChilds'));
     }
 
     /**
@@ -139,13 +144,7 @@ class ProductsController extends Controller
      */
     public function update(Product $product)
     {
-        if (empty(request('code'))) {
-            $code = Product::where('category_id', request('category_id'))
-                ->where('manufacturer_id', request('manufacturer_id'))
-                ->count();
-        } else {
-            $code = strtoupper(request('code'));
-        }
+        $code = strtoupper(request('code'));
 
         Validator::make(request()->all(), [
             'category_id' => 'required',
@@ -155,21 +154,28 @@ class ProductsController extends Controller
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($product, $code) {
-            $check = Product::where('category_id', request('category_id'))
-                ->where('manufacturer_id', request('manufacturer_id'))
-                ->where('code', $code)
-                ->where('id', '<>', $product->id)
-                ->first();
+            if (! empty($code)) {
+                $check = Product::where('category_id', request('category_id'))
+                    ->where('manufacturer_id', request('manufacturer_id'))
+                    ->where('code', $code)
+                    ->where('id', '<>', $product->id)
+                    ->first();
 
-            if ($check) {
-                $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+                if ($check) {
+                    $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
+                }
             }
         })->validate();
+
+        if (empty($code)) {
+            $code = $product->id;
+        }
 
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id') ? request('color_id') : 0,
+            'color_id' => request('color_id', 0),
+            'parent_id' => request('parent_id', 0),
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
@@ -178,20 +184,18 @@ class ProductsController extends Controller
             'attributes' => json_encode(request('attributes', [])),
         ])->save();
 
-        $jsonSend = [
-            "id"            => $product->id,
-            "categoryId"      => $product->category_id,
-            "brandId"      => $product->manufacturer_id,
-            "sku"      => $product->sku,
-            "name"      => $product->name,
-            "skuIdentifier"      => $product->code,
-            "status"    => $product->status == true ? 'active' : 'inactive',
-            "sourceUrl"      => $product->source_url,
-            "createdAt" => strtotime($product->created_at)
-        ];
-        $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+            'id' => $product->id,
+            'categoryId' => $product->category_id,
+            'brandId' => $product->manufacturer_id,
+            'sku' => $product->sku,
+            'name' => $product->name,
+            'skuIdentifier' => $product->code,
+            'status' => $product->status ? 'active' : 'inactive',
+            'sourceUrl' => $product->source_url,
+            'createdAt' => strtotime($product->created_at),
+        ])));
 
         flash()->success('Success!', 'Product successfully updated.');
 
@@ -201,6 +205,13 @@ class ProductsController extends Controller
     public function getDatatables()
     {
         return Product::getDatatables();
+    }
+
+    public function getProductInCombo()
+    {
+        $productIds = request('productIds', []);
+
+        return Product::getProductInCombo($productIds);
     }
 
     protected function generateSku($categoryId, $manufacturerId, $code, $colorId = null)
@@ -218,5 +229,25 @@ class ProductsController extends Controller
         }
 
         return $sku;
+    }
+
+    public function getSimpleProduct()
+    {
+        return Product::getSimpleProduct();
+    }
+
+    public function addChild(Product $product)
+    {
+        $productChild = Product::findOrFail(request('productChild'));
+        $productChild->forceFill(['parent_id' => $product->id])->save();
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function removeChild(Product $product, $childId){
+        $productChild = Product::findOrFail($childId);
+        $productChild->forceFill(['parent_id' => 0])->save();
+
+        return response()->json(['status' => 'success']);
     }
 }

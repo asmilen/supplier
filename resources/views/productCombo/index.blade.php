@@ -15,7 +15,6 @@
             z-index: 0;
         }
     </style>
-
 @endsection
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
@@ -30,7 +29,7 @@
             <a href="{{ url('/dashboard') }}">Dashboard</a>
         </li>
         <li>
-            <a href="{{ route('products.index') }}">Sản phẩm</a>
+            <a href="{{ route('combo.index') }}">Sản phẩm Combo</a>
         </li>
         <li class="active">Danh sách</li>
     </ul><!-- /.breadcrumb -->
@@ -41,12 +40,12 @@
 <div class="page-content">
     <div class="page-header">
         <h1>
-            Sản phẩm
+            Sản phẩm Combo
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
-            <a class="btn btn-primary pull-right" href="{{ route('products.create') }}">
+            <a class="btn btn-primary pull-right" href="{{ route('combo.create') }}">
                 <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
                 <span class="hidden-xs">Thêm</span>
             </a>
@@ -62,32 +61,7 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
-                            <select class="categories" name="category_id">
-                                <option value=""></option>
-                                @foreach ($categoriesList as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="manufactures" name="manufacturer_id">
-                                <option value=""></option>
-                                @foreach ($manufacturersList as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="form-control" name="status">
-                                <option value="">--Chọn Trạng thái--</option>
-                                <option value="active">Kích hoạt</option>
-                                <option value="inactive">Không kích hoạt</option>
-                            </select>
-                            <select class="form-control" name="type">
-                                <option value="">--Chọn Loại Sản Phẩm--</option>
-                                <option value="0">Simple</option>
-                                <option value="1">Configurable</option>
-                            </select>
-                            <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
-                            <button type="submit" class="btn btn-purple btn-sm">
-                                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                            </button>
+
                         </form>
                     </div>
                 </div>
@@ -99,13 +73,9 @@
             <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
                     <tr>
-                        <th>Id</th>
                         <th>Tên</th>
-                        <th>SKU</th>
-                        <th>Danh mục</th>
-                        <th>Nhà SX</th>
                         <th>Mã</th>
-                        <th>URL</th>
+                        <th>Số lượng sản phẩm</th>
                         <th>Trạng thái</th>
                         <th></th>
                     </tr>
@@ -125,42 +95,23 @@
 @section('inline_scripts')
 <script>
 $(function () {
-    $(".categories").select2({
-        placeholder: "-- Chọn danh mục --",
-        allowClear: true,
-        width:'10%',
-    });
-    $(".manufactures").select2({
-        placeholder: "-- Chọn nhà sản xuất --",
-        allowClear: true,
-        width:'11%',
-    });
 
     var datatable = $("#dataTables-products").DataTable({
         searching: false,
         autoWidth: false,
         processing: true,
         serverSide: true,
-        pageLength: 50,
+        pageLength: 20,
         ajax: {
-            url: '{!! route('products.datatables') !!}',
+            url: '{!! route('combo.datatables') !!}',
             data: function (d) {
-                d.category_id = $('select[name=category_id]').val();
-                d.manufacturer_id = $('select[name=manufacturer_id]').val();
-                d.keyword = $('input[name=keyword]').val();
-                d.status = $('select[name=status]').val();
-                d.type = $('select[name=type]').val();
             }
         },
         columns: [
-            {data: 'id', name: 'id'},
             {data: 'name', name: 'name'},
-            {data: 'sku', name: 'sku'},
-            {data: 'category_id', name: 'category_id'},
-            {data: 'manufacturer_id', name: 'manufacturer_id'},
             {data: 'code', name: 'code'},
-            {data: 'source_url', name: 'source_url'},
-            {data: 'status', name: 'status'},
+            {data: 'quantity', name: 'quantity'},
+            {data: 'status', name: 'status', orderable: false, searchable: false},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
     });

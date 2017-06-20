@@ -27,6 +27,11 @@ class Category extends Model
         return $this->belongsToMany(Attribute::class);
     }
 
+    public function margins()
+    {
+        return $this->hasMany(MarginRegionCategory::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', true);

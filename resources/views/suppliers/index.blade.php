@@ -487,7 +487,7 @@
                 autoWidth: false,
                 processing: true,
                 serverSide: true,
-                pageLength: 50,
+                pageLength: 10,
                 "bDestroy": true,
                 ajax: {
                     url: '{!! route('suppliers.datatables') !!}',
@@ -628,7 +628,12 @@
                     success: function (res){
                         $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
                         if (res.status == 'success'){
-                            swal("Thành công!", "Tạo thành công sản phẩm cho nhà cung cấp!", "success");
+                            swal({
+                                title: "Thành công!",
+                                text: "Tạo thành công sản phẩm cho nhà cung cấp!",
+                                type: "success",
+                                showConfirmButton: true
+                            });
                             window.location.reload();
                         } else if (res.status == 'exists') {
                             $("#supplier_id").text('Sản phẩm này đã có cho nhà cung cấp trong hệ thống! ');

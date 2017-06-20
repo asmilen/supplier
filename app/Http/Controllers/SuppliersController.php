@@ -45,6 +45,7 @@ class SuppliersController extends Controller
             ->join('suppliers', 'supplier_supported_province.supplier_id', '=', 'suppliers.id')
             ->orderBy('suppliers.name', 'asc')
             ->where('user_supported_province.supported_id', $user_id)
+            ->where('suppliers.status', true)
             ->select(DB::raw('distinct suppliers.id as supplier_id,suppliers.name as supplier_name,suppliers.code as supplier_code'))
             ->get();
         $products = Product::all();

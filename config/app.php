@@ -12,7 +12,8 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'Supplier Tools',
+    //'name' => 'Supplier Tools',
+    'name' => env('APP_NAME', 'Supplier Tools'),
 
     /*
     |--------------------------------------------------------------------------

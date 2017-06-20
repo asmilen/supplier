@@ -33,10 +33,12 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Thay đổi
             </small>
-            <a class="btn btn-primary pull-right" href="{{ route('categories.index') }}">
-                <i class="ace-icon fa fa-list" aria-hidden="true"></i>
-                <span class="hidden-xs">Danh sách</span>
-            </a>
+            <p class="pull-right">
+                <a class="btn btn-primary" href="{{ route('categories.index') }}">
+                    <i class="ace-icon fa fa-list" aria-hidden="true"></i>
+                    <span class="hidden-xs">Danh sách</span>
+                </a>
+            </p>
         </h1>
     </div><!-- /.page-header -->
     <div class="row">

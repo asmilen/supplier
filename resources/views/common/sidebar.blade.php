@@ -74,6 +74,12 @@
         </li>
         @endif
 
+        @if ($currentUser->hasAccess('combo.index'))
+            <li class="{{ (Request::is('combo') || Request::is('combo/*')) ? 'active' : '' }}">
+                <a href="{{ url('/combo') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm Combo </span></a>
+            </li>
+        @endif
+
         @if ($currentUser->hasAccess('bundles.index'))
             <li class="{{ (Request::is('bundles') || Request::is('bundles/*') || Request::is('bundleCategories') || Request::is('bundleCategories/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">

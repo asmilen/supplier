@@ -5,8 +5,11 @@ namespace App\Http\Controllers\API;
 use DB;
 use Validator;
 use Datatables;
+use App\Models\Color;
 use App\Models\Product;
+use App\Models\Category;
 use App\Models\Province;
+use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
 use App\Models\MarginRegionCategory;
 use App\Http\Controllers\Controller;
@@ -43,8 +46,8 @@ class ProductsController extends Controller
 
         $model = Product::select([
             'products.id', 'products.name', 'products.code',
-            'products.sku', 'products.source_url', 'products.best_price',
-            'products.category_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
+            'products.sku', 'products.source_url', 'products.best_price', 'products.category_id',
+            'products.manufacturer_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
             'product_supplier.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
             , DB::raw('MIN(ceil(product_supplier.import_price/1000) * 1000) as import_price')
@@ -77,6 +80,14 @@ class ProductsController extends Controller
 
                 if (request()->has('manufacturer_id') && request('manufacturer_id')) {
                     $query->where('products.manufacturer_id', request('manufacturer_id'));
+                }
+
+                if (request()->has('from_price') && request('from_price')) {
+                    $query->having('price', '>=', request('from_price'));
+                }
+
+                if (request()->has('to_price') && request('to_price')) {
+                    $query->having('price', '<=', request('to_price'));
                 }
             })
             // ->addColumn('price', function ($model) use ($regions) {
@@ -177,6 +188,12 @@ class ProductsController extends Controller
                 ->where('product_supplier.state', '=', 1)
                 ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000'));
 
+            $product->recommended_price = ProductSupplier::where('product_id', $id)
+                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->where('product_supplier.state', '=', 1)
+                ->where('price_recommend', $product->best_price)
+                ->min('product_supplier.price_recommend');
+
             return $product;
         } catch (\Exception $e) {
 
@@ -187,5 +204,72 @@ class ProductsController extends Controller
     public function show(Product $product)
     {
         return $product;
+    }
+
+    public function createFromGoogleSheet()
+    {
+        $results = [];
+
+        foreach (request()->all() as $productData) {
+            try {
+                $product = $this->createProductFromGoogleSheetData($productData);
+
+                array_push($results, [$product->sku, 'Nhập thành công.']);
+            } catch (\Exception $e) {
+                array_push($results, ['', 'Lỗi: '.$e->getMessage()]);
+            }
+        }
+
+        return response()->json($results);
+    }
+
+    protected function createProductFromGoogleSheetData($productData)
+    {
+        $category = Category::where('name', $productData['category_name'])->firstOrFail();
+
+        $manufacturer = Manufacturer::where('name', $productData['manufacturer_name'])->firstOrFail();
+
+        $color = Color::where('name', $productData['color'])->first();
+
+        $product = Product::where('name', $productData['name'])->first();
+
+        if ($product) {
+            return $product;
+        }
+
+        if (! empty($productData['code'])) {
+            $check = Product::where('category_id', $category->id)
+                ->where('manufacturer_id', $manufacturer->id)
+                ->where('code', $productData['code'])
+                ->first();
+
+            if ($check) {
+                throw new \Exception('Mã sản phẩm đã tồn tại.');
+            }
+        }
+
+        $product = Product::forceCreate([
+            'category_id' => $category->id,
+            'manufacturer_id' => $manufacturer->id,
+            'color_id' => $color ? $color->id : 0,
+            'name' => $productData['name'],
+            'status' => 0,
+        ]);
+
+        if (empty($productCode)) {
+            $productCode = $product->id;
+        }
+
+        $product->forceFill([
+            'code' => $productCode,
+            'sku' => generate_sku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
+        ])->save();
+
+        return $product;
+    }
+
+    public function getConfigurableList()
+    {
+        return Product::where('type', 1)->get();
     }
 }

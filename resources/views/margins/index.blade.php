@@ -13,7 +13,7 @@
             <a href="{{ url('/dashboard') }}">Dashboard</a>
         </li>
         <li>
-            <a href="{{ route('manufacturers.index') }}">Margin cho đơn hàng</a>
+            <a href="{{ route('margins.index') }}">Margin cho đơn hàng</a>
         </li>
         <li class="active">Danh sách</li>
     </ul><!-- /.breadcrumb -->

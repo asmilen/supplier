@@ -27,8 +27,9 @@ class ProductSalepriceController extends Controller
                     ->get()
             )->get()->sortBy('region_id')->groupBy('region_id');
 
+        $productMarket = DB::table('product_marketprice_best')->where('product_id', $product->id)->first();
 
-        return view('products.saleprice.show', compact('product', 'productSuppliers', 'nowSalePrices'));
+        return view('products.saleprice.show', compact('product', 'productSuppliers', 'nowSalePrices', 'productMarket'));
     }
 
     public function update(Product $product)

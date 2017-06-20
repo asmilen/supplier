@@ -129,8 +129,8 @@
     </div>
 
     <div class="row">
+        <div class="col-xs-6">
         <h3>Giá bán hiện tại</h3>
-        <div class="col-xs-12">
             <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
@@ -152,6 +152,30 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <div class="col-xs-6">
+            <h3>Giá bán thấp nhất trên thị trường</h3>
+            @if($productMarket)
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Giá bán</th>
+                        <th>Url</th>
+                        <th>Retailer Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ $productMarket->min_retailer_price }}</td>
+                        <td>{{ $productMarket->crawled_url }}</td>
+                        <td>{{ $productMarket->retailer_name }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            @else
+                <p> Không có dữ liệu </p>
+            @endif
         </div>
     </div>
 

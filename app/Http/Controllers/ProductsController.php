@@ -222,4 +222,8 @@ class ProductsController extends Controller
 
         return $sku;
     }
+
+    public function editStatus(Product $product) {
+        $product->forceFill(['status' => $product->status ? false : true])->save();
+    }
 }

@@ -164,7 +164,26 @@ $(function () {
         e.preventDefault();
     });
 
-    @include('scripts.click-datatable-toggle-button')
+    datatable.on('click', '[id^="btn-toggle-"]', function (e) {
+        e.preventDefault();
+
+        var url = $(this).data('url');
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            beforeSend: function (xhr) {
+                return xhr.setRequestHeader('X-CSRF-TOKEN', window.Laradmin.csrfToken);
+            },
+            success: function (districts) {
+                var row = $(this).closest('tr');
+                datatable.row(row).draw();
+            },
+            error: function () {
+            }
+        });
+    });
+
 });
 </script>
 @endsection

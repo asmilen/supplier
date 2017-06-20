@@ -164,28 +164,7 @@ $(function () {
         e.preventDefault();
     });
 
-    $(document).on('click', '#status', function(e) {
-        e.preventDefault();
-        var row = $(this).closest('tr');
-        var data = datatable.row( row ).data();
-        var id = data.id;
-        updateStatus(id, row);
-    });
-
-    function updateStatus(productId, row) {
-        $.ajax({
-            url: "/products/" + productId + "/editStatus",
-            type: "POST",
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function (districts) {
-                datatable.row(row).draw();
-            },
-            error: function () {
-            }
-        });
-    }
+    @include('scripts.click-datatable-toggle-button')
 });
 </script>
 @endsection

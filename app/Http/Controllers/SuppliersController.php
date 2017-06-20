@@ -794,10 +794,10 @@ class SuppliersController extends Controller
                   $supplier_product = ProductSupplier::where('product_id', $sheet->id_product)->where('supplier_id', $sheet->id_supplier)->first();
                   if(count($supplier_product) > 0) {
                       $supplier_product->forceFill([
-                          'name' => $sheet->product_name ? $sheet->product_name : '',
+                          'name' => $sheet->product_name ? $sheet->product_name : $supplier_product->name,
                           'code' => request('code',''),
-                          'import_price' => $sheet->import_price ? $sheet->import_price : 0,
-                          'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : 0,
+                          'import_price' => $sheet->import_price ? $sheet->import_price : $supplier_product->import_price,
+                          'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : $supplier_product->price_recommend,
                           'state' => $sheet->status_product ? $sheet->status_product : 1,
                           'updated_by' => Sentinel::getUser()->id,
                       ])->save();

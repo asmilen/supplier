@@ -250,4 +250,8 @@ class ProductsController extends Controller
 
         return response()->json(['status' => 'success']);
     }
+    public function toggleStatus(Product $product) {
+        $product->forceFill(['status' => ! $product->status])->save();
+
+    }
 }

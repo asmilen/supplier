@@ -61,6 +61,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
+        Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
 
         Route::put('products/{product}/getChildren', 'ProductSalepriceController@getChildren')->name('products.getChildren');
         Route::post('products/{product}/addChild', 'ProductsController@addChild')->name('products.addChild');

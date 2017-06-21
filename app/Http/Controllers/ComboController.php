@@ -43,7 +43,7 @@ class ComboController extends Controller
     {
         $rules = [
             'name' => 'required|max:255',
-            'price' => 'required|max:255',
+            'price' => 'required|numeric',
             'status' => 'required',
         ];
         $messages = [
@@ -113,7 +113,7 @@ class ComboController extends Controller
     public function update(Combo $combo)
     {
         $this->validate(request(), [
-            'price' => 'required|max:255',
+            'price' => 'required|numeric',
             'status' => 'required',
         ], [
             'price.required' => 'Hãy nhập giá combo.',

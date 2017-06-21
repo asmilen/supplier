@@ -55,7 +55,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Giá Combo</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="price" placeholder="Giá combo ...." value="{{ old('price') }}">
+                            <input type="number" class="form-control" name="price" placeholder="Giá combo ...." value="{{ old('price') }}">
                         </div>
                         <p style="color:red;text-align: left;font-size:14px;" id="price">{{$errors->first('price')}}</p>
                     </div>

@@ -67,15 +67,47 @@ class BundleCategory extends Model
         });
     }
 
-    public function listProductBySuppliersNotExist($supplierIds,$productIds)
+    public function listProductBySuppliersNotExist($supplierIds, $productIds, $regionId)
     {
-        return Product::select(DB::raw("distinct products.id, products.name , products.sku"))
+        return Product::select([
+            'products.id', 'products.name', 'products.sku'
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
+        ])
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds)
                     ->where('product_supplier.state', '=', 1);
             })
-            ->whereNotIn('products.id',$productIds)->get();
+            ->leftJoin('margin_region_category', function ($q) use ($regionId) {
+                $q->on('margin_region_category.category_id', '=', 'products.category_id')
+                    ->where('margin_region_category.region_id', $regionId);
+            })->whereNotIn('products.id',$productIds)
+            ->groupBy('products.id', 'products.name', 'products.code',
+                'products.sku', 'products.source_url', 'products.best_price',
+                'products.category_id')->get();
     }
 
+    public function listProducts($supplierIds, $idBundleCategory, $regionId)
+    {
+        return Product::select([
+            'products.id', 'products.name', 'products.sku', 'bundle_product.is_default as is_default', 'bundle_product.quantity as quantity', 'bundle_product.id_bundle as id_bundle'
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
+        ])
+            ->join('bundle_product', function ($q) use ($idBundleCategory) {
+                $q->on('bundle_product.id_product', '=', 'products.id')
+                    ->where('bundle_product.id_bundleCategory', '=', $idBundleCategory);
+            })
+            ->join('product_supplier', function ($q) use ($supplierIds) {
+                $q->on('product_supplier.product_id', '=', 'products.id')
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1);
+            })
+            ->leftJoin('margin_region_category', function ($q) use ($regionId) {
+                $q->on('margin_region_category.category_id', '=', 'products.category_id')
+                    ->where('margin_region_category.region_id', $regionId);
+            })
+            ->groupBy('products.id', 'products.name', 'products.code',
+                'products.sku', 'products.source_url', 'products.best_price',
+                'products.category_id')->get();
+    }
 }

@@ -12,6 +12,7 @@ function ProductCreateController($scope, $http, $window) {
         this.manufacturer_id = '';
         this.color_id = '';
         this.type = 'simple';
+        this.parent_id = '0';
         this.name = '';
         this.code = '';
         this.source_url = '';
@@ -46,6 +47,13 @@ function ProductCreateController($scope, $http, $window) {
             });
     };
 
+    $scope.getProductConfigurables = function () {
+        $http.get('/api/products/configurable')
+            .then(function (response) {
+                $scope.productConfigurables = response.data;
+            });
+    };
+
     $scope.refreshData = function () {
         categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
 
@@ -62,6 +70,7 @@ function ProductCreateController($scope, $http, $window) {
     $scope.getCategories();
     $scope.getManufacturers();
     $scope.getColors();
+    $scope.getProductConfigurables();
     $scope.refreshData();
 
     $scope.addProduct = function () {
@@ -130,3 +139,4 @@ function select2($timeout, $parse) {
         }
     };
 };
+

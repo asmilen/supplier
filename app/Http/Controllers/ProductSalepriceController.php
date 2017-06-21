@@ -20,12 +20,20 @@ class ProductSalepriceController extends Controller
             ->take(5)
             ->get();
 
-        return view('products.saleprice.show', compact('product', 'productSuppliers'));
+        $nowSalePrices = Saleprice::whereIn('id',
+            Saleprice::select(DB::raw('MAX(id) as id_p'))
+                    ->where('product_id', $product->id)
+                    ->groupBy('store_id', 'region_id')
+                    ->get()
+            )->get()->sortBy('region_id')->groupBy('region_id');
+
+        $productMarket = DB::table('product_marketprice_best')->where('product_id', $product->id)->first();
+
+        return view('products.saleprice.show', compact('product', 'productSuppliers', 'nowSalePrices', 'productMarket'));
     }
 
     public function update(Product $product)
     {
-
         Validator::make(request()->all(), [
             'price' => 'required|numeric',
             'stores.*' => 'required',

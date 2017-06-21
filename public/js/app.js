@@ -389,7 +389,7 @@ function ProductEditController($scope, $http, $window) {
     };
 
     $scope.getProductConfigurables = function () {
-        $http.get('/api/products/configurable').then(function (response) {
+        $http.get('/api/products/getConfigurableList').then(function (response) {
             $scope.productConfigurables = response.data;
         });
     };

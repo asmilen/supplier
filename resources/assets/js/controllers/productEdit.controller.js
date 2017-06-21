@@ -77,7 +77,7 @@ function ProductEditController($scope, $http, $window) {
     };
 
     $scope.getProductConfigurables = function () {
-        $http.get('/api/products/configurable')
+        $http.get('/api/products/getConfigurableList')
             .then(function (response) {
                 $scope.productConfigurables = response.data;
             });

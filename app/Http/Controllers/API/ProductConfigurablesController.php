@@ -8,7 +8,7 @@ use Datatables;
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 
-class ProductConfigruablesController extends Controller
+class ProductConfigurablesController extends Controller
 {
     public function index()
     {

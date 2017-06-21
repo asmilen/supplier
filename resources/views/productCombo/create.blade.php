@@ -41,7 +41,7 @@
             <div class="col-xs-12">
                 @include('common.errors')
 
-                <form class="form-horizontal" role="form" method="POST" action="{{ route('combo.store') }}">
+                <form class="form-horizontal" role="form" id="createForm" method="POST" action="{{ route('combo.store') }}">
                     {!! csrf_field() !!}
 
                     <div class="form-group">
@@ -49,6 +49,7 @@
                         <div class="col-sm-6">
                             <input type="text" class="form-control" name="name" placeholder="Tên combo ...." value="{{ old('name') }}">
                         </div>
+                        <p style="color:red;text-align: left;font-size:14px;" id="name">{{$errors->first('name')}}</p>
                     </div>
 
                     <div class="form-group">
@@ -56,6 +57,7 @@
                         <div class="col-sm-6">
                             <input type="text" class="form-control" name="price" placeholder="Giá combo ...." value="{{ old('price') }}">
                         </div>
+                        <p style="color:red;text-align: left;font-size:14px;" id="price">{{$errors->first('price')}}</p>
                     </div>
 
                     <div class="form-group">
@@ -66,6 +68,7 @@
                                 <span class="lbl"></span>
                             </label>
                         </div>
+                        <p style="color:red;text-align: left;font-size:14px;" id="status">{{$errors->first('status')}}</p>
                     </div>
 
 
@@ -88,7 +91,7 @@
 
                     <div class="clearfix form-actions">
                         <div class="col-md-offset-3 col-md-9">
-                            <button type="submit" class="btn btn-success">
+                            <button type="button" class="btn btn-success" id="btn_save">
                                 <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                             </button>
                             <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct">
@@ -153,7 +156,14 @@
 
             productsTable = $("#products-table").DataTable({
                 autoWidth: false,
-                pageLength: 10,
+                searching: true,
+                'columns': [
+                    { 'searchable': false },
+                    { 'searchable': true },
+                    { 'searchable': true },
+                    null,   // product code
+                    null,   // description
+                ]
             });
 
             var table = $("#tableproducts").DataTable({
@@ -210,7 +220,15 @@
                 $("#myModalProduct").hide();
                 $("body").removeClass("modal-open");
                 productsTable = $("#products-table").DataTable({
-                    autoWidth: false
+                    autoWidth: false,
+                    searching: true,
+                    'columns': [
+                        { 'searchable': false },
+                        { 'searchable': true },
+                        { 'searchable': true },
+                        null,   // product code
+                        null,   // description
+                    ]
                 });
 
                 loadProduct(product_ids);
@@ -252,6 +270,28 @@
                     ],
                 });
             }
+
+            $("#btn_save").on("click", function () {
+                var form = $('#createForm');
+                var data = form.serialize();
+                $.ajax({
+                    url: form.attr('action'),
+                    type: form.attr('method'),
+                    data: data,
+                    dataType: 'JSON',
+                    success: function (res){
+                        $("#name, #price, #status").text('');
+                        if (res.mess == 'success'){
+                            window.location.href = '{{ route("combo.index") }}';
+                        }
+                        else {
+                            $.each(res.errors,function(index, value) {
+                                $("#"+index).text(value);
+                            });
+                        }
+                    }
+                });
+            });
         });
 
     </script>

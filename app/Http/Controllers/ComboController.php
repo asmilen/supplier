@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Validator;
 use App\Models\Combo;
 use App\Models\ProductCombo;
-use Illuminate\Http\Request;
 
 class ComboController extends Controller
 {
@@ -38,44 +39,54 @@ class ComboController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(Request  $request)
     {
-        $this->validate(request(), [
+        $rules = [
             'name' => 'required|max:255',
             'price' => 'required|max:255',
             'status' => 'required',
-        ], [
-            'name.unique' => 'Hãy nhập tên combo.',
+        ];
+        $messages = [
+            'name.required' => 'Hãy nhập tên combo.',
             'price.required' => 'Hãy nhập giá combo.',
             'status.required' => 'Hãy nhập chọn trạng thái.',
-        ]);
+        ];
 
-        $combo = Combo::forceCreate([
-            'name' => request('name'),
-            'price' => request('price', 0),
-            'status' => !! request('status'),
-        ]);
-        $combo->forceFill([
-            'code' => $combo->name . '-' . $combo->id
-        ])->save();
+        $validator = Validator::make($request->all(), $rules, $messages);
 
-        if (request()->has('productIds')) {
-            $productIds = request('productIds');
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $response['mess'] = 'fails';
+            $response['errors'] = $errors;
+        } else {
+            $combo = Combo::forceCreate([
+                'name' => request('name'),
+                'price' => request('price', 0),
+                'status' => !! request('status'),
+            ]);
+            $combo->forceFill([
+                'code' => $combo->name . '-' . $combo->id
+            ])->save();
 
-            $quantity = request('quantity');
+            if (request()->has('productIds')) {
+                $productIds = request('productIds');
 
-            foreach ($productIds as $key => $productId) {
-                $bundleProduct = ProductCombo::forceCreate([
-                    'combo_id' => $combo->id,
-                    'product_id' => $productIds[$key],
-                    'quantity' =>  $quantity[$key] ? $quantity[$key] : 1,
-                ]);
+                $quantity = request('quantity');
+
+                foreach ($productIds as $key => $productId) {
+                    $bundleProduct = ProductCombo::forceCreate([
+                        'combo_id' => $combo->id,
+                        'product_id' => $productIds[$key],
+                        'quantity' =>  $quantity[$key] ? $quantity[$key] : 1,
+                    ]);
+                }
             }
+
+            flash()->success('Success!', 'Combo successfully created.');
+            $response['mess'] = 'success';
         }
 
-        flash()->success('Success!', 'Combo successfully created.');
-
-        return redirect()->route('combo.index');
+        return response()->json($response);
     }
 
     /**

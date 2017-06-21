@@ -6,7 +6,7 @@ Route::get('colors', 'ColorsController@index');
 Route::get('categories/{category}/attributes', 'CategoryAttributesController@index');
 Route::get('combos', 'CombosController@index');
 Route::get('combos/{combo}/detail', 'CombosController@detail');
-Route::get('productConfigruables', 'ProductConfigruablesController@index');
+Route::get('productConfigurables', 'ProductConfigurablesController@index');
 Route::get('products', 'ProductsController@index');
 Route::get('products/getConfigurableList', 'ProductsController@getConfigurableList');
 Route::get('products/{product}', 'ProductsController@show');

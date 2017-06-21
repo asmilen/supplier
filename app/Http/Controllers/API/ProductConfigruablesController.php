@@ -12,6 +12,21 @@ class ProductConfigruablesController extends Controller
 {
     public function index()
     {
-        return Product::with('children')->where('type', 1)->get();
+        $model = Product::with('children')->where('type', 1);
+
+        return Datatables::eloquent($model)
+            ->filter(function ($query) {
+                if (request()->has('name')) {
+                    $query->where('products.name', 'like', '%' . request('name') . '%');
+                }
+                if (request()->has('category_id')) {
+                    $query->where('products.category_id', request('category_id'));
+                }
+                if (request()->has('manufacturer_id')) {
+                    $query->where('products.manufacturer_id', request('manufacturer_id'));
+                }
+            })
+            ->make(true);
+
     }
 }

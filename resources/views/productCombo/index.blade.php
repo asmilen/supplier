@@ -53,23 +53,6 @@
     </div><!-- /.page-header -->
     <div class="row">
         <div class="col-xs-12">
-            <div class="widget-box">
-                <div class="widget-header">
-                    <h5 class="widget-title">Search</h5>
-                </div>
-
-                <div class="widget-body">
-                    <div class="widget-main">
-                        <form class="form-inline" id="search-form">
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
             <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
                     <tr>
@@ -97,11 +80,11 @@
 $(function () {
 
     var datatable = $("#dataTables-products").DataTable({
-        searching: false,
+        searching: true,
         autoWidth: false,
         processing: true,
         serverSide: true,
-        pageLength: 20,
+        "pageLength": 10,
         ajax: {
             url: '{!! route('combo.datatables') !!}',
             data: function (d) {
@@ -110,7 +93,7 @@ $(function () {
         columns: [
             {data: 'name', name: 'name'},
             {data: 'code', name: 'code'},
-            {data: 'quantity', name: 'quantity'},
+            {data: 'quantity', name: 'quantity', searchable: false},
             {data: 'status', name: 'status', orderable: false, searchable: false},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]

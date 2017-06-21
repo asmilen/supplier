@@ -166,7 +166,14 @@
             var productsTable = '';
             productsTable = $("#products-table").DataTable({
                 autoWidth: false,
-                searching: false
+                searching: true,
+                'columns': [
+                    { 'searchable': false },
+                    { 'searchable': true },
+                    { 'searchable': true },
+                    null,   // product code
+                    null,   // description
+                ]
             });
 
             var productIds = {{ $productIds }};
@@ -237,7 +244,14 @@
                 $("body").removeClass("modal-open");
                 productsTable = $("#products-table").DataTable({
                     autoWidth: false,
-                    searching: false
+                    searching: true,
+                    'columns': [
+                        { 'searchable': false },
+                        { 'searchable': true },
+                        { 'searchable': true },
+                        null,   // product code
+                        null,   // description
+                    ]
                 });
                 var dataRows = productsTable.rows().data();
                 var productIds = [];

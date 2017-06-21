@@ -13,7 +13,7 @@ class ProductApiTransformer extends TransformerAbstract
     {
         return [
             'id' => $data['id'],
-            'name' => $data['name'],
+            'name' => html_entity_decode($data['name']),
             'price' => $data['price'],
             'import_price' => $data['import_price'],
             'source_url' => $data['image'],

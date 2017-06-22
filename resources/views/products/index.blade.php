@@ -105,7 +105,7 @@
                         <th>Danh mục</th>
                         <th>Nhà SX</th>
                         <th>Mã</th>
-                        <th>Link Ảnh</th>
+                        <th>Ảnh</th>
                         <th>Trạng thái</th>
                         <th></th>
                     </tr>

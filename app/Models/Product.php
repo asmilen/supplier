@@ -97,9 +97,10 @@ class Product extends Model
             ->editColumn('manufacturer_id', function ($model) {
                 return $model->manufacturer ? $model->manufacturer->name : '';
             })
+            ->editColumn('image', 'products.datatables.image')
             ->editColumn('status', 'products.datatables.status')
             ->addColumn('action', 'products.datatables.action')
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['image', 'status', 'action'])
             ->make(true);
     }
 

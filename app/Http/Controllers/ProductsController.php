@@ -50,13 +50,13 @@ class ProductsController extends Controller
      */
     public function store()
     {
+       // dd(request()->all());
         $code = strtoupper(request('code'));
-        dd(request()->all());
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
-            'image' => 'required|image|mimes:jpeg,bmp,png|max:2000',
+            'image' => 'required',
             'code' => 'alpha_num|max:255',
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
@@ -73,18 +73,18 @@ class ProductsController extends Controller
             }
         })->validate();
 
-        $file = request()->file('image');
+        $file = request('image');
+
         $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
         Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
 
-        dd(request()->url());
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
             'color_id' => request('color_id') ? request('color_id') : 0,
             'name' => request('name'),
             'status' => !! request('status'),
-            'image' => url(),
+            'image' => url('/') . '/storage/' .$filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ]);

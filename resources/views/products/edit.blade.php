@@ -44,7 +44,7 @@
                 </ul>
             </div>
 
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal" role="form" enctype="multipart/form-data">
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
@@ -113,6 +113,22 @@
                         </span>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Ảnh sản phẩm</label>
+                    <div class="col-sm-6">
+                        <input type="file" class="form-control" name="image" placeholder="Image" fileread="productForm.image">
+                    </div>
+                </div>
+
+                @if($product->image)
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right"></label>
+                    <div class="col-sm-6">
+                        <img src="@{{productForm.image}}" style="height: 80px;">
+                    </div>
+                </div>
+                @endif
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Mô tả</label>

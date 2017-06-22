@@ -1,8 +1,9 @@
 angular
-    .module('controllers.productCreate', [])
+    .module('controllers.productCreate', [
+        'directives.fileread'
+    ])
     .controller('ProductCreateController', ProductCreateController)
-    .directive('select2',select2)
-    .directive("fileread", fileread);
+    .directive('select2',select2);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
@@ -80,14 +81,12 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-        var formData = new FormData();
-        formData.append("image", $scope.productForm.image);
         $http({
             method  : 'POST',
             url     : '/products',
             processData: false,
             transformRequest: function (data) {
-                var formData = new FormData(data);
+                var formData = new FormData();
                 for ( var key in data ) {
                     formData.append(key, data[key]);
                 }
@@ -97,7 +96,7 @@ function ProductCreateController($scope, $http, $window) {
             headers: {
                 'Content-Type': undefined
             }
-        }).success(function(data){
+        }).success(function(response){
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
@@ -174,18 +173,3 @@ function select2($timeout, $parse) {
         }
     };
 };
-
-function fileread() {
-    return {
-        scope: {
-            fileread: "="
-        },
-        link: function (scope, element, attributes) {
-            element.bind("change", function (changeEvent) {
-                scope.$apply(function () {
-                    scope.fileread = changeEvent.target.files[0];
-                });
-            });
-        }
-    }
-}

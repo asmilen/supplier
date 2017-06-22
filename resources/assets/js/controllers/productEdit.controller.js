@@ -1,5 +1,7 @@
 angular
-    .module('controllers.productEdit', [])
+    .module('controllers.productEdit', [
+        'directives.fileread'
+    ])
     .controller('ProductEditController', ProductEditController)
     .directive('select2',select2);
 
@@ -17,6 +19,7 @@ function ProductEditController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -36,7 +39,6 @@ function ProductEditController($scope, $http, $window) {
                     $scope.productIsLoaded = true;
 
                     $scope.populateProductForm();
-
                     $scope.refreshData();
                 }
             });
@@ -50,6 +52,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
+        $scope.productForm.image = $scope.product.image ? $scope.product.image : '';
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
@@ -122,22 +125,52 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-
-        $http.put('/products/' + PRODUCT_ID, $scope.productForm)
-            .then(function () {
-                $scope.productForm.successful = true;
-                $scope.productForm.disabled = false;
-
-                $window.location.href = '/products';
-            })
-            .catch(function (response) {
-                if (typeof response.data === 'object') {
-                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
-                } else {
-                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        $http({
+            method  : 'POST',
+            url     : '/products/' + PRODUCT_ID + '/update',
+            processData: false,
+            transformRequest: function (data) {
+                console.log(data);
+                var formData = new FormData();
+                for ( var key in data ) {
+                    formData.append(key, data[key]);
                 }
-                $scope.productForm.disabled = false;
-            });
+
+                return formData;
+            },
+            data : $scope.productForm,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function(response){
+            $scope.productForm.successful = true;
+            $scope.productForm.disabled = false;
+
+            $window.location.href = '/products';
+        }).catch(function (response) {
+            if (typeof response.data === 'object') {
+                $scope.productForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.productForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.productForm.disabled = false;
+        });
+
+        // $http.put('/products/' + PRODUCT_ID, $scope.productForm)
+        //     .then(function () {
+        //         $scope.productForm.successful = true;
+        //         $scope.productForm.disabled = false;
+        //
+        //         $window.location.href = '/products';
+        //     })
+        //     .catch(function (response) {
+        //         if (typeof response.data === 'object') {
+        //             $scope.productForm.errors = _.flatten(_.toArray(response.data));
+        //         } else {
+        //             $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        //         }
+        //         $scope.productForm.disabled = false;
+        //     });
     };
 }
 
@@ -184,4 +217,5 @@ function select2($timeout, $parse) {
         }
     };
 };
+
 

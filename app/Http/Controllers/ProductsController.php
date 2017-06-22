@@ -50,13 +50,12 @@ class ProductsController extends Controller
      */
     public function store()
     {
-       // dd(request()->all());
         $code = strtoupper(request('code'));
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
-            'image' => 'required',
+            'image' => 'image|mimes:jpg,png,jpeg|max:2000',
             'code' => 'alpha_num|max:255',
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
@@ -192,6 +191,13 @@ class ProductsController extends Controller
             'attributes' => json_encode(request('attributes', [])),
         ])->save();
 
+            $file = request('image');
+
+            $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
+            Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+            $product->forceFill([
+                'image' => url('/') . '/storage/' .$filename,
+            ])->save();
 
         dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
             'id' => $product->id,

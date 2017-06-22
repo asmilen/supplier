@@ -83,6 +83,8 @@ __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(3);
 
+__webpack_require__(12);
+
 /***/ }),
 /* 1 */
 /***/ (function(module, exports) {
@@ -179,7 +181,7 @@ function CategoryIndexController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController).directive('select2', select2).directive("fileread", fileread);
+angular.module('controllers.productCreate', ['directives.fileread']).controller('ProductCreateController', ProductCreateController).directive('select2', select2);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
@@ -252,14 +254,12 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-        var formData = new FormData();
-        formData.append("image", $scope.productForm.image);
         $http({
             method: 'POST',
             url: '/products',
             processData: false,
             transformRequest: function transformRequest(data) {
-                var formData = new FormData(data);
+                var formData = new FormData();
                 for (var key in data) {
                     formData.append(key, data[key]);
                 }
@@ -269,7 +269,7 @@ function ProductCreateController($scope, $http, $window) {
             headers: {
                 'Content-Type': undefined
             }
-        }).success(function (data) {
+        }).success(function (response) {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
@@ -347,28 +347,13 @@ function select2($timeout, $parse) {
     };
 };
 
-function fileread() {
-    return {
-        scope: {
-            fileread: "="
-        },
-        link: function link(scope, element, attributes) {
-            element.bind("change", function (changeEvent) {
-                scope.$apply(function () {
-                    scope.fileread = changeEvent.target.files[0];
-                });
-            });
-        }
-    };
-}
-
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController).directive('select2', select2);
+angular.module('controllers.productEdit', ['directives.fileread']).controller('ProductEditController', ProductEditController).directive('select2', select2);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -384,6 +369,7 @@ function ProductEditController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -402,7 +388,6 @@ function ProductEditController($scope, $http, $window) {
                 $scope.productIsLoaded = true;
 
                 $scope.populateProductForm();
-
                 $scope.refreshData();
             }
         });
@@ -416,6 +401,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
+        $scope.productForm.image = $scope.product.image ? $scope.product.image : '';
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
@@ -478,12 +464,28 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
+        $http({
+            method: 'POST',
+            url: '/products/' + PRODUCT_ID + '/update',
+            processData: false,
+            transformRequest: function transformRequest(data) {
+                console.log(data);
+                var formData = new FormData();
+                for (var key in data) {
+                    formData.append(key, data[key]);
+                }
 
-        $http.put('/products/' + PRODUCT_ID, $scope.productForm).then(function () {
-            $scope.productForm.successful = true;
-            $scope.productForm.disabled = false;
-
-            $window.location.href = '/products';
+                return formData;
+            },
+            data: $scope.productForm,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function (response) {
+            // $scope.productForm.successful = true;
+            // $scope.productForm.disabled = false;
+            //
+            // $window.location.href = '/products';
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productForm.errors = _.flatten(_.toArray(response.data));
@@ -492,6 +494,22 @@ function ProductEditController($scope, $http, $window) {
             }
             $scope.productForm.disabled = false;
         });
+
+        // $http.put('/products/' + PRODUCT_ID, $scope.productForm)
+        //     .then(function () {
+        //         $scope.productForm.successful = true;
+        //         $scope.productForm.disabled = false;
+        //
+        //         $window.location.href = '/products';
+        //     })
+        //     .catch(function (response) {
+        //         if (typeof response.data === 'object') {
+        //             $scope.productForm.errors = _.flatten(_.toArray(response.data));
+        //         } else {
+        //             $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        //         }
+        //         $scope.productForm.disabled = false;
+        //     });
     };
 }
 
@@ -669,6 +687,30 @@ function TransportFeeIndexController($scope, $http) {
 __webpack_require__(0);
 module.exports = __webpack_require__(1);
 
+
+/***/ }),
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */
+/***/ (function(module, exports) {
+
+angular.module('directives.fileread', []).directive("fileread", fileread);
+
+function fileread() {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function link(scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                });
+            });
+        }
+    };
+}
 
 /***/ })
 /******/ ]);

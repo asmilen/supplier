@@ -149,4 +149,9 @@ class CategoriesController extends Controller
     {
         return Category::getDatatables();
     }
+
+    public function all()
+    {
+        return Category::orderBy('name', 'asc')->get();
+    }
 }

@@ -12,6 +12,7 @@ Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index'
 Route::get('provinces/{province}/addressCode', 'ProvinceDistrictsController@addressCode');
 Route::get('region/{bundle}/products', 'BundlesController@listProductByRegion');
 Route::get('products/getProductInCombo', 'ProductsController@getProductInCombo')->name('products.getProductInCombo');
+Route::get('products/getSimpleProduct', 'ProductsController@getSimpleProduct')->name('products.getSimpleProduct');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
@@ -38,7 +39,10 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Categories
         Route::get('categories/datatables', 'CategoriesController@getDatatables')->name('categories.datatables');
+        Route::get('categories/all', 'CategoriesController@all')->name('categories.all');
         Route::resource('categories', 'CategoriesController');
+        Route::get('categories/{category}/margins', 'CategoryMarginsController@index')->name('categories.margins.index');
+        Route::put('categories/{category}/margins', 'CategoryMarginsController@update')->name('categories.margins.update');
 
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
@@ -58,6 +62,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
         Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
         Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
+
+        Route::put('products/{product}/getChildren', 'ProductSalepriceController@getChildren')->name('products.getChildren');
+        Route::post('products/{product}/addChild', 'ProductsController@addChild')->name('products.addChild');
+        Route::post('products/{product}/removeChild/{childId}', 'ProductsController@removeChild')->name('products.removeChild');
 
         // ProductCombos
         Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');

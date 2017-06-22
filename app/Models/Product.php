@@ -23,6 +23,7 @@ class Product extends Model
         'category_id' => 'string',
         'manufacturer_id' => 'string',
         'color_id' => 'string',
+        'parent_id' => 'string',
         'status' => 'boolean',
     ];
 
@@ -43,7 +44,12 @@ class Product extends Model
 
     public function saleprices()
     {
-        return $this->hasMany(Saleprice::class);
+        return $this->hasMany(Saleprice::class)->orderBy('updated_at','desc');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Product::class, 'parent_id');
     }
 
     public function scopeActive($query)
@@ -79,6 +85,10 @@ class Product extends Model
                     $query->where('status', true);
                 } elseif (request('status') == 'inactive') {
                     $query->where('status', false);
+                }
+
+                if (request()->has('type')) {
+                    $query->where('type', request('type'));
                 }
             })
             ->editColumn('category_id', function ($model) {
@@ -125,7 +135,7 @@ class Product extends Model
     {
         $model = static::select([
             'id', 'name', 'code', 'source_url', 'sku', 'status',
-        ])->whereNotIn('products.id',$productIds);
+        ])->where('products.type',0)->whereNotIn('products.id',$productIds);
 
         return Datatables::of($model)
             ->editColumn('status', 'products.datatables.status')
@@ -136,6 +146,21 @@ class Product extends Model
                 return '<input  class="qty"  type="number" min = 0 value="1"/>';
             })
             ->rawColumns(['status','check', 'quantity'])
+            ->make(true);
+    }
+
+    public static function getSimpleProduct()
+    {
+        $model = static::select([
+            'id', 'name', 'code', 'source_url', 'sku', 'status',
+        ])->where('products.type',0);
+
+        return Datatables::of($model)
+            ->editColumn('status', 'products.datatables.status')
+            ->addColumn('add', function ($product) {
+                return '<a href="#"><i class="ace-icon fa fa-plus" aria-hidden="true"></i></a>';
+            })
+            ->rawColumns(['status','add'])
             ->make(true);
     }
 }

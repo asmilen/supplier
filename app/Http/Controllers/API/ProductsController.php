@@ -48,7 +48,7 @@ class ProductsController extends Controller
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price', 'products.category_id',
             'products.manufacturer_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
-            'product_supplier.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
+            'products.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
             , DB::raw('MIN(ceil(product_supplier.import_price/1000) * 1000) as import_price')
         ])
@@ -161,7 +161,7 @@ class ProductsController extends Controller
                 ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
-                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
+                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
                 ->join('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -266,5 +266,10 @@ class ProductsController extends Controller
         ])->save();
 
         return $product;
+    }
+
+    public function getConfigurableList()
+    {
+        return Product::where('type', 1)->get();
     }
 }

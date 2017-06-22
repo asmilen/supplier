@@ -8,5 +8,7 @@ class MarginRegionCategory extends Model
 {
     protected $table = 'margin_region_category';
 
+    public $timestamps = false;
+
     protected $fillable = ['category_id', 'region_id', 'margin'];
 }

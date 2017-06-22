@@ -16,6 +16,7 @@
         "gtk/gapi": "^0.1.1",
         "guzzlehttp/guzzle": "^6.2",
         "intervention/image": "dev-master",
+        "laravel/dusk": "^1.1",
         "laravel/framework": "5.4.*",
         "laravel/socialite": "^3.0",
         "laravel/tinker": "~1.0",

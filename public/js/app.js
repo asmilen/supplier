@@ -107,12 +107,30 @@ function AppController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController);
+angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController).directive('select2', select2).directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function link(scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    scope.$apply(function () {
+                        scope.fileread = loadEvent.target.result;
+                    });
+                };
+                reader.readAsDataURL(changeEvent.target.files[0]);
+            });
+        }
+    };
+}]);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
 function ProductCreateController($scope, $http, $window) {
+
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
@@ -120,6 +138,7 @@ function ProductCreateController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = '';
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -129,7 +148,7 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.productForm = new productForm();
-
+    $scope.filered = '';
     $scope.getCategories = function () {
         $http.get('/api/categories').then(function (response) {
             $scope.categories = response.data;
@@ -143,7 +162,6 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.getColors = function () {
-        console.log(10);
         $http.get('/api/colors').then(function (response) {
             $scope.colors = response.data;
         });
@@ -170,7 +188,7 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-
+        $scope.productForm.image = $scope.filered;
         $http.post('/products', $scope.productForm).then(function () {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
@@ -187,13 +205,57 @@ function ProductCreateController($scope, $http, $window) {
     };
 }
 
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function link(scope, element, attrs) {
+            $timeout(function () {
+                element.select2({
+                    placeholder: attrs.placeholder,
+                    allowClear: true,
+                    width: '100%'
+                });
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function refreshSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function recreateSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+};
+
 /***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController).directive('select2',select2);
+angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -303,50 +365,6 @@ function ProductEditController($scope, $http, $window) {
         });
     };
 }
-
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function(scope, element, attrs) {
-            $timeout(function() {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width:'100%',
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function() {
-                if (!element.select2Initialized) return;
-                $timeout(function() {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function () {
-                if (!element.select2Initialized) return;
-                $timeout(function() {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
 
 /***/ }),
 /* 5 */

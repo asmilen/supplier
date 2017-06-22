@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Jobs\PublishMessage;
+use Intervention\Image\Facades\Image as Image;
 
 class ProductsController extends Controller
 {
@@ -50,11 +51,12 @@ class ProductsController extends Controller
     public function store()
     {
         $code = strtoupper(request('code'));
-
+        dd(request()->all());
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
+            'image' => 'required|image|mimes:jpeg,bmp,png|max:2000',
             'code' => 'alpha_num|max:255',
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
@@ -71,12 +73,18 @@ class ProductsController extends Controller
             }
         })->validate();
 
+        $file = request()->file('image');
+        $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
+        Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+
+        dd(request()->url());
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
             'color_id' => request('color_id') ? request('color_id') : 0,
             'name' => request('name'),
             'status' => !! request('status'),
+            'image' => url(),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ]);

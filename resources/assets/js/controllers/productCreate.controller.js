@@ -1,12 +1,31 @@
 angular
     .module('controllers.productCreate', [])
     .controller('ProductCreateController', ProductCreateController)
-    .directive('select2',select2);
+    .directive('select2',select2)
+    .directive("fileread", [function () {
+        return {
+            scope: {
+                fileread: "="
+            },
+            link: function (scope, element, attributes) {
+                element.bind("change", function (changeEvent) {
+                    var reader = new FileReader();
+                    reader.onload = function (loadEvent) {
+                        scope.$apply(function () {
+                            scope.fileread = loadEvent.target.result;
+                        });
+                    }
+                    reader.readAsDataURL(changeEvent.target.files[0]);
+                });
+            }
+        }
+    }]);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
 function ProductCreateController($scope, $http, $window) {
+
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
@@ -14,6 +33,7 @@ function ProductCreateController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = '';
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -23,7 +43,7 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.productForm = new productForm();
-
+    $scope.filered = '';
     $scope.getCategories = function () {
         $http.get('/api/categories')
             .then(function (response) {
@@ -39,7 +59,6 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.getColors = function () {
-        console.log(10);
         $http.get('/api/colors')
             .then(function (response) {
                 $scope.colors = response.data;
@@ -68,8 +87,9 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-
+        $scope.productForm.image = $scope.filered;
         $http.post('/products', $scope.productForm)
+
             .then(function () {
                 $scope.productForm.successful = true;
                 $scope.productForm.disabled = false;

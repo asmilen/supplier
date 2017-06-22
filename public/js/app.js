@@ -179,12 +179,13 @@ function CategoryIndexController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController).directive('select2', select2);
+angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController).directive('select2', select2).directive("fileread", fileread);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
 function ProductCreateController($scope, $http, $window) {
+
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
@@ -194,6 +195,7 @@ function ProductCreateController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -250,8 +252,24 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-
-        $http.post('/products', $scope.productForm).then(function () {
+        var formData = new FormData();
+        formData.append("image", $scope.productForm.image);
+        $http({
+            method: 'POST',
+            url: '/products',
+            processData: false,
+            transformRequest: function transformRequest(data) {
+                var formData = new FormData(data);
+                for (var key in data) {
+                    formData.append(key, data[key]);
+                }
+                return formData;
+            },
+            data: $scope.productForm,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function (data) {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
@@ -264,6 +282,24 @@ function ProductCreateController($scope, $http, $window) {
             }
             $scope.productForm.disabled = false;
         });
+
+        // $http.post('/products', [$scope.productForm, formData], {
+        //     headers: {'Content-Type': 'multipart/form-data'}
+        // })
+        //     .then(function () {
+        //         // $scope.productForm.successful = true;
+        //         // $scope.productForm.disabled = false;
+        //         //
+        //         // $window.location.href = '/products';
+        //     })
+        //     .catch(function (response) {
+        //         if (typeof response.data === 'object') {
+        //             $scope.productForm.errors = _.flatten(_.toArray(response.data));
+        //         } else {
+        //             $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        //         }
+        //         $scope.productForm.disabled = false;
+        //     });
     };
 }
 
@@ -310,6 +346,21 @@ function select2($timeout, $parse) {
         }
     };
 };
+
+function fileread() {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function link(scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                });
+            });
+        }
+    };
+}
 
 /***/ }),
 /* 5 */

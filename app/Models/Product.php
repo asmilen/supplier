@@ -60,7 +60,7 @@ class Product extends Model
     public static function getDatatables()
     {
         $model = static::select([
-                'id', 'category_id', 'manufacturer_id', 'name', 'code', 'source_url', 'sku', 'status', 'type'
+                'id', 'category_id', 'manufacturer_id', 'name', 'code', 'image', 'sku', 'status',
             ])->with('category', 'manufacturer');
 
         return Datatables::eloquent($model)
@@ -97,9 +97,10 @@ class Product extends Model
             ->editColumn('manufacturer_id', function ($model) {
                 return $model->manufacturer ? $model->manufacturer->name : '';
             })
+            ->editColumn('image', 'products.datatables.image')
             ->editColumn('status', 'products.datatables.status')
             ->addColumn('action', 'products.datatables.action')
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['image', 'status', 'action'])
             ->make(true);
     }
 

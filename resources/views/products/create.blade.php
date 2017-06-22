@@ -46,7 +46,7 @@
                     </ul>
                 </div>
 
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                         <div class="col-sm-6">
@@ -121,6 +121,13 @@
                             <span class="help-block">
                             URL nguồn sản phẩm.
                         </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Ảnh sản phẩm</label>
+                        <div class="col-sm-6">
+                            <input type="file" class="form-control" name="image" placeholder="Image" fileread="productForm.image">
                         </div>
                     </div>
 

@@ -105,7 +105,7 @@
                         <th>Danh mục</th>
                         <th>Nhà SX</th>
                         <th>Mã</th>
-                        <th>URL</th>
+                        <th>Ảnh</th>
                         <th>Trạng thái</th>
                         <th></th>
                     </tr>
@@ -159,7 +159,7 @@ $(function () {
             {data: 'category_id', name: 'category_id'},
             {data: 'manufacturer_id', name: 'manufacturer_id'},
             {data: 'code', name: 'code'},
-            {data: 'source_url', name: 'source_url'},
+            {data: 'image', name: 'image'},
             {data: 'status', name: 'status'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]

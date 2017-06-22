@@ -54,7 +54,7 @@ class Product extends Model
     public static function getDatatables()
     {
         $model = static::select([
-                'id', 'category_id', 'manufacturer_id', 'name', 'code', 'source_url', 'sku', 'status',
+                'id', 'category_id', 'manufacturer_id', 'name', 'code', 'image', 'sku', 'status',
             ])->with('category', 'manufacturer');
 
         return Datatables::eloquent($model)

@@ -4,6 +4,7 @@ var app = angular.module('app', [
     'controllers.productEdit',
     'controllers.productSaleprice',
     'controllers.transportFeeIndex',
+    'controllers.categoryIndex',
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {
@@ -15,3 +16,4 @@ require('./controllers/productCreate.controller.js');
 require('./controllers/productEdit.controller.js');
 require('./controllers/productSaleprice.controller.js');
 require('./controllers/transportFeeIndex.controller.js');
+require('./controllers/categoryIndex.controller.js');

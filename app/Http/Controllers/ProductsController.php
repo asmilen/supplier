@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Jobs\PublishMessage;
+use Intervention\Image\Facades\Image as Image;
 
 class ProductsController extends Controller
 {
@@ -49,12 +50,13 @@ class ProductsController extends Controller
      */
     public function store()
     {
+       // dd(request()->all());
         $code = strtoupper(request('code'));
-
         Validator::make(request()->all(), [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
+            'image' => 'required',
             'code' => 'alpha_num|max:255',
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
@@ -71,12 +73,20 @@ class ProductsController extends Controller
             }
         })->validate();
 
+        $file = request('image');
+
+        $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
+        Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id') ? request('color_id') : 0,
+            'color_id' => request('color_id',0),
+            'type' => request('type') == 'simple' ? 0 : 1,
+            'parent_id' => request('parent_id', 0),
             'name' => request('name'),
             'status' => !! request('status'),
+            'image' => url('/') . '/storage/' .$filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ]);
@@ -90,18 +100,20 @@ class ProductsController extends Controller
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
         ])->save();
 
-        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
-            'id' => $product->id,
-            'categoryId' => $product->category_id,
-            'brandId' => $product->manufacturer_id,
-            'type' => 'simple',
-            'sku' => $product->sku,
-            'name' => $product->name,
-            'skuIdentifier' => $product->code,
-            'status' => $product->status ? 'active' : 'inactive',
-            'sourceUrl' => $product->source_url,
-            'createdAt' => strtotime($product->created_at),
-        ])));
+        if(request('type') == 'simple') {
+            dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+                'id' => $product->id,
+                'categoryId' => $product->category_id,
+                'brandId' => $product->manufacturer_id,
+                'type' => 'simple',
+                'sku' => $product->sku,
+                'name' => $product->name,
+                'skuIdentifier' => $product->code,
+                'status' => $product->status ? 'active' : 'inactive',
+                'sourceUrl' => $product->source_url,
+                'createdAt' => strtotime($product->created_at),
+            ])));
+        }
 
         flash()->success('Success!', 'Product successfully created.');
 
@@ -127,7 +139,9 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $productChilds = $product->children()->get();
+
+        return view('products.edit', compact('product', 'productChilds'));
     }
 
     /**
@@ -168,7 +182,8 @@ class ProductsController extends Controller
         $product->forceFill([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id') ? request('color_id') : 0,
+            'color_id' => request('color_id', 0),
+            'parent_id' => request('parent_id', 0),
             'name' => request('name'),
             'code' => $code,
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
@@ -176,6 +191,7 @@ class ProductsController extends Controller
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ])->save();
+
 
         dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
             'id' => $product->id,
@@ -221,6 +237,26 @@ class ProductsController extends Controller
         }
 
         return $sku;
+    }
+
+    public function getSimpleProduct()
+    {
+        return Product::getSimpleProduct();
+    }
+
+    public function addChild(Product $product)
+    {
+        $productChild = Product::findOrFail(request('productChild'));
+        $productChild->forceFill(['parent_id' => $product->id])->save();
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function removeChild(Product $product, $childId){
+        $productChild = Product::findOrFail($childId);
+        $productChild->forceFill(['parent_id' => 0])->save();
+
+        return response()->json(['status' => 'success']);
     }
 
     public function toggleStatus(Product $product) {

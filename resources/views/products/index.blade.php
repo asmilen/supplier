@@ -79,6 +79,11 @@
                                 <option value="active">Kích hoạt</option>
                                 <option value="inactive">Không kích hoạt</option>
                             </select>
+                            <select class="form-control" name="type">
+                                <option value="">--Chọn Loại Sản Phẩm--</option>
+                                <option value="0">Simple</option>
+                                <option value="1">Configurable</option>
+                            </select>
                             <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
                             <button type="submit" class="btn btn-purple btn-sm">
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
@@ -100,7 +105,7 @@
                         <th>Danh mục</th>
                         <th>Nhà SX</th>
                         <th>Mã</th>
-                        <th>URL</th>
+                        <th>Ảnh</th>
                         <th>Trạng thái</th>
                         <th></th>
                     </tr>
@@ -144,6 +149,7 @@ $(function () {
                 d.manufacturer_id = $('select[name=manufacturer_id]').val();
                 d.keyword = $('input[name=keyword]').val();
                 d.status = $('select[name=status]').val();
+                d.type = $('select[name=type]').val();
             }
         },
         columns: [
@@ -153,7 +159,7 @@ $(function () {
             {data: 'category_id', name: 'category_id'},
             {data: 'manufacturer_id', name: 'manufacturer_id'},
             {data: 'code', name: 'code'},
-            {data: 'source_url', name: 'source_url'},
+            {data: 'image', name: 'image'},
             {data: 'status', name: 'status'},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]

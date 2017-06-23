@@ -55,7 +55,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Giá Combo</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="price" placeholder="Giá combo ...." value="{{ old('price', $combo->price) }}">
+                            <input type="number" class="form-control" name="price" placeholder="Giá combo ...." value="{{ old('price', $combo->price) }}">
                         </div>
                     </div>
 
@@ -166,7 +166,14 @@
             var productsTable = '';
             productsTable = $("#products-table").DataTable({
                 autoWidth: false,
-                searching: false
+                searching: true,
+                'columns': [
+                    { 'searchable': false },
+                    { 'searchable': true },
+                    { 'searchable': true },
+                    null,   // product code
+                    null,   // description
+                ]
             });
 
             var productIds = {{ $productIds }};
@@ -237,7 +244,14 @@
                 $("body").removeClass("modal-open");
                 productsTable = $("#products-table").DataTable({
                     autoWidth: false,
-                    searching: false
+                    searching: true,
+                    'columns': [
+                        { 'searchable': false },
+                        { 'searchable': true },
+                        { 'searchable': true },
+                        null,   // product code
+                        null,   // description
+                    ]
                 });
                 var dataRows = productsTable.rows().data();
                 var productIds = [];

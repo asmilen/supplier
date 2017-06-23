@@ -16,7 +16,7 @@
             <a href="{{ route('products.index') }}">Sản phẩm</a>
         </li>
         <li>
-            <a href="{{ route('products.show', $product->id) }}">{{ $product->name }}</a>
+            <a href="{{ route('products.edit', $product->id) }}">{{ $product->name }}</a>
         </li>
         <li class="active">Đặt giá bán</li>
     </ul><!-- /.breadcrumb -->
@@ -39,7 +39,7 @@
         </h1>
     </div><!-- /.page-header -->
     <div class="row" ng-if="productIsLoaded">
-        <div class="col-xs-12">
+        <div class="col-xs-6">
             <div class="alert alert-success" ng-show="productSalepriceForm.successful">
                 Đặt giá bán thành công.
             </div>
@@ -99,35 +99,89 @@
                 </div>
             </form>
         </div>
+
+        <div class="col-xs-6">
+                <h3>Nhà cung cấp</h3>
+
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Nhà cung cấp</th>
+                            <th>Số lượng</th>
+                            <th>Giá nhập</th>
+                            <th>Giá bán khuyến nghị</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach($productSuppliers as $k => $v)
+                            <tr>
+                                <td>{{ $k + 1 }}</td>
+                                <td>{{ $v->supplier->name }}</td>
+                                <td>{{ $v->quantity }}</td>
+                                <td>{{  number_format (  $v->import_price , 0 , "." , "," )}}</td>
+                                <td>{{  number_format (  $v->price_recommend , 0 , "." , "," )}}</td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+        </div>
     </div>
+
     <div class="row">
-        <h3>Nhà cung cấp</h3>
-        <div class="col-xs-12">
+        <div class="col-xs-6">
+        <h3>Giá bán hiện tại</h3>
             <table class="table table-bordered table-hover">
                 <thead>
                 <tr>
-                    <th>STT</th>
-                    <th>Nhà cung cấp</th>
-                    <th>Số lượng</th>
-                    <th>Giá nhập</th>
-                    <th>Giá bán khuyến nghị</th>
+                    <th>Giá bán</th>
+                    <th>Online</th>
+                    <th>Offline</th>
+                    <th>Phòng máy</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($productSuppliers as $k => $v)
-                    <tr>
-                        <td>{{ $k + 1 }}</td>
-                        <td>{{ $v->supplier->name }}</td>
-                        <td>{{ $v->quantity }}</td>
-                        <td>{{  number_format (  $v->import_price , 0 , "." , "," )}}</td>
-                        <td>{{  number_format (  $v->price_recommend , 0 , "." , "," )}}</td>
-                    </tr>
-                @endforeach
+                    <?php $regions = config('teko.regions'); ?>
+                    @foreach($nowSalePrices as $key => $nowSalePrice)
+                        <tr>
+                            <td>{{ $regions[$key] }}</td>
+                            @foreach([1,2,3] as $k)
+                            <td>{{ $nowSalePrice->where('store_id', $k)->isEmpty() ?
+                            "N/A" :
+                            $nowSalePrice->where('store_id', $k)->first()->price }}
+                            </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
+
+        <div class="col-xs-6">
+            <h3>Giá bán thấp nhất trên thị trường</h3>
+            @if($productMarket)
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Giá bán</th>
+                        <th>Url</th>
+                        <th>Retailer Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ $productMarket->min_retailer_price }}</td>
+                        <td>{{ $productMarket->crawled_url }}</td>
+                        <td>{{ $productMarket->retailer_name }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            @else
+                <p> Không có dữ liệu </p>
+            @endif
+        </div>
     </div>
-    <div class="clearfix form-actions"></div>
+
     <div class="row">
         <h3>Lịch sử cập nhật giá</h3>
         <div class="col-xs-12">

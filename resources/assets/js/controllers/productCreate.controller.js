@@ -1,19 +1,24 @@
 angular
     .module('controllers.productCreate', [])
     .controller('ProductCreateController', ProductCreateController)
-    .directive('select2',select2);
+    .directive('select2',select2)
+    .directive("fileread", fileread);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
 function ProductCreateController($scope, $http, $window) {
+
     function productForm() {
         this.category_id = '';
         this.manufacturer_id = '';
         this.color_id = '';
+        this.type = 'simple';
+        this.parent_id = '0';
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -39,10 +44,16 @@ function ProductCreateController($scope, $http, $window) {
     };
 
     $scope.getColors = function () {
-        console.log(10);
         $http.get('/api/colors')
             .then(function (response) {
                 $scope.colors = response.data;
+            });
+    };
+
+    $scope.getProductConfigurables = function () {
+        $http.get('/api/products/configurable')
+            .then(function (response) {
+                $scope.productConfigurables = response.data;
             });
     };
 
@@ -62,28 +73,61 @@ function ProductCreateController($scope, $http, $window) {
     $scope.getCategories();
     $scope.getManufacturers();
     $scope.getColors();
+    $scope.getProductConfigurables();
     $scope.refreshData();
 
     $scope.addProduct = function () {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-
-        $http.post('/products', $scope.productForm)
-            .then(function () {
-                $scope.productForm.successful = true;
-                $scope.productForm.disabled = false;
-
-                $window.location.href = '/products';
-            })
-            .catch(function (response) {
-                if (typeof response.data === 'object') {
-                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
-                } else {
-                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        var formData = new FormData();
+        formData.append("image", $scope.productForm.image);
+        $http({
+            method  : 'POST',
+            url     : '/products',
+            processData: false,
+            transformRequest: function (data) {
+                var formData = new FormData(data);
+                for ( var key in data ) {
+                    formData.append(key, data[key]);
                 }
-                $scope.productForm.disabled = false;
-            });
+                return formData;
+            },
+            data : $scope.productForm,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function(data){
+            $scope.productForm.successful = true;
+            $scope.productForm.disabled = false;
+
+            $window.location.href = '/products';
+        }).catch(function (response) {
+            if (typeof response.data === 'object') {
+                $scope.productForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.productForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.productForm.disabled = false;
+        });
+
+        // $http.post('/products', [$scope.productForm, formData], {
+        //     headers: {'Content-Type': 'multipart/form-data'}
+        // })
+        //     .then(function () {
+        //         // $scope.productForm.successful = true;
+        //         // $scope.productForm.disabled = false;
+        //         //
+        //         // $window.location.href = '/products';
+        //     })
+        //     .catch(function (response) {
+        //         if (typeof response.data === 'object') {
+        //             $scope.productForm.errors = _.flatten(_.toArray(response.data));
+        //         } else {
+        //             $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        //         }
+        //         $scope.productForm.disabled = false;
+        //     });
     };
 }
 
@@ -130,3 +174,18 @@ function select2($timeout, $parse) {
         }
     };
 };
+
+function fileread() {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                });
+            });
+        }
+    }
+}

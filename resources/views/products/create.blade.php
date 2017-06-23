@@ -46,7 +46,7 @@
                     </ul>
                 </div>
 
-                <form class="form-horizontal" role="form">
+                <form class="form-horizontal" role="form" enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                         <div class="col-sm-6">
@@ -78,6 +78,26 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Loại sản phẩm</label>
+                        <div class="col-sm-6">
+                            <select name="type" class="form-control" ng-model="productForm.type">
+                                <option value="simple">Simple</option>
+                                <option value="configurable">Configurable</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-show="productForm.type=='simple'">
+                        <label class="col-sm-3 control-label no-padding-right">Sản phẩm cha</label>
+                        <div class="col-sm-6">
+                            <select name="parent_id" class="productConfigurables" ng-model="productForm.parent_id" placeholder="-- Chọn sản phẩm cha --" ng-disabled="disabled" select2>
+                                <option value=""></option>
+                                <option ng-repeat="product in productConfigurables" value="@{{ product.id }}">@{{ product.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                         <div class="col-sm-6">
                             <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" ng-model="productForm.name">
@@ -101,6 +121,13 @@
                             <span class="help-block">
                             URL nguồn sản phẩm.
                         </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Ảnh sản phẩm</label>
+                        <div class="col-sm-6">
+                            <input type="file" class="form-control" name="image" placeholder="Image" fileread="productForm.image">
                         </div>
                     </div>
 
@@ -146,22 +173,30 @@
 @endsection
 
 @section('scripts')
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
 @endsection
 
 @section('inline_scripts')
     <script>
         $(function () {
-//            $(".categories").select2({
-//                placeholder: "-- Chọn danh mục --",
-//                allowClear: true,
-//                width:'100%',
-//            });
-//            $(".manufactures").select2({
-//                placeholder: "-- Chọn nhà sản xuất --",
-//                allowClear: true,
-//                width:'100%',
-//            });
+            $(".categories").select2({
+                placeholder: "-- Chọn danh mục --",
+                allowClear: true,
+                width:'300px',
+            });
+            $(".manufactures").select2({
+                placeholder: "-- Chọn nhà sản xuất --",
+                allowClear: true,
+                width:'100%',
+            });
+            $(".productConfigurables").select2({
+                placeholder: "-- Chọn sản phẩm cha --",
+                allowClear: true,
+                width:'100%',
+            });
         });
     </script>
 @endsection

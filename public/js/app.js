@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 9);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -84,7 +84,7 @@ __webpack_require__(7);
 __webpack_require__(3);
 
 __webpack_require__(8);
-__webpack_require__(13);
+__webpack_require__(9);
 
 /***/ }),
 /* 1 */
@@ -405,7 +405,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.successful = false;
         $http({
             method: 'POST',
-            url: '/products/' + PRODUCT_ID + '/update',
+            url: '/products/' + PRODUCT_ID,
             processData: false,
             transformRequest: function transformRequest(data) {
                 var formData = new FormData();
@@ -581,17 +581,6 @@ function fileread() {
 
 /***/ }),
 /* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(0);
-module.exports = __webpack_require__(1);
-
-
-/***/ }),
-/* 10 */,
-/* 11 */,
-/* 12 */,
-/* 13 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive("select2", select2);
@@ -639,6 +628,14 @@ function select2($timeout, $parse) {
         }
     };
 };
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(0);
+module.exports = __webpack_require__(1);
+
 
 /***/ })
 /******/ ]);

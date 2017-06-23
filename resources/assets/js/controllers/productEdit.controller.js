@@ -126,7 +126,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.successful = false;
         $http({
             method  : 'POST',
-            url     : '/products/' + PRODUCT_ID + '/update',
+            url     : '/products/' + PRODUCT_ID,
             processData: false,
             transformRequest: function (data) {
                 var formData = new FormData();

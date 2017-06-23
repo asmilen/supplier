@@ -109,24 +109,6 @@ function ProductCreateController($scope, $http, $window) {
             }
             $scope.productForm.disabled = false;
         });
-
-        // $http.post('/products', [$scope.productForm, formData], {
-        //     headers: {'Content-Type': 'multipart/form-data'}
-        // })
-        //     .then(function () {
-        //         // $scope.productForm.successful = true;
-        //         // $scope.productForm.disabled = false;
-        //         //
-        //         // $window.location.href = '/products';
-        //     })
-        //     .catch(function (response) {
-        //         if (typeof response.data === 'object') {
-        //             $scope.productForm.errors = _.flatten(_.toArray(response.data));
-        //         } else {
-        //             $scope.productForm.errors = ['Something went wrong. Please try again.'];
-        //         }
-        //         $scope.productForm.disabled = false;
-        //     });
     };
 }
 

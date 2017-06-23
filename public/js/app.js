@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,6 +82,9 @@ __webpack_require__(5);
 __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(3);
+
+__webpack_require__(8);
+__webpack_require__(9);
 
 /***/ }),
 /* 1 */
@@ -179,7 +182,7 @@ function CategoryIndexController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController).directive('select2', select2).directive("fileread", fileread);
+angular.module('controllers.productCreate', ['directives.fileread', 'directives.select2']).controller('ProductCreateController', ProductCreateController);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
@@ -252,14 +255,12 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-        var formData = new FormData();
-        formData.append("image", $scope.productForm.image);
         $http({
             method: 'POST',
             url: '/products',
             processData: false,
             transformRequest: function transformRequest(data) {
-                var formData = new FormData(data);
+                var formData = new FormData();
                 for (var key in data) {
                     formData.append(key, data[key]);
                 }
@@ -269,7 +270,7 @@ function ProductCreateController($scope, $http, $window) {
             headers: {
                 'Content-Type': undefined
             }
-        }).success(function (data) {
+        }).success(function (response) {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
@@ -282,83 +283,6 @@ function ProductCreateController($scope, $http, $window) {
             }
             $scope.productForm.disabled = false;
         });
-
-        // $http.post('/products', [$scope.productForm, formData], {
-        //     headers: {'Content-Type': 'multipart/form-data'}
-        // })
-        //     .then(function () {
-        //         // $scope.productForm.successful = true;
-        //         // $scope.productForm.disabled = false;
-        //         //
-        //         // $window.location.href = '/products';
-        //     })
-        //     .catch(function (response) {
-        //         if (typeof response.data === 'object') {
-        //             $scope.productForm.errors = _.flatten(_.toArray(response.data));
-        //         } else {
-        //             $scope.productForm.errors = ['Something went wrong. Please try again.'];
-        //         }
-        //         $scope.productForm.disabled = false;
-        //     });
-    };
-}
-
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function link(scope, element, attrs) {
-            $timeout(function () {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width: '100%'
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function refreshSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function recreateSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
-
-function fileread() {
-    return {
-        scope: {
-            fileread: "="
-        },
-        link: function link(scope, element, attributes) {
-            element.bind("change", function (changeEvent) {
-                scope.$apply(function () {
-                    scope.fileread = changeEvent.target.files[0];
-                });
-            });
-        }
     };
 }
 
@@ -368,7 +292,7 @@ function fileread() {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController).directive('select2', select2);
+angular.module('controllers.productEdit', ['directives.fileread', 'directives.select2']).controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -384,6 +308,7 @@ function ProductEditController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -402,7 +327,6 @@ function ProductEditController($scope, $http, $window) {
                 $scope.productIsLoaded = true;
 
                 $scope.populateProductForm();
-
                 $scope.refreshData();
             }
         });
@@ -416,6 +340,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
+        $scope.productForm.image = $scope.product.image ? $scope.product.image : '';
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
@@ -478,8 +403,23 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
+        $http({
+            method: 'POST',
+            url: '/products/' + PRODUCT_ID,
+            processData: false,
+            transformRequest: function transformRequest(data) {
+                var formData = new FormData();
+                for (var key in data) {
+                    formData.append(key, data[key]);
+                }
 
-        $http.put('/products/' + PRODUCT_ID, $scope.productForm).then(function () {
+                return formData;
+            },
+            data: $scope.productForm,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function (response) {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
@@ -494,50 +434,6 @@ function ProductEditController($scope, $http, $window) {
         });
     };
 }
-
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function link(scope, element, attrs) {
-            $timeout(function () {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width: '100%'
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function refreshSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function recreateSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
 
 /***/ }),
 /* 6 */
@@ -664,6 +560,77 @@ function TransportFeeIndexController($scope, $http) {
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+angular.module('directives.fileread', []).directive("fileread", fileread);
+
+function fileread() {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function link(scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                });
+            });
+        }
+    };
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+angular.module('directives.select2', []).directive("select2", select2);
+
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function link(scope, element, attrs) {
+            $timeout(function () {
+                element.select2({
+                    placeholder: attrs.placeholder,
+                    allowClear: true,
+                    width: '100%'
+                });
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function refreshSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function recreateSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+};
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

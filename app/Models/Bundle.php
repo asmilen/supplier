@@ -50,9 +50,7 @@ class Bundle extends Model
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->where('margin_region_category.region_id', $regionId);
             })->whereNotIn('products.id',$productIds)
-            ->groupBy('products.id', 'products.name', 'products.code',
-                'products.sku', 'products.source_url', 'products.best_price',
-                'products.category_id');
+            ->groupBy('products.id', 'products.name', 'products.sku');
 
         return Datatables::of($products)
             ->addColumn('check', function ($product) {

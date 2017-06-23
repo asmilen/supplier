@@ -1,3 +1,3 @@
 @if ($image)
-<img src="{{ $image }}" style="width: 50px; height: 50px;"/>
+<img src="{{ $image }}" style="height: 80px;"/>
 @endif

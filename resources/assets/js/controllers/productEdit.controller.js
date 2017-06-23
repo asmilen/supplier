@@ -1,7 +1,8 @@
 angular
-    .module('controllers.productEdit', [])
-    .controller('ProductEditController', ProductEditController)
-    .directive('select2',select2);
+    .module('controllers.productEdit', [
+        'directives.fileread', 'directives.select2'
+    ])
+    .controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -17,6 +18,7 @@ function ProductEditController($scope, $http, $window) {
         this.name = '';
         this.code = '';
         this.source_url = '';
+        this.image = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -36,7 +38,6 @@ function ProductEditController($scope, $http, $window) {
                     $scope.productIsLoaded = true;
 
                     $scope.populateProductForm();
-
                     $scope.refreshData();
                 }
             });
@@ -50,6 +51,7 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
+        $scope.productForm.image = $scope.product.image ? $scope.product.image : '';
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
@@ -122,66 +124,37 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-
-        $http.put('/products/' + PRODUCT_ID, $scope.productForm)
-            .then(function () {
-                $scope.productForm.successful = true;
-                $scope.productForm.disabled = false;
-
-                $window.location.href = '/products';
-            })
-            .catch(function (response) {
-                if (typeof response.data === 'object') {
-                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
-                } else {
-                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
+        $http({
+            method  : 'POST',
+            url     : '/products/' + PRODUCT_ID,
+            processData: false,
+            transformRequest: function (data) {
+                var formData = new FormData();
+                for ( var key in data ) {
+                    formData.append(key, data[key]);
                 }
-                $scope.productForm.disabled = false;
-            });
+
+                return formData;
+            },
+            data : $scope.productForm,
+            headers: {
+                'Content-Type': undefined
+            }
+        }).success(function(response){
+            $scope.productForm.successful = true;
+            $scope.productForm.disabled = false;
+
+            $window.location.href = '/products';
+        }).catch(function (response) {
+            if (typeof response.data === 'object') {
+                $scope.productForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.productForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.productForm.disabled = false;
+        });
     };
 }
 
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function(scope, element, attrs) {
-            $timeout(function() {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width:'100%',
-                });
-                element.select2Initialized = true;
-            });
 
-            var refreshSelect = function() {
-                if (!element.select2Initialized) return;
-                $timeout(function() {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function () {
-                if (!element.select2Initialized) return;
-                $timeout(function() {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
 

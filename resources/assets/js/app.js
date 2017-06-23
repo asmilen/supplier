@@ -17,3 +17,6 @@ require('./controllers/productEdit.controller.js');
 require('./controllers/productSaleprice.controller.js');
 require('./controllers/transportFeeIndex.controller.js');
 require('./controllers/categoryIndex.controller.js');
+
+require('./directives/fileread.directive.js');
+require('./directives/select2.directive.js');

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,7 +83,7 @@ __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(3);
 
-__webpack_require__(12);
+__webpack_require__(8);
 
 /***/ }),
 /* 1 */
@@ -469,7 +469,6 @@ function ProductEditController($scope, $http, $window) {
             url: '/products/' + PRODUCT_ID + '/update',
             processData: false,
             transformRequest: function transformRequest(data) {
-                console.log(data);
                 var formData = new FormData();
                 for (var key in data) {
                     formData.append(key, data[key]);
@@ -482,10 +481,10 @@ function ProductEditController($scope, $http, $window) {
                 'Content-Type': undefined
             }
         }).success(function (response) {
-            // $scope.productForm.successful = true;
-            // $scope.productForm.disabled = false;
-            //
-            // $window.location.href = '/products';
+            $scope.productForm.successful = true;
+            $scope.productForm.disabled = false;
+
+            $window.location.href = '/products';
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productForm.errors = _.flatten(_.toArray(response.data));
@@ -682,17 +681,6 @@ function TransportFeeIndexController($scope, $http) {
 
 /***/ }),
 /* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(0);
-module.exports = __webpack_require__(1);
-
-
-/***/ }),
-/* 9 */,
-/* 10 */,
-/* 11 */,
-/* 12 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -711,6 +699,14 @@ function fileread() {
         }
     };
 }
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(0);
+module.exports = __webpack_require__(1);
+
 
 /***/ })
 /******/ ]);

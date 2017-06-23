@@ -191,6 +191,7 @@ class ProductsController extends Controller
             'attributes' => json_encode(request('attributes', [])),
         ])->save();
 
+        if (request()->file('image') && request()->file('image')->isValid()) {
             $file = request('image');
 
             $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
@@ -198,6 +199,7 @@ class ProductsController extends Controller
             $product->forceFill([
                 'image' => url('/') . '/storage/' .$filename,
             ])->save();
+        }
 
         dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
             'id' => $product->id,

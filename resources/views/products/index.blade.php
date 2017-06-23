@@ -141,7 +141,7 @@ $(function () {
         autoWidth: false,
         processing: true,
         serverSide: true,
-        pageLength: 20,
+        pageLength: 25,
         ajax: {
             url: '{!! route('products.datatables') !!}',
             data: function (d) {

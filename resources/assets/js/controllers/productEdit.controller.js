@@ -130,7 +130,6 @@ function ProductEditController($scope, $http, $window) {
             url     : '/products/' + PRODUCT_ID + '/update',
             processData: false,
             transformRequest: function (data) {
-                console.log(data);
                 var formData = new FormData();
                 for ( var key in data ) {
                     formData.append(key, data[key]);

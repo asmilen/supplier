@@ -125,7 +125,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right"></label>
                     <div class="col-sm-6">
-                        <img src="@{{productForm.image}}" style="height: 80px;">
+                        <img src="{{$product->image}}" style="height: 80px;">
                     </div>
                 </div>
                 @endif

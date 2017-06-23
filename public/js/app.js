@@ -84,6 +84,7 @@ __webpack_require__(7);
 __webpack_require__(3);
 
 __webpack_require__(8);
+__webpack_require__(13);
 
 /***/ }),
 /* 1 */
@@ -181,7 +182,7 @@ function CategoryIndexController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', ['directives.fileread']).controller('ProductCreateController', ProductCreateController).directive('select2', select2);
+angular.module('controllers.productCreate', ['directives.fileread', 'directives.select2']).controller('ProductCreateController', ProductCreateController);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
@@ -285,57 +286,13 @@ function ProductCreateController($scope, $http, $window) {
     };
 }
 
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function link(scope, element, attrs) {
-            $timeout(function () {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width: '100%'
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function refreshSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function recreateSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
-
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', ['directives.fileread']).controller('ProductEditController', ProductEditController).directive('select2', select2);
+angular.module('controllers.productEdit', ['directives.fileread', 'directives.select2']).controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -477,50 +434,6 @@ function ProductEditController($scope, $http, $window) {
         });
     };
 }
-
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function link(scope, element, attrs) {
-            $timeout(function () {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width: '100%'
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function refreshSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function recreateSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
 
 /***/ }),
 /* 6 */
@@ -673,6 +586,59 @@ function fileread() {
 __webpack_require__(0);
 module.exports = __webpack_require__(1);
 
+
+/***/ }),
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */
+/***/ (function(module, exports) {
+
+angular.module('directives.select2', []).directive("select2", select2);
+
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function link(scope, element, attrs) {
+            $timeout(function () {
+                element.select2({
+                    placeholder: attrs.placeholder,
+                    allowClear: true,
+                    width: '100%'
+                });
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function refreshSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function recreateSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+};
 
 /***/ })
 /******/ ]);

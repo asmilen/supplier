@@ -193,9 +193,9 @@ class ProductsController extends Controller
 
         if (request()->file('image') && request()->file('image')->isValid()) {
             $file = request('image');
-
             $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
             Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+            
             $product->forceFill([
                 'image' => url('/') . '/storage/' .$filename,
             ])->save();

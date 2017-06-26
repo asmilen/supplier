@@ -42,10 +42,11 @@ class ComboController extends Controller
     public function store(Request  $request)
     {
         $rules = [
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:combos',
             'price' => 'required|numeric',
         ];
         $messages = [
+            'name.unique' => 'Tên combo bị trùng.',
             'name.required' => 'Hãy nhập tên combo.',
             'price.required' => 'Hãy nhập giá combo.',
         ];

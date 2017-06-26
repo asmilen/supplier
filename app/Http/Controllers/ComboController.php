@@ -44,12 +44,10 @@ class ComboController extends Controller
         $rules = [
             'name' => 'required|max:255',
             'price' => 'required|numeric',
-            'status' => 'required',
         ];
         $messages = [
             'name.required' => 'Hãy nhập tên combo.',
             'price.required' => 'Hãy nhập giá combo.',
-            'status.required' => 'Hãy nhập chọn trạng thái.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -114,10 +112,8 @@ class ComboController extends Controller
     {
         $this->validate(request(), [
             'price' => 'required|numeric',
-            'status' => 'required',
         ], [
             'price.required' => 'Hãy nhập giá combo.',
-            'status.required' => 'Hãy nhập chọn trạng thái.',
         ]);
 
         $combo->forceFill([

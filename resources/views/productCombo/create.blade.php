@@ -217,7 +217,7 @@
                         '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
                         + '</tr>');
                 }
-                $("#myModalProduct").hide();
+                $("#myModalProduct").modal('hide');
                 $("body").removeClass("modal-open");
                 productsTable = $("#products-table").DataTable({
                     autoWidth: false,

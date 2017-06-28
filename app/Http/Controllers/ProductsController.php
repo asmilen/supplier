@@ -127,7 +127,8 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $productChilds = $product->children()->get();
+        return view('products.edit', compact('product', 'productChilds'));
     }
 
     /**
@@ -153,12 +154,18 @@ class ProductsController extends Controller
     {
         $code = strtoupper(request('code'));
 
-        Validator::make(request()->all(), [
+        $rules = [
             'category_id' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products,name,'.$product->id,
             'code' => 'alpha_num|max:255',
-        ], [
+        ];
+
+        if (request()->file('image')) {
+            $rules['image'] = 'image|mimes:jpg,png,jpeg|max:2000';
+        }
+
+        Validator::make(request()->all(), $rules, [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($product, $code) {
             if (! empty($code)) {
@@ -191,7 +198,7 @@ class ProductsController extends Controller
             'attributes' => json_encode(request('attributes', [])),
         ])->save();
 
-        if (request()->file('image') && request()->file('image')->isValid()) {
+        if (request()->file('image')) {
             $file = request('image');
             $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
             Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));

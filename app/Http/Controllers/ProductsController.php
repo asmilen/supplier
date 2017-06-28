@@ -127,7 +127,7 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
-        return view('products.edit', compact('product', 'productChilds'));
+        return view('products.edit', compact('product'));
     }
 
     /**

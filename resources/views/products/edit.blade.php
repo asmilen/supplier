@@ -224,7 +224,7 @@
         </div>
     </div>
 
-    @if(count($productChilds))
+    @if($product->children)
     <div class="row">
         <h3>Sản phẩm con </h3>
         <div class="col-xs-12">
@@ -238,7 +238,7 @@
                 </tr>
                 </thead>
                 <tbody id="productChildren">
-                @foreach($productChilds as $key => $value)
+                @foreach($product->children as $key => $value)
                     <tr>
                         <td>{{ $value->id }}</td>
                         <td>{{ $value->name }}</td>

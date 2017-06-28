@@ -127,7 +127,6 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
-        $productChilds = $product->children()->get();
         return view('products.edit', compact('product', 'productChilds'));
     }
 
@@ -139,9 +138,7 @@ class ProductsController extends Controller
      */
     public function edit(Product $product)
     {
-        $productChilds = $product->children()->get();
-
-        return view('products.edit', compact('product', 'productChilds'));
+        return view('products.edit', compact('product'));
     }
 
     /**

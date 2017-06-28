@@ -27,5 +27,7 @@ Route::get('suppliers', 'SuppliersController@index');
 Route::post('products/imports/import-from-google-sheet', 'ProductImportsController@importFromGoogleSheet');
 
 Route::group(['middleware' => 'auth:api'], function () {
-    //
+    Route::get('user', 'UserController@show');
+
+    Route::post('products/suppliers/update-price-from-google-sheet', 'ProductSuppliersController@updatePriceFromGoolgeSheet');
 });

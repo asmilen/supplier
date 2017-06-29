@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Product;
 use App\Models\ProductSupplier;
+use App\Models\Supplier;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
@@ -19,7 +20,7 @@ class ProductSuppliersController extends Controller
                 $productSupplier = $this->updateProductFromGoogleSheetData($data);
                 array_push($results, [$productSupplier->updated_at->format('d/m/Y H:i:s'), 'Nhập thành công.']);
             } catch (\Exception $e) {
-                array_push($results, ['', 'Lỗi: '.$e->getMessage()]);
+                array_push($results, [Carbon::now()->format('d/m/Y H:i:s'), 'Lỗi: '.$e->getMessage()]);
                 Log::info($e);
             }
         }
@@ -29,8 +30,17 @@ class ProductSuppliersController extends Controller
 
     protected function updateProductFromGoogleSheetData($productData)
     {
-
         $product = Product::where('sku', $productData['product_sku'])->first();
+
+        if (!$product) {
+            throw new \Exception('Mã sản phẩm không tồn tại.');
+        }
+
+        $supplier = Supplier::find($productData['supplier_id']);
+
+        if (!$supplier) {
+            throw new \Exception('Nhà cung cấp không tồn tại.');
+        }
 
         if (!$product) {
             throw new \Exception('Mã sản phẩm không tồn tại.');

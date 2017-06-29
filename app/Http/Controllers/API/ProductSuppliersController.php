@@ -21,7 +21,6 @@ class ProductSuppliersController extends Controller
                 array_push($results, [$productSupplier->updated_at->format('d/m/Y H:i:s'), 'Nhập thành công.']);
             } catch (\Exception $e) {
                 array_push($results, [Carbon::now()->format('d/m/Y H:i:s'), 'Lỗi: '.$e->getMessage()]);
-                Log::info($e);
             }
         }
 
@@ -30,51 +29,31 @@ class ProductSuppliersController extends Controller
 
     protected function updateProductFromGoogleSheetData($productData)
     {
-        $product = Product::where('sku', $productData['product_sku'])->first();
+        $product = Product::where('sku', $productData['product_sku'])->firstOrFail();
 
-        if (!$product) {
-            throw new \Exception('Mã sản phẩm không tồn tại.');
-        }
-
-        $supplier = Supplier::find($productData['supplier_id']);
-
-        if (!$supplier) {
-            throw new \Exception('Nhà cung cấp không tồn tại.');
-        }
-
-        if (!$product) {
-            throw new \Exception('Mã sản phẩm không tồn tại.');
-        }
+        $supplier = Supplier::findOrFail($productData['supplier_id']);
 
         $productSupplier = ProductSupplier::where('supplier_id', $productData['supplier_id'])
             ->where('product_id', $product->id)
             ->first();
 
-        if ($productSupplier) {
-            $productSupplier->forceFill([
-                'status' => $productData['supplier_priority_status'],
-                'import_price' => $productData['price'] ? $productData['price'] : 0,
-                'vat' => $productData['vat'] ? $productData['vat'] : 0,
-                'price_recommend' => $productData['recommend_price'] ? $productData['recommend_price'] : 0,
-                'description' => $productData['description'],
-                'updated_by' => Sentinel::getUser()->id,
-            ])->save();
-        }
-        else
-        {
+        if (!$productSupplier) {
             $productSupplier = ProductSupplier::forceCreate([
-                'supplier_id'=> $productData['supplier_id'],
+                'supplier_id'=> $supplier->id,
                 'product_id' => $product->id,
                 'name' => $product->name,
-                'status' => $productData['supplier_priority_status'],
-                'import_price' => $productData['price'] ? $productData['price'] : 0,
-                'vat' => $productData['vat'] ? $productData['vat'] : 0,
-                'price_recommend' => $productData['recommend_price'] ? $productData['recommend_price'] : 0,
-                'description' => $productData['description'],
                 'created_by' => Sentinel::getUser()->id,
-                'updated_by' => Sentinel::getUser()->id,
             ]);
         }
+
+        $productSupplier->forceFill([
+            'status' => $productData['supplier_priority_status'],
+            'import_price' => $productData['price'] ? $productData['price'] : 0,
+            'vat' => $productData['vat'] ? $productData['vat'] : 0,
+            'price_recommend' => $productData['recommend_price'] ? $productData['recommend_price'] : 0,
+            'description' => $productData['description'],
+            'updated_by' => Sentinel::getUser()->id,
+        ])->save();
 
         return $productSupplier;
     }

@@ -1294,7 +1294,7 @@
                 "laravel",
                 "token"
             ],
-            "time": "2017-05-25 06:37:30"
+            "time": "2017-05-25T06:37:30+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1483,12 +1483,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
-                "reference": "274403ce35bec3c419fdeedcd161c98dc02d3467"
+                "reference": "4505885ff5d63ec55776ea69abf4ee000114a9d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Intervention/image/zipball/274403ce35bec3c419fdeedcd161c98dc02d3467",
-                "reference": "274403ce35bec3c419fdeedcd161c98dc02d3467",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/4505885ff5d63ec55776ea69abf4ee000114a9d5",
+                "reference": "4505885ff5d63ec55776ea69abf4ee000114a9d5",
                 "shasum": ""
             },
             "require": {
@@ -1545,7 +1545,7 @@
                 "thumbnail",
                 "watermark"
             ],
-            "time": "2017-06-07 17:18:28"
+            "time": "2017-06-28T17:21:58+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",
@@ -2458,16 +2458,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v3.0.5",
+            "version": "v3.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "2b9e2f71b722f7c53918ab0c25f7646c2013f17d"
+                "reference": "0808939f81c1347a3c8a82a5925385a08074b0f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/2b9e2f71b722f7c53918ab0c25f7646c2013f17d",
-                "reference": "2b9e2f71b722f7c53918ab0c25f7646c2013f17d",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/0808939f81c1347a3c8a82a5925385a08074b0f1",
+                "reference": "0808939f81c1347a3c8a82a5925385a08074b0f1",
                 "shasum": ""
             },
             "require": {
@@ -2505,7 +2505,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2017-03-05T18:23:57+00:00"
+            "time": "2017-06-28T20:53:48+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -4131,16 +4131,16 @@
         },
         {
             "name": "yajra/laravel-datatables-oracle",
-            "version": "v7.8.0",
+            "version": "v7.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/yajra/laravel-datatables.git",
-                "reference": "2f6e17a63eec8a329fb034e45157aea1f6681c5b"
+                "reference": "03a06201ab128724b3953731752038475920fd25"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/yajra/laravel-datatables/zipball/2f6e17a63eec8a329fb034e45157aea1f6681c5b",
-                "reference": "2f6e17a63eec8a329fb034e45157aea1f6681c5b",
+                "url": "https://api.github.com/repos/yajra/laravel-datatables/zipball/03a06201ab128724b3953731752038475920fd25",
+                "reference": "03a06201ab128724b3953731752038475920fd25",
                 "shasum": ""
             },
             "require": {
@@ -4188,7 +4188,7 @@
                 "jquery",
                 "laravel"
             ],
-            "time": "2017-06-23T08:18:29+00:00"
+            "time": "2017-06-27T13:52:09+00:00"
         }
     ],
     "packages-dev": [

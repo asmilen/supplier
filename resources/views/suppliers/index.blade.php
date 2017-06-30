@@ -550,7 +550,6 @@
             });
             function myCallbackFunction (updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();
-                console.log(data);
                 var id = data.id;
                 var import_price = data.import_price.replace(/,/g , "");
                 var status = data.status;

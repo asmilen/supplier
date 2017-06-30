@@ -48,9 +48,10 @@ class ProductsController extends Controller
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price', 'products.category_id',
             'products.manufacturer_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
-            'products.image', DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price)) as best_import_price')
+            'products.image', DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as best_import_price')
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
-            , DB::raw('MIN(ceil(product_supplier.import_price/1000) * 1000) as import_price')
+            , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 , 
+								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {

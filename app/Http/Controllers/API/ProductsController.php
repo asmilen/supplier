@@ -194,7 +194,7 @@ class ProductsController extends Controller
             $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                 ->where('product_supplier.state', '=', 1)
-                ->min(DB::raw('ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000'));
+                ->min(DB::raw('ceil(product_supplier.import_price * (1 + 0.01 * ' . $productMargin . '/1000) * 1000'));
 
             $product->recommended_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)

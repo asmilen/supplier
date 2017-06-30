@@ -48,7 +48,7 @@ class ProductSuppliersController extends Controller
         }
 
         $productSupplier->forceFill([
-            'status' => !! $productData['supplier_priority_status'],
+            'status' => $productData['supplier_priority_status'],
             'import_price' => $productData['price'] ? $productData['price'] : 0,
             'vat' => $productData['vat'] ? $productData['vat'] : 0,
             'price_recommend' => $productData['recommend_price'] ? $productData['recommend_price'] : 0,

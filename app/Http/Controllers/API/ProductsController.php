@@ -48,7 +48,9 @@ class ProductsController extends Controller
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price', 'products.category_id',
             'products.manufacturer_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
-            'products.image', DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as import_price')
+            'products.image',
+            DB::raw('ceil(product_supplier.import_price / 1000) * 1000 as import_price'),
+             DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as import_price_w_margin')
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
             , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 , 
 								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
@@ -188,6 +190,11 @@ class ProductsController extends Controller
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                 ->where('product_supplier.state', '=', 1)
                 ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000'));
+
+            $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
+                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->where('product_supplier.state', '=', 1)
+                ->min(DB::raw('ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000'));
 
             $product->recommended_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)

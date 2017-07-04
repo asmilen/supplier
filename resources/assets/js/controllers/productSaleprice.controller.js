@@ -56,6 +56,8 @@ function ProductSalepriceController($scope, $http, $window) {
             .then(function () {
                 $scope.productSalepriceForm.successful = true;
                 $scope.productSalepriceForm.disabled = false;
+
+                $window.location.reload();
             })
             .catch(function (response) {
                 if (typeof response.data === 'object') {

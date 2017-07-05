@@ -378,7 +378,6 @@
                         {{--<th >Trạng thái </th>--}}
                         <th >Tình trạng</th>
                         <th >Ngày cập nhật</th>
-                        <th >Thao tac</th>
                     </tr>
                 </thead>
 
@@ -411,7 +410,6 @@
                             </select></th>
                         <th ><input class="form-control input-daterange-datepicker" type="text" name="db_updated_at"
                                     value="" placeholder="Từ ngày" style="width: 200px;"/></th>
-                        <th ></th>
                     </tr>
                 </tfoot>
 
@@ -519,7 +517,6 @@
 //                    {data: 'status',name: 'status',"width": "10%"},
                    {data: 'status_product',name: 'status_product',"width": "10%"},
                     {data: 'updated_at',name: 'updated_at',"width": "5%"},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
                 ],
 
             });

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use App\Models\SupplierProductLog;
 use Illuminate\Database\Eloquent\Model;
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
@@ -67,5 +68,20 @@ class ProductSupplier extends Model
                 'created_by' => Sentinel::getUser()->id,
             ]);
         });
+    }
+
+    public static function getListByRegion($regionId)
+    {
+        return collect(DB::select('
+                SELECT ps.product_id, p.sku, ps.import_price, ps.state, ps.created_at, ps.updated_at FROM product_supplier AS ps
+                INNER JOIN products AS p ON ps.product_id = p.id
+                WHERE supplier_id IN (
+                    SELECT supplier_id FROM supplier_supported_province
+                    WHERE province_id IN (
+                        SELECT province_id FROM provinces WHERE region_id = '.$regionId.'
+                    )
+                )
+                ORDER BY updated_at DESC, created_at DESC
+        '))->groupBy('product_id');
     }
 }

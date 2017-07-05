@@ -52,7 +52,7 @@ class ProductsController extends Controller
             DB::raw('MIN(ceil(product_supplier.import_price / 1000) * 1000) as import_price'),
              DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as import_price_w_margin')
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
-            , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 , 
+            , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
 								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
             ->with('category')
@@ -279,5 +279,27 @@ class ProductsController extends Controller
     public function getConfigurableList()
     {
         return Product::where('type', 1)->get();
+    }
+
+    public function getMinImportPriceList()
+    {
+        $products = ProductSupplier::getListByRegion(request('region_id', 0))
+            ->map(function ($productSuppliers, $productId) {
+                $product = $productSuppliers->shift();
+
+                $productSuppliers->each(function ($productSupplier) use (&$product) {
+                    if ($productSupplier->state == 1 && $productSupplier->import_price < $product->import_price) {
+                        $product->import_price = $productSupplier->import_price;
+                    }
+                });
+
+                return [
+                    'id' => $product->product_id,
+                    'sku' => $product->sku,
+                    'min_import_price' => $product->import_price,
+                ];
+            });
+
+        return response()->json($products);
     }
 }

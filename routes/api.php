@@ -9,6 +9,7 @@ Route::get('combos/{combo}/detail', 'CombosController@detail');
 Route::get('productConfigurables', 'ProductConfigurablesController@index');
 Route::get('products', 'ProductsController@index');
 Route::get('products/getConfigurableList', 'ProductsController@getConfigurableList');
+Route::get('products/min-import-price-list', 'ProductsController@getMinImportPriceList');
 Route::get('products/{product}', 'ProductsController@show');
 Route::get('products/{id}/detail', 'ProductsController@detail');
 Route::get('listProductSku', 'ProductsController@getListProductSku');

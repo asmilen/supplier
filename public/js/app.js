@@ -492,6 +492,8 @@ function ProductSalepriceController($scope, $http, $window) {
         $http.put('/products/' + PRODUCT_ID + '/saleprice', $scope.productSalepriceForm).then(function () {
             $scope.productSalepriceForm.successful = true;
             $scope.productSalepriceForm.disabled = false;
+
+            $window.location.reload();
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productSalepriceForm.errors = _.flatten(_.toArray(response.data));

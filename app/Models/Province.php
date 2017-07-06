@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Province extends Model
@@ -25,5 +26,14 @@ class Province extends Model
     {
         return static::where('region_id', $regionId)->pluck('id')->all();
     }
-}
 
+    public static function getTransportFeesList()
+    {
+        return DB::table('provinces')
+            ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'provinces.id')
+            ->whereIn('provinces.code', request('province_codes'))
+            ->select(DB::raw('provinces.code as province_code, provinces.name as province_name, ifnull(transport_fees.percent_fee, 0) as shipping_fee'))
+            ->get()
+            ->keyBy('province_code');
+    }
+}

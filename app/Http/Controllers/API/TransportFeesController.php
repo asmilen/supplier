@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
+use DB;
+use Validator;
 use App\Models\Province;
 use App\Models\TransportFee;
 use App\Http\Controllers\Controller;
-use Validator;
-use DB;
 
 class TransportFeesController extends Controller
 {

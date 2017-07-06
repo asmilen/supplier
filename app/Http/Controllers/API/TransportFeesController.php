@@ -2,13 +2,23 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\TransportFee;
+use Validator;
+use App\Models\Province;
 use App\Http\Controllers\Controller;
 
 class TransportFeesController extends Controller
 {
     public function index()
     {
-        return TransportFee::getList();
+        $validator = Validator::make(request()->all(), [
+            'province_codes' => 'array',
+            'province_codes.*' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $validator->errors();
+        }
+
+        return Province::getTransportFeesList();
     }
 }

@@ -48,7 +48,7 @@ class SuppliersController extends Controller
             ->where('suppliers.status', true)
             ->select(DB::raw('distinct suppliers.id as supplier_id,suppliers.name as supplier_name,suppliers.code as supplier_code'))
             ->get();
-        $products = Product::all();
+        $products = Product::paginate(20);
         return view('suppliers.index', compact('suppliers', 'products'));
     }
 

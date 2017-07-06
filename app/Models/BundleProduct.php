@@ -54,7 +54,7 @@ class BundleProduct extends Model
 
     public function getProduct($supplierIds, $regionId)
     {
-        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`"))
+        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, `product_supplier`.`state`"))
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->leftJoin('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds)

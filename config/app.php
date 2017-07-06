@@ -179,6 +179,7 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
         Cviebrock\EloquentSluggable\ServiceProvider::class,
+        Gtk\LaravelTokenGuard\ServiceProvider::class,
 
         /*
          * Application Service Providers...

@@ -60,9 +60,6 @@
                             @endif
                         </td>
                         <td>
-                            @if ($currentUser->hasAccess('categories.show'))
-                                <a class="blue" href="/categories/@{{ category.id }}"><i class="ace-icon fa fa-search-plus bigger-130"></i></a>
-                            @endif
                             @if ($currentUser->hasAccess('categories.edit'))
                                 <a class="green" href="/categories/@{{ category.id }}/edit"><i class="ace-icon fa fa-pencil bigger-130"></i></a>
                             @endif

@@ -1,9 +1,6 @@
 @if ($currentUser->hasAccess('rolePermissions.index'))
 <a class="orange" href="{{ route('rolePermissions.index', $id) }}"><i class="ace-icon fa fa-lock bigger-130"></i></a>
 @endif
-@if ($currentUser->hasAccess('roles.show'))
-<a class="blue" href="{{ route('roles.show', $id) }}"><i class="ace-icon fa fa-search-plus bigger-130"></i></a>
-@endif
 @if ($currentUser->hasAccess('roles.edit'))
 <a class="green" href="{{ route('roles.edit', $id) }}"><i class="ace-icon fa fa-pencil bigger-130"></i></a>
 @endif

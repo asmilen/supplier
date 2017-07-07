@@ -45,6 +45,7 @@ class SuppliersController extends Controller
                                 ->whereIn('product_supplier.product_id', $productIds);
                         })
                         ->whereIn('suppliers.id', $supplierIds)
+                        ->where('suppliers.status',true)
                         ->get();
 
         $response = [];

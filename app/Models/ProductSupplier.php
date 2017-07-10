@@ -78,7 +78,7 @@ class ProductSupplier extends Model
                 WHERE supplier_id IN (
                     SELECT supplier_id FROM supplier_supported_province
                     WHERE province_id IN (
-                        SELECT province_id FROM provinces WHERE region_id = '.$regionId.'
+                        SELECT id FROM provinces WHERE region_id = '.$regionId.'
                     )
                 )
                 ORDER BY updated_at DESC, created_at DESC

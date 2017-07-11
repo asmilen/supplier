@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductSupplier;
+use App\Models\SalepriceLog;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use App\Models\Product;
 use App\Models\Saleprice;
@@ -10,6 +13,8 @@ use DB;
 use App\Models\Province;
 use App\Models\SupplierSupportedProvince;
 use App\Models\MarginRegionCategory;
+use GuzzleHttp\Client;
+use Sentinel;
 
 class ProductSalepriceController extends Controller
 {
@@ -22,10 +27,10 @@ class ProductSalepriceController extends Controller
 
         $nowSalePrices = Saleprice::whereIn('id',
             Saleprice::select(DB::raw('MAX(id) as id_p'))
-                    ->where('product_id', $product->id)
-                    ->groupBy('store_id', 'region_id')
-                    ->get()
-            )->get()->sortBy('region_id')->groupBy('region_id');
+                ->where('product_id', $product->id)
+                ->groupBy('store_id', 'region_id')
+                ->get()
+        )->get()->sortBy('region_id')->groupBy('region_id');
 
         $productMarket = DB::table('product_marketprice_best')->where('product_id', $product->id)->first();
 
@@ -35,16 +40,15 @@ class ProductSalepriceController extends Controller
     public function update(Product $product)
     {
         Validator::make(request()->all(), [
-            'price' => 'required|numeric',
             'stores.*' => 'required',
         ])->after(function ($validator) use ($product) {
             if (request('price') <= 0) {
                 $validator->errors()->add('price', 'Giá bán phải > 0.');
             }
-            if (!in_array(true,request('stores'))) {
+            if (!in_array(true, request('stores'))) {
                 $validator->errors()->add('stores', 'Bạn phải chọn ít nhất 1 store.');
             }
-            if (!in_array(true,request('regions'))) {
+            if (!in_array(true, request('regions'))) {
                 $validator->errors()->add('regions', 'Bạn phải chọn ít nhất 1 miền.');
             }
             foreach (request('regions') as $regionId => $flagRegion) {
@@ -74,17 +78,39 @@ class ProductSalepriceController extends Controller
             }
         })->validate();
 
+        $id = [];
+        $storeName = [];
+        $regionName = [];
+        $date = Carbon::now('Asia/Ho_Chi_Minh')->subMinute(120)->getTimestamp();
+        $user_id = Sentinel::getUser()->id;
+
         foreach (request('stores') as $storeId => $flagStore) {
             if ($flagStore) {
-                foreach (request('regions') as $regionId => $flagRegion)
-                {
+                array_push($storeName, $storeId);
+                foreach (request('regions') as $regionId => $flagRegion) {
                     if ($flagRegion) {
                         try {
+                            $region_name = config('teko.regions')[$regionId];
+                            array_push($regionName, $region_name);
+
                             $product->addSaleprice([
                                 'store_id' => $storeId,
                                 'region_id' => $regionId,
                                 'price' => request('price'),
                             ]);
+                            $change_info = [
+                                'user_id' => $user_id,
+                                "product_id" => $product->id,
+                                'price' => request('price'),
+                                'store' => $storeId,
+                                'region' => $regionId,
+                                'status' => 0
+                            ];
+                            $log = SalepriceLog::create($change_info);
+                            $log->save();
+
+                            array_push($id, $log->id);
+
                         } catch (\Exception $e) {
                             return response()->json([
                                 'error' => $e->getMessage(),
@@ -94,7 +120,38 @@ class ProductSalepriceController extends Controller
                 }
             }
         }
-
+        $data = [
+            "storeIds" => array_unique($storeName),
+            "regionNames" => array_unique($regionName),
+            "productId" => $product->id,
+            "price" => request('price'),
+            "createdAt" => $date
+        ];
+        $response = $this->callApi($data);
+        if ($response['status'] == 'success') {
+            for ($i = 0; $i < count($id); $i++) {
+                $sales = SalepriceLog::where('id', $id[$i])->first();
+                $sales['detail'] = json_encode($response['detail']);
+                $sales['status'] = 1;
+                $sales->save();
+            }
+        }
         return $product;
+    }
+
+    private function callApi($data)
+    {
+        $client = new Client(['base_uri' => env('UPDATE_PRICE_URL_BASE')]);
+        /**
+         * @var \GuzzleHttp\Psr7\Response $result
+         */
+        $result = $client->request('POST', env('UPDATE_PRICE_URL'), [
+            'body' => json_encode($data),
+        ]);
+
+        if (null === $decodedResult = json_decode($result->getBody()->getContents(), true)) {
+            return array('errorMessage' => 'Could not decode json');
+        }
+        return $decodedResult;
     }
 }

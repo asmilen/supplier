@@ -54,11 +54,10 @@ class BundleProduct extends Model
 
     public function getProduct($supplierIds, $regionId)
     {
-        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, `product_supplier`.`state`"))
+        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, `product_supplier`.`state`, `products`.`status`"))
             ->join('product_supplier', function ($q) use ($supplierIds) {
                 $q->leftJoin('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds)
-                    ->where('product_supplier.state', '=', 1);
+                    ->whereIn('product_supplier.supplier_id', $supplierIds);
             })
             ->findOrFail($this->id_product);
 
@@ -78,6 +77,8 @@ class BundleProduct extends Model
         $product->quantity = $this->quantity;
 
         $product->isDefault = $this->is_default;
+
+        $product->state = config('teko.product.state')[$product->state];
 
         return $product;
     }

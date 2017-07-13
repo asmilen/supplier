@@ -64,7 +64,8 @@ class ProductsController extends Controller
             ->leftJoin('margin_region_category', function ($q) use ($regions) {
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->whereIn('margin_region_category.region_id', $regions);
-            });
+            })
+            ->where('products.status', 1);
 
         return Datatables::eloquent($model)
             ->setTransformer(new ProductApiTransformer())

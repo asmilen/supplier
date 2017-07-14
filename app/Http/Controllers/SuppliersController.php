@@ -151,8 +151,7 @@ class SuppliersController extends Controller
     public function getDatatables()
     {
         $user_id = Sentinel::getUser()->id;
-        $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinc
-        es.region_id')
+        $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
             ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
             ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
             ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')

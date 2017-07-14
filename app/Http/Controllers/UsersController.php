@@ -37,8 +37,9 @@ class UsersController extends Controller
     public function create()
     {
         $user = new User;
+        $supportedProvince = $user->getUserSupportedProvince();
 
-        return view('users.create', compact('user'));
+        return view('users.create', compact('user','supportedProvince'));
     }
 
     /**
@@ -53,11 +54,15 @@ class UsersController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
+            'level' => 'required',
+            'area' => 'required',
         ]);
 
-        Sentinel::register(
+        $user = Sentinel::register(
             request()->all(), !! request('active')
         )->syncRoles(request('roles', []));
+
+        $user->setUserSupportedProvince(request('level'),request('area'));
 
         flash()->success('Success!', 'User successfully created.');
 
@@ -83,7 +88,9 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+        $supportedProvince = $user->getUserSupportedProvince();
+
+        return view('users.edit', compact('user','supportedProvince'));
     }
 
     /**
@@ -99,11 +106,15 @@ class UsersController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'password' => 'min:6|confirmed',
+            'level' => 'required',
+            'area' => 'required',
         ]);
 
         $user->update(request()->all())
             ->setActivation(!! request('active'))
             ->syncRoles(request('roles', []));
+
+        $user->setUserSupportedProvince(request('level'),request('area'));
 
         flash()->success('Success!', 'User successfully updated.');
 

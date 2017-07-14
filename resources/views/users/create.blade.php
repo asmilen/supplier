@@ -53,6 +53,7 @@
 
 @section('scripts')
 <script src="/vendor/ace/assets/js/chosen.jquery.js"></script>
+<script type="text/javascript" src="http://www.appelsiini.net/projects/chained/jquery.chained.js?v=0.9.10"></script>
 @endsection
 
 @section('inline_scripts')
@@ -62,6 +63,8 @@ $(function () {
         allow_single_deselect: true,
         width: '100%'
     });
+
+    $("#area").chained("#level");
 });
 </script>
 @endsection

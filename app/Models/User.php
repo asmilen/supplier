@@ -233,32 +233,12 @@ class User extends EloquentUser implements
         $userProvince->forceFill([
             'region_id' => $regionId,
             'province_id' => $provinceID,
+            'level' => $level,
         ])->save();
     }
 
-    public function getUserSupportedProvince()
+    public function userSupportedProvince()
     {
-        $supportedProvince = UserSupportedProvince::where('supported_id',$this->id)->first();
-
-        if ($supportedProvince)
-        {
-            if ($supportedProvince->province_id == 0)
-            {
-                $supportedProvince->level = 1;
-                $supportedProvince->area = $supportedProvince->region_id;
-            }
-            else
-            {
-                $supportedProvince->level = 2;
-                $supportedProvince->area = $supportedProvince->province_id;
-            }
-        } else{
-
-            $supportedProvince = new UserSupportedProvince;
-            $supportedProvince->level = 0;
-            $supportedProvince->area = 0;
-        }
-
-        return $supportedProvince;
+        return $this->hasOne(UserSupportedProvince::class,'supported_id','id');
     }
 }

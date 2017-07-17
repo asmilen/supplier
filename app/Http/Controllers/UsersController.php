@@ -37,7 +37,7 @@ class UsersController extends Controller
     public function create()
     {
         $user = new User;
-        $supportedProvince = $user->getUserSupportedProvince();
+        $supportedProvince = $user->userSupportedProvince()->first();
 
         return view('users.create', compact('user','supportedProvince'));
     }
@@ -88,7 +88,7 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
-        $supportedProvince = $user->getUserSupportedProvince();
+        $supportedProvince = $user->userSupportedProvince()->first();
 
         return view('users.edit', compact('user','supportedProvince'));
     }

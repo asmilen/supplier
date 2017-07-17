@@ -58,8 +58,8 @@
     <div class="col-sm-6">
         <select name="level" class="form-control" id="level">
             <option value="">Chọn cấp quản lý</option>
-            @foreach( config('teko.managerLevel') as $key => $value)
-                <option value="{{$key}}" {{ ($supportedProvince->level == $key ) ? 'selected' : '' }}>{{$value}}</option>
+            @foreach( config('teko.manager_levels') as $key => $value)
+                <option value="{{$key}}" {{ ($supportedProvince && $supportedProvince->level == $key ) ? 'selected' : '' }}>{{$value}}</option>
             @endforeach
         </select>
     </div>
@@ -71,10 +71,10 @@
         <select name="area" class="form-control" id="area">
             <option value="">Chọn Thông tin quản lý</option>
             @foreach( config('teko.regions') as $key => $value)
-                <option value="{{$key}}" {{ ($supportedProvince->area == $key ) ? 'selected' : '' }} class="1">{{$value}}</option>
+                <option value="{{$key}}" {{ ($supportedProvince && $supportedProvince->region_id == $key ) ? 'selected' : '' }} class="1">{{$value}}</option>
             @endforeach
             @foreach( \App\Models\Province::all() as $key => $value)
-                <option value="{{$value->id}}" {{ ($supportedProvince->area == $value->id ) ? 'selected' : '' }} class="2">{{$value->name}}</option>
+                <option value="{{$value->id}}" {{ ($supportedProvince && $supportedProvince->province_id == $value->id ) ? 'selected' : '' }} class="2">{{$value->name}}</option>
             @endforeach
         </select>
     </div>

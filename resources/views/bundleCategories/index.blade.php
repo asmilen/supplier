@@ -75,7 +75,7 @@ $(function () {
         columns: [
             {data: 'name', name: 'name'},
             {data: 'nameBundle', name: 'nameBundle', orderable: false, searchable: false},
-            {data: 'totalProduct', name: 'totalProduct', searchable: false},
+            {data: 'totalProduct', name: 'totalProduct', orderable: false, searchable: false},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
     });

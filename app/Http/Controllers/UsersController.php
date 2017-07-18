@@ -37,7 +37,7 @@ class UsersController extends Controller
     public function create()
     {
         $user = new User;
-        $supportedProvince = $user->userSupportedProvince()->first();
+        $supportedProvince = $user->userSupportedProvince()->get();
 
         return view('users.create', compact('user','supportedProvince'));
     }
@@ -55,14 +55,15 @@ class UsersController extends Controller
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
             'level' => 'required',
-            'area' => 'required',
+            'areas' => 'required|array',
+            'areas.*' => 'required',
         ]);
 
         $user = Sentinel::register(
             request()->all(), !! request('active')
         )->syncRoles(request('roles', []));
 
-        $user->setUserSupportedProvince(request('level'),request('area'));
+        $user->setUserSupportedProvince(request('level'),request('areas'));
 
         flash()->success('Success!', 'User successfully created.');
 
@@ -88,7 +89,7 @@ class UsersController extends Controller
      */
     public function edit(User $user)
     {
-        $supportedProvince = $user->userSupportedProvince()->first();
+        $supportedProvince = $user->userSupportedProvince()->get();
 
         return view('users.edit', compact('user','supportedProvince'));
     }
@@ -107,14 +108,15 @@ class UsersController extends Controller
             'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'password' => 'min:6|confirmed',
             'level' => 'required',
-            'area' => 'required',
+            'areas' => 'required|array',
+            'areas.*' => 'required',
         ]);
 
         $user->update(request()->all())
             ->setActivation(!! request('active'))
             ->syncRoles(request('roles', []));
 
-        $user->setUserSupportedProvince(request('level'),request('area'));
+        $user->setUserSupportedProvince(request('level'),request('areas'));
 
         flash()->success('Success!', 'User successfully updated.');
 

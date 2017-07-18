@@ -210,35 +210,39 @@ class User extends EloquentUser implements
         return $this;
     }
 
-    public function setUserSupportedProvince($level,$area)
+    public function setUserSupportedProvince($level,$areas)
     {
+        UserSupportedProvince::where('supported_id',$this->id)->delete();
+
         if ($level == 1) {
-            $regionId = $area;
-            $provinceID = 0;
+            foreach($areas as $regionID)
+            {
+                UserSupportedProvince::forceCreate([
+                    'supported_id' => $this->id,
+                    'status'       => true,
+                    'level' => $level,
+                    'region_id' => $regionID,
+                    'province_id' => 0,
+                ]);
+            }
         } else {
-            $regionId = Province::find($area)->region_id;
-            $provinceID = $area;
+            foreach($areas as $provinceID)
+            {
+                $regionId = Province::find($provinceID)->region_id;
+
+                UserSupportedProvince::forceCreate([
+                    'supported_id' => $this->id,
+                    'status'       => true,
+                    'level' => $level,
+                    'region_id' => $regionId,
+                    'province_id' => $provinceID,
+                ]);
+            }
         }
-
-        $userProvince = UserSupportedProvince::where('supported_id',$this->id)->first();
-
-        if (!$userProvince)
-        {
-            $userProvince = UserSupportedProvince::forceCreate([
-                'supported_id' => $this->id,
-                'status'       => true,
-            ]);
-        }
-
-        $userProvince->forceFill([
-            'region_id' => $regionId,
-            'province_id' => $provinceID,
-            'level' => $level,
-        ])->save();
     }
 
     public function userSupportedProvince()
     {
-        return $this->hasOne(UserSupportedProvince::class,'supported_id','id');
+        return $this->hasMany(UserSupportedProvince::class,'supported_id','id');
     }
 }

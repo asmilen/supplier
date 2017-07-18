@@ -59,12 +59,16 @@
 @section('inline_scripts')
 <script>
 $(function () {
+    $("#area").chained("#level");
+
     $(".chosen-select").chosen({
         allow_single_deselect: true,
         width: '100%'
     });
 
-    $("#area").chained("#level");
+    $('#area, #level').on('change', function(){
+        $('#area, #level').trigger('chosen:updated');
+    });
 });
 </script>
 @endsection

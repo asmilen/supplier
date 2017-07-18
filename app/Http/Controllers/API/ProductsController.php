@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\Supplier;
 use DB;
 use Validator;
 use Datatables;
@@ -9,6 +10,7 @@ use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Province;
+use App\Models\TransportFee;
 use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
 use App\Models\MarginRegionCategory;
@@ -27,7 +29,6 @@ class ProductsController extends Controller
             'province_ids' => 'required|array',
             'province_ids.*' => 'required',
         ]);
-
         if ($validator->fails()) {
             return $validator->errors();
         }
@@ -43,17 +44,16 @@ class ProductsController extends Controller
             ->get()
             ->pluck('supplier_id');
 
-
         $model = Product::select([
             'products.id', 'products.name', 'products.code',
             'products.sku', 'products.source_url', 'products.best_price', 'products.category_id',
             'products.manufacturer_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
             'products.image',
-            DB::raw('MIN(ceil(product_supplier.import_price / 1000) * 1000) as import_price'),
-             DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as import_price_w_margin')
-            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
-            , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
-								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
+            DB::raw('(ceil(product_supplier.import_price / 1000) * 1000) as import_price'),
+            DB::raw('(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as import_price_w_margin')
+            , DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price/1000) * 1000)) as price')
+            , DB::raw('if((if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
+								(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($supplierIds) {
@@ -68,7 +68,7 @@ class ProductsController extends Controller
             ->where('products.status', 1);
 
         return Datatables::eloquent($model)
-            ->setTransformer(new ProductApiTransformer())
+            ->setTransformer(new ProductApiTransformer($provinceIds, request('province_ids')))
             ->filter(function ($query) {
                 if (request()->has('sku')) {
                     $query->where('products.sku', 'like', '%' . request('sku') . '%');
@@ -166,7 +166,7 @@ class ProductsController extends Controller
 
             $product = Product::with('manufacturer', 'category')
                 ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
-                ->join('product_supplier', function ($q) use ($supplierIds) {
+                ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->whereIn('product_supplier.supplier_id', $supplierIds)
                         ->where('product_supplier.state', '=', 1);
@@ -176,8 +176,26 @@ class ProductsController extends Controller
             $margin = MarginRegionCategory::where('category_id', $product->category_id)
                 ->whereIn('region_id', $regions)->first();
 
+            $province = Province::whereIn('code', request('province_ids'))->pluck('id');
+            $provinceFee = TransportFee::whereIn('province_id', $province)
+                ->orderBy('percent_fee')
+                ->first();
+            $minPrice = ProductSupplier::where('product_id', $id)
+                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->where('product_supplier.state', '=', 1)
+                ->orderBy('import_price')
+                ->first();
+
+            $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
+                ->where('supplier_id', $minPrice->supplier->id)
+                ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
+                ->orderBy('transport_fees.percent_fee')
+                ->first();
+
             if ($margin) {
-                $productMargin = 1 + 0.01 * $margin->margin;
+                $productMargin = 1 + 0.01 * $margin->margin +
+                    ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 +
+                    ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
             } else {
                 $productMargin = 1.05;
             }
@@ -202,7 +220,13 @@ class ProductsController extends Controller
                 ->where('product_supplier.state', '=', 1)
                 ->where('price_recommend', $product->best_price)
                 ->min('product_supplier.price_recommend');
+            $supplier = Supplier::where('id', $provinceFeeMin->supplier_id)->first();
+            $province = Province::where('id', $provinceFeeMin->province_id)->first();
 
+            $product->supplier_id = $supplier->id;
+            $product->supplier_name = $supplier->name;
+            $product->province_name = $province->name;
+            $product->province_code = $province->code;
             return $product;
         } catch (\Exception $e) {
 
@@ -225,7 +249,7 @@ class ProductsController extends Controller
 
                 array_push($results, [$product->sku, 'Nhập thành công.']);
             } catch (\Exception $e) {
-                array_push($results, ['', 'Lỗi: '.$e->getMessage()]);
+                array_push($results, ['', 'Lỗi: ' . $e->getMessage()]);
             }
         }
 
@@ -246,7 +270,7 @@ class ProductsController extends Controller
             return $product;
         }
 
-        if (! empty($productData['code'])) {
+        if (!empty($productData['code'])) {
             $check = Product::where('category_id', $category->id)
                 ->where('manufacturer_id', $manufacturer->id)
                 ->where('code', $productData['code'])

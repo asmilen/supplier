@@ -51,6 +51,33 @@
     </div>
 </div>
 
+<hr>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Cấp quản lý</label>
+    <div class="col-sm-6">
+        <select name="level" class="form-control" id="level" data-placeholder="Chọn cấp quản lý">
+            @foreach( config('teko.manager_levels') as $key => $value)
+                <option value="{{$key}}" {{ ($user->level == $key) ? 'selected' : '' }}>{{$value}}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Thông tin quản lý</label>
+    <div class="col-sm-6">
+        <select id=area name="areas[]" class="chosen-select form-control tag-input-style" data-placeholder="Chọn Thông tin quản lý" multiple>
+            @foreach( config('teko.regions') as $key => $value)
+                <option value="{{$key}}" {{ ($user->level==1 && $user->userSupportedProvince && in_array($key,$user->userSupportedProvince->pluck('region_id')->toArray())) ? 'selected' : '' }} class="1">{{$value}}</option>
+            @endforeach
+            @foreach( \App\Models\Province::all() as $key => $value)
+                <option value="{{$value->id}}" {{ ($user->level==2 && $user->userSupportedProvince && in_array($value->id,$user->userSupportedProvince->pluck('province_id')->toArray())) ? 'selected' : '' }} class="2">{{$value->name}}</option>
+            @endforeach
+        </select>
+    </div>
+</div>
+
 <div class="clearfix form-actions">
     <div class="col-md-offset-3 col-md-9">
         <button type="submit" class="btn btn-success">

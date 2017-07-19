@@ -209,4 +209,41 @@ class User extends EloquentUser implements
 
         return $this;
     }
+
+    public function setUserSupportedProvince($level,$areas)
+    {
+        UserSupportedProvince::where('supported_id',$this->id)->delete();
+
+        $this->level = $level;
+        $this->save();
+
+        if ($level == 1) {
+            foreach($areas as $regionID)
+            {
+                UserSupportedProvince::forceCreate([
+                    'supported_id' => $this->id,
+                    'status'       => true,
+                    'region_id' => $regionID,
+                    'province_id' => 0,
+                ]);
+            }
+        } else {
+            foreach($areas as $provinceID)
+            {
+                $regionId = Province::find($provinceID)->region_id;
+
+                UserSupportedProvince::forceCreate([
+                    'supported_id' => $this->id,
+                    'status'       => true,
+                    'region_id' => $regionId,
+                    'province_id' => $provinceID,
+                ]);
+            }
+        }
+    }
+
+    public function userSupportedProvince()
+    {
+        return $this->hasMany(UserSupportedProvince::class,'supported_id','id');
+    }
 }

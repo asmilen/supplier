@@ -192,13 +192,10 @@ class ProductsController extends Controller
                 ->orderBy('transport_fees.percent_fee')
                 ->first();
 
-            if ($margin) {
-                $productMargin = 1 + 0.01 * $margin->margin +
-                    ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 +
-                    ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
-            } else {
-                $productMargin = 1.05;
-            }
+            $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 +
+                ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 +
+                ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
+
 
             $product->best_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -223,10 +220,10 @@ class ProductsController extends Controller
             $supplier = Supplier::where('id', $provinceFeeMin->supplier_id)->first();
             $province = Province::where('id', $provinceFeeMin->province_id)->first();
 
-            $product->supplier_id = $supplier->id;
-            $product->supplier_name = $supplier->name;
-            $product->province_name = $province->name;
-            $product->province_code = $province->code;
+            $product->supplier_id = $supplier ? $supplier->id : null;
+            $product->supplier_name = $supplier ? $supplier->name : null;
+            $product->province_name = $province ? $province->name : null;
+            $product->province_code = $province ? $province->code : null;
             return $product;
         } catch (\Exception $e) {
 

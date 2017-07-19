@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddLevelColumnTableUsersupportedprovince extends Migration
+class AddLevelColumnTableUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddLevelColumnTableUsersupportedprovince extends Migration
      */
     public function up()
     {
-        Schema::table('user_supported_province', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->integer('level')->default(1);
         });
     }
@@ -25,7 +25,7 @@ class AddLevelColumnTableUsersupportedprovince extends Migration
      */
     public function down()
     {
-        Schema::table('user_supported_province', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('level');
         });
     }

@@ -214,13 +214,15 @@ class User extends EloquentUser implements
     {
         UserSupportedProvince::where('supported_id',$this->id)->delete();
 
+        $this->level = $level;
+        $this->save();
+
         if ($level == 1) {
             foreach($areas as $regionID)
             {
                 UserSupportedProvince::forceCreate([
                     'supported_id' => $this->id,
                     'status'       => true,
-                    'level' => $level,
                     'region_id' => $regionID,
                     'province_id' => 0,
                 ]);
@@ -233,7 +235,6 @@ class User extends EloquentUser implements
                 UserSupportedProvince::forceCreate([
                     'supported_id' => $this->id,
                     'status'       => true,
-                    'level' => $level,
                     'region_id' => $regionId,
                     'province_id' => $provinceID,
                 ]);

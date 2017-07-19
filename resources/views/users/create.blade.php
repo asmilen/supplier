@@ -66,8 +66,8 @@ $(function () {
         width: '100%'
     });
 
-    $('#area, #level').on('change', function(){
-        $('#area, #level').trigger('chosen:updated');
+    $('#level').on('change', function(){
+        $('#area').trigger('chosen:updated');
     });
 });
 </script>

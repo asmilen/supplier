@@ -62,7 +62,6 @@
 <script>
 $(function () {
     $("#area").chained("#level");
-    $('#area').trigger('chosen:updated');
 
     $(".chosen-select").chosen({
         allow_single_deselect: true,

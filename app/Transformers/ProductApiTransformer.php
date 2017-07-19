@@ -62,7 +62,7 @@ class ProductApiTransformer extends TransformerAbstract
             ->orderBy('transport_fees.percent_fee')
             ->first();
         $ship_province = $province->toArray();
-        if (in_array($provinceFeeMin->transportFee->province_id, $ship_province )){
+        if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province )){
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
         }else{
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;

@@ -82,7 +82,10 @@ class RolesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
+        ], [
+            'name.required' => "Vui lòng nhập Name.",
         ]);
+
 
         $role->update(request()->all());
 

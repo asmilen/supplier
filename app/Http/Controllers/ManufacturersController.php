@@ -103,6 +103,8 @@ class ManufacturersController extends Controller
             'name' => 'required|max:255|unique:manufacturers,name,'.$manufacturer->id,
         ], [
             'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
+            'name.required' => 'Vui lòng nhập tên nhà sản xuất.',
+            'name.max' => 'Tên nhà sản xuất quá dài, tối đa 255 kí tụ.',
         ]);
 
         $manufacturer->forceFill([

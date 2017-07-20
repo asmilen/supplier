@@ -111,7 +111,6 @@ class ProductsController extends Controller
          * @var array $supplierIds
          */
         $model = Product::select(['products.id', 'products.name', 'products.sku', 'products.category_id'])
-            ->active()
             ->with('category');
 
         return Datatables::eloquent($model)
@@ -296,6 +295,18 @@ class ProductsController extends Controller
             'sku' => generate_sku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
         ])->save();
 
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+            'id' => $product->id,
+            'categoryId' => $product->category_id,
+            'brandId' => $product->manufacturer_id,
+            'sku' => $product->sku,
+            'name' => $product->name,
+            'skuIdentifier' => $product->code,
+            'status' => $product->status ? 'active' : 'inactive',
+            'sourceUrl' => $product->source_url,
+            'createdAt' => strtotime($product->created_at),
+        ])));
+        
         return $product;
     }
 

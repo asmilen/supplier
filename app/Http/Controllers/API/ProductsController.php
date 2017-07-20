@@ -192,10 +192,12 @@ class ProductsController extends Controller
                 ->orderBy('transport_fees.percent_fee')
                 ->first();
 
-            $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 +
-                ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 +
-                ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
-
+            $ship_province = $province->toArray();
+            if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province)) {
+                $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
+            } else {
+                $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
+            }
 
             $product->best_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -217,8 +219,21 @@ class ProductsController extends Controller
                 ->where('product_supplier.state', '=', 1)
                 ->where('price_recommend', $product->best_price)
                 ->min('product_supplier.price_recommend');
-            $supplier = Supplier::where('id', $provinceFeeMin->supplier_id)->first();
-            $province = Province::where('id', $provinceFeeMin->province_id)->first();
+
+            $supplier = ProductSupplier::where('price_recommend', $product->best_price)
+                ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
+                ->first();
+            $province = SupplierSupportedProvince::where('supplier_id', $supplier->id)
+                ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')
+                ->first();
+
+            $product->suppliers = array_merge([[
+                'id' => $supplier ? $supplier->id : null,
+                'name' => $supplier ? $supplier->name : null,
+                'import_price' => $product->import_price,
+                'province_name' => $province ? $province->name : null,
+                'province_code' => $province ? $province->code : null
+            ]], is_array($product->suppliers) ? $product->suppliers : []);
 
             $product->supplier_id = $supplier ? $supplier->id : null;
             $product->supplier_name = $supplier ? $supplier->name : null;
@@ -226,7 +241,6 @@ class ProductsController extends Controller
             $product->province_code = $province ? $province->code : null;
             return $product;
         } catch (\Exception $e) {
-
             return api_response(['message' => $e->getMessage()], 500);
         }
     }

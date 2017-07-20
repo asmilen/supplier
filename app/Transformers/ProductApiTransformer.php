@@ -11,6 +11,7 @@ use App\Models\TransportFee;
 use \League\Fractal\TransformerAbstract;
 use Illuminate\Support\Facades\DB;
 
+
 /**
  * @property  int provinceIds
  * @property  int code

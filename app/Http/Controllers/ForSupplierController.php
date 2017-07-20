@@ -221,7 +221,7 @@ class ForSupplierController extends Controller
     {
         $user_id = Sentinel::getUser()->id;
         $supplier_account = DB::table('supplier_accounts')->where('user_id','=',$user_id)->first();
-        $supplier_id = $supplier_account->supplier_id;
+        $supplier_id = $supplier_account ? $supplier_account->supplier_id : null;
 
         $query_builder = DB::table('product_supplier')
                         ->leftJoin('products','product_supplier.product_id','=','products.id')

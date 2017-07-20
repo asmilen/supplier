@@ -32,5 +32,10 @@ return [
         1 => 'Máy chủ',
         2 => 'Máy trạm',
         3 => 'Linh kiện, phụ kiện khác',
+    ],
+
+    'manager_levels' => [
+        1 => 'Khu vực (Miền)',
+        2 => 'Tỉnh',
     ]
 ];

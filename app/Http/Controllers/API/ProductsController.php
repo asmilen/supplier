@@ -111,7 +111,6 @@ class ProductsController extends Controller
          * @var array $supplierIds
          */
         $model = Product::select(['products.id', 'products.name', 'products.sku', 'products.category_id'])
-            ->active()
             ->with('category');
 
         return Datatables::eloquent($model)

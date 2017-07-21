@@ -249,14 +249,14 @@ class ProductsController extends Controller
             }
             for ($i = 0; $i < $supplier->count(); $i++) {
                 $product->suppliers = array_merge([[
-                    'id' => $supplier ? $supplier[$i]->id : null,
-                    'name' => $supplier ? $supplier[$i]->name : null,
+                    'id' => isset($supplier[$i]) ? $supplier[$i]->id : null,
+                    'name' => isset($supplier[$i]) ? $supplier[$i]->name : null,
                     'import_price' => ProductSupplier::where('product_id', $id)
                         ->where('product_supplier.supplier_id', $supplier[$i]->id)
                         ->where('product_supplier.state', '=', 1)
                         ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000')),
-                    'province_name' => $province ? $province[$i]->name : null,
-                    'province_code' => $province ? $province[$i]->code : null
+                    'province_name' => isset($province[$i]) ? $province[$i]->name : null,
+                    'province_code' => isset($province[$i]) ? $province[$i]->code : null
                 ]], is_array($product->suppliers) ? $product->suppliers : []);
             }
 

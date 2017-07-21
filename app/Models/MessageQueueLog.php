@@ -8,7 +8,7 @@ class MessageQueueLog extends Model
 {
     protected $table = 'message_queue_logs';
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = ['exchange', 'routingKey', 'body', 'created_at', 'updated_at'];
 }

@@ -14,7 +14,7 @@ class AddColumnSubTypeSupplierTable extends Migration
     public function up()
     {
         Schema::table('suppliers', function (Blueprint $table) {
-            $table->tinyInteger('sub_type')->nullable();
+            $table->tinyInteger('sup_type')->nullable();
         });
     }
 

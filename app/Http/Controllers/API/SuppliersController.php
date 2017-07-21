@@ -39,7 +39,7 @@ class SuppliersController extends Controller
 
         $productIds = \request('product_ids');
 
-        $suppliers = Supplier::select('suppliers.id','suppliers.name','product_supplier.import_price','product_supplier.product_id')
+        $suppliers = Supplier::select('suppliers.id','suppliers.name','suppliers.sup_type','product_supplier.import_price','product_supplier.product_id')
                         ->join('product_supplier', function ($q) use ($productIds) {
                             $q->on('product_supplier.supplier_id', '=', 'suppliers.id')
                                 ->whereIn('product_supplier.product_id', $productIds);

@@ -70,10 +70,10 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Loại nhà cung cấp</label>
     <div class="col-sm-6">
-        <select name="sub_type" class="form-control">
+        <select name="sup_type" class="form-control">
             <option value="">--Chọn Loại Nhà cung cấp--</option>
-            <option value="0" {{ 0 === $supplier->sub_type ? ' selected=selected' : '' }}>Hàng mua</option>
-            <option value="1" {{ 1 === $supplier->sub_type ? ' selected=selected' : '' }}>Ký gửi</option>
+            <option value="0" {{ 0 === $supplier->sup_type ? ' selected=selected' : '' }}>Hàng mua</option>
+            <option value="1" {{ 1 === $supplier->sup_type ? ' selected=selected' : '' }}>Ký gửi</option>
         </select>
     </div>
 </div>

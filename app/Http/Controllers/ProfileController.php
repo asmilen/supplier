@@ -41,8 +41,11 @@ class ProfileController extends Controller
             'current_password' => 'required|passcheck',
             'password' => 'required|confirmed|min:6',
         ], [
-            'current_password.required' => "Vui lòng nhập Current Password.",
-            'password.required' => "Vui lòng nhập New Password.",
+            'current_password.required' => "Vui lòng nhập mật khẩu hiện tại.",
+            'password.required' => "Vui lòng nhập Mật khẩu mới.",
+            'current_password.passcheck' => "Mật khẩu hiện tại không chính xác.",
+            'password.min' => "Mật khẩu mới phải có ít nhất 6 kí tụ.",
+            'password.confirmed' => "Mật khẩu mới 'Confirm' chưa chính xác.",
         ]);
 
         Sentinel::update(Sentinel::getUser(), request()->only('password'));

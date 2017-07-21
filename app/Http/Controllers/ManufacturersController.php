@@ -43,7 +43,12 @@ class ManufacturersController extends Controller
             'code' => 'alpha_num|min:3|max:6|unique:manufacturers',
         ], [
             'name.unique' => 'Tên nhà sản xuất đã tồn tại.',
+            'name.required' => 'Vui lòng nhập tên nhà sản xuất.',
+            'name.max' => 'Tên nhà sản xuất quá dài, tối đa 255 kí tự.',
             'code.unique' => 'Mã nhà sản xuất đã tồn tại.',
+            'code.min' => 'Mã nhà sản xuất phải có ít nhất 3 kí tự.',
+            'code.max' => 'Mã nhà sản xuất có tối đa 6 kí tự.',
+            'code.alpha_num' => 'Mã nhà sản xuất không được chứa kí tự đặc biệt.',
         ]);
 
         $manufacturer = Manufacturer::forceCreate([

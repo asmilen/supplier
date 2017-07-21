@@ -56,6 +56,13 @@ class UsersController extends Controller
             'level' => 'required',
             'areas' => 'required|array',
             'areas.*' => 'required',
+        ], [
+            'name.required' => 'Vui lòng nhập tên.',
+            'name.max' => 'Tên quá dài, tối đa 255 kí tự.',
+            'email.required' => 'Vui lòng nhập email.',
+            'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
         ]);
 
         $user = Sentinel::register(
@@ -107,6 +114,12 @@ class UsersController extends Controller
             'level' => 'required',
             'areas' => 'required|array',
             'areas.*' => 'required',
+        ], [
+            'name.required' => 'Vui lòng nhập tên.',
+            'name.max' => 'Tên quá dài, tối đa 255 kí tự.',
+            'email.required' => 'Vui lòng nhập email.',
+            'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
         ]);
 
         $user->update(request()->all())

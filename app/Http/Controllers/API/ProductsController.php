@@ -182,8 +182,11 @@ class ProductsController extends Controller
                 ->first();
             $minPrice = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
+                ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
+                ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
                 ->where('product_supplier.state', '=', 1)
-                ->orderBy('import_price')
+                ->orderBy('product_supplier.import_price')
+                ->orderBy('transport_fees.percent_fee')
                 ->first();
 
             $provinceFeeMin = SupplierSupportedProvince::with('transportFee')

@@ -17,7 +17,7 @@ class ProfileController extends Controller
             'name' => 'required|unique:name|max:255',
             'email' => 'required|email|max:255|unique:users,email,'.Sentinel::getUser()->id,
         ], [
-            'name.required' => "Vui lòng nhập Name.",
+            'name.required' => "Vui lòng nhập tên.",
             'email.required' => "Vui lòng nhập Email.",
             'name.max:255' => "Tên của bạn quá dài, tối đa 255 kí tự.",
             'name.unique' => "Tên của bạn đã tồn tại.",
@@ -45,7 +45,7 @@ class ProfileController extends Controller
             'password.required' => "Vui lòng nhập Mật khẩu mới.",
             'current_password.passcheck' => "Mật khẩu hiện tại không chính xác.",
             'password.min' => "Mật khẩu mới phải có ít nhất 6 kí tụ.",
-            'password.confirmed' => "Mật khẩu mới 'Confirm' chưa chính xác.",
+            'password.confirmed' => "Xác nhận mật khẩu mới chưa chính xác.",
         ]);
 
         Sentinel::update(Sentinel::getUser(), request()->only('password'));

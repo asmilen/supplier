@@ -63,6 +63,7 @@ class UsersController extends Controller
             'email.max' => 'Email quá dài, tối đa 255 kí tự.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
             'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
+            'areas.required' => 'Bạn chưa chọn thông tin quản lí.',
         ]);
 
         $user = Sentinel::register(

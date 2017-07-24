@@ -37,5 +37,12 @@ return [
     'manager_levels' => [
         1 => 'Khu vực (Miền)',
         2 => 'Tỉnh',
-    ]
+    ],
+
+    'supplier' => [
+        'sup_type' => [
+            0 => 'Hàng mua',
+            1 => 'Ký gửi',
+        ],
+    ],
 ];

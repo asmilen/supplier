@@ -416,7 +416,7 @@ class SuppliersController extends Controller
             'tax_number' => 'required',
             'province_id' => 'required',
             'type' => 'required',
-
+            'sup_type' => 'required',
         ]);
 
         $supplier = Supplier::forceCreate([
@@ -429,6 +429,7 @@ class SuppliersController extends Controller
             'website' => request('website'),
             'tax_number' => request('tax_number'),
             'type' => request('type'),
+            'sup_type' => request('sup_type'),
             'created_by' => Sentinel::getUser()->id
         ]);
 

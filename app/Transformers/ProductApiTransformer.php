@@ -45,7 +45,7 @@ class ProductApiTransformer extends TransformerAbstract
         $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id');
         $margin = MarginRegionCategory::where('category_id', $product->category_id)
             ->whereIn('region_id', $regions)->first();
-        
+
         $minPrice = ProductSupplier::where('product_id', $data['id'])
             ->whereIn('product_supplier.supplier_id', $supplierIds)
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
@@ -61,11 +61,12 @@ class ProductApiTransformer extends TransformerAbstract
             ->orderBy('transport_fees.percent_fee')
             ->first();
         $ship_province = $province->toArray();
-        if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province )){
+        if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province)) {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
-        }else{
+        } else {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
         }
+        $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
         $product->best_price = ProductSupplier::where('product_id', $data['id'])
             ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -75,7 +76,7 @@ class ProductApiTransformer extends TransformerAbstract
         $product->import_price = ProductSupplier::where('product_id', $data['id'])
             ->whereIn('product_supplier.supplier_id', $supplierIds)
             ->where('product_supplier.state', '=', 1)
-            ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000'));
+            ->min(DB::raw('ceil(product_supplier.import_price * (' . $productFee . '-' . $w_margin . ')/1000) * 1000'));
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $data['id'])
             ->whereIn('product_supplier.supplier_id', $supplierIds)

@@ -39,6 +39,13 @@ return [
         2 => 'Tỉnh',
     ],
 
+    'manager_emails' => [
+        1 => [
+            'email' => 'nam.vh@teko.vn',
+            'name'  => 'Nam Vũ',
+        ],
+    ],
+
     'supplier' => [
         'sup_type' => [
             0 => 'Hàng mua',

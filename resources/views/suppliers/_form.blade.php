@@ -51,8 +51,16 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Tax Number</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="tax_number" placeholder="Tax Number ..."
+        <input type="number" class="form-control" name="tax_number" placeholder="Tax Number ..."
                value="{{ old('tax_number', $supplier->tax_number) }}">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Thời gian hiệu lực giá</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" name="price_active_time" placeholder="Đơn vị: ngày"
+               value="{{ old('price_active_time', ($supplier->price_active_time/24)) }}">
     </div>
 </div>
 

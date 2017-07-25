@@ -25,7 +25,7 @@ class Supplier extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id','name','code','tax_number','status','type'
+            'id','name','code','tax_number','status','type','price_active_time'
         ])->with('addresses','suppliers_supported_provinces');
 
         return Datatables::eloquent($model)
@@ -59,6 +59,9 @@ class Supplier extends Model
                 $string .= ' - ';
                 $string .= $model->addresses()->first() ? $model->addresses()->first()->contact_phone : '';
                 return $string;
+            })
+            ->editColumn('price_active_time', function ($model) {
+                return ($model->price_active_time/24) . ' ngày' ;
             })
             ->editColumn('status', 'products.datatables.status')
             ->addColumn('action', 'suppliers.datatables.action')

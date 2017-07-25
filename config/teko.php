@@ -37,5 +37,12 @@ return [
     'manager_levels' => [
         1 => 'Khu vực (Miền)',
         2 => 'Tỉnh',
+    ],
+
+    'manager_emails' => [
+        1 => [
+            'email' => 'nam.vh@teko.vn',
+            'name'  => 'Nam Vũ',
+        ],
     ]
 ];

@@ -76,6 +76,7 @@
                         <th>Mã số thuế</th>
                         <th>Trạng thái</th>
                         <th>Thông tin về người đại diện của NCC</th>
+                        <th>Thời gian hiệu lực giá nhập</th>
                         <th></th>
                     </tr>
                     </thead>
@@ -114,6 +115,7 @@
                     {data: 'tax_number', name: 'tax_number'},
                     {data: 'status', name: 'status'},
                     {data: 'info_person', name: 'info_person'},
+                    {data: 'price_active_time', name: 'price_active_time'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}
                 ]
             });

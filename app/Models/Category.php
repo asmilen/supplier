@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use Datatables;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends Model
+class Category extends BaseModel
 {
     use SoftDeletes;
 
@@ -16,6 +15,11 @@ class Category extends Model
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    public static function boot()
+    {
+        parent::boot();
+    }
 
     public function products()
     {

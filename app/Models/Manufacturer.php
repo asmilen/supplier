@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use Datatables;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Manufacturer extends Model
+class Manufacturer extends BaseModel
 {
     use SoftDeletes;
 

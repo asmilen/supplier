@@ -44,5 +44,12 @@ return [
             'email' => 'nam.vh@teko.vn',
             'name'  => 'Nam Vũ',
         ],
-    ]
+    ],
+
+    'supplier' => [
+        'sup_type' => [
+            0 => 'Hàng mua',
+            1 => 'Ký gửi',
+        ],
+    ],
 ];

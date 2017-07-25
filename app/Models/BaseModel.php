@@ -15,16 +15,20 @@ class BaseModel extends Model
         {
             $user = Sentinel::getUser() ?: auth()->user();
 
-            $model->created_by = $user->id;
+            if ($user) {
+                $model->created_by = $user->id;
 
-            $model->updated_by = $user->id;
+                $model->updated_by = $user->id;
+            }
         });
 
         static::updating(function ($model)
         {
             $user = Sentinel::getUser() ?: auth()->user();
 
-            $model->updated_by = $user->id;
+            if ($user) {
+                $model->updated_by = $user->id;
+            }
         });
     }
 }

@@ -26,6 +26,27 @@ class Product extends BaseModel
         'status' => 'boolean',
     ];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($model)
+        {
+            dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+                'id' => $model->id,
+                'categoryId' => $model->category_id,
+                'brandId' => $model->manufacturer_id,
+                'type' => $model->type,
+                'sku' => $model->sku,
+                'name' => $model->name,
+                'skuIdentifier' => $model->code,
+                'status' => $model->status ? 'active' : 'inactive',
+                'sourceUrl' => $model->source_url,
+                'createdAt' => strtotime($model->created_at),
+            ])));
+        });
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

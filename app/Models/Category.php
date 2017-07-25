@@ -16,11 +16,6 @@ class Category extends BaseModel
      */
     protected $dates = ['deleted_at'];
 
-    public static function boot()
-    {
-        parent::boot();
-    }
-
     public function products()
     {
         return $this->hasMany(Product::class);

@@ -375,4 +375,21 @@ class ProductsController extends Controller
             }
         }
     }
+
+    public function getProductQuotation(){
+        $query = 'select p.id,p.sku,p.name,c.name as cname,m.name as mname,ps.supplier_name,ps.import_price,"" as location,ps.updated_at from products as p
+                    left join categories as c on p.category_id = c.id
+                    left join manufacturers as m on p.manufacturer_id = m.id
+                    inner join (select ps.*,s.name as supplier_name from product_supplier as ps
+                    left join suppliers as s on ps.supplier_id = s.id
+                    where ps.state = 1
+                    ) as ps on p.id = ps.product_id
+                    where p.status = 1
+                    order by ps.supplier_name asc
+                    limit :limit offset :offset' ;
+
+        $products = DB::select($query,['limit' => request('limit'),'offset' => request('offset')]);
+
+        return $products;
+    }
 }

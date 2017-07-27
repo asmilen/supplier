@@ -10,6 +10,7 @@ Route::get('productConfigurables', 'ProductConfigurablesController@index');
 Route::get('products', 'ProductsController@index');
 Route::get('products/getConfigurableList', 'ProductsController@getConfigurableList');
 Route::get('products/min-import-price-list', 'ProductsController@getMinImportPriceList');
+Route::get('products/get-quotation','ProductsController@getProductQuotation');
 Route::get('products/{product}', 'ProductsController@show');
 Route::get('products/{id}/detail', 'ProductsController@detail');
 Route::get('listProductSku', 'ProductsController@getListProductSku');
@@ -26,6 +27,8 @@ Route::put('provinces/{province}/transport-fee', 'ProvinceTransportFeeController
 Route::post('products/create-from-google-sheet', 'ProductsController@createFromGoogleSheet');
 Route::get('suppliers', 'SuppliersController@index');
 Route::post('products/imports/import-from-google-sheet', 'ProductImportsController@importFromGoogleSheet');
+
+
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('user', 'UserController@show');

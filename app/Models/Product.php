@@ -5,10 +5,9 @@ namespace App\Models;
 use DB;
 use Datatables;
 use App\Jobs\PublishMessage;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model
+class Product extends BaseModel
 {
     use SoftDeletes;
 
@@ -26,6 +25,29 @@ class Product extends Model
         'parent_id' => 'string',
         'status' => 'boolean',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($model)
+        {
+            if ($model->sku) {
+                dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+                    'id' => $model->id,
+                    'categoryId' => $model->category_id,
+                    'brandId' => $model->manufacturer_id,
+                    'type' => $model->type,
+                    'sku' => $model->sku,
+                    'name' => $model->name,
+                    'skuIdentifier' => $model->code,
+                    'status' => $model->status ? 'active' : 'inactive',
+                    'sourceUrl' => $model->source_url,
+                    'createdAt' => strtotime($model->created_at),
+                ])));
+            }
+        });
+    }
 
     public function category()
     {

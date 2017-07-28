@@ -7,7 +7,6 @@ use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
-use App\Jobs\PublishMessage;
 use Intervention\Image\Facades\Image as Image;
 
 class ProductsController extends Controller
@@ -99,21 +98,6 @@ class ProductsController extends Controller
             'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
         ])->save();
 
-        if(request('type') == 'simple') {
-            dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
-                'id' => $product->id,
-                'categoryId' => $product->category_id,
-                'brandId' => $product->manufacturer_id,
-                'type' => 'simple',
-                'sku' => $product->sku,
-                'name' => $product->name,
-                'skuIdentifier' => $product->code,
-                'status' => $product->status ? 'active' : 'inactive',
-                'sourceUrl' => $product->source_url,
-                'createdAt' => strtotime($product->created_at),
-            ])));
-        }
-
         flash()->success('Success!', 'Product successfully created.');
 
         return $product;
@@ -199,23 +183,11 @@ class ProductsController extends Controller
             $file = request('image');
             $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
             Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
-            
+
             $product->forceFill([
                 'image' => url('/') . '/storage/' .$filename,
             ])->save();
         }
-
-        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
-            'id' => $product->id,
-            'categoryId' => $product->category_id,
-            'brandId' => $product->manufacturer_id,
-            'sku' => $product->sku,
-            'name' => $product->name,
-            'skuIdentifier' => $product->code,
-            'status' => $product->status ? 'active' : 'inactive',
-            'sourceUrl' => $product->source_url,
-            'createdAt' => strtotime($product->created_at),
-        ])));
 
         flash()->success('Success!', 'Product successfully updated.');
 

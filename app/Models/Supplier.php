@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Datatables;
-use Illuminate\Database\Eloquent\Model;
 
-class Supplier extends Model
+class Supplier extends BaseModel
 {
     public function addresses()
     {

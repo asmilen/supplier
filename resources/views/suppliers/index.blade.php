@@ -499,6 +499,13 @@
                 width: '100%',
             });
 
+            $(document).on("keyup", ".my-input-class", function () {
+                $('.table-product').find("tr").addClass('product-row');
+                if (!$(this).val().includes("-")) {
+                    $(this).val($(this).val().replace(/\,/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                }
+            });
+
             $(".suppliers").select2({
                 placeholder: "-- Chọn nhà cung cấp --",
                 allowClear: true,
@@ -589,6 +596,10 @@
                 },
                 "inputTypes": [
                     {
+                        "column": 5,
+                        "type": "text"
+                    },
+                    {
                         "column": 10,
                         "type": "list",
                         "options": [
@@ -598,6 +609,9 @@
                     }
                 ]
             });
+
+            $("tbody").addClass('table-product');
+
             function myCallbackFunction(updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();
                 var id = data.id;
@@ -608,6 +622,7 @@
                 var supplier_quantity = data.supplier_quantity;
                 var recommend_price = data.recommend_price.replace(/,/g, "");
                 var status_product = data.status_product;
+
                 $.ajax({
                     url: "{!! route('suppliers.datatables-edit') !!}",
                     type: "POST",
@@ -832,7 +847,6 @@
 
             @include('scripts.click-datatable-delete-button')
         });
-
 
     </script>
 @endsection

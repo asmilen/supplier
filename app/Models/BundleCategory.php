@@ -28,14 +28,20 @@ class BundleCategory extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id', 'name','id_bundle','isRequired'
+            'bundle_category.id', 'bundle_category.name','bundle_category.id_bundle','bundle_category.isRequired'
         ])->with('bundle');
-
         return Datatables::eloquent($model)
             ->editColumn('price', function ($bundle) {
                 return number_format($bundle->price);
             })
-            ->editColumn('nameBundle', function ($model) {
+            ->filter(function ($query) {
+                $query->leftJoin('bundles','bundles.id','=','bundle_category.id_bundle');
+                if (request('search.value')) {
+                    $query->where('bundles.name', 'like', '%'.request('search.value').'%')
+                          ->orWhere('bundle_category.name', 'like', '%'.request('search.value').'%');
+                }
+            })
+            ->editColumn('bundles.name', function ($model) {
                 return $model->bundle ? $model->bundle->name : '';
             })
             ->editColumn('totalProduct', function ($model) {

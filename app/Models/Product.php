@@ -32,18 +32,20 @@ class Product extends BaseModel
 
         static::saved(function ($model)
         {
-            dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
-                'id' => $model->id,
-                'categoryId' => $model->category_id,
-                'brandId' => $model->manufacturer_id,
-                'type' => $model->type,
-                'sku' => $model->sku,
-                'name' => $model->name,
-                'skuIdentifier' => $model->code,
-                'status' => $model->status ? 'active' : 'inactive',
-                'sourceUrl' => $model->source_url,
-                'createdAt' => strtotime($model->created_at),
-            ])));
+            if ($model->sku) {
+                dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+                    'id' => $model->id,
+                    'categoryId' => $model->category_id,
+                    'brandId' => $model->manufacturer_id,
+                    'type' => $model->type,
+                    'sku' => $model->sku,
+                    'name' => $model->name,
+                    'skuIdentifier' => $model->code,
+                    'status' => $model->status ? 'active' : 'inactive',
+                    'sourceUrl' => $model->source_url,
+                    'createdAt' => strtotime($model->created_at),
+                ])));
+            }
         });
     }
 

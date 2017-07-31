@@ -48,6 +48,9 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
+                        <p class="form-control-static"><strong>@{{ ::product.old_sku }}</strong></p>
+                    </div>
+                    <div class="col-sm-6">
                         <select name="category_id" class="form-control" ng-model="productForm.category_id" ng-change="refreshData()">
                             <option value="">--Chọn Danh mục--</option>
                             <option ng-repeat="category in categories" value="@{{ category.id }}">@{{ category.name }}</option>

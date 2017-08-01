@@ -20,9 +20,9 @@ class ProductSupplierPricesController extends Controller
 
             $supplier = Supplier::where('name', request('supplier_name'))->firstOrFail();
 
-            $product = Product::findOrFail($productData['id']);
-
             foreach (request('products', []) as $productData) {
+                $product = Product::findOrFail($productData['id']);
+
                 $productSupplier = ProductSupplier::where('supplier_id', $supplier->id)
                     ->where('product_id', $product->id)
                     ->first();
@@ -36,8 +36,9 @@ class ProductSupplierPricesController extends Controller
                 }
 
                 $productSupplier->forceFill([
-                    'import_price' => request('import_price', 0),
-                    'min_quantity' => request('min_quantity', 0),
+                    'import_price' => $productData['import_price'] ?: 0,
+                    'min_quantity' => $productData['min_quantity'] ?: 0,
+                    'state' => 1,
                 ])->save();
             }
 

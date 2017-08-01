@@ -4,6 +4,7 @@ namespace App\Http\Controllers\GoogleSpreadsheet;
 
 use Sentinel;
 use App\Models\User;
+use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\ProductSupplier;
 use App\Http\Controllers\Controller;
@@ -19,13 +20,19 @@ class ProductSupplierPricesController extends Controller
 
             $supplier = Supplier::where('name', request('supplier_name'))->firstOrFail();
 
+            $product = Product::findOrFail($productData['id']);
+
             foreach (request('products', []) as $productData) {
                 $productSupplier = ProductSupplier::where('supplier_id', $supplier->id)
-                    ->where('product_id', $productData['id'])
+                    ->where('product_id', $product->id)
                     ->first();
 
                 if (! $productSupplier) {
-                    continue;
+                    $productSupplier = ProductSupplier::forceCreate([
+                        'supplier_id' => $supplier->id,
+                        'product_id' => $product->id,
+                        'name' => $product->name,
+                    ]);
                 }
 
                 $productSupplier->forceFill([

@@ -411,7 +411,7 @@
                         <th>Tên</th>
                         <th>Nhà cung cấp</th>
                         <th>Giá nhập</th>
-                        <th>Số lượng</th>
+                        <th>Số lượng tối thiểu</th>
                         {{--<th >GTGT</th>--}}
                         <th>Giá bán khuyến nghị</th>
                         {{--<th >Trạng thái </th>--}}
@@ -443,7 +443,7 @@
                         <th><input type="text" style="width: 100%" name="db_supplier_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""
                                    disabled/></th>
-                        <th><input type="text" style="width: 100%" name="db_supplier_quantity" placeholder="" disabled/>
+                        <th><input type="text" style="width: 100%" name="db_supplier_min_quantity" placeholder="" disabled/>
                         </th>
                         {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
                         <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/>
@@ -552,7 +552,7 @@
                         d.product_name = $('input[name=db_product_name]').val();
                         d.supplier_name = $('input[name=db_supplier_name]').val();
                         d.product_import_price = $('input[name=db_product_import_price]').val();
-                        d.supplier_quantity = $('input[name=db_supplier_quantity]').val();
+                        d.supplier_min_quantity = $('input[name=db_supplier_min_quantity]').val();
 //                        d.vat = $('input[name=db_product_vat]').val();
                         d.recommend_price = $('input[name=db_product_recommend_price]').val();
 //                       d.status = $('select[name=db_status]').val();
@@ -567,7 +567,7 @@
                     {data: 'product_name', name: 'product_name', "width": "20%"},
                     {data: 'supplier_name', name: 'supplier_name', "width": "10%"},
                     {data: 'import_price', name: 'import_price', "width": "10%"},
-                    {data: 'supplier_quantity', name: 'supplier_quantity', "width": "5%"},
+                    {data: 'supplier_min_quantity', name: 'supplier_min_quantity', "width": "5%"},
                     {data: 'recommend_price', name: 'recommend_price', "width": "10%"},
                     {data: 'status_product', name: 'status_product', "width": "10%"},
                     {data: 'updated_at', name: 'updated_at', "width": "5%"},
@@ -604,7 +604,7 @@
                 var id = data.id;
                 var import_price = data.import_price.replace(/,/g, "");
                 var status = data.status;
-                var supplier_quantity = data.supplier_quantity;
+                var supplier_min_quantity = data.supplier_min_quantity;
                 var recommend_price = data.recommend_price.replace(/,/g, "");
                 var status_product = data.status_product;
                 $.ajax({
@@ -614,7 +614,7 @@
                         id: id,
                         status: status,
                         import_price: import_price,
-                        supplier_quantity: supplier_quantity,
+                        supplier_min_quantity: supplier_min_quantity,
                         recommend_price: recommend_price,
                         status_product: status_product,
                     },
@@ -765,7 +765,7 @@
                         "product_name": $('input[name=db_product_name]').val(),
                         "supplier_name": $('input[name=db_supplier_name]').val(),
                         "product_import_price": $('input[name=db_product_import_price]').val(),
-                        "supplier_quantity": $('input[name=db_supplier_quantity]').val(),
+                        "supplier_min_quantity": $('input[name=db_supplier_min_quantity]').val(),
                         "recommend_price": $('input[name=db_product_recommend_price]').val(),
                         "state": $('select[name=db_state]').val(),
                         "updated_at": $('input[name=db_updated_at]').val(),

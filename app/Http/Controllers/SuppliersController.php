@@ -162,7 +162,7 @@ class SuppliersController extends Controller
             ->orderBy('product_supplier.updated_at', 'desc')
             ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
-                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
+                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.min_quantity as supplier_min_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
 
         return Datatables::of($products)
@@ -208,8 +208,8 @@ class SuppliersController extends Controller
                     $query->where('suppliers.name', 'like', '%' . request('supplier_name') . '%');
                 }
 
-                if (request()->has('supplier_quantity')) {
-                    $query->where('product_supplier.quantity', request('supplier_quantity'));
+                if (request()->has('supplier_min_quantity')) {
+                    $query->where('product_supplier.min_quantity', request('supplier_min_quantity'));
                 }
 
                 if (request()->has('state')) {
@@ -342,7 +342,7 @@ class SuppliersController extends Controller
         $status = $request->input('status');
         $status_product = $request->input('status_product');
         $import_price = $request->input('import_price');
-        $supplier_quantity = $request->input('supplier_quantity');
+        $supplier_min_quantity = $request->input('supplier_min_quantity');
         $recommend_price = $request->input('recommend_price');
 
         if ($status_product == 'Hết hàng') {
@@ -358,7 +358,7 @@ class SuppliersController extends Controller
         $product_id = $product->product_id;
         $supplier_id = $product->supplier_id;
 
-        $product->update(['state' => $status_product, 'import_price' => $import_price, 'quantity' => $supplier_quantity, 'price_recommend' => $recommend_price]);
+        $product->update(['state' => $status_product, 'import_price' => $import_price, 'quantity' => $supplier_min_quantity, 'price_recommend' => $recommend_price]);
 
         $sku = Product::where('id',$product->id)->pluck('sku');
 
@@ -714,7 +714,7 @@ class SuppliersController extends Controller
         ->orderBy('product_supplier.updated_at', 'desc')
         ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,product_supplier.supplier_id as id_supplier,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price,product_supplier.status as status,
-                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.quantity as supplier_quantity,
+                    product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.min_quantity as supplier_min_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
 
             if (request()->has('category_name')) {
@@ -749,8 +749,8 @@ class SuppliersController extends Controller
                 $products->where('suppliers.name', 'like', '%' . request('supplier_name') . '%');
             }
 
-            if (request()->has('supplier_quantity')) {
-                $products->where('product_supplier.quantity', request('supplier_quantity'));
+            if (request()->has('supplier_min_quantity')) {
+                $products->where('product_supplier.min_quantity', request('supplier_min_quantity'));
             }
 
             if (request()->has('state')) {

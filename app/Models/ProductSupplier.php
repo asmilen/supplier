@@ -4,12 +4,10 @@ namespace App\Models;
 
 use DB;
 use App\Models\SupplierProductLog;
-use Illuminate\Database\Eloquent\Model;
 use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 
-class ProductSupplier extends Model
+class ProductSupplier extends BaseModel
 {
-    //
     protected $table = 'product_supplier';
 
     protected $fillable = [

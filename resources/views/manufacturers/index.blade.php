@@ -65,11 +65,10 @@ $(function () {
         autoWidth: false,
         processing: true,
         serverSide: true,
-        pageLength: 100,
+        pageLength: 25,
         ajax: {
             url: '{!! route('manufacturers.datatables') !!}',
             data: function (d) {
-                console.log(d);
                 //
             }
         },

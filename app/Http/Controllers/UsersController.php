@@ -60,9 +60,12 @@ class UsersController extends Controller
             'name.required' => 'Vui lòng nhập tên.',
             'name.max' => 'Tên quá dài, tối đa 255 kí tự.',
             'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Vui lòng nhập đúng định dạng email.',
             'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'email.unique' => 'Email đã tồn tại.',
             'password.required' => 'Vui lòng nhập mật khẩu.',
             'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không chính xác.',
             'areas.required' => 'Bạn chưa chọn thông tin quản lí.',
         ]);
 

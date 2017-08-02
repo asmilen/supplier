@@ -60,4 +60,44 @@ class SuppliersController extends Controller
         }
         return $response;
     }
+
+    public function updatePriceValidTimeFromGoolgeSheet()
+    {
+        $results = [];
+
+        foreach (request('form_data') as $data) {
+            try {
+                $productSupplier = $this->updateSupplierFromGoogleSheetData($data);
+
+                array_push($results, [$productSupplier->updated_at->format('d/m/Y H:i:s'), 'Nhập thành công.']);
+            } catch (\Exception $e) {
+                array_push($results, [Carbon::now()->format('d/m/Y H:i:s'), 'Lỗi: '.$e->getMessage()]);
+            }
+        }
+
+        return response()->json($results);
+    }
+
+    public function updateSupplierFromGoogleSheetData($data)
+    {
+        $supplier = Supplier::findOrFail($data['supplier_id']);
+
+        switch ($data['price_valid_time'])
+        {
+            case 'monthly':
+                $priceValidTime = 30 * 24;
+            case 'weekly':
+                $priceValidTime = 7 * 24;
+            case '15days':
+                $priceValidTime = 15 * 24;
+            default:
+                $priceValidTime = 10 * 24;
+        }
+
+        $supplier->forceFill([
+            'price_valid_time' => $priceValidTime,
+        ])->save();
+
+        return $supplier;
+    }
 }

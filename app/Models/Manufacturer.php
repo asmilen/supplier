@@ -30,6 +30,8 @@ class Manufacturer extends BaseModel
                 return;
             }
 
+            $manufacturer->name = htmlspecialchars($manufacturer->name, ENT_QUOTES, 'UTF-8');
+            
             $name = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', trim($manufacturer->name))));
 
             if (($pos = strpos($name, '-')) === false) {

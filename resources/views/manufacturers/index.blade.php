@@ -69,6 +69,7 @@ $(function () {
         ajax: {
             url: '{!! route('manufacturers.datatables') !!}',
             data: function (d) {
+                console.log(d);
                 //
             }
         },

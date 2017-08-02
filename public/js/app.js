@@ -141,6 +141,7 @@ function CategoryIndexController($scope, $http) {
     $scope.refreshData();
 
     $scope.showEditMarginsModal = function (category) {
+        // console.log(category);
         $scope.marginCategoryName = category.name;
 
         $scope.marginsForm = new marginsForm();

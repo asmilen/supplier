@@ -53,8 +53,13 @@ class CategoriesController extends Controller
             'code' => 'required|alpha_num|min:3|max:3|unique:categories',
             'margin' => 'integer|between:0,100',
         ], [
+            'name.required' => 'Vui lòng nhập tên danh mục.',
+            'code.required' => 'Vui lòng nhập mã danh mục.',
             'name.unique' => 'Tên danh mục đã tồn tại.',
             'code.unique' => 'Mã danh mục đã tồn tại.',
+            'code.alpha_num' => 'Mã danh mục không được chứa kí tự đặc biệt.',
+            'code.min' => 'Mã danh mục xuất phải có 3 kí tự.',
+            'code.max' => 'Mã danh mục xuất phải có 3 kí tự.',
             'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
         ]);
 
@@ -117,8 +122,11 @@ class CategoriesController extends Controller
             'name' => 'required|max:255|unique:categories,name,'.$category->id,
             'margin' => 'integer|between:0,100',
         ], [
+            'name.required' => 'Vui lòng nhập tên danh mục.',
+            'name.max' => 'Tên danh mục quá dài, tối đa 255 kí tự.',
             'name.unique' => 'Tên danh mục đã tồn tại.',
             'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
+            'margin.integer' => 'Biên độ lợi nhuận phải là một số',
         ]);
 
         $category->forceFill([

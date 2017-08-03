@@ -14,13 +14,13 @@ class ProfileController extends Controller
     public function update()
     {
         $this->validate(request(), [
-            'name' => 'required|unique:name|max:255',
+            'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users,email,'.Sentinel::getUser()->id,
         ], [
             'name.required' => "Vui lòng nhập tên.",
             'email.required' => "Vui lòng nhập Email.",
             'name.max:255' => "Tên của bạn quá dài, tối đa 255 kí tự.",
-            'name.unique' => "Tên của bạn đã tồn tại.",
+            'email.unique' => "Email của bạn đã tồn tại.",
         ]);
 
         Sentinel::update(Sentinel::getUser(), request()->all());

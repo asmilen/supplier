@@ -93,6 +93,7 @@ class ColorsController extends Controller
         ], [
             'name.required' => 'Hãy nhập tên màu sắc.',
             'name.unique' => 'Tên màu sắc đã tồn tại.',
+            'name.max' => 'Tên màu sắc quá dài, tối đa 255 ký tự.',
         ]);
 
         $color->forceFill([

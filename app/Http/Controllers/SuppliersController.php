@@ -439,9 +439,9 @@ class SuppliersController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'address' => 'required',
+            'address' => 'required|max:255',
             'name' => 'required|max:255',
-            'phone' => 'required',
+            'phone' => 'required|integer',
             'fax' => 'required',
             'tax_number' => 'required',
             'province_id' => 'required',
@@ -452,8 +452,11 @@ class SuppliersController extends Controller
         ], [
             'name.required' => "Vui lòng nhập tên.",
             'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
+            'address.max' => "Địa chỉ nhà cung cấp quá dài, tối đa 255 kí tự.",
             'address.required' => "Vui lòng nhập địa chỉ.",
             'phone.required' => "Vui lòng nhập số điện thoại.",
+            'phone.integer' => "Số điện thoại không được chứa kĩ tự và kí tự đặc biệt.",
+            'fax.required' => "Vui lòng nhập số fax.",
             'tax_number.required' => "Vui lòng nhập số tax.",
             'province_id.required' => "Vui lòng nhập tỉnh thành.",
             'type.required' => "Vui lòng nhập loại hóa đơn.",

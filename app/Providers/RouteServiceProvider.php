@@ -39,7 +39,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
-        //
+        $this->mapGoogleSpreadsheetRoutes();
     }
 
     /**
@@ -69,5 +69,12 @@ class RouteServiceProvider extends ServiceProvider
              ->middleware('api')
              ->namespace($this->namespace.'\API')
              ->group(base_path('routes/api.php'));
+    }
+
+    protected function mapGoogleSpreadsheetRoutes()
+    {
+        Route::prefix('google-spreadsheet')
+             ->namespace($this->namespace.'\GoogleSpreadsheet')
+             ->group(base_path('routes/google-spreadsheet.php'));
     }
 }

@@ -424,7 +424,7 @@
                         <th>Giá nhập</th>
                         <th>Hiệu lực từ</th>
                         <th>Hiệu lực đến</th>
-                        <th>Số lượng</th>
+                        <th>Số lượng tối thiểu</th>
                         <th>Giá bán khuyến nghị</th>
                         <th>Tình trạng</th>
                         <th>Ngày cập nhật</th>
@@ -455,8 +455,18 @@
                         <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder="" disabled/></th>
                         <th><input type="text" style="width: 100%" name="" placeholder="" disabled/></th>
                         <th><input class="form-control input-daterange-datepicker" type="text" style="width: 100%" name="db_to_date" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_supplier_quantity" placeholder="" disabled/></th>
+                        <th><input type="text" style="width: 100%" name="db_supplier_min_quantity" placeholder="" disabled/></th>
                         <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
+                        {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
+                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
+                        {{--<th><select name="db_status" style="width: 100%">--}}
+                        {{--<option value=""></option>--}}
+                        {{--<option value="0">Chờ duyệt</option>--}}
+                        {{--<option value="1">Hết hàng</option>--}}
+                        {{--<option value="2">Ưu tiên lấy hàng</option>--}}
+                        {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
+                        {{--<option value="4">Không ưu tiên lấy hàng</option>--}}
+                        {{--</select></th>--}}
                         <th><select name="db_state" style="width: 100%">
                                 <option value=""></option>
                                 <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
@@ -557,7 +567,8 @@
                         d.product_name = $('input[name=db_product_name]').val();
                         d.supplier_name = $('input[name=db_supplier_name]').val();
                         d.product_import_price = $('input[name=db_product_import_price]').val();
-                        d.supplier_quantity = $('input[name=db_supplier_quantity]').val();
+                        d.supplier_min_quantity = $('input[name=db_supplier_min_quantity]').val();
+//                        d.vat = $('input[name=db_product_vat]').val();
                         d.recommend_price = $('input[name=db_product_recommend_price]').val();
                         d.state = $('select[name=db_state]').val();
                         d.updated_at = $('input[name=db_updated_at]').val();
@@ -573,7 +584,7 @@
                     {data: 'import_price', name: 'import_price', "width": "10%"},
                     {data: 'from_date', name: 'from_date', "width": "10%"},
                     {data: 'to_date', name: 'to_date', "width": "10%"},
-                    {data: 'supplier_quantity', name: 'supplier_quantity', "width": "5%"},
+                    {data: 'supplier_min_quantity', name: 'supplier_min_quantity', "width": "5%"},
                     {data: 'recommend_price', name: 'recommend_price', "width": "10%"},
                     {data: 'status_product', name: 'status_product', "width": "10%"},
                     {data: 'updated_at', name: 'updated_at', "width": "5%"},
@@ -619,7 +630,7 @@
                 var from_date = data.from_date;
                 var to_date = data.to_date;
                 var status = data.status;
-                var supplier_quantity = data.supplier_quantity;
+                var supplier_min_quantity = data.supplier_min_quantity;
                 var recommend_price = data.recommend_price.replace(/,/g, "");
                 var status_product = data.status_product;
 
@@ -632,7 +643,7 @@
                         import_price: import_price,
                         from_date: from_date,
                         to_date: to_date,
-                        supplier_quantity: supplier_quantity,
+                        supplier_min_quantity: supplier_min_quantity,
                         recommend_price: recommend_price,
                         status_product: status_product,
                     },
@@ -829,7 +840,7 @@
                         "product_name": $('input[name=db_product_name]').val(),
                         "supplier_name": $('input[name=db_supplier_name]').val(),
                         "product_import_price": $('input[name=db_product_import_price]').val(),
-                        "supplier_quantity": $('input[name=db_supplier_quantity]').val(),
+                        "supplier_min_quantity": $('input[name=db_supplier_min_quantity]').val(),
                         "recommend_price": $('input[name=db_product_recommend_price]').val(),
                         "state": $('select[name=db_state]').val(),
                         "updated_at": $('input[name=db_updated_at]').val(),

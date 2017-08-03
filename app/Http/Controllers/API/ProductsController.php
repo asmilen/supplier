@@ -111,6 +111,7 @@ class ProductsController extends Controller
          * @var array $supplierIds
          */
         $model = Product::select(['products.id', 'products.name', 'products.sku', 'products.category_id'])
+            ->active()
             ->with('category');
 
         return Datatables::eloquent($model)
@@ -390,6 +391,17 @@ class ProductsController extends Controller
                     limit :limit offset :offset' ;
 
         $products = DB::select($query,['limit' => request('limit'),'offset' => request('offset')]);
+
+        return $products;
+    }
+
+    public function getProductWithCategoryManufacturer(){
+
+        $products = Product::active()
+            ->with('category')
+            ->with('manufacturer')
+            ->skip(request('offset'))->take(request('limit'))
+            ->get();
 
         return $products;
     }

@@ -393,4 +393,15 @@ class ProductsController extends Controller
 
         return $products;
     }
+
+    public function getProductWithCategoryManufacturer(){
+
+        $products = Product::active()
+            ->with('category')
+            ->with('manufacturer')
+            ->skip(request('offset'))->take(request('limit'))
+            ->get();
+
+        return $products;
+    }
 }

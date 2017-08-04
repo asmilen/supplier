@@ -75,6 +75,7 @@
                         <th>Địa bàn cung cấp</th>
                         <th>Mã số thuế</th>
                         <th>Trạng thái</th>
+                        <th>Loại nhà cung cấp</th>
                         <th>Thông tin về người đại diện của NCC</th>
                         <th>Thời gian hiệu lực giá nhập</th>
                         <th></th>
@@ -114,6 +115,7 @@
                     {data: 'province', name: 'province', orderable: false},
                     {data: 'tax_number', name: 'tax_number'},
                     {data: 'status', name: 'status'},
+                    {data: 'sup_type', name: 'sup_type'},
                     {data: 'info_person', name: 'info_person', orderable: false},
                     {data: 'price_active_time', name: 'price_active_time'},
                     {data: 'action', name: 'action', orderable: false, searchable: false}

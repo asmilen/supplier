@@ -34,23 +34,24 @@ function ProductSupplierController($scope, $http, $window) {
                 $scope.categories = response.data;
             });
     };
+
     $scope.getManufacturers = function () {
         $http.get('/api/manufacturers')
             .then(function (response) {
                 $scope.manufacturers = response.data;
             });
     };
+
     $scope.refreshData = function () {
-        categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
-
-        $http.get('/api/categories/' + categoryId + '/attributes')
-            .then(function (response) {
-                $scope.attributes = response.data;
-
-                _.each($scope.attributes, function (attribute) {
-                    $scope.productForm.attributes[attribute.slug] = '';
+        if (categoryId = $scope.productForm.category_id) {
+            $http.get('/api/categories/' + categoryId + '/attributes')
+                .then(function (response) {
+                    $scope.attributes = response.data;
+                    _.each($scope.attributes, function (attribute) {
+                        $scope.productForm.attributes[attribute.slug] = '';
+                    });
                 });
-            });
+        }
     };
 
     $scope.getCategories();

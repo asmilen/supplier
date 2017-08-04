@@ -453,12 +453,11 @@
                         <th><input type="text" style="width: 100%" name="db_product_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_supplier_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder="" disabled/></th>
-                        <th><input type="text" style="width: 100%" name="" placeholder="" disabled/></th>
+                        <th><input type="text" style="width: 100%" name="db_from_date" placeholder="" disabled/></th>
                         <th><input class="form-control input-daterange-datepicker" type="text" style="width: 100%" name="db_to_date" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_supplier_min_quantity" placeholder="" disabled/></th>
                         <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
                         {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
-                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
                         {{--<th><select name="db_status" style="width: 100%">--}}
                         {{--<option value=""></option>--}}
                         {{--<option value="0">Chờ duyệt</option>--}}
@@ -611,6 +610,14 @@
                         "type": "text"
                     },
                     {
+                        "column": 8,
+                        "type": "text"
+                    },
+                    {
+                        "column": 9,
+                        "type": "text"
+                    },
+                    {
                         "column": 10,
                         "type": "list",
                         "options": [
@@ -633,7 +640,6 @@
                 var supplier_min_quantity = data.supplier_min_quantity;
                 var recommend_price = data.recommend_price.replace(/,/g, "");
                 var status_product = data.status_product;
-
                 $.ajax({
                     url: "{!! route('suppliers.datatables-edit') !!}",
                     type: "POST",

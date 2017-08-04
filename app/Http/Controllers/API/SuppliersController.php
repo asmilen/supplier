@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use App\Models\Province;
 use App\Models\SupplierSupportedProvince;
@@ -64,38 +66,38 @@ class SuppliersController extends Controller
     public function updatePriceValidTimeFromGoolgeSheet()
     {
         $results = [];
-
         foreach (request('form_data') as $data) {
             try {
                 $productSupplier = $this->updateSupplierFromGoogleSheetData($data);
 
-                array_push($results, [$productSupplier->updated_at->format('d/m/Y H:i:s'), 'Nhập thành công.']);
+                array_push($results, ['Nhập thành công.']);
             } catch (\Exception $e) {
                 array_push($results, [Carbon::now()->format('d/m/Y H:i:s'), 'Lỗi: '.$e->getMessage()]);
             }
         }
-
         return response()->json($results);
     }
 
     public function updateSupplierFromGoogleSheetData($data)
     {
         $supplier = Supplier::findOrFail($data['supplier_id']);
-
         switch ($data['price_valid_time'])
         {
             case 'monthly':
                 $priceValidTime = 30 * 24;
+                break;
             case 'weekly':
                 $priceValidTime = 7 * 24;
-            case '15days':
-                $priceValidTime = 15 * 24;
+                break;
+            case 'daily':
+                $priceValidTime = 1 * 24;
+                break;
             default:
                 $priceValidTime = 10 * 24;
         }
 
         $supplier->forceFill([
-            'price_valid_time' => $priceValidTime,
+            'price_active_time' => $priceValidTime,
         ])->save();
 
         return $supplier;

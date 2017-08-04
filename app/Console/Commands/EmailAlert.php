@@ -43,7 +43,8 @@ class EmailAlert extends Command
     {
         //
         $expired_time = Carbon::now()->addDay();
-        $productSuppliers = ProductSupplier::where('to_date','<=',$expired_time)->pluck('name');
+        $productSuppliers = ProductSupplier::where('to_date','<=',$expired_time)
+            ->get();
 
         if ($productSuppliers)
         {

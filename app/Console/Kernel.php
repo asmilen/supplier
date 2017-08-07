@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
         Commands\InitProductsFromCsv::class,
         Commands\ConsumeMessage::class,
         Commands\ImportProducts::class,
+        Commands\MigrateValidTimeProductSupplier::class,
+        Commands\EmailAlert::class,
         SendQueue::class,
     ];
 
@@ -34,6 +36,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('queue:send')
             ->dailyAt('02:00')
             ->sendOutputTo('queue-send_.log', true);
+
+        $schedule->command('email:alert')
+            ->dailyAt('01:30')
+            ->sendOutputTo('email-alert.log', true);
     }
 
     /**

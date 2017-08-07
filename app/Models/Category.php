@@ -45,8 +45,9 @@ class Category extends Model
 
         return Datatables::eloquent($model)
             ->editColumn('status', 'categories.datatables.status')
+            ->addColumn('margin', 'categories.datatables.margin')
             ->addColumn('action', 'categories.datatables.action')
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['status','margin', 'action'])
             ->make(true);
     }
 

@@ -28,6 +28,7 @@ Route::put('provinces/{province}/transport-fee', 'ProvinceTransportFeeController
 Route::post('products/create-from-google-sheet', 'ProductsController@createFromGoogleSheet');
 Route::get('suppliers', 'SuppliersController@index');
 Route::post('products/imports/import-from-google-sheet', 'ProductImportsController@importFromGoogleSheet');
+Route::post('suppliers/update-price-valid-time-google-sheet','SuppliersController@updatePriceValidTimeFromGoolgeSheet');
 
 
 

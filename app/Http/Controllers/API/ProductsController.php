@@ -202,6 +202,7 @@ class ProductsController extends Controller
                 } else {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
                 }
+            $w_margin = ($margin ? $margin->margin : 5) * 0.01 ;
 
             $product->best_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -210,7 +211,7 @@ class ProductsController extends Controller
             $product->import_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                 ->where('product_supplier.state', '=', 1)
-                ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000'));
+                ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
 
             $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -236,12 +237,12 @@ class ProductsController extends Controller
                 $product->import_price = ProductSupplier::where('product_id', $id)
                     ->whereIn('product_supplier.supplier_id', $suppliers)
                     ->where('product_supplier.state', '=', 1)
-                    ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000'));
+                    ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
 
                 $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
                     ->whereIn('product_supplier.supplier_id', $suppliers)
                     ->where('product_supplier.state', '=', 1)
-                    ->min(DB::raw('ceil(' . $product->import_price . '* ' . $productMargin . '/1000) * 1000'));
+                    ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
             } else {
                 $supplier = Supplier::where('id', $provinceFeeMin ? $provinceFeeMin->supplier_id : 0)
                     ->get();

@@ -66,6 +66,8 @@ class SuppliersController extends Controller
             'status' => 'required',
             'state' => 'required',
             'import_price' => 'required|integer|min:0',
+            'from_date' => 'required',
+            'to_date'  => 'required',
 //            'vat' => 'required|integer|min:0',
 //            'price_recommend' => 'required|integer|min:0',
 //            'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
@@ -80,6 +82,8 @@ class SuppliersController extends Controller
             'import_price.required' => 'Hãy nhập giá nhập',
             'import_price.integer' => 'Hãy nhập đúng định dạng',
             'import_price.min' => 'Hãy nhập đúng định dạng',
+            'from_date.required' => 'Hãy nhập Ngày bắt đầu hiệu lực giá',
+            'to_date.required' => 'Hãy nhập Ngày kết thúc hiệu lực giá',
 //            'vat.required' => 'Hãy nhập VAT',
 //            'vat.integer' => 'Hãy nhập đúng định dạng',
 //            'vat.min' => 'Hãy nhập đúng định dạng',
@@ -118,6 +122,8 @@ class SuppliersController extends Controller
                     'product_id' => $request->input('product_id'),
                     'supplier_id' => $request->input('supplier_id'),
                     'import_price' => $request->input('import_price'),
+                    'from_date' => Carbon::createFromFormat('d/m/Y', $request->input('from_date'))->startOfDay(),
+                    'to_date' => Carbon::createFromFormat('d/m/Y', $request->input('to_date'))->endOfDay(),
                     'vat' => $request->input('vat') ? $request->input('vat') : 0,
                     'price_recommend' => $request->input('price_recommend') ? $request->input('price_recommend') : 0,
                     'image' => $filename,
@@ -163,7 +169,8 @@ class SuppliersController extends Controller
             ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price, product_supplier.vat,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.min_quantity as supplier_min_quantity,
-                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
+                    product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name,product_supplier.from_date as
+                    from_date,product_supplier.to_date as to_date'));
 
         return Datatables::of($products)
             ->filter(function ($query) {
@@ -227,6 +234,19 @@ class SuppliersController extends Controller
 
                     $query->where('product_supplier.updated_at', '>', $from);
                     $query->where('product_supplier.updated_at', '<', $to);
+                }
+
+                if (request()->has('to_date')) {
+                    $date = request('to_date');
+
+                    $from = trim(explode(' - ', $date)[0]);
+                    $from = Carbon::createFromFormat('d/m/Y', $from)->startOfDay()->toDateTimeString();
+
+                    $to = trim(explode('-', $date)[1]);
+                    $to = Carbon::createFromFormat('d/m/Y', $to)->endOfDay()->toDateTimeString();
+
+                    $query->where('product_supplier.to_date', '>', $from);
+                    $query->where('product_supplier.to_date', '<', $to);
                 }
             })
             ->editColumn('import_price', function ($product) {
@@ -342,6 +362,8 @@ class SuppliersController extends Controller
         $status = $request->input('status');
         $status_product = $request->input('status_product');
         $import_price = $request->input('import_price');
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
         $supplier_min_quantity = $request->input('supplier_min_quantity');
         $recommend_price = $request->input('recommend_price');
 
@@ -358,9 +380,16 @@ class SuppliersController extends Controller
         $product_id = $product->product_id;
         $supplier_id = $product->supplier_id;
 
-        $product->update(['state' => $status_product, 'import_price' => $import_price, 'quantity' => $supplier_min_quantity, 'price_recommend' => $recommend_price]);
+        $product->update([
+            'state' => $status_product,
+            'import_price' => $import_price,
+            'from_date' => $from_date,
+            'to_date' => $to_date,
+            'quantity' => $supplier_min_quantity,
+            'price_recommend' => $recommend_price,
+        ]);
 
-        $sku = Product::where('id',$product->id)->pluck('sku');
+        $sku = Product::where('id',$product->product_id)->pluck('sku');
 
         $jsonSend = [
             'product_id' => $product_id,
@@ -410,13 +439,32 @@ class SuppliersController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'address' => 'required',
+            'address' => 'required|max:255',
             'name' => 'required|max:255',
-            'phone' => 'required',
+            'phone' => 'required|integer',
+            'fax' => 'required',
             'tax_number' => 'required',
             'province_id' => 'required',
             'type' => 'required',
+            'price_active_time' => 'required|numeric',
             'sup_type' => 'required',
+            'email' => 'required|email|max:255|unique:users',
+        ], [
+            'name.required' => "Vui lòng nhập tên.",
+            'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
+            'address.max' => "Địa chỉ nhà cung cấp quá dài, tối đa 255 kí tự.",
+            'address.required' => "Vui lòng nhập địa chỉ.",
+            'phone.required' => "Vui lòng nhập số điện thoại.",
+            'phone.integer' => "Số điện thoại không được chứa kĩ tự và kí tự đặc biệt.",
+            'fax.required' => "Vui lòng nhập số fax.",
+            'tax_number.required' => "Vui lòng nhập số tax.",
+            'province_id.required' => "Vui lòng nhập tỉnh thành.",
+            'type.required' => "Vui lòng nhập loại hóa đơn.",
+            'sup_type.required' => "Vui lòng nhập loại nhà cung cấp.",
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Vui lòng nhập đúng định dạng email.',
+            'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'email.unique' => 'Email đã tồn tại.',
         ]);
 
         $supplier = Supplier::forceCreate([
@@ -428,6 +476,7 @@ class SuppliersController extends Controller
             'email' => request('email'),
             'website' => request('website'),
             'tax_number' => request('tax_number'),
+            'price_active_time' => request('price_active_time') * 24,
             'type' => request('type'),
             'sup_type' => request('sup_type'),
             'created_by' => Sentinel::getUser()->id
@@ -544,9 +593,27 @@ class SuppliersController extends Controller
             'address' => 'required',
             'name' => 'required|max:255',
             'phone' => 'required',
+            'fax' => 'required|integer',
             'tax_number' => 'required',
             'province_id' => 'required',
             'type' => 'required',
+            'price_active_time' => 'required|numeric',
+            'sup_type' => 'required',
+            'email' => 'required|email|max:255|unique:users',
+        ], [
+            'name.required' => "Vui lòng nhập tên.",
+            'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
+            'address.required' => "Vui lòng nhập địa chỉ.",
+            'phone.required' => "Vui lòng nhập số điện thoại.",
+            'tax_number.required' => "Vui lòng nhập số tax.",
+            'fax.integer' => "Số Fax không được chứa chữ cái và kí tự đặc biệt.",
+            'province_id.required' => "Vui lòng nhập tỉnh thành.",
+            'type.required' => "Vui lòng nhập loại hóa đơn.",
+            'sup_type.required' => "Vui lòng nhập loại nhà cung cấp.",
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Vui lòng nhập đúng định dạng email.',
+            'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'email.unique' => 'Email đã tồn tại.',
         ]);
 
         $supplier->forceFill([
@@ -559,6 +626,7 @@ class SuppliersController extends Controller
             'website' => request('website'),
             'tax_number' => request('tax_number'),
             'type' => request('type'),
+            'price_active_time' => request('price_active_time') * 24,
             'created_by' => Sentinel::getUser()->id
         ])->save();
 

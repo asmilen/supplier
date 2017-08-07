@@ -36,10 +36,16 @@ class ColorsController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255|unique:colors',
-            'code' => 'alpha_num|min:3|max:6|unique:colors',
+            'code' => 'required|alpha_num|min:3|max:6|unique:colors',
         ], [
-            'name.unique' => 'Hãy nhập tên màu sắc.',
+            'name.required' => 'Hãy nhập tên màu sắc.',
+            'name.unique' => 'Tên màu sắc đã tồn tại.',
+            'name.max' => 'Tên màu sắc quá dài, tối đa 255 ký tự.',
             'code.unique' => 'Mã mau đã tồn tại.',
+            'code.required' => 'Hãy nhập mã màu sắc.',
+            'code.alpha_num' => 'Mã màu sắc không được chứa kí tự đặc biệt.',
+            'code.min' => 'Mã màu sắc phải có ít nhất 3 ký tự.',
+            'code.max' => 'Mã màu sắc phải có nhiều nhất 6 ký tự.',
         ]);
 
         $color = Color::forceCreate([
@@ -85,7 +91,9 @@ class ColorsController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255|unique:colors,name,'.$color->id,
         ], [
-            'name.unique' => 'Màu sắc đã tồn tại.',
+            'name.required' => 'Hãy nhập tên màu sắc.',
+            'name.unique' => 'Tên màu sắc đã tồn tại.',
+            'name.max' => 'Tên màu sắc quá dài, tối đa 255 ký tự.',
         ]);
 
         $color->forceFill([

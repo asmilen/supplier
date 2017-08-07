@@ -204,6 +204,17 @@
                                     </div>
 
                                     <div class="form-group">
+                                        <label class="col-sm-3 control-label no-padding-left">Hiệu lực giá</label>
+                                        <div class="col-sm-9">
+                                            <input class="form-control" id="price_valid_time" placeholder="Nhập ngày">
+                                            <input type="hidden" name="from_date">
+                                            <input type="hidden" name="to_date">
+                                            <p style="color:red;text-align: left; font-size: 14px" id="from_date">{{$errors->first('from_date')}}</p>
+                                            <p style="color:red;text-align: left; font-size: 14px" id="to_date">{{$errors->first('to_date')}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
                                         <label class="col-sm-3 control-label no-padding-left">VAT</label>
                                         <div class="col-sm-9">
                                             <input type="number" min="0" class="form-control" name="vat"
@@ -411,10 +422,10 @@
                         <th>Tên</th>
                         <th>Nhà cung cấp</th>
                         <th>Giá nhập</th>
+                        <th>Hiệu lực từ</th>
+                        <th>Hiệu lực đến</th>
                         <th>Số lượng tối thiểu</th>
-                        {{--<th >GTGT</th>--}}
                         <th>Giá bán khuyến nghị</th>
-                        {{--<th >Trạng thái </th>--}}
                         <th>Tình trạng</th>
                         <th>Ngày cập nhật</th>
                     </tr>
@@ -441,13 +452,12 @@
                         <th><input type="text" style="width: 100%" name="db_product_sku" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_product_name" placeholder=""/></th>
                         <th><input type="text" style="width: 100%" name="db_supplier_name" placeholder=""/></th>
-                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder=""
-                                   disabled/></th>
-                        <th><input type="text" style="width: 100%" name="db_supplier_min_quantity" placeholder="" disabled/>
-                        </th>
+                        <th><input type="text" style="width: 100%" name="db_product_import_price" placeholder="" disabled/></th>
+                        <th><input type="text" style="width: 100%" name="db_from_date" placeholder="" disabled/></th>
+                        <th><input class="form-control input-daterange-datepicker" type="text" style="width: 100%" name="db_to_date" placeholder=""/></th>
+                        <th><input type="text" style="width: 100%" name="db_supplier_min_quantity" placeholder="" disabled/></th>
+                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/></th>
                         {{--<th><input type="text" style="width: 100%" name="db_product_vat" placeholder=""/></th>--}}
-                        <th><input type="text" style="width: 100%" name="db_product_recommend_price" placeholder=""/>
-                        </th>
                         {{--<th><select name="db_status" style="width: 100%">--}}
                         {{--<option value=""></option>--}}
                         {{--<option value="0">Chờ duyệt</option>--}}
@@ -456,8 +466,6 @@
                         {{--<option value="3">Yêu cầu ưu tiên lấy hàng</option>--}}
                         {{--<option value="4">Không ưu tiên lấy hàng</option>--}}
                         {{--</select></th>--}}
-
-
                         <th><select name="db_state" style="width: 100%">
                                 <option value=""></option>
                                 <option value="{{ App\Models\ProductSupplier::$STATE_HET_HANG }}">Hết hàng</option>
@@ -498,6 +506,13 @@
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
                 width: '100%',
+            });
+
+            $(document).on("keyup", ".my-input-class", function () {
+                $('.table-product').find("tr").addClass('product-row');
+                if (!$(this).val().includes("-")) {
+                    $(this).val($(this).val().replace(/\,/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                }
             });
 
             $(".suppliers").select2({
@@ -545,7 +560,6 @@
                 ajax: {
                     url: '{!! route('suppliers.datatables') !!}',
                     data: function (d) {
-//                        d.category_name = $('input[name=db_category_name]').val();
                         d.category_name = $('select[name=db_category_name]').val();
                         d.manufacture_name = $('input[name=db_manufacture_name]').val();
                         d.product_sku = $('input[name=db_product_sku]').val();
@@ -555,9 +569,9 @@
                         d.supplier_min_quantity = $('input[name=db_supplier_min_quantity]').val();
 //                        d.vat = $('input[name=db_product_vat]').val();
                         d.recommend_price = $('input[name=db_product_recommend_price]').val();
-//                       d.status = $('select[name=db_status]').val();
                         d.state = $('select[name=db_state]').val();
                         d.updated_at = $('input[name=db_updated_at]').val();
+                        d.to_date = $('input[name=db_to_date]').val();
                     }
                 },
                 columns: [
@@ -567,6 +581,8 @@
                     {data: 'product_name', name: 'product_name', "width": "20%"},
                     {data: 'supplier_name', name: 'supplier_name', "width": "10%"},
                     {data: 'import_price', name: 'import_price', "width": "10%"},
+                    {data: 'from_date', name: 'from_date', "width": "10%"},
+                    {data: 'to_date', name: 'to_date', "width": "10%"},
                     {data: 'supplier_min_quantity', name: 'supplier_min_quantity', "width": "5%"},
                     {data: 'recommend_price', name: 'recommend_price', "width": "10%"},
                     {data: 'status_product', name: 'status_product', "width": "10%"},
@@ -579,7 +595,7 @@
                 "onUpdate": myCallbackFunction,
                 "inputCss": 'my-input-class',
                 "idSrc": 'id',
-                "columns": [5, 6, 7, 8],
+                "columns": [5, 6, 7, 9,10],
                 "allowNulls": {
                     "columns": [4],
                     "errorClass": 'error'
@@ -590,7 +606,19 @@
                 },
                 "inputTypes": [
                     {
+                        "column": 5,
+                        "type": "text"
+                    },
+                    {
                         "column": 8,
+                        "type": "text"
+                    },
+                    {
+                        "column": 9,
+                        "type": "text"
+                    },
+                    {
+                        "column": 10,
                         "type": "list",
                         "options": [
                             {"value": "Hết hàng", "display": "Hết hàng"},
@@ -599,10 +627,15 @@
                     }
                 ]
             });
+
+            $("tbody").addClass('table-product');
+
             function myCallbackFunction(updatedCell, updatedRow, oldValue) {
                 var data = updatedRow.data();
                 var id = data.id;
                 var import_price = data.import_price.replace(/,/g, "");
+                var from_date = data.from_date;
+                var to_date = data.to_date;
                 var status = data.status;
                 var supplier_min_quantity = data.supplier_min_quantity;
                 var recommend_price = data.recommend_price.replace(/,/g, "");
@@ -614,6 +647,8 @@
                         id: id,
                         status: status,
                         import_price: import_price,
+                        from_date: from_date,
+                        to_date: to_date,
                         supplier_min_quantity: supplier_min_quantity,
                         recommend_price: recommend_price,
                         status_product: status_product,
@@ -643,7 +678,7 @@
                 $('.input-daterange-datepicker').on('apply.daterangepicker', function (ev, picker) {
                     var startDate = picker.startDate;
                     var endDate = picker.endDate;
-                    $('.input-daterange-datepicker').val(startDate.format('DD/MM/YYYY') + ' - ' + endDate.format('DD/MM/YYYY'));
+                    $(this).val(startDate.format('DD/MM/YYYY') + ' - ' + endDate.format('DD/MM/YYYY'));
                     datatable.draw();
                 });
             });
@@ -686,7 +721,7 @@
                     contentType: false,
                     dataType: 'JSON',
                     success: function (res) {
-                        $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description").text('');
+                        $("#product_id,#supplier_id, #status, #state, #import_price , #vat , #price_recommend , #quantity, #image, #description, #from_date, #to_date").text('');
                         if (res.status == 'success') {
                             swal({
                                 title: "Thành công!",
@@ -706,6 +741,52 @@
 
                     }
                 });
+            });
+
+            $('#price_valid_time').daterangepicker({
+                autoUpdateInput: false,
+                dateLimit: {
+                    days: 60
+                },
+                showDropdowns: true,
+                showWeekNumbers: true,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+                ranges: {
+                    '10 Days': [moment(),moment().add(10, 'days')],
+                    '30 Days': [moment(),moment().add(30, 'days')],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                },
+                opens: 'left',
+                drops: 'down',
+                buttonClasses: ['btn', 'btn-sm'],
+                applyClass: 'btn-default',
+                cancelClass: 'btn-white',
+                separator: ' to ',
+                locale: {
+                    format: 'DD/MM/YYYY',
+                    applyLabel: 'Submit',
+                    cancelLabel: 'Clear',
+                    fromLabel: 'From',
+                    toLabel: 'To',
+                    customRangeLabel: 'Custom',
+                    daysOfWeek: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                    firstDay: 1
+                }
+            });
+
+            $('#price_valid_time').on('apply.daterangepicker', function (ev, picker) {
+                $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+                $("input[name^='from_date']").val(picker.startDate.format('DD/MM/YYYY'));
+                $("input[name^='to_date']").val(picker.endDate.format('DD/MM/YYYY'));
+            });
+
+            $('#price_valid_time').on('cancel.daterangepicker', function (ev, picker) {
+                $(this).val('');
+                $("input[name^='from_date']").val('');
+                $("input[name^='to_date']").val('');
             });
 
             $('.input-daterange-datepicker').daterangepicker({
@@ -783,7 +864,6 @@
 
             @include('scripts.click-datatable-delete-button')
         });
-
 
     </script>
 @endsection

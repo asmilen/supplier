@@ -39,6 +39,21 @@ return [
         2 => 'Tỉnh',
     ],
 
+    'manager_emails' => [
+        'to' => [
+            'tuan.nm1@teko.vn',
+            'nhuong.nx@teko.vn',
+            'dung.nd@teko.vn',
+            'khoa.nha@teko.vn',
+            'nguyen.tp@teko.vn',
+        ],
+        'cc' => [
+            'tuan.na@teko.vn',
+            'dung.cc@teko.vn',
+            'hiep.pn@teko.vn',
+        ],
+    ],
+
     'supplier' => [
         'sup_type' => [
             0 => 'Hàng mua',

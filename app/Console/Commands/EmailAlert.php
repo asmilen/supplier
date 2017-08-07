@@ -48,16 +48,18 @@ class EmailAlert extends Command
 
         if ($productSuppliers)
         {
-            foreach (config('teko.manager_emails') as $manager)
-            {
-                Mail::send('emails.alert', ['name' => $manager['name'], 'products' => $productSuppliers], function ($message) use ($manager) {
-                    $message->from('supplier-tool@teko.vn', 'Supplier Tool');
+            $managers = config('teko.manager_emails');
 
-                    $message->subject('Cảnh báo sản phẩm hết hạn hiệu lực giá');
+            Mail::send('emails.alert', ['products' => $productSuppliers], function ($message) use ($managers) {
 
-                    $message->to($manager['email']);
-                });
-            }
+                $message->from('supplier-tool@teko.vn', 'Supplier Tool');
+
+                $message->subject('Cảnh báo sản phẩm hết hạn hiệu lực giá');
+
+                $message->to($managers['to']);
+
+                $message->cc($managers['cc']);
+            });
         }
 
 

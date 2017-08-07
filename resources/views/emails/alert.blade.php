@@ -1,7 +1,7 @@
 <html>
 <head></head>
 <body>
-<p>Dear {{$name}}, </p>
+<p>Dear team, </p>
 <p>Những sản phẩm sau có hiệu lực giá hết hạn trong 24h tới, vui lòng kiểm tra:</p>
 <table style=" border: none;">
     <thead>
@@ -9,7 +9,7 @@
             <th>Tên sản phẩm</th>
             <th>Tên nhà cung cấp</th>
             <th>Giá nhập</th>
-            <th>Cập nhật lúc</th>
+            <th>Cập nhật lần cuối lúc</th>
         </tr>
     </thead>
     <tbody>

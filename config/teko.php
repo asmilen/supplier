@@ -40,9 +40,17 @@ return [
     ],
 
     'manager_emails' => [
-        1 => [
-            'email' => 'nam.vh@teko.vn',
-            'name'  => 'Nam Vũ',
+        'to' => [
+            'tuan.nm1@teko.vn',
+            'nhuong.nx@teko.vn',
+            'dung.nd@teko.vn',
+            'khoa.nha@teko.vn',
+            'nguyen.tp@teko.vn',
+        ],
+        'cc' => [
+            'tuan.na@teko.vn',
+            'dung.cc@teko.vn',
+            'hiep.pn@teko.vn',
         ],
     ]
 ];

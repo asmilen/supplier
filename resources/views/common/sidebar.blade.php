@@ -180,6 +180,25 @@
                 </ul>
             </li>
         @endif
+
+        @if ($currentUser->isSuperAdmin())
+            <li class="{{ (Request::is('model-tracking-logs') || Request::is('model-tracking-logs/*')) ? 'active open' : '' }}">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-cog"></i>
+                    <span class="menu-text"> Hệ thống </span>
+
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    <li class="{{ (Request::is('model-tracking-logs') || Request::is('model-tracking-logs/*')) ? 'active' : '' }}">
+                        <a href="{{ url('/model-tracking-logs') }}"><i class="menu-icon fa fa-bookmark-o"></i> <span class="menu-text"> Model Tracking Log </span></a>
+                    </li>
+                </ul>
+            </li>
+        @endif
     </ul><!-- /.nav-list -->
 
     <!-- #section:basics/sidebar.layout.minimize -->

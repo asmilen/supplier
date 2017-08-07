@@ -119,5 +119,8 @@ Route::group(['middleware' => 'auth'], function () {
         // Margins for Orders
         Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
         Route::resource('margins', 'MarginsController', ['except' => 'destroy']);
+
+        Route::get('model-tracking-logs', 'ModelTrackingLogsController@index');
+        Route::get('model-tracking-logs/datatables', 'ModelTrackingLogsController@getDatatables');
     });
 });

@@ -42,7 +42,8 @@ class SuppliersController extends Controller
         $suppliers = Supplier::select('suppliers.id','suppliers.name','suppliers.sup_type','product_supplier.import_price','product_supplier.product_id')
                         ->join('product_supplier', function ($q) use ($productIds) {
                             $q->on('product_supplier.supplier_id', '=', 'suppliers.id')
-                                ->whereIn('product_supplier.product_id', $productIds);
+                                ->whereIn('product_supplier.product_id', $productIds)
+                                ->where('product_supplier.state', '=', 1);
                         })
                         ->whereIn('suppliers.id', $supplierIds)
                         ->where('suppliers.status',true)

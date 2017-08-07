@@ -41,17 +41,14 @@ class EmailAlert extends Command
      */
     public function handle()
     {
-        //
         $expired_time = Carbon::now()->addDay();
-        $productSuppliers = ProductSupplier::where('to_date','<=',$expired_time)
-            ->get();
+        
+        $productSuppliers = ProductSupplier::where('to_date', '<=', $expired_time)->get();
 
-        if ($productSuppliers)
-        {
+        if ($productSuppliers) {
             $managers = config('teko.manager_emails');
 
             Mail::send('emails.alert', ['products' => $productSuppliers], function ($message) use ($managers) {
-
                 $message->from('supplier-tool@teko.vn', 'Supplier Tool');
 
                 $message->subject('Cảnh báo sản phẩm hết hạn hiệu lực giá');
@@ -61,7 +58,5 @@ class EmailAlert extends Command
                 $message->cc($managers['cc']);
             });
         }
-
-
     }
 }

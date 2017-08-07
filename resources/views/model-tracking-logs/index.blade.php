@@ -88,7 +88,6 @@
 $(function () {
     var datatable = $("#dataTables-model-tracking-logs").DataTable({
         searching: false,
-        autoWidth: false,
         processing: true,
         serverSide: true,
         ajax: {
@@ -107,6 +106,7 @@ $(function () {
             {data: 'user_id', name: 'user_id'},
             {data: 'created_at', name: 'created_at'},
         ],
+        pageLength: 100,
         order: [6, 'desc']
     });
 

@@ -136,10 +136,7 @@ class ProductsController extends Controller
         $code = strtoupper(request('code'));
 
         $rules = [
-            'category_id' => 'required',
-            'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products,name,'.$product->id,
-            'code' => 'alpha_num|max:255',
         ];
 
         if (request()->file('image')) {
@@ -148,32 +145,11 @@ class ProductsController extends Controller
 
         Validator::make(request()->all(), $rules, [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
-        ])->after(function ($validator) use ($product, $code) {
-            if (! empty($code)) {
-                $check = Product::where('category_id', request('category_id'))
-                    ->where('manufacturer_id', request('manufacturer_id'))
-                    ->where('code', $code)
-                    ->where('id', '<>', $product->id)
-                    ->first();
-
-                if ($check) {
-                    $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
-                }
-            }
-        })->validate();
-
-        if (empty($code)) {
-            $code = $product->id;
-        }
+        ])->validate();
 
         $product->forceFill([
-            'category_id' => request('category_id'),
-            'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id', 0),
             'parent_id' => request('parent_id', 0),
             'name' => request('name'),
-            'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
             'status' => !! request('status'),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),

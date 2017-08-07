@@ -3,11 +3,12 @@
 namespace App\Models;
 
 use Datatables;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Category extends BaseModel
+class Category extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Trackable, HasUpdater;
 
     /**
      * The attributes that should be mutated to dates.

@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Datatables;
+use Illuminate\Database\Eloquent\Model;
 
-class Supplier extends BaseModel
+class Supplier extends Model
 {
+    use Trackable, HasUpdater;
+
     public function addresses()
     {
         return $this->hasMany(SupplierAddress::class);

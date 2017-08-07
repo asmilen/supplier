@@ -5,11 +5,12 @@ namespace App\Models;
 use DB;
 use Datatables;
 use App\Jobs\PublishMessage;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends BaseModel
+class Product extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Trackable, HasUpdater;
 
     /**
      * The attributes that should be mutated to dates.

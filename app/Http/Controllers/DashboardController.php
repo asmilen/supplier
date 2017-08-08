@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $countProductsHasNoSuppliers = Product::hasNoSuppliers()->count();
         $countSuppliersHasNoProducts = Supplier::hasNoProducts()->count();
         $countProductsHasImportPriceExpired = Product::hasImportPriceExpired()->count();
-        $countProductsHasImportPriceExpiredSoon = Product::hasImportPriceExpiredSoon(1)->count();
+        $countProductsHasImportPriceExpiredSoon = Product::hasImportPriceExpiredSoon(2)->count();
 
         return view('dashboard', compact(
             'countCategories',

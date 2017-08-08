@@ -204,7 +204,7 @@ class Product extends Model
             ->where('product_supplier.to_date', '<=', Carbon::now());
     }
 
-    public function scopeHasImportPriceExpiredSoon($query, $days = 1)
+    public function scopeHasImportPriceExpiredSoon($query, $days = 2)
     {
         return $query->where('products.status', true)
             ->join('product_supplier', 'products.id', '=', 'product_supplier.product_id')

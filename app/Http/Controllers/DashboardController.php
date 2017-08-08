@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Supplier;
+use App\Models\Manufacturer;
 
 class DashboardController extends Controller
 {
@@ -23,6 +26,23 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        $countCategories = Category::active()->count();
+        $countManufacturers = Manufacturer::active()->count();
+        $countSuppliers = Supplier::where('status', true)->count();
+        $countProducts = Product::where('status', true)->count();
+
+        $countProductsHasNoSuppliers = Product::hasNoSuppliers()->count();
+        $countSuppliersHasNoProducts = Supplier::hasNoProducts()->count();
+        $countProductsHasImportPriceExpired = Product::hasImportPriceExpired()->count();
+
+        return view('dashboard', compact(
+            'countCategories',
+            'countManufacturers',
+            'countSuppliers',
+            'countProducts',
+            'countProductsHasNoSuppliers',
+            'countSuppliersHasNoProducts',
+            'countProductsHasImportPriceExpired'
+        ));
     }
 }

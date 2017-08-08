@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Sentinel;
+use Datatables;
 use Illuminate\Database\Eloquent\Model;
 
 class ModelTrackingLog extends Model
@@ -19,5 +20,31 @@ class ModelTrackingLog extends Model
             'action' => $action,
             'user_id' => $user->id,
         ]);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public static function getDatatables()
+    {
+        $model = static::select('*')->with('user')
+            ->orderBy('created_at', 'desc');
+
+        return Datatables::eloquent($model)
+            ->filter(function ($query) {
+                $query->where(function ($query) {
+                    $query->where('trackable_type', request('model_type'));
+                });
+
+                if (request()->has('model_id')) {
+                    $query->where('trackable_id', request('model_id'));
+                }
+            })
+            ->editColumn('user_id', function ($trackingLog) {
+                return $trackingLog->user ? $trackingLog->user->name : $trackingLog->user_id;
+            })
+            ->make(true);
     }
 }

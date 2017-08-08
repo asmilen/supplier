@@ -201,6 +201,15 @@ class Product extends Model
         return $query->where('products.status', true)
             ->join('product_supplier', 'products.id', '=', 'product_supplier.product_id')
             ->whereNotNull('product_supplier.to_date')
-            ->where('product_supplier.to_date', '<', Carbon::now());
+            ->where('product_supplier.to_date', '<=', Carbon::now());
+    }
+
+    public function scopeHasImportPriceExpiredSoon($query, $days = 7)
+    {
+        return $query->where('products.status', true)
+            ->join('product_supplier', 'products.id', '=', 'product_supplier.product_id')
+            ->whereNotNull('product_supplier.to_date')
+            ->where('product_supplier.to_date', '>', Carbon::now())
+            ->where('product_supplier.to_date', '<=', Carbon::now()->addDays($days));
     }
 }

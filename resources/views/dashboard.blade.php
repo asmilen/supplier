@@ -105,6 +105,16 @@
                             <i class="ace-icon fa fa-cube"></i>
                         </div>
                         <div class="infobox-data">
+                            <span class="infobox-data-number">{{ $countProductsHasImportPriceExpiredSoon }}</span>
+                            <div class="infobox-content">sản phẩm có giá nhập sắp hết hạn</div>
+                        </div>
+                    </div>
+
+                    <div class="infobox infobox-red">
+                        <div class="infobox-icon">
+                            <i class="ace-icon fa fa-cube"></i>
+                        </div>
+                        <div class="infobox-data">
                             <span class="infobox-data-number">{{ $countProductsHasImportPriceExpired }}</span>
                             <div class="infobox-content">sản phẩm có giá nhập hết hạn</div>
                         </div>

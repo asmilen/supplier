@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use DB;
+use Carbon\Carbon;
 use Datatables;
 use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
@@ -186,5 +187,20 @@ class Product extends Model
             })
             ->rawColumns(['status','add'])
             ->make(true);
+    }
+
+    public function scopeHasNoSuppliers($query)
+    {
+        return $query->where('products.status', true)
+            ->leftJoin('product_supplier', 'products.id', '=', 'product_supplier.product_id')
+            ->whereNull('product_supplier.id');
+    }
+
+    public function scopeHasImportPriceExpired($query)
+    {
+        return $query->where('products.status', true)
+            ->join('product_supplier', 'products.id', '=', 'product_supplier.product_id')
+            ->whereNotNull('product_supplier.to_date')
+            ->where('product_supplier.to_date', '<', Carbon::now());
     }
 }

@@ -76,5 +76,11 @@ class Supplier extends Model
             ->rawColumns(['status', 'action'])
             ->make(true);
     }
-}
 
+    public function scopeHasNoProducts($query)
+    {
+        return $query->where('suppliers.status', true)
+            ->leftJoin('product_supplier', 'suppliers.id', '=', 'product_supplier.supplier_id')
+            ->whereNull('product_supplier.id');
+    }
+}

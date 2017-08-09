@@ -153,8 +153,8 @@ class ProductSupplier extends Model
             ->addColumn('supplier_name', function ($productSupplier) {
                 return $productSupplier->supplier->name ?: '';
             })
-            ->editColumn('price', function ($productSupplier) {
-                return number_format($productSupplier->price);
+            ->editColumn('import_price', function ($productSupplier) {
+                return number_format(round($productSupplier->import_price, 0));
             })
             ->editColumn('state', function ($productSupplier) {
                 return config('teko.product.state')[$productSupplier->state] ? : 'N/A';

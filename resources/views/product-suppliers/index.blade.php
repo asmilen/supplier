@@ -139,6 +139,9 @@ $(function () {
             {data: 'updated_by', name: 'updated_by'},
             {data: 'updated_at', name: 'updated_at'},
         ],
+        columnDefs: [
+            {className: 'text-right', 'targets': [5,6,7,8,9]}
+        ],
         pageLength: 50,
         order: [12, 'desc']
     });

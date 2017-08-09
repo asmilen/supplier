@@ -93,7 +93,7 @@ class ProductSupplier extends Model
     {
         $user = Sentinel::getUser();
 
-        if (! $user->isSuperAdmin()) {
+        if ($user->isSuperAdmin()) {
             return $query;
         }
 

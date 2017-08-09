@@ -137,14 +137,11 @@
                     </li>
                 </ul>
             </li>
-
         @endif
 
-
-
-        @if ($currentUser->hasAccess('suppliers.index'))
-            <li class="{{ (Request::is('suppliers') || Request::is('suppliers/index')) ? 'active' : '' }}">
-                <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
+        @if ($currentUser->hasAccess('product-suppliers.index'))
+            <li class="{{ (Request::is('product-suppliers') || Request::is('product-suppliers/*')) ? 'active' : '' }}">
+                <a href="{{ url('/product-suppliers') }}"><i class="menu-icon fa fa-exchange"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
             </li>
         @endif
 

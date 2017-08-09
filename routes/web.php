@@ -122,5 +122,8 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('model-tracking-logs', 'ModelTrackingLogsController@index');
         Route::get('model-tracking-logs/datatables', 'ModelTrackingLogsController@getDatatables');
+
+        Route::get('product-suppliers', 'ProductSuppliersController@index');
+        Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
     });
 });

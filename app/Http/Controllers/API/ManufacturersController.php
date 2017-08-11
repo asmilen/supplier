@@ -9,6 +9,6 @@ class ManufacturersController extends Controller
 {
     public function index()
     {
-        return Manufacturer::all(['id', 'name', 'homepage']);
+        return Manufacturer::active()->get();
     }
 }

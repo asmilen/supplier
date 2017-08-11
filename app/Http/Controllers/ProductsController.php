@@ -89,15 +89,6 @@ class ProductsController extends Controller
             'attributes' => json_encode(request('attributes', [])),
         ]);
 
-        if (empty($code)) {
-            $code = $product->id;
-        }
-
-        $product->forceFill([
-            'code' => $code,
-            'sku' => $this->generateSku(request('category_id'), request('manufacturer_id'), $code, request('color_id')),
-        ])->save();
-
         flash()->success('Success!', 'Product successfully created.');
 
         return $product;
@@ -180,23 +171,6 @@ class ProductsController extends Controller
         $productIds = request('productIds', []);
 
         return Product::getProductInCombo($productIds);
-    }
-
-    protected function generateSku($categoryId, $manufacturerId, $code, $colorId = null)
-    {
-        $category = Category::findOrFail($categoryId);
-
-        $manufacturer = Manufacturer::findOrFail($manufacturerId);
-
-        $sku = $category->code.'-'.$manufacturer->code.'-'.$code;
-
-        $color = Color::find($colorId);
-
-        if ($color) {
-            $sku .= '-'.$color->code;
-        }
-
-        return $sku;
     }
 
     public function getSimpleProduct()

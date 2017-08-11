@@ -17,7 +17,7 @@ class BundlesController extends Controller
 
         $bundles = Bundle::withCount('products')->where(
             'region_id', Province::getRegionIdsByCode($codeProvince)
-        )->whereIn('label', array_keys($labels))->having('products_count', '>', 0)->get()->groupBy('label');
+        )->whereIn('label', array_keys($labels))->havingRaw('products_count > 0')->get()->groupBy('label');
 
         return $bundles->map(function ($bundle, $key) use ($labels) {
             return [

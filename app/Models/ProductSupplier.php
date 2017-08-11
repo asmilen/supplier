@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use DB;
+use Sentinel;
+use Datatables;
 use App\Models\SupplierProductLog;
 use Illuminate\Database\Eloquent\Model;
-use Cartalyst\Sentinel\Laravel\Facades\Sentinel;
 
 class ProductSupplier extends Model
 {
@@ -86,5 +87,89 @@ class ProductSupplier extends Model
                 )
                 ORDER BY updated_at DESC, created_at DESC
         '))->groupBy('product_id');
+    }
+
+    public function scopeCanManage($query)
+    {
+        $user = Sentinel::getUser();
+
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        $supplierIds = collect(DB::select('select supplier_id from supplier_supported_province where province_id in (select id from provinces where region_id in (select region_id from user_supported_province where supported_id = ?))', [$user->id]))
+            ->pluck('supplier_id')
+            ->toArray();
+
+        return $query->whereIn('supplier_id', $supplierIds);
+    }
+
+    public static function getDatatables()
+    {
+        $model = static::select('*')->with('product', 'product.category', 'product.manufacturer', 'supplier', 'creater', 'updater')
+            ->canManage();
+
+        return Datatables::eloquent($model)
+            ->filter(function ($query) {
+                if (request()->has('category_id')) {
+                    $query->whereHas('product', function ($query) {
+                        $query->where('category_id', request('category_id'));
+                    });
+                }
+
+                if (request()->has('manufacturer_id')) {
+                    $query->whereHas('product', function ($query) {
+                        $query->where('manufacturer_id', request('manufacturer_id'));
+                    });
+                }
+
+                if (request()->has('supplier_id')) {
+                    $query->where('supplier_id', request('supplier_id'));
+                }
+
+                if (request()->has('keyword')) {
+                    $query->whereHas('product', function ($query) {
+                        $query->where('name', 'like', '%'.request('keyword').'%')
+                            ->orWhere('sku', 'like', '%'.request('keyword').'%');
+                    });
+                }
+
+                if (request()->has('state')) {
+                    $query->where('state', request('state'));
+                }
+            })
+            ->addColumn('category_name', function ($productSupplier) {
+                return isset($productSupplier->product->category->name) ? $productSupplier->product->category->name : '';
+            })
+            ->addColumn('manufacturer_name', function ($productSupplier) {
+                return isset($productSupplier->product->manufacturer->name) ? $productSupplier->product->manufacturer->name : '';
+            })
+            ->addColumn('sku', function ($productSupplier) {
+                return $productSupplier->product->sku ?: '';
+            })
+            ->addColumn('product_name', function ($productSupplier) {
+                return $productSupplier->product->name ?: '';
+            })
+            ->addColumn('supplier_name', function ($productSupplier) {
+                return $productSupplier->supplier->name ?: '';
+            })
+            ->editColumn('import_price', function ($productSupplier) {
+                return number_format(round($productSupplier->import_price, 0));
+            })
+            ->editColumn('state', function ($productSupplier) {
+                return config('teko.product.state')[$productSupplier->state] ? : 'N/A';
+            })
+            ->editColumn('updated_by', function ($productSupplier) {
+                if (isset($productSupplier->updater->name)) {
+                    return $productSupplier->updater->name;
+                }
+
+                if (isset($productSupplier->creater->name)) {
+                    return $productSupplier->creater->name;
+                }
+
+                return '';
+            })
+            ->make(true);
     }
 }

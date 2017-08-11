@@ -24,4 +24,14 @@ trait HasUpdater
             $model->updated_by = $user->id;
         });
     }
+
+    public function creater()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

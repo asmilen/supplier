@@ -126,15 +126,6 @@ class ImportProducts extends Command
                 'status' => 0,
             ]);
 
-            if (empty($productCode)) {
-                $productCode = $product->id;
-            }
-
-            $product->forceFill([
-                'code' => $productCode,
-                'sku' => $this->generateSku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
-            ])->save();
-
             ++$count;
         }
 
@@ -151,16 +142,5 @@ class ImportProducts extends Command
         foreach ($exists as $v) {
             $this->info('Product Name: '.$v);
         }
-    }
-
-    protected function generateSku($categoryCode, $manufacturerCode, $productCode, $colorCode = '')
-    {
-        $sku = $categoryCode.'-'.$manufacturerCode.'-'.$productCode;
-
-        if (! empty($colorCode)) {
-            $sku .= '-'.$colorCode;
-        }
-
-        return $sku;
     }
 }

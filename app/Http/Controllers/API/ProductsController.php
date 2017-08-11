@@ -315,24 +315,14 @@ class ProductsController extends Controller
             }
         }
 
-        $product = Product::forceCreate([
+        return Product::forceCreate([
             'category_id' => $category->id,
             'manufacturer_id' => $manufacturer->id,
             'color_id' => $color ? $color->id : 0,
             'name' => $productData['name'],
+            'code' => $productData['code'],
             'status' => 0,
         ]);
-
-        if (empty($productCode)) {
-            $productCode = $product->id;
-        }
-
-        $product->forceFill([
-            'code' => $productCode,
-            'sku' => generate_sku($category->code, $manufacturer->code, $productCode, $color ? $color->code : ''),
-        ])->save();
-
-        return $product;
     }
 
     public function getConfigurableList()

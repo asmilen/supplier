@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use DB;
-use Carbon\Carbon;
 use Datatables;
+use Carbon\Carbon;
 use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -31,6 +31,15 @@ class Product extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::created(function ($model) {
+            $code = $model->code ?: $model->id;
+
+            $model->forceFill([
+                'code' => $code,
+                'sku' => $model->generateSku($code),
+            ])->save();
+        });
 
         static::saved(function ($model)
         {
@@ -211,5 +220,16 @@ class Product extends Model
             ->whereNotNull('product_supplier.to_date')
             ->where('product_supplier.to_date', '>', Carbon::now())
             ->where('product_supplier.to_date', '<=', Carbon::now()->addDays($days));
+    }
+
+    protected function generateSku($code)
+    {
+        $sku = $this->category->code.'-'.$this->manufacturer->code.'-'.$code;
+
+        if ($this->color) {
+            $sku .= '-'.$this->color->code;
+        }
+
+        return $sku;
     }
 }

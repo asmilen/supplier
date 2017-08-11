@@ -120,9 +120,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
         Route::resource('margins', 'MarginsController', ['except' => 'destroy']);
 
+        // Model Tracking Logs
         Route::get('model-tracking-logs', 'ModelTrackingLogsController@index');
         Route::get('model-tracking-logs/datatables', 'ModelTrackingLogsController@getDatatables');
 
+        // Product Suppliers
         Route::get('product-suppliers', 'ProductSuppliersController@index');
         Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
     });

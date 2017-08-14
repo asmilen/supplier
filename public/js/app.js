@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 11);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex']);
+var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -81,11 +81,12 @@ __webpack_require__(4);
 __webpack_require__(7);
 __webpack_require__(5);
 __webpack_require__(6);
-__webpack_require__(8);
-__webpack_require__(3);
-
 __webpack_require__(9);
+__webpack_require__(3);
+__webpack_require__(8);
+
 __webpack_require__(10);
+__webpack_require__(11);
 
 /***/ }),
 /* 1 */
@@ -568,6 +569,38 @@ function ProductSupplierController($scope, $http, $window) {
 /* 8 */
 /***/ (function(module, exports) {
 
+angular.module('controllers.productSupplierIndex', []).controller('ProductSupplierIndexController', ProductSupplierIndexController);
+
+ProductSupplierIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function ProductSupplierIndexController($scope, $http) {
+    function addProductSupplierForm() {
+        this.product_id = '';
+        this.product_name = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.addProductSupplierForm = new addProductSupplierForm();
+
+    $scope.showAddProductSupplierModal = function () {
+        $('#modal-add-product-supplier').modal('show');
+    };
+
+    $scope.showSelectProductModal = function () {
+        $('#modal-select-product').modal('show');
+    };
+
+    $scope.showSelectSupplierModal = function () {
+        $('#modal-select-supplier').modal('show');
+    };
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
@@ -620,7 +653,7 @@ function TransportFeeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -641,7 +674,7 @@ function fileread() {
 }
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive("select2", select2);
@@ -691,7 +724,7 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

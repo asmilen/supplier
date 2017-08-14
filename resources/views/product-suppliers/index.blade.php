@@ -21,7 +21,7 @@
 </div>
 <!-- /section:basics/content.breadcrumbs -->
 
-<div class="page-content">
+<div class="page-content" ng-controller="ProductSupplierIndexController">
     <div class="page-header">
         <h1>
             Sản phẩm - Nhà cung cấp
@@ -29,6 +29,10 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
+            <a class="btn btn-primary pull-right" ng-click="showAddProductSupplierModal()">
+                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                <span class="hidden-xs">Thêm</span>
+            </a>
         </h1>
     </div><!-- /.page-header -->
 
@@ -76,6 +80,7 @@
             </div>
         </div>
     </div>
+
     <div class="row">
         <div class="col-xs-12">
             <table id="dataTables-product-suppliers" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
@@ -97,6 +102,81 @@
                     </tr>
                 </thead>
             </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-add-product-supplier" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Thêm giá nhập Sản phẩm theo Nhà cung cấp</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" ng-show="addProductSupplierForm.errors.length > 0">
+                        <ul>
+                            <li ng-repeat="error in addProductSupplierForm.errors">@{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Sản phẩm</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">
+                                    <a class="action-link" ng-click="showSelectProductModal()">@{{ addProductSupplierForm.product_id ? addProductSupplierForm.product_name : 'Chọn sản phẩm' }}</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Nhà cung cấp</label>
+                            <div class="col-sm-6">
+                                <p class="form-control-static">
+                                    <a class="action-link" ng-click="showSelectSupplierModal()">@{{ addProductSupplierForm.supplier_id ? addProductSupplierForm.supplier_name : 'Chọn nhà cung cấp' }}</a>
+                                </p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success" ng-click="addProductSupplier()" ng-disabled="addProductSupplierForm.disabled"><i class="fa fa-save"></i> Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-select-product" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Chọn sản phẩm</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-select-supplier" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Chọn nhà cung cấp</h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -125,6 +205,7 @@ $(function () {
             }
         },
         columns: [
+            // {data: 'action', name: 'action', orderable: false, searchable: false},
             {data: 'category_name', name: 'category_name', orderable: false},
             {data: 'manufacturer_name', name: 'manufacturer_name', orderable: false},
             {data: 'sku', name: 'sku', orderable: false},

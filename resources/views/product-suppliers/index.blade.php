@@ -121,7 +121,7 @@
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Sản phẩm</label>
-                            <div class="col-sm-6">
+                            <div class="col-sm-9">
                                 <p class="form-control-static">
                                     <a class="action-link" ng-click="showSelectProductModal()">@{{ addProductSupplierForm.product_id ? addProductSupplierForm.product_name : 'Chọn sản phẩm' }}</a>
                                 </p>
@@ -130,10 +130,47 @@
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Nhà cung cấp</label>
-                            <div class="col-sm-6">
+                            <div class="col-sm-9">
                                 <p class="form-control-static">
                                     <a class="action-link" ng-click="showSelectSupplierModal()">@{{ addProductSupplierForm.supplier_id ? addProductSupplierForm.supplier_name : 'Chọn nhà cung cấp' }}</a>
                                 </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Giá nhập (có VAT)</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.from_date_to_date" placeholder="Hiệu lực giá">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Số lượng tối thiểu</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Giá bán khuyến nghị</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Tình trạng</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" ng-model="addProductSupplierForm.state">
+                                    <option value="">- Tình trạng -</option>
+                                </select>
                             </div>
                         </div>
                     </form>

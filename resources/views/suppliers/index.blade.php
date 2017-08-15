@@ -1,5 +1,6 @@
 @extends('layouts.app')
 @section('styles')
+    <!--suppress ALL -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
     <link rel="stylesheet" href="//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.min.css">
@@ -284,7 +285,7 @@
         </div><!-- /.page-header -->
 
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-6">
                 <div class="widget-box">
                     <div class="widget-header">
                         <h5 class="widget-title">Export & Import</h5>
@@ -313,6 +314,28 @@
                                     </div>
 
                                 </form>
+                            </div>
+                            <div style="float: left; margin-right: 15px">
+                                <span id="lblError" style="color: red;"></span>
+                                @include('common.errors')
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Cập nhật hiệu lực giá</h5>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main" style="overflow:hidden;">
+                            <div style="float: left; margin-right: 15px">
+                                <input id="valid_time" value="10/24/2017" />
+                                <button id="valid_time_submit" class="btn btn-sm btn-primary">Save</button>
                             </div>
                             <div style="float: left; margin-right: 15px">
                                 <span id="lblError" style="color: red;"></span>
@@ -502,6 +525,12 @@
 
     <script>
         $(document).ready(function () {
+
+            $('#valid_time').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: true
+            });
+
             $(".js-example-basic-single").select2({
                 placeholder: "-- Chọn sản phẩm --",
                 allowClear: true,
@@ -691,6 +720,36 @@
             });
 
             CKEDITOR.replace('_description');
+
+            $("#valid_time_submit").on("click", function () {
+                $.ajax({
+                    headers: {'X-CSRF-Token': $('input[name="_token"]').val()},
+                    url: '{{url('suppliers/updateValidTime')}}',
+                    type: 'POST',
+                    data: {
+                        category_name : $('select[name=db_category_name]').val(),
+                        manufacture_name : $('input[name=db_manufacture_name]').val(),
+                        product_sku : $('input[name=db_product_sku]').val(),
+                        product_name : $('input[name=db_product_name]').val(),
+                        supplier_name : $('input[name=db_supplier_name]').val(),
+                        product_import_price : $('input[name=db_product_import_price]').val(),
+                        supplier_min_quantity : $('input[name=db_supplier_min_quantity]').val(),
+                        recommend_price : $('input[name=db_product_recommend_price]').val(),
+                        state : $('select[name=db_state]').val(),
+                        updated_at : $('input[name=db_updated_at]').val(),
+                        to_date : $('input[name=db_to_date]').val(),
+                        valid_time : $('#valid_time').val(),
+                    },
+                    success: function (res) {
+                        swal({
+                            title: res.title,
+                            text: res.message,
+                            type: res.type
+                        });
+                        datatable.draw();
+                    }
+                });
+            });
 
             $("#btn_import").on("click", function () {
                 var allowedFiles = [".xlsx"];

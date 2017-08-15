@@ -8,7 +8,7 @@ use DB;
 use Auth;
 use Carbon\Carbon;
 use Excel;
-use Mockery\Exception;
+use Exception;
 use Response;
 use Sentinel;
 use Validator;

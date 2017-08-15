@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
+        <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
     <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        try {
+            ace.settings.check('breadcrumbs', 'fixed')
+        } catch (e) {
+        }
     </script>
 
     <ul class="breadcrumb">
@@ -45,56 +48,85 @@
                             <select class="form-control" name="category_id">
                                 <option value="">-- Danh mục --</option>
                                 @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                             <select class="form-control" name="manufacturer_id">
                                 <option value="">-- Nhà sản xuất --</option>
                                 @foreach ($manufacturers as $manufacturer)
-                                <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
+                                    <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
                                 @endforeach
                             </select>
                             <select class="form-control" name="supplier_id">
                                 <option value="">-- Nhà cung cấp --</option>
                                 @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach
                             </select>
-                            <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" name="keyword" />
+                            <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" name="keyword"/>
                             <select class="form-control" name="state">
                                 <option value="">-- Trạng thái hàng --</option>
                                 @foreach (config('teko.product.state') as $k => $v)
-                                <option value="{{ $k }}">{{ $v }}</option>
+                                    <option value="{{ $k }}">{{ $v }}</option>
                                 @endforeach
                             </select>
                             <button type="submit" class="btn btn-purple btn-sm">
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button>
                         </form>
+                        {{--<form class="form-inline" action="{{ url('product-suppliers/update-price') }}" method="get" style="margin-top: 10px">--}}
+                        <button type="submit" class="btn btn-success btn-sm" id="btn_show"  style="margin-top: 10px">
+                            Update Price to Magento
+                        </button>
+                        {{--</form>--}}
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="myModalRunJob" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header" style="text-align: center">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.<br> Bạn có đồng ý cập nhật giá không?</h4>
+                    </div>
+                    <div  style="text-align: center; margin-top: 10px" >
+                        <button class="btn btn-success btn-sm" id="btn_price" style="margin-right: 30px" data-dismiss="modal">Đồng ý</button>
+                        <button class="btn btn-danger btn-sm" id="btn_price"  data-dismiss="modal">Hủy</button>
+                    </div>
+
+                    <div class="modal-body" id="CheckStatusBody">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
     <div class="row">
         <div class="col-xs-12">
-            <table id="dataTables-product-suppliers" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+            <table id="dataTables-product-suppliers"
+                   class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
-                    <tr>
-                        <th>Danh mục</th>
-                        <th>Nhà sản xuất</th>
-                        <th>SKU</th>
-                        <th>Tên</th>
-                        <th>NCC</th>
-                        <th>Giá nhập</th>
-                        <th>Hiệu lực từ</th>
-                        <th>Hiệu lực đến</th>
-                        <th>Số lượng tối thiểu</th>
-                        <th>Giá bán khuyến nghị</th>
-                        <th>Tình trạng</th>
-                        <th>Người cập nhật</th>
-                        <th>Cập nhật lần cuối</th>
-                    </tr>
+                <tr>
+                    <th>Danh mục</th>
+                    <th>Nhà sản xuất</th>
+                    <th>SKU</th>
+                    <th>Tên</th>
+                    <th>NCC</th>
+                    <th>Giá nhập</th>
+                    <th>Hiệu lực từ</th>
+                    <th>Hiệu lực đến</th>
+                    <th>Số lượng tối thiểu</th>
+                    <th>Giá bán khuyến nghị</th>
+                    <th>Tình trạng</th>
+                    <th>Người cập nhật</th>
+                    <th>Cập nhật lần cuối</th>
+                </tr>
                 </thead>
             </table>
         </div>
@@ -108,48 +140,68 @@
 @endsection
 
 @section('inline_scripts')
-<script>
-$(function () {
-    var datatable = $("#dataTables-product-suppliers").DataTable({
-        searching: false,
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '{!! url('/product-suppliers/datatables') !!}',
-            data: function (d) {
-                d.category_id = $('select[name=category_id]').val();
-                d.manufacturer_id = $('select[name=manufacturer_id]').val();
-                d.supplier_id = $('select[name=supplier_id]').val();
-                d.keyword = $('input[name=keyword]').val();
-                d.state = $('select[name=state]').val();
-            }
-        },
-        columns: [
-            {data: 'category_name', name: 'category_name', orderable: false},
-            {data: 'manufacturer_name', name: 'manufacturer_name', orderable: false},
-            {data: 'sku', name: 'sku', orderable: false},
-            {data: 'product_name', name: 'product_name', orderable: false},
-            {data: 'supplier_name', name: 'supplier_name', orderable: false},
-            {data: 'import_price', name: 'import_price'},
-            {data: 'from_date', name: 'from_date'},
-            {data: 'to_date', name: 'to_date'},
-            {data: 'min_quantity', name: 'min_quantity'},
-            {data: 'price_recommend', name: 'price_recommend'},
-            {data: 'state', name: 'state'},
-            {data: 'updated_by', name: 'updated_by'},
-            {data: 'updated_at', name: 'updated_at'},
-        ],
-        columnDefs: [
-            {className: 'text-right', 'targets': [5,6,7,8,9]}
-        ],
-        pageLength: 50,
-        order: [12, 'desc']
-    });
+    <script>
+        $(function () {
+            var datatable = $("#dataTables-product-suppliers").DataTable({
+                searching: false,
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '{!! url('/product-suppliers/datatables') !!}',
+                    data: function (d) {
+                        d.category_id = $('select[name=category_id]').val();
+                        d.manufacturer_id = $('select[name=manufacturer_id]').val();
+                        d.supplier_id = $('select[name=supplier_id]').val();
+                        d.keyword = $('input[name=keyword]').val();
+                        d.state = $('select[name=state]').val();
+                    }
+                },
+                columns: [
+                    {data: 'category_name', name: 'category_name', orderable: false},
+                    {data: 'manufacturer_name', name: 'manufacturer_name', orderable: false},
+                    {data: 'sku', name: 'sku', orderable: false},
+                    {data: 'product_name', name: 'product_name', orderable: false},
+                    {data: 'supplier_name', name: 'supplier_name', orderable: false},
+                    {data: 'import_price', name: 'import_price'},
+                    {data: 'from_date', name: 'from_date'},
+                    {data: 'to_date', name: 'to_date'},
+                    {data: 'min_quantity', name: 'min_quantity'},
+                    {data: 'price_recommend', name: 'price_recommend'},
+                    {data: 'state', name: 'state'},
+                    {data: 'updated_by', name: 'updated_by'},
+                    {data: 'updated_at', name: 'updated_at'},
+                ],
+                columnDefs: [
+                    {className: 'text-right', 'targets': [5, 6, 7, 8, 9]}
+                ],
+                pageLength: 50,
+                order: [12, 'desc']
+            });
 
-    $('#search-form').on('submit', function(e) {
-        datatable.draw();
-        e.preventDefault();
-    });
-});
-</script>
+            $('#search-form').on('submit', function (e) {
+                datatable.draw();
+                e.preventDefault();
+            });
+
+        });
+        $(document).ready(function () {
+
+            $(document).on("click", "#btn_show", function () {
+                $('#myModalRunJob').modal('show');
+            });
+
+            $(document).on("click", "#btn_price", function () {
+                $.ajax({
+                    headers: {'X-CSRF-Token': $('input[name="_token"]').val()},
+                    url: '{{ url('product-suppliers/update-price') }}',
+                    type: 'GET',
+                    success: function (res) {
+                        if (res.status == 'success') {
+
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

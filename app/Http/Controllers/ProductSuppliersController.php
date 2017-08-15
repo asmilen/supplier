@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Supplier;
 use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
+use App\Jobs\UpdatePriceToMagento;
+use Sentinel;
 
 class ProductSuppliersController extends Controller
 {
@@ -23,5 +25,11 @@ class ProductSuppliersController extends Controller
     public function getDatatables()
     {
         return ProductSupplier::getDatatables();
+    }
+
+    public function updatePriceToMagento()
+    {
+        $user_id = Sentinel::getUser()->id;
+        dispatch(new UpdatePriceToMagento($user_id));
     }
 }

@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex']);
+var app = angular.module('app', ['controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -78,13 +78,14 @@ app.config(['$httpProvider', function ($httpProvider) {
 
 __webpack_require__(2);
 __webpack_require__(4);
+__webpack_require__(7);
 __webpack_require__(5);
 __webpack_require__(6);
-__webpack_require__(7);
+__webpack_require__(8);
 __webpack_require__(3);
 
-__webpack_require__(8);
 __webpack_require__(9);
+__webpack_require__(10);
 
 /***/ }),
 /* 1 */
@@ -492,6 +493,8 @@ function ProductSalepriceController($scope, $http, $window) {
         $http.put('/products/' + PRODUCT_ID + '/saleprice', $scope.productSalepriceForm).then(function () {
             $scope.productSalepriceForm.successful = true;
             $scope.productSalepriceForm.disabled = false;
+
+            $window.location.reload();
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productSalepriceForm.errors = _.flatten(_.toArray(response.data));
@@ -505,6 +508,64 @@ function ProductSalepriceController($scope, $http, $window) {
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
+
+ProductSupplierController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function ProductSupplierController($scope, $http, $window) {
+
+    function productForm() {
+        this.category_id = '';
+        this.manufacturer_id = '';
+        this.color_id = '';
+        this.type = 'simple';
+        this.parent_id = '0';
+        this.name = '';
+        this.code = '';
+        this.source_url = '';
+        this.image = {};
+        this.description = '';
+        this.status = true;
+        this.attributes = {};
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    };
+
+    $scope.productForm = new productForm();
+    $scope.getCategories = function () {
+        $http.get('/api/categories').then(function (response) {
+            $scope.categories = response.data;
+        });
+    };
+
+    $scope.getManufacturers = function () {
+        $http.get('/api/manufacturers').then(function (response) {
+            $scope.manufacturers = response.data;
+        });
+    };
+
+    $scope.refreshData = function () {
+        if (categoryId = $scope.productForm.category_id) {
+            $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
+                $scope.attributes = response.data;
+                _.each($scope.attributes, function (attribute) {
+                    $scope.productForm.attributes[attribute.slug] = '';
+                });
+            });
+        }
+    };
+
+    $scope.getCategories();
+    $scope.getManufacturers();
+    $scope.refreshData();
+}
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -559,7 +620,7 @@ function TransportFeeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -580,7 +641,7 @@ function fileread() {
 }
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive("select2", select2);
@@ -630,7 +691,7 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Supplier extends Model
 {
+    use Trackable, HasUpdater;
+
     public function addresses()
     {
         return $this->hasMany(SupplierAddress::class);
@@ -25,7 +27,7 @@ class Supplier extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id','name','code','tax_number','status','type'
+            'id','name','code','tax_number','status','type','sup_type','price_active_time'
         ])->with('addresses','suppliers_supported_provinces');
 
         return Datatables::eloquent($model)
@@ -60,10 +62,25 @@ class Supplier extends Model
                 $string .= $model->addresses()->first() ? $model->addresses()->first()->contact_phone : '';
                 return $string;
             })
+            ->editColumn('price_active_time', function ($model) {
+                return ($model->price_active_time/24) . ' ngày' ;
+            })
+            ->editColumn('sup_type', function ($model) {
+                if ($model->sup_type === 1){
+                    return 'Ký gửi';
+                }else
+                return 'Hàng mua';
+            })
             ->editColumn('status', 'products.datatables.status')
             ->addColumn('action', 'suppliers.datatables.action')
             ->rawColumns(['status', 'action'])
             ->make(true);
     }
-}
 
+    public function scopeHasNoProducts($query)
+    {
+        return $query->where('suppliers.status', true)
+            ->leftJoin('product_supplier', 'suppliers.id', '=', 'product_supplier.supplier_id')
+            ->whereNull('product_supplier.id');
+    }
+}

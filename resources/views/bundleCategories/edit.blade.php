@@ -87,7 +87,7 @@
                                     <td class="sku">{{ $bundleProduct->sku }}</td>
                                     <td class="price">{{ $bundleProduct->price }}</td>
                                     <td><input name="quantity[]" type="number" min = 0 value="{{ $bundleProduct->quantity }}"/></td>
-                                    <td><input type="radio" name="default"  {{ $bundleProduct->is_default == 1 ? ' checked=checked' : '' }}/></td>
+                                    <td><input type="radio" name="default"  value="{{ $bundleProduct->id }}" {{ $bundleProduct->is_default ? ' checked=checked' : '' }}/></td>
                                     <td><a class="deleteProduct" data-categoryId ="{{ $bundleCategory->id }}" data-productId ="{{ $bundleProduct->id }}" data-bundleId = "{{  $bundleProduct->id_bundle  }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
                                 </tr>
                             @endforeach
@@ -238,7 +238,7 @@
                         '<td><a class="deleteProduct" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>'  +
                         + '</tr>');
                 }
-                $("#myModalProduct").hide();
+                $("#myModalProduct").modal('hide');
                 $("body").removeClass("modal-open");
                 productsTable = $("#products-table").DataTable({
                     autoWidth: false

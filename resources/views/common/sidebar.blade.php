@@ -44,39 +44,75 @@
             <a href="{{ url('/dashboard') }}"><i class="menu-icon fa fa-tachometer"></i> <span class="menu-text"> Dashboard </span></a>
         </li>
 
-        @if ($currentUser->hasAccess('categories.index'))
-        <li class="{{ (Request::is('categories') || Request::is('categories/*')) ? 'active' : '' }}">
-            <a href="{{ url('/categories') }}"><i class="menu-icon fa fa-folder"></i> <span class="menu-text"> Danh mục </span></a>
-        </li>
-        @endif
+        @if ($currentUser->hasAccess('categories.index') || $currentUser->hasAccess('manufacturers.index') || $currentUser->hasAccess('colors.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('suppliers.getList'))
+            <li class="{{ (Request::is('categories') || Request::is('categories/*') || Request::is('manufacturers') || Request::is('manufacturers/*') || Request::is('colors') || Request::is('colors/*') || Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active open' : '' }}">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-list"></i>
+                    <span class="menu-text"> Quản lý danh mục </span>
 
-        @if ($currentUser->hasAccess('manufacturers.index'))
-        <li class="{{ (Request::is('manufacturers') || Request::is('manufacturers/*')) ? 'active' : '' }}">
-            <a href="{{ url('/manufacturers') }}"><i class="menu-icon fa fa-cube"></i> <span class="menu-text"> Nhà SX </span></a>
-        </li>
-        @endif
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
 
-        @if ($currentUser->hasAccess('colors.index'))
-            <li class="{{ (Request::is('colors') || Request::is('colors/*')) ? 'active' : '' }}">
-                <a href="{{ url('/colors') }}"><i class="menu-icon fa fa-paint-brush"></i> <span class="menu-text"> Màu sắc </span></a>
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    @if ($currentUser->hasAccess('categories.index'))
+                    <li class="{{ (Request::is('categories') || Request::is('categories/*')) ? 'active' : '' }}">
+                        <a href="{{ url('/categories') }}"><i class="menu-icon fa fa-folder"></i> <span class="menu-text"> Danh mục </span></a>
+                    </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('manufacturers.index'))
+                    <li class="{{ (Request::is('manufacturers') || Request::is('manufacturers/*')) ? 'active' : '' }}">
+                        <a href="{{ url('/manufacturers') }}"><i class="menu-icon fa fa-cube"></i> <span class="menu-text"> Nhà SX </span></a>
+                    </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('colors.index'))
+                        <li class="{{ (Request::is('colors') || Request::is('colors/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/colors') }}"><i class="menu-icon fa fa-paint-brush"></i> <span class="menu-text"> Màu sắc </span></a>
+                        </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('suppliers.getList'))
+                        <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-users"></i> <span class="menu-text"> Nhà cung cấp </span></a>
+                        </li>
+                    @endif
+                </ul>
             </li>
         @endif
 
-        @if ($currentUser->hasAccess('attributes.index'))
-        <li class="{{ (Request::is('attributes') || Request::is('attributes/*')) ? 'active' : '' }}">
-            <a href="{{ url('/attributes') }}"><i class="menu-icon fa fa-list-alt"></i> <span class="menu-text"> Thuộc tính </span></a>
-        </li>
-        @endif
+        @if ($currentUser->hasAccess('products.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('combo.index'))
+            <li class="{{ (Request::is('products') || Request::is('products/*') || Request::is('attributes') || Request::is('attributes/*') || Request::is('combo') || Request::is('combo/*')) ? 'active open' : '' }}">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-list"></i>
+                    <span class="menu-text"> Quản lý sản phẩm </span>
 
-        @if ($currentUser->hasAccess('products.index'))
-        <li class="{{ (Request::is('products') || Request::is('products/*')) ? 'active' : '' }}">
-            <a href="{{ url('/products') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm </span></a>
-        </li>
-        @endif
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
 
-        @if ($currentUser->hasAccess('combo.index'))
-            <li class="{{ (Request::is('combo') || Request::is('combo/*')) ? 'active' : '' }}">
-                <a href="{{ url('/combo') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm Combo </span></a>
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    @if ($currentUser->hasAccess('products.index'))
+                        <li class="{{ (Request::is('products') || Request::is('products/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/products') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm </span></a>
+                        </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('attributes.index'))
+                        <li class="{{ (Request::is('attributes') || Request::is('attributes/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/attributes') }}"><i class="menu-icon fa fa-list-alt"></i> <span class="menu-text"> Thuộc tính </span></a>
+                        </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('combo.index'))
+                        <li class="{{ (Request::is('combo') || Request::is('combo/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/combo') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm Combo </span></a>
+                        </li>
+                    @endif
+                </ul>
             </li>
         @endif
 
@@ -101,36 +137,69 @@
                     </li>
                 </ul>
             </li>
-
         @endif
 
-        @if ($currentUser->hasAccess('suppliers.getList'))
-            <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active' : '' }}">
-                <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-users"></i> <span class="menu-text"> Nhà cung cấp </span></a>
+        @if ($currentUser->hasAccess('product-suppliers.index'))
+            <li class="{{ (Request::is('product-suppliers') || Request::is('product-suppliers/*')) ? 'active' : '' }}">
+                <a href="{{ url('/product-suppliers') }}"><i class="menu-icon fa fa-exchange"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
             </li>
         @endif
 
         @if ($currentUser->hasAccess('suppliers.index'))
-            <li class="{{ (Request::is('suppliers') || Request::is('suppliers/index')) ? 'active' : '' }}">
+            <li class="{{ (Request::is('suppliers') || Request::is('suppliers/*')) ? 'active' : '' }}">
                 <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
             </li>
         @endif
 
         @if ($currentUser->hasAccess('supplier.updatePrice'))
             <li class="{{ (Request::is('supplier') || Request::is('supplier/updatePrice')) ? 'active' : '' }}">
-                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-wrench"></i> <span class="menu-text"> Cập nhật giá </span></a>
+                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-wrench"></i> <span class="menu-text"> NCC Cập nhật giá </span></a>
             </li>
         @endif
 
-        @if ($currentUser->hasAccess('margins.index'))
-            <li class="{{ (Request::is('margins') || Request::is('margins/*')) ? 'active' : '' }}">
-                <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-percent"></i> <span class="menu-text"> Margin Order </span></a>
+        @if ($currentUser->hasAccess('margins.index') || $currentUser->hasAccess('transport-fees.index'))
+            <li class="{{ (Request::is('margins') || Request::is('margins/*') || Request::is('transport-fees') || Request::is('transport-fees/*')) ? 'active open' : '' }}">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-list"></i>
+                    <span class="menu-text"> Quản lý giá bán </span>
+
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    @if ($currentUser->hasAccess('margins.index'))
+                        <li class="{{ (Request::is('margins') || Request::is('margins/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/margins') }}"><i class="menu-icon fa fa-percent"></i> <span class="menu-text"> Margin Order </span></a>
+                        </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('transport-fees.index'))
+                        <li class="{{ (Request::is('transport-fees') || Request::is('transport-fees/index')) ? 'active' : '' }}">
+                            <a href="{{ url('/transport-fees') }}"><i class="menu-icon fa fa-truck"></i> <span class="menu-text"> Phí vận chuyển</span></a>
+                        </li>
+                    @endif
+                </ul>
             </li>
         @endif
 
-        @if ($currentUser->hasAccess('transport-fees.index'))
-            <li class="{{ (Request::is('transport-fees') || Request::is('transport-fees/index')) ? 'active' : '' }}">
-                <a href="{{ url('/transport-fees') }}"><i class="menu-icon fa fa-truck"></i> <span class="menu-text"> Phí vận chuyển</span></a>
+        @if ($currentUser->isSuperAdmin())
+            <li class="{{ (Request::is('model-tracking-logs') || Request::is('model-tracking-logs/*')) ? 'active open' : '' }}">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-cog"></i>
+                    <span class="menu-text"> Hệ thống </span>
+
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    <li class="{{ (Request::is('model-tracking-logs') || Request::is('model-tracking-logs/*')) ? 'active' : '' }}">
+                        <a href="{{ url('/model-tracking-logs') }}"><i class="menu-icon fa fa-bookmark-o"></i> <span class="menu-text"> Model Tracking Log </span></a>
+                    </li>
+                </ul>
             </li>
         @endif
     </ul><!-- /.nav-list -->

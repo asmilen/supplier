@@ -4,13 +4,14 @@ namespace App\Models;
 
 use DB;
 use Datatables;
+use Carbon\Carbon;
 use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Trackable, HasUpdater;
 
     /**
      * The attributes that should be mutated to dates.
@@ -26,6 +27,38 @@ class Product extends Model
         'parent_id' => 'string',
         'status' => 'boolean',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            $code = $model->code ?: $model->id;
+
+            $model->forceFill([
+                'code' => $code,
+                'sku' => $model->generateSku($code),
+            ])->save();
+        });
+
+        static::saved(function ($model)
+        {
+            if ($model->sku) {
+                dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+                    'id' => $model->id,
+                    'categoryId' => $model->category_id,
+                    'brandId' => $model->manufacturer_id,
+                    'type' => $model->type,
+                    'sku' => $model->sku,
+                    'name' => $model->name,
+                    'skuIdentifier' => $model->code,
+                    'status' => $model->status ? 'active' : 'inactive',
+                    'sourceUrl' => $model->source_url,
+                    'createdAt' => strtotime($model->created_at),
+                ])));
+            }
+        });
+    }
 
     public function category()
     {
@@ -163,5 +196,40 @@ class Product extends Model
             })
             ->rawColumns(['status','add'])
             ->make(true);
+    }
+
+    public function scopeHasNoSuppliers($query)
+    {
+        return $query->where('products.status', true)
+            ->leftJoin('product_supplier', 'products.id', '=', 'product_supplier.product_id')
+            ->whereNull('product_supplier.id');
+    }
+
+    public function scopeHasImportPriceExpired($query)
+    {
+        return $query->where('products.status', true)
+            ->join('product_supplier', 'products.id', '=', 'product_supplier.product_id')
+            ->whereNotNull('product_supplier.to_date')
+            ->where('product_supplier.to_date', '<=', Carbon::now());
+    }
+
+    public function scopeHasImportPriceExpiredSoon($query, $days = 2)
+    {
+        return $query->where('products.status', true)
+            ->join('product_supplier', 'products.id', '=', 'product_supplier.product_id')
+            ->whereNotNull('product_supplier.to_date')
+            ->where('product_supplier.to_date', '>', Carbon::now())
+            ->where('product_supplier.to_date', '<=', Carbon::now()->addDays($days));
+    }
+
+    protected function generateSku($code)
+    {
+        $sku = $this->category->code.'-'.$this->manufacturer->code.'-'.$code;
+
+        if ($this->color) {
+            $sku .= '-'.$this->color->code;
+        }
+
+        return $sku;
     }
 }

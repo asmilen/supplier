@@ -40,6 +40,9 @@ class RolesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
+        ], [
+            'name.required' => "Vui lòng nhập tên.",
+            'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
         ]);
 
         Sentinel::getRoleRepository()->createModel()->create(request()->all());
@@ -82,7 +85,11 @@ class RolesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255',
+        ], [
+            'name.required' => "Vui lòng nhập tên.",
+            'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
         ]);
+
 
         $role->update(request()->all());
 

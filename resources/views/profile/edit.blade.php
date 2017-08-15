@@ -46,6 +46,13 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Api Token</label>
+                    <div class="col-sm-6">
+                        <p class="form-control-static"><strong>{{$currentUser->api_token}}</strong></p>
+                    </div>
+                </div>
+
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
                         <button type="submit" class="btn btn-success">

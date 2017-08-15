@@ -55,14 +55,21 @@
 
 @section('scripts')
 <script src="/vendor/ace/assets/js/chosen.jquery.js"></script>
+<script src="/js/jquery.chained.min.js"></script>
 @endsection
 
 @section('inline_scripts')
 <script>
 $(function () {
+    $("#area").chained("#level");
+
     $(".chosen-select").chosen({
         allow_single_deselect: true,
         width: '100%'
+    });
+
+    $('#level').on('change', function(){
+        $('#area').trigger('chosen:updated');
     });
 });
 </script>

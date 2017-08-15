@@ -64,7 +64,11 @@ class Authenticate
             }
 
             if ($this->auth->guard($guard)->check()) {
-                return $this->auth->shouldUse($guard);
+                $this->auth->shouldUse($guard);
+
+                Sentinel::login($this->auth->user());
+
+                return $this->auth->user();
             }
         }
 

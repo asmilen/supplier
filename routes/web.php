@@ -5,6 +5,11 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+
+Route::get('login', function () {
+    return redirect('/auth/google');
+});
+
 Route::get('auth/google', 'Auth\AuthController@redirectToProvider');
 Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback');
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
@@ -106,6 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::post('suppliers/exportExcel', 'SuppliersController@exportExcel')->name('suppliers.exportExcel');
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
+        Route::post('suppliers/updateValidTime', 'SuppliersController@updateValidTime')->name('suppliers.updateValidTime');
         Route::resource('suppliers', 'SuppliersController');
 
         // Transport Fees
@@ -114,5 +120,15 @@ Route::group(['middleware' => 'auth'], function () {
         // Margins for Orders
         Route::get('margins/datatables', 'MarginsController@getDatatables')->name('margins.datatables');
         Route::resource('margins', 'MarginsController', ['except' => 'destroy']);
+
+        // Model Tracking Logs
+        Route::get('model-tracking-logs', 'ModelTrackingLogsController@index');
+        Route::get('model-tracking-logs/datatables', 'ModelTrackingLogsController@getDatatables');
+
+        // Product Suppliers
+        Route::get('product-suppliers', 'ProductSuppliersController@index');
+        Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
+        // update price to magento
+        Route::get('product-suppliers/update-price', 'ProductSuppliersController@updatePriceToMagento')->name('product-suppliers.update-price');
     });
 });

@@ -53,11 +53,27 @@ class UsersController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
+            'level' => 'required',
+            'areas' => 'required|array',
+            'areas.*' => 'required',
+        ], [
+            'name.required' => 'Vui lòng nhập tên.',
+            'name.max' => 'Tên quá dài, tối đa 255 kí tự.',
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Vui lòng nhập đúng định dạng email.',
+            'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'email.unique' => 'Email đã tồn tại.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không chính xác.',
+            'areas.required' => 'Bạn chưa chọn thông tin quản lí.',
         ]);
 
-        Sentinel::register(
+        $user = Sentinel::register(
             request()->all(), !! request('active')
         )->syncRoles(request('roles', []));
+
+        $user->setUserSupportedProvince(request('level'),request('areas'));
 
         flash()->success('Success!', 'User successfully created.');
 
@@ -99,11 +115,24 @@ class UsersController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users,email,'.$user->id,
             'password' => 'min:6|confirmed',
+            'level' => 'required',
+            'areas' => 'required|array',
+            'areas.*' => 'required',
+        ], [
+            'name.required' => 'Vui lòng nhập tên.',
+            'name.max' => 'Tên quá dài, tối đa 255 kí tự.',
+            'email.c' => 'Vui lòng nhập email.',
+            'email.unique' => 'Email đã tồn tại.',
+            'email.max' => 'Email quá dài, tối đa 255 kí tự.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không chính xác.',
         ]);
 
         $user->update(request()->all())
             ->setActivation(!! request('active'))
             ->syncRoles(request('roles', []));
+
+        $user->setUserSupportedProvince(request('level'),request('areas'));
 
         flash()->success('Success!', 'User successfully updated.');
 

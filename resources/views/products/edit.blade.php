@@ -48,30 +48,21 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
-                        <select name="category_id" class="form-control" ng-model="productForm.category_id" ng-change="refreshData()">
-                            <option value="">--Chọn Danh mục--</option>
-                            <option ng-repeat="category in categories" value="@{{ category.id }}">@{{ category.name }}</option>
-                        </select>
+                        <p class="form-control-static"><strong>{{($product->category) ? $product->category->name : ""}}</strong></p>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhà SX</label>
                     <div class="col-sm-6">
-                        <select name="manufacturer_id" class="form-control" ng-model="productForm.manufacturer_id">
-                            <option value="">--Chọn Nhà SX--</option>
-                            <option ng-repeat="manufacturer in manufacturers" value="@{{ manufacturer.id }}">@{{ manufacturer.name }}</option>
-                        </select>
+                        <p class="form-control-static"><strong>{{($product->manufacturer) ? $product->manufacturer->name : ""}}</strong></p>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Màu sắc</label>
                     <div class="col-sm-6">
-                        <select name="color_id" class="form-control" ng-model="productForm.color_id">
-                            <option value="">--Chọn Màu sắc--</option>
-                            <option ng-repeat="color in colors" value="@{{ color.id }}">@{{ color.name }}</option>
-                        </select>
+                        <p class="form-control-static"><strong>{{($product->color) ? $product->color->name : ""}}</strong></p>
                     </div>
                 </div>
 
@@ -97,10 +88,9 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Mã sản phẩm</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="code" placeholder="Mã sản phẩm" ng-model="productForm.code">
-                        <span class="help-block">
-                            Dùng để sinh SKU.
-                        </span>
+                        <div class="col-sm-6">
+                            <p class="form-control-static"><strong>{{($product->code) ? $product->code : ""}}</strong></p>
+                        </div>
                     </div>
                 </div>
 
@@ -224,7 +214,7 @@
         </div>
     </div>
 
-    @if(count($productChilds))
+    @if($product->children)
     <div class="row">
         <h3>Sản phẩm con </h3>
         <div class="col-xs-12">
@@ -238,7 +228,7 @@
                 </tr>
                 </thead>
                 <tbody id="productChildren">
-                @foreach($productChilds as $key => $value)
+                @foreach($product->children as $key => $value)
                     <tr>
                         <td>{{ $value->id }}</td>
                         <td>{{ $value->name }}</td>

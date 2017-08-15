@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Manufacturer extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Trackable, HasUpdater;
 
     /**
      * The attributes that should be mutated to dates.
@@ -30,7 +30,7 @@ class Manufacturer extends Model
             if (! empty($manufacturer->code)) {
                 return;
             }
-
+            
             $name = strtoupper(preg_replace('/[^A-Za-z0-9\-]/', '', str_replace(' ', '-', trim($manufacturer->name))));
 
             if (($pos = strpos($name, '-')) === false) {

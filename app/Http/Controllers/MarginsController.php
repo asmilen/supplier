@@ -36,10 +36,11 @@ class MarginsController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'label' => 'required',
+            'label' => 'required|max:200',
             'value' => 'required',
         ], [
             'label.required' => 'Hãy nhập label.',
+            'label.max' => 'Label quá dài, tối đa 200 ký tự.',
             'value.required' => 'Hãy nhập giá trị.',
         ]);
 
@@ -84,9 +85,10 @@ class MarginsController extends Controller
     public function update(Margin $margin)
     {
         $this->validate(request(), [
-            'label' => 'required',
+            'label' => 'required|max:200',
             'value' => 'required',
         ], [
+            'label.max' => 'Label quá dài, tối đa 200 ký tự.',
             'label.required' => 'Hãy nhập label.',
             'value.required' => 'Hãy nhập giá trị.',
         ]);

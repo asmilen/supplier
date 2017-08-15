@@ -32,5 +32,32 @@ return [
         1 => 'Máy chủ',
         2 => 'Máy trạm',
         3 => 'Linh kiện, phụ kiện khác',
-    ]
+    ],
+
+    'manager_levels' => [
+        1 => 'Khu vực (Miền)',
+        2 => 'Tỉnh',
+    ],
+
+    'manager_emails' => [
+        'to' => [
+            'tuan.nm1@teko.vn',
+            'nhuong.nx@teko.vn',
+            'dung.nd@teko.vn',
+            'khoa.nha@teko.vn',
+            'nguyen.tp@teko.vn',
+        ],
+        'cc' => [
+            'tuan.na@teko.vn',
+            'dung.cc@teko.vn',
+            'hiep.pn@teko.vn',
+        ],
+    ],
+
+    'supplier' => [
+        'sup_type' => [
+            0 => 'Hàng mua',
+            1 => 'Ký gửi',
+        ],
+    ],
 ];

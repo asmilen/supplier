@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Console\Commands\SendQueue;
 
 class Kernel extends ConsoleKernel
 {
@@ -16,6 +17,9 @@ class Kernel extends ConsoleKernel
         Commands\InitProductsFromCsv::class,
         Commands\ConsumeMessage::class,
         Commands\ImportProducts::class,
+        Commands\MigrateValidTimeProductSupplier::class,
+        Commands\EmailAlert::class,
+        SendQueue::class,
     ];
 
     /**
@@ -28,6 +32,14 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+
+        $schedule->command('queue:send')
+            ->dailyAt('02:00')
+            ->sendOutputTo('queue-send_.log', true);
+
+        $schedule->command('email:alert')
+            ->dailyAt('01:30')
+            ->sendOutputTo('email-alert.log', true);
     }
 
     /**
@@ -39,4 +51,5 @@ class Kernel extends ConsoleKernel
     {
         require base_path('routes/console.php');
     }
+
 }

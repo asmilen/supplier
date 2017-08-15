@@ -51,8 +51,16 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Tax Number</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="tax_number" placeholder="Tax Number ..."
+        <input type="number" class="form-control" name="tax_number" placeholder="Tax Number ..."
                value="{{ old('tax_number', $supplier->tax_number) }}">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Thời gian hiệu lực giá</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" name="price_active_time" placeholder="Đơn vị: ngày"
+               value="{{ old('price_active_time', ($supplier->price_active_time/24)) }}">
     </div>
 </div>
 
@@ -61,8 +69,19 @@
     <div class="col-sm-6">
         <select name="type" class="form-control">
             <option value="">--Chọn Loại hóa đơn--</option>
-            <option value="0" {{ 0 == $supplier->type ? ' selected=selected' : '' }}>Hóa đơn Trực tiếp</option>
-            <option value="1" {{ 1 == $supplier->type ? ' selected=selected' : '' }}>Hóa đơn Gián tiếp</option>
+            <option value="0" {{ 0 === $supplier->type ? ' selected=selected' : '' }}>Hóa đơn Trực tiếp</option>
+            <option value="1" {{ 1 === $supplier->type ? ' selected=selected' : '' }}>Hóa đơn Gián tiếp</option>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Loại nhà cung cấp</label>
+    <div class="col-sm-6">
+        <select name="sup_type" class="form-control">
+            <option value="">--Chọn Loại Nhà cung cấp--</option>
+            <option value="0" {{ 0 === $supplier->sup_type ? ' selected=selected' : '' }}>Hàng mua</option>
+            <option value="1" {{ 1 === $supplier->sup_type ? ' selected=selected' : '' }}>Ký gửi</option>
         </select>
     </div>
 </div>

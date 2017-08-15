@@ -183,7 +183,7 @@ $(function () {
             },
             success: function (districts) {
                 var row = $(this).closest('tr');
-                datatable.row(row).draw();
+                datatable.row(row).draw(false);
             },
             error: function () {
             }

@@ -21,7 +21,7 @@
 </div>
 <!-- /section:basics/content.breadcrumbs -->
 
-<div class="page-content" ng-controller="CategoryIndexController">
+<div class="page-content" id="categoryController" ng-controller="CategoryIndexController">
     <div class="page-header">
         <h1>
             Danh mục
@@ -51,22 +51,9 @@
                     <tr ng-repeat="category in categories">
                         <td>@{{ category.code }}</td>
                         <td>@{{ category.name }}</td>
-                        <td>
-                            <i class="@{{ category.status ? 'ace-icon fa bigger-130 fa-check-circle-o green' : 'ace-icon fa bigger-130 fa-times-circle-o red'}}"></i>
-                        </td>
-                        <td>
-                            @if ($currentUser->hasAccess('categories.margins'))
-                                <span class="orange" style="cursor: pointer;" ng-click="showEditMarginsModal(category)"><i class="ace-icon fa fa-anchor bigger-130"></i></span>
-                            @endif
-                        </td>
-                        <td>
-                            @if ($currentUser->hasAccess('categories.show'))
-                                <a class="blue" href="/categories/@{{ category.id }}"><i class="ace-icon fa fa-search-plus bigger-130"></i></a>
-                            @endif
-                            @if ($currentUser->hasAccess('categories.edit'))
-                                <a class="green" href="/categories/@{{ category.id }}/edit"><i class="ace-icon fa fa-pencil bigger-130"></i></a>
-                            @endif
-                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -116,4 +103,48 @@
         </div>
     </div>
 </div><!-- /.page-content -->
+@endsection
+@section('scripts')
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
+    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+@endsection
+@section('inline_scripts')
+    <script>
+        $(function () {
+            var datatable = $("#dataTables-categories").DataTable({
+                searching: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                pageLength: 25,
+                ajax: {
+                    url: '{!! route('categories.datatables') !!}',
+                    data: function (d) {
+                        d.keyword = $('input[name=keyword]').val();
+                        d.typeId = $('select[name=typeId]').val();
+                        d.status = $('select[name=status]').val();
+                    }
+                },
+                columns: [
+                    {data: 'code', name: 'code'},
+                    {data: 'name', name: 'name'},
+                    {data: 'status', name: 'status'},
+                    {data: 'margin', name: 'margin', orderable: false},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                ]
+            });
+
+            $('#search-form').on('submit', function(e) {
+                datatable.draw();
+                e.preventDefault();
+            });
+            $(document).on("click", ".orange", function () {
+                    var data = datatable.row( $(this).parents('tr') ).data();
+                angular.element('#categoryController').scope().$apply();
+                angular.element('#categoryController').scope().showEditMarginsModal(data);
+            });
+        });
+
+
+    </script>
 @endsection

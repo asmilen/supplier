@@ -12,6 +12,10 @@ class Bundle extends Model
     {
         return $this->belongsToMany(Product::class,'bundle_product','id_bundle','id_product')->withPivot('is_default', 'quantity');
     }
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class,'bundle_category','id_bundle','category')->withPivot('name', 'isRequire');
+    }
 
     public static function getDatatables()
     {

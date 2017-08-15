@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Models\BundleProduct;
 use DB;
 use App\Models\Bundle;
 use App\Models\Province;
@@ -15,7 +16,7 @@ class BundlesController extends Controller
     {
         $labels = config('teko.bundleLabels');
 
-        $bundles = Bundle::withCount('products')->where(
+        $bundles = Bundle::withCount('products', 'categories')->where(
             'region_id', Province::getRegionIdsByCode($codeProvince)
         )->whereIn('label', array_keys($labels))->havingRaw('products_count > 0')->get()->groupBy('label');
 

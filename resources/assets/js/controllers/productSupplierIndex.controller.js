@@ -9,6 +9,14 @@ function ProductSupplierIndexController($scope, $http) {
     function addProductSupplierForm() {
         this.product_id = '';
         this.product_name = '';
+        this.supplier_id = '';
+        this.supplier_name = '';
+        this.import_price = '';
+        this.from_date = '';
+        this.to_date = '';
+        this.min_quantity = 0;
+        this.price_recommend = '';
+        this.success = false;
         this.errors = [];
         this.disabled = false;
     }
@@ -78,4 +86,29 @@ function ProductSupplierIndexController($scope, $http) {
 
         $('#modal-select-supplier').modal('hide');
     }
+
+    $scope.addProductSupplier = function () {
+        $scope.addProductSupplierForm.success = false;
+        $scope.addProductSupplierForm.errors = [];
+        $scope.addProductSupplierForm.disabled = true;
+
+        $http.post('/product-suppliers', $scope.addProductSupplierForm)
+            .then(function (response) {
+                $scope.addProductSupplierForm = new addProductSupplierForm();
+                $scope.addProductSupplierForm.success = true;
+            })
+            .catch(function (response) {
+                if (typeof response.data === 'object') {
+                    $scope.addProductSupplierForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.addProductSupplierForm.errors = ['Something went wrong. Please try again.'];
+                }
+                $scope.addProductSupplierForm.disabled = false;
+            });
+    }
+
+    $('.input-daterange').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true
+    });
 }

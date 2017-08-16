@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('styles')
+<link rel="stylesheet" href="/vendor/ace/assets/css/datepicker.css" />
+@endsection
+
 @section('content')
 <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
@@ -113,6 +117,9 @@
                     <h4 class="modal-title">Thêm giá nhập Sản phẩm theo Nhà cung cấp</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-success" ng-if="addProductSupplierForm.success">
+                        Thêm giá nhập theo nhà cung cấp thành công.
+                    </div>
                     <div class="alert alert-danger" ng-show="addProductSupplierForm.errors.length > 0">
                         <ul>
                             <li ng-repeat="error in addProductSupplierForm.errors">@{{ error }}</li>
@@ -147,7 +154,13 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.from_date_to_date" placeholder="Hiệu lực giá">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.from_date" placeholder="Từ" />
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-exchange"></i>
+                                    </span>
+                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.to_date" placeholder="Đến" />
+                                </div>
                             </div>
                         </div>
 
@@ -279,6 +292,7 @@
 @section('scripts')
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
+    <script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
 @endsection
 
 @section('inline_scripts')

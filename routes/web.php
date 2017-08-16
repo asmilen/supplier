@@ -111,6 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::post('suppliers/exportExcel', 'SuppliersController@exportExcel')->name('suppliers.exportExcel');
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
+        Route::post('suppliers/updateValidTime', 'SuppliersController@updateValidTime')->name('suppliers.updateValidTime');
         Route::resource('suppliers', 'SuppliersController');
 
         // Transport Fees
@@ -127,6 +128,10 @@ Route::group(['middleware' => 'auth'], function () {
         // Product Suppliers
         Route::get('product-suppliers', 'ProductSuppliersController@index');
         Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
+
         Route::post('product-suppliers', 'ProductSuppliersController@store');
+
+        // update price to magento
+        Route::get('product-suppliers/update-price', 'ProductSuppliersController@updatePriceToMagento')->name('product-suppliers.update-price');
     });
 });

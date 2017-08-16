@@ -5,10 +5,13 @@
 @endsection
 
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
+        <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
     <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        try {
+            ace.settings.check('breadcrumbs', 'fixed')
+        } catch (e) {
+        }
     </script>
 
     <ul class="breadcrumb">
@@ -53,57 +56,85 @@
                             <select class="form-control" name="category_id">
                                 <option value="">-- Danh mục --</option>
                                 @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                             <select class="form-control" name="manufacturer_id">
                                 <option value="">-- Nhà sản xuất --</option>
                                 @foreach ($manufacturers as $manufacturer)
-                                <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
+                                    <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
                                 @endforeach
                             </select>
                             <select class="form-control" name="supplier_id">
                                 <option value="">-- Nhà cung cấp --</option>
                                 @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach
                             </select>
-                            <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" name="keyword" />
+                            <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" name="keyword"/>
                             <select class="form-control" name="state">
                                 <option value="">-- Trạng thái hàng --</option>
                                 @foreach (config('teko.product.state') as $k => $v)
-                                <option value="{{ $k }}">{{ $v }}</option>
+                                    <option value="{{ $k }}">{{ $v }}</option>
                                 @endforeach
                             </select>
                             <button type="submit" class="btn btn-purple btn-sm">
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button>
                         </form>
+                        {{--<form class="form-inline" action="{{ url('product-suppliers/update-price') }}" method="get" style="margin-top: 10px">--}}
+                        <button type="submit" class="btn btn-success btn-sm" id="btn_show"  style="margin-top: 10px">
+                            Update Price to Magento
+                        </button>
+                        {{--</form>--}}
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="myModalRunJob" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header" style="text-align: center">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.<br> Bạn có đồng ý cập nhật giá không?</h4>
+                    </div>
+                    <div  style="text-align: center; margin-top: 10px" >
+                        <button class="btn btn-success btn-sm" id="btn_price" style="margin-right: 30px" data-dismiss="modal">Đồng ý</button>
+                        <button class="btn btn-danger btn-sm" id="btn_price"  data-dismiss="modal">Hủy</button>
+                    </div>
+
+                    <div class="modal-body" id="CheckStatusBody">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
     <div class="row">
         <div class="col-xs-12">
             <table id="dataTables-product-suppliers" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                 <thead>
-                    <tr>
-                        <th>Danh mục</th>
-                        <th>Nhà sản xuất</th>
-                        <th>SKU</th>
-                        <th>Tên</th>
-                        <th>NCC</th>
-                        <th>Giá nhập</th>
-                        <th>Hiệu lực từ</th>
-                        <th>Hiệu lực đến</th>
-                        <th>Số lượng tối thiểu</th>
-                        <th>Giá bán khuyến nghị</th>
-                        <th>Tình trạng</th>
-                        <th>Người cập nhật</th>
-                        <th>Cập nhật lần cuối</th>
-                    </tr>
+                <tr>
+                    <th>Danh mục</th>
+                    <th>Nhà sản xuất</th>
+                    <th>SKU</th>
+                    <th>Tên</th>
+                    <th>NCC</th>
+                    <th>Giá nhập</th>
+                    <th>Hiệu lực từ</th>
+                    <th>Hiệu lực đến</th>
+                    <th>Số lượng tối thiểu</th>
+                    <th>Giá bán khuyến nghị</th>
+                    <th>Tình trạng</th>
+                    <th>Người cập nhật</th>
+                    <th>Cập nhật lần cuối</th>
+                </tr>
                 </thead>
             </table>
         </div>

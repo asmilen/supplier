@@ -103,4 +103,32 @@ class SuppliersController extends Controller
 
         return $supplier;
     }
+
+    public function search()
+    {
+        $page = request('page', 1);
+
+        $limit = request('limit', 10);
+
+        $offset = ($page - 1) * $limit;
+
+        $builder = Supplier::active()
+            ->where(function ($query) {
+                $q = request('q');
+
+                $query->where('id', $q)
+                    ->orWhere('name', 'like', '%'.$q.'%');
+            });
+
+        $totalItems = $builder->count();
+
+        $suppliers = $builder->skip($offset)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $suppliers,
+            'total_items' => $totalItems,
+        ]);
+    }
 }

@@ -397,4 +397,32 @@ class ProductsController extends Controller
 
         return $products;
     }
+
+    public function search()
+    {
+        $page = request('page', 1);
+
+        $limit = request('limit', 10);
+
+        $offset = ($page - 1) * $limit;
+
+        $builder = Product::active()
+            ->where(function ($query) {
+                $q = request('q');
+
+                $query->where('id', $q)
+                    ->orWhere('sku', 'like', '%'.$q.'%');
+            });
+
+        $totalItems = $builder->count();
+
+        $products = $builder->skip($offset)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $products,
+            'total_items' => $totalItems,
+        ]);
+    }
 }

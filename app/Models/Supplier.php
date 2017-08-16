@@ -9,6 +9,11 @@ class Supplier extends Model
 {
     use Trackable, HasUpdater;
 
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     public function addresses()
     {
         return $this->hasMany(SupplierAddress::class);

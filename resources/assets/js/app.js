@@ -1,4 +1,5 @@
 var app = angular.module('app', [
+    'ui.bootstrap',
     'controllers.app',
     'controllers.productCreate',
     'controllers.productSupplier',
@@ -12,6 +13,8 @@ var app = angular.module('app', [
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
+
+require('angular-ui-bootstrap');
 
 require('./controllers/app.controller.js');
 require('./controllers/productCreate.controller.js');

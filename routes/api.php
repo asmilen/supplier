@@ -7,6 +7,8 @@ Route::get('categories/{category}/attributes', 'CategoryAttributesController@ind
 Route::get('combos', 'CombosController@index');
 Route::get('combos/{combo}/detail', 'CombosController@detail');
 Route::get('productConfigurables', 'ProductConfigurablesController@index');
+Route::get('products/search', 'ProductsController@search');
+Route::get('suppliers/search', 'SuppliersController@search');
 Route::get('products', 'ProductsController@index');
 Route::get('products/getConfigurableList', 'ProductsController@getConfigurableList');
 Route::get('products/min-import-price-list', 'ProductsController@getMinImportPriceList');

@@ -164,15 +164,6 @@
                                 <input type="text" class="form-control" ng-model="addProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label no-padding-right">Tình trạng</label>
-                            <div class="col-sm-9">
-                                <select class="form-control" ng-model="addProductSupplierForm.state">
-                                    <option value="">- Tình trạng -</option>
-                                </select>
-                            </div>
-                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -191,7 +182,41 @@
                     <h4 class="modal-title">Chọn sản phẩm</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form class="form-inline">
+                                <input type="text" class="input-large" placeholder="ID hoặc SKU" ng-model="productsListForm.q" ng-change="getProductsList(productsListForm.page)">
+                                <button type="button" class="btn btn-info btn-sm" ng-click="getProductsList(productsListForm.page)">Tìm kiếm</button>
+                            </form>
 
+                            <h3 class="header smaller lighter blue"></h3>
+
+                            <table class="table table-bordered table-hover" ng-show="productsList.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>Chọn</th>
+                                        <th>ID</th>
+                                        <th>SKU</th>
+                                        <th>Tên</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="product in productsList">
+                                        <td>
+                                            <button class="btn btn-xs btn-success" ng-click="selectProduct(product)">
+                                                <i class="ace-icon fa fa-check bigger-120"></i>
+                                            </button>
+                                        </td>
+                                        <td>@{{ product.id }}</td>
+                                        <td>@{{ product.sku }}</td>
+                                        <td>@{{ product.name }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <ul uib-pagination boundary-links="true" total-items="productsListForm.total_items" items-per-page="productsListForm.limit" ng-model="productsListForm.page" ng-change="getProductsList(productsListForm.page)" class="pagination" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="productsListForm.total_items > productsListForm.limit"></ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
@@ -208,7 +233,39 @@
                     <h4 class="modal-title">Chọn nhà cung cấp</h4>
                 </div>
                 <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <form class="form-inline">
+                                <input type="text" class="input-large" placeholder="ID hoặc Tên" ng-model="suppliersListForm.q" ng-change="getSuppliersList(suppliersListForm.page)">
+                                <button type="button" class="btn btn-info btn-sm" ng-click="getSuppliersList(suppliersListForm.page)">Tìm kiếm</button>
+                            </form>
 
+                            <h3 class="header smaller lighter blue"></h3>
+
+                            <table class="table table-bordered table-hover" ng-show="suppliersList.length > 0">
+                                <thead>
+                                    <tr>
+                                        <th>Chọn</th>
+                                        <th>ID</th>
+                                        <th>Tên</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="supplier in suppliersList">
+                                        <td>
+                                            <button class="btn btn-xs btn-success" ng-click="selectSupplier(supplier)">
+                                                <i class="ace-icon fa fa-check bigger-120"></i>
+                                            </button>
+                                        </td>
+                                        <td>@{{ supplier.id }}</td>
+                                        <td>@{{ supplier.name }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <ul uib-pagination boundary-links="true" total-items="suppliersListForm.total_items" items-per-page="suppliersListForm.limit" ng-model="suppliersListForm.page" ng-change="getSuppliersList(suppliersListForm.page)" class="pagination" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" ng-show="suppliersListForm.total_items > suppliersListForm.limit"></ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>

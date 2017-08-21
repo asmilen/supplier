@@ -128,10 +128,12 @@ Route::group(['middleware' => 'auth'], function () {
         // Product Suppliers
         Route::get('product-suppliers', 'ProductSuppliersController@index');
         Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
-
         Route::post('product-suppliers', 'ProductSuppliersController@store');
 
         // update price to magento
         Route::get('product-suppliers/update-price', 'ProductSuppliersController@updatePriceToMagento')->name('product-suppliers.update-price');
+
+        // Report
+        Route::get('reports/import-price', 'ReportsController@importPrice')->name('reports.importPrice');;
     });
 });

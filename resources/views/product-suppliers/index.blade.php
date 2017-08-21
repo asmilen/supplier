@@ -86,7 +86,6 @@
                         <button type="submit" class="btn btn-success btn-sm" id="btn_show"  style="margin-top: 10px">
                             Update Price to Magento
                         </button>
-
                     </div>
                 </div>
             </div>
@@ -103,6 +102,8 @@
                     <div  style="text-align: center; margin-top: 10px" >
                         <button class="btn btn-success btn-sm" id="btn_price" style="margin-right: 30px" data-dismiss="modal">Đồng ý</button>
                         <button class="btn btn-danger btn-sm" id="btn_price"  data-dismiss="modal">Hủy</button>
+                    </div>
+                    <div class="modal-body" id="CheckStatusBody">
                     </div>
                 </div>
 

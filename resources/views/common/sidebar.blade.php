@@ -184,6 +184,27 @@
             </li>
         @endif
 
+        @if ($currentUser->hasAccess('reports.importPrice') )
+            <li class="{{ (Request::is('reports') || Request::is('reports/*') ) ? 'active open' : '' }}">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-list"></i>
+                    <span class="menu-text"> Báo cáo </span>
+
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu nav-show" style="display: none;">
+                    @if ($currentUser->hasAccess('reports.importPrice'))
+                        <li class="{{ (Request::is('reports/import-price')) ? 'active' : '' }}">
+                            <a href="{{ url('/reports/import-price') }}"><i class="menu-icon fa fa-percent"></i> <span class="menu-text"> Giá nhập </span></a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
+
         @if ($currentUser->isSuperAdmin())
             <li class="{{ (Request::is('model-tracking-logs') || Request::is('model-tracking-logs/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">

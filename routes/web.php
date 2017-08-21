@@ -127,5 +127,8 @@ Route::group(['middleware' => 'auth'], function () {
         // Product Suppliers
         Route::get('product-suppliers', 'ProductSuppliersController@index');
         Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
+
+        // Report
+        Route::get('reports/import-price', 'ReportsController@importPrice')->name('reports.importPrice');;
     });
 });

@@ -59,9 +59,12 @@ class BundleCategoriesController extends Controller
             'bundle_id.required' => 'Hãy chọn nhóm sản phẩm.',
         ]);
 
+        $category = Product::where('id', request('default'))->first();
+
         $bundleCategory = BundleCategory::forceCreate([
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
+            'category' => $category ? $category->category_id : 0,
             'isRequired' => request('isRequired', 0),
         ]);
 
@@ -121,9 +124,12 @@ class BundleCategoriesController extends Controller
             'bundle_id.required' => 'Hãy chọn nhóm sản phẩm.',
         ]);
 
+        $category = Product::where('id', request('default'))->first();
+
         $bundleCategory->forceFill([
             'name' => request('name'),
             'id_bundle' => request('bundle_id'),
+            'category' => $category ? $category->category_id : 0,
             'isRequired' => request('isRequired', 0),
         ])->save();
 

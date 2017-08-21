@@ -138,6 +138,7 @@ class ProductSupplier extends Model
                     $query->where('state', request('state'));
                 }
             })
+            ->addColumn('action', 'product-suppliers.datatables.action')
             ->addColumn('category_name', function ($productSupplier) {
                 return isset($productSupplier->product->category->name) ? $productSupplier->product->category->name : '';
             })

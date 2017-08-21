@@ -234,15 +234,6 @@ class ProductsController extends Controller
                 $province = SupplierSupportedProvince::whereIn('supplier_id', $suppliers ? $suppliers : 0)
                         ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')
                         ->get();
-                $product->import_price = ProductSupplier::where('product_id', $id)
-                    ->whereIn('product_supplier.supplier_id', $suppliers)
-                    ->where('product_supplier.state', '=', 1)
-                    ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
-
-                $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
-                    ->whereIn('product_supplier.supplier_id', $suppliers)
-                    ->where('product_supplier.state', '=', 1)
-                    ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
             } else {
                 $supplier = Supplier::where('id', $provinceFeeMin ? $provinceFeeMin->supplier_id : 0)
                     ->get();
@@ -369,13 +360,15 @@ class ProductsController extends Controller
     }
 
     public function getProductQuotation(){
+        $isIncludeOutStock = request('include_out_stock');
+        
         $query = 'select p.id,p.sku,p.name,c.name as cname,m.name as mname,ps.supplier_name,ps.import_price,"" as location,ps.updated_at from products as p
                     left join categories as c on p.category_id = c.id
                     left join manufacturers as m on p.manufacturer_id = m.id
                     inner join (select ps.*,s.name as supplier_name from product_supplier as ps
-                    left join suppliers as s on ps.supplier_id = s.id
-                    where ps.state = 1
-                    ) as ps on p.id = ps.product_id
+                    left join suppliers as s on ps.supplier_id = s.id ' .
+                    ( !$isIncludeOutStock ? 'where ps.state = 1' : '') .
+                    ') as ps on p.id = ps.product_id
                     where p.status = 1
                     order by ps.supplier_name asc
                     limit :limit offset :offset' ;
@@ -394,5 +387,33 @@ class ProductsController extends Controller
             ->get();
 
         return $products;
+    }
+
+    public function search()
+    {
+        $page = request('page', 1);
+
+        $limit = request('limit', 10);
+
+        $offset = ($page - 1) * $limit;
+
+        $builder = Product::active()
+            ->where(function ($query) {
+                $q = request('q');
+
+                $query->where('id', $q)
+                    ->orWhere('sku', 'like', '%'.$q.'%');
+            });
+
+        $totalItems = $builder->count();
+
+        $products = $builder->skip($offset)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $products,
+            'total_items' => $totalItems,
+        ]);
     }
 }

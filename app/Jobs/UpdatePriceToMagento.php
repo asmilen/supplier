@@ -112,6 +112,7 @@ class UpdatePriceToMagento implements ShouldQueue
                                 ->orderBy('min_price')
                                 ->first();
 
+
                             if ($minPrice) {
                                 $post_data = [
                                     'data' => [
@@ -122,16 +123,18 @@ class UpdatePriceToMagento implements ShouldQueue
                                         ]
                                     ]
                                 ];
+                                $checkLog = PostPriceToMgtLog::where('post_data', json_encode($post_data))->first();
+                                if(!$checkLog){
+                                    $response = $this->callApi($post_data);
 
-                                $response = $this->callApi($post_data);
-
-                                PostPriceToMgtLog::create([
-                                    'user_id' => $this->user_id,
-                                    'product_id' => $product->id,
-                                    'detail' => json_encode($detail[0]),
-                                    'post_data' => json_encode($post_data),
-                                    'response' => json_encode($response)
-                                ]);
+                                    PostPriceToMgtLog::create([
+                                        'user_id' => $this->user_id,
+                                        'product_id' => $product->id,
+                                        'detail' => json_encode($detail[0]),
+                                        'post_data' => json_encode($post_data),
+                                        'response' => json_encode($response)
+                                    ]);
+                                }
                             }
                         }
                     }

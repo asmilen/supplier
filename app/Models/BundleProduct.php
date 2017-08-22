@@ -12,24 +12,24 @@ class BundleProduct extends Model
 
     public function bundle()
     {
-        return $this->belongsTo(Bundle::class,'id_bundle');
+        return $this->belongsTo(Bundle::class, 'id_bundle');
     }
 
     public function bundleCategory()
     {
-        return $this->belongsTo(BundleCategory::class,'id_bundleCategory');
+        return $this->belongsTo(BundleCategory::class, 'id_bundleCategory');
     }
 
     public function product()
     {
-        return $this->belongsTo(Product::class,'id_product');
+        return $this->belongsTo(Product::class, 'id_product');
     }
 
     public static function getDatatables()
     {
         $model = static::select([
-            'id','id_product', 'id_bundleCategory','id_bundle','is_default','quantity'
-        ])->with('bundle','bundleCategory', 'product');
+            'id', 'id_product', 'id_bundleCategory', 'id_bundle', 'is_default', 'quantity'
+        ])->with('bundle', 'bundleCategory', 'product');
 
         return Datatables::eloquent($model)
             ->addColumn('nameProduct', function ($model) {
@@ -43,7 +43,7 @@ class BundleProduct extends Model
             })
             ->editColumn('is_default', 'bundleProducts.datatables.status')
             ->addColumn('action', 'bundleProducts.datatables.action')
-            ->rawColumns(['is_default','action'])
+            ->rawColumns(['is_default', 'action'])
             ->make(true);
     }
 
@@ -64,15 +64,26 @@ class BundleProduct extends Model
         $margin = MarginRegionCategory::where('category_id', $product->category_id)
             ->where('region_id', $regionId)->first();
 
-        $productMargin = $margin ? 1 + 0.01 * $margin->margin : 1.05;
+        $province_id = Province::where('region_id', $regionId)->pluck('id');
+
+        $provinceFee = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
+        
+        $productMarginFee =( $margin ? 1 + 0.01 * $margin->margin : 1.05) + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2  ;
 
         $product->best_price = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)
-            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
+            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee . '/1000) * 1000))'));
 
         $product->import_price = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)
             ->min(DB::raw('(ceil(product_supplier.import_price/1000) * 1000)'));
+        $product->import_price_w_margin = ProductSupplier::where('product_id', $product->id)
+            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee . '/1000) * 1000))'));
+        $product->recommended_price = ProductSupplier::where('product_id', $product->id)
+            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('price_recommend', '!=', 0)
+            ->min(DB::raw('(ceil(product_supplier.price_recommend/1000) * 1000)'));
 
         $product->quantity = $this->quantity;
 

@@ -82,11 +82,11 @@
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button>
                         </form>
-                        {{--<form class="form-inline" action="{{ url('product-suppliers/update-price') }}" method="get" style="margin-top: 10px">--}}
+
                         <button type="submit" class="btn btn-success btn-sm" id="btn_show"  style="margin-top: 10px">
                             Update Price to Magento
                         </button>
-                        {{--</form>--}}
+
                     </div>
                 </div>
             </div>
@@ -94,7 +94,6 @@
 
         <div class="modal fade" id="myModalRunJob" role="dialog">
             <div class="modal-dialog">
-
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header" style="text-align: center">
@@ -104,10 +103,6 @@
                     <div  style="text-align: center; margin-top: 10px" >
                         <button class="btn btn-success btn-sm" id="btn_price" style="margin-right: 30px" data-dismiss="modal">Đồng ý</button>
                         <button class="btn btn-danger btn-sm" id="btn_price"  data-dismiss="modal">Hủy</button>
-                    </div>
-
-                    <div class="modal-body" id="CheckStatusBody">
-
                     </div>
                 </div>
 
@@ -371,5 +366,25 @@ $(function () {
         e.preventDefault();
     });
 });
+
+$(document).ready(function () {
+    $(document).on("click", "#btn_show", function () {
+        $('#myModalRunJob').modal('show');
+    });
+
+    $(document).on("click", "#btn_price", function () {
+        $.ajax({
+            headers: {'X-CSRF-Token': $('input[name="_token"]').val()},
+            url: '{{ url('product-suppliers/update-price') }}',
+            type: 'GET',
+            success: function (res) {
+                if (res.status == 'success') {
+
+                }
+            }
+        });
+    });
+});
+
 </script>
 @endsection

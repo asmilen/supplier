@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Jobs\UpdatePriceToMagento;
 use App\Models\District;
 use DB;
 use Auth;
@@ -400,7 +401,10 @@ class SuppliersController extends Controller
             'createdAt' => strtotime($product->updated_at)
         ];
         $messSend = json_encode($jsonSend);
+        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, $request->input('id')));
+
         dispatch(new PublishMessage('teko.sale', 'sale.price.import.update', $messSend));
+
     }
 
     public function getList()

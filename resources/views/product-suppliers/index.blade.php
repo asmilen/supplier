@@ -82,10 +82,11 @@
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button>
                         </form>
-
-                        <button type="submit" class="btn btn-success btn-sm" id="btn_show"  style="margin-top: 10px">
+                        <form class="form-inline" action="{{ url('product-suppliers/update-price') }}" method="get" style="margin-top: 10px">
+                        <button type="submit" class="btn btn-success btn-sm" id="btn_show2"  style="margin-top: 10px">
                             Update Price to Magento
                         </button>
+                        </form>
                     </div>
                 </div>
             </div>

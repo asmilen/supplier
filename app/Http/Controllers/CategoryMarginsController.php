@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\UpdatePriceToMagento;
 use App\Models\Category;
 use App\Models\MarginRegionCategory;
+use Sentinel;
 
 class CategoryMarginsController extends Controller
 {
@@ -15,9 +17,9 @@ class CategoryMarginsController extends Controller
     public function update(Category $category)
     {
         $this->validate(request(), [
-            'north_region' => 'required|numeric|min:0|max:100',
-            'middle_region' => 'required|numeric|min:0|max:100',
-            'south_region' => 'required|numeric|min:0|max:100',
+            'north_region' => 'required|numeric|min:1|max:100',
+            'middle_region' => 'required|numeric|min:1|max:100',
+            'south_region' => 'required|numeric|min:1|max:100',
         ]);
 
         $mapToRegions = [
@@ -34,5 +36,7 @@ class CategoryMarginsController extends Controller
                 'margin' => $value,
             ]);
         }
+
+        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, 0));
     }
 }

@@ -137,8 +137,10 @@ function ProductSupplierIndexController($scope, $http) {
 
         $http.post('/product-suppliers', $scope.addProductSupplierForm)
             .then(function (response) {
-                $scope.addProductSupplierForm = new addProductSupplierForm();
                 $scope.addProductSupplierForm.success = true;
+                $scope.addProductSupplierForm = new addProductSupplierForm();
+
+                $('#modal-add-product-supplier').modal('hide');
             })
             .catch(function (response) {
                 if (typeof response.data === 'object') {

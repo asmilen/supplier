@@ -89,6 +89,7 @@ __webpack_require__(10);
 
 __webpack_require__(12);
 __webpack_require__(13);
+__webpack_require__(18);
 
 /***/ }),
 /* 1 */
@@ -8488,8 +8489,10 @@ function ProductSupplierIndexController($scope, $http) {
         $scope.addProductSupplierForm.disabled = true;
 
         $http.post('/product-suppliers', $scope.addProductSupplierForm).then(function (response) {
-            $scope.addProductSupplierForm = new addProductSupplierForm();
             $scope.addProductSupplierForm.success = true;
+            $scope.addProductSupplierForm = new addProductSupplierForm();
+
+            $('#modal-add-product-supplier').modal('hide');
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.addProductSupplierForm.errors = _.flatten(_.toArray(response.data));
@@ -8687,6 +8690,36 @@ function select2($timeout, $parse) {
 __webpack_require__(0);
 module.exports = __webpack_require__(1);
 
+
+/***/ }),
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */
+/***/ (function(module, exports) {
+
+angular.module('directives.format', []).directive('format', format);
+
+format.$inject = ['$filter'];
+
+function format($filter) {
+    return {
+        require: '?ngModel',
+        link: function link(scope, elem, attrs, ctrl) {
+            if (!ctrl) return;
+
+            ctrl.$formatters.unshift(function (a) {
+                return $filter(attrs.format)(ctrl.$modelValue);
+            });
+
+            ctrl.$parsers.unshift(function (viewValue) {
+                var plainNumber = viewValue.replace(/[^\d|\-+|\.+]/g, '');
+                elem.val($filter(attrs.format)(plainNumber));
+                return plainNumber;
+            });
+        }
+    };
+};
 
 /***/ })
 /******/ ]);

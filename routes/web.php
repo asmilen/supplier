@@ -126,12 +126,11 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('model-tracking-logs/datatables', 'ModelTrackingLogsController@getDatatables');
 
         // Product Suppliers
+        Route::post('product-suppliers/update-prices-to-magento', 'ProductSuppliersController@updatePriceToMagento')->name('product-suppliers.update-price');
         Route::get('product-suppliers', 'ProductSuppliersController@index')->name('product-suppliers.index');
         Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables')->name('product-suppliers.datatables');
         Route::post('product-suppliers', 'ProductSuppliersController@store')->name('product-suppliers.store');
         Route::put('product-suppliers/{id}', 'ProductSuppliersController@update')->name('product-suppliers.update');
-
-        Route::get('product-suppliers/update-price', 'ProductSuppliersController@updatePriceToMagento')->name('product-suppliers.update-price');
 
         // Report
         Route::get('reports/import-price', 'ReportsController@importPrice')->name('reports.importPrice');;

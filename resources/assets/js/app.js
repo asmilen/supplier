@@ -8,6 +8,8 @@ var app = angular.module('app', [
     'controllers.transportFeeIndex',
     'controllers.categoryIndex',
     'controllers.productSupplierIndex',
+    'directives.format',
+    'directives.currencyInput',
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {
@@ -27,3 +29,5 @@ require('./controllers/productSupplierIndex.controller.js');
 
 require('./directives/fileread.directive.js');
 require('./directives/select2.directive.js');
+require('./directives/format.directive.js');
+require('./directives/currencyInput.directive.js');

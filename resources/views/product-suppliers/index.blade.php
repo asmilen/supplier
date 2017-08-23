@@ -36,16 +36,23 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
-
-            <a class="btn btn-primary pull-right" ng-click="showAddProductSupplierModal()">
-                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Thêm</span>
-            </a>
-            <button type="submit" class="btn btn-success btn-sm pull-right" id="btn_show"  style="margin-right: 10px; height: 42px">
-                Update Price to Magento
-            </button>
         </h1>
     </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <p class="text-right">
+                <button class="btn btn-primary" ng-click="showAddProductSupplierModal()">
+                    <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                    <span class="hidden-xs">Thêm</span>
+                </button>
+                <button class="btn btn-info" ng-click="showUpdatePricesToMagentoModal()">
+                    <i class="ace-icon fa fa-save" aria-hidden="true"></i>
+                    <span class="hidden-xs">Cập nhật giá sang Magento</span>
+                </button>
+            </p>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-xs-12">
@@ -90,27 +97,6 @@
                 </div>
             </div>
         </div>
-
-
-        <div class="modal fade" id="myModalRunJob" role="dialog">
-            <div class="modal-dialog">
-                <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-header" style="text-align: center">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.<br> Bạn có đồng ý cập nhật giá không?</h4>
-                    </div>
-                    <div  style="text-align: center; margin-top: 10px" >
-                        <button class="btn btn-success btn-sm" id="btn_price" style="margin-right: 30px" data-dismiss="modal">Đồng ý</button>
-                        <button class="btn btn-danger btn-sm" id="btn_price"  data-dismiss="modal">Hủy</button>
-                    </div>
-                    <div class="modal-body" id="CheckStatusBody">
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
     </div>
 
     <div class="row">
@@ -152,8 +138,8 @@
                         <td class="text-right">@{{ item.import_price | number:0 }}</td>
                         <td class="text-right">@{{ item.from_date }}</td>
                         <td class="text-right">@{{ item.to_date }}</td>
-                        <td class="text-right">@{{ item.min_quantity }}</td>
-                        <td class="text-right">@{{ item.price_recommend }}</td>
+                        <td class="text-right">@{{ item.min_quantity | number:0 }}</td>
+                        <td class="text-right">@{{ item.price_recommend | number:0 }}</td>
                         <td>@{{ stateText(item.state) }}</td>
                         <td>@{{ item.updater.name ? item.updater.name : item.creater.name }}</td>
                         <td class="text-right">@{{ item.updated_at }}</td>
@@ -203,7 +189,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá nhập (có VAT)</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)" format="number" />
                             </div>
                         </div>
 
@@ -223,14 +209,14 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Số lượng tối thiểu</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu" format="number">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá bán khuyến nghị</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị" format="number">
                             </div>
                         </div>
                     </form>
@@ -343,6 +329,25 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal-update-prices-to-magento" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Cập nhật giá sang Magento</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.</p>
+                    <p>Bạn có đồng ý cập nhật giá không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success" ng-click="updatePricesToMagento()" ng-disabled="updatePricesToMagentoForm.disabled"><i class="fa fa-save"></i> Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modal-edit-product-supplier" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -374,7 +379,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá nhập (có VAT)</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="editProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)">
+                                <input type="text" class="form-control" ng-model="editProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)" format="number" />
                             </div>
                         </div>
 
@@ -394,14 +399,26 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Số lượng tối thiểu</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="editProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu">
+                                <input type="text" class="form-control" ng-model="editProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu" format="number">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá bán khuyến nghị</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="editProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
+                                <input type="text" class="form-control" ng-model="editProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị" format="number">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Trạng thái hàng</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" ng-model="editProductSupplierForm.state">
+                                    <option value="">-- Trạng thái hàng --</option>
+                                    @foreach (config('teko.product.state') as $k => $v)
+                                    <option value="{{ $k }}">{{ $v }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </form>

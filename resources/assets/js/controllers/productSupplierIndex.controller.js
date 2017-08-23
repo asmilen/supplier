@@ -28,7 +28,7 @@ function ProductSupplierIndexController($scope, $http) {
         this.from_date = '';
         this.to_date = '';
         this.min_quantity = 0;
-        this.price_recommend = '';
+        this.price_recommend = 0;
         this.success = false;
         this.errors = [];
         this.disabled = false;
@@ -39,7 +39,8 @@ function ProductSupplierIndexController($scope, $http) {
         this.from_date = '';
         this.to_date = '';
         this.min_quantity = 0;
-        this.price_recommend = '';
+        this.price_recommend = 0;
+        this.state = '';
         this.errors = [];
         this.disabled = false;
     }
@@ -58,11 +59,16 @@ function ProductSupplierIndexController($scope, $http) {
         this.total_items = 0;
     }
 
+    function updatePricesToMagentoForm() {
+        this.disabled = false;
+    }
+
     $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
+    $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
 
     $scope.refreshData = function () {
         $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page +
@@ -136,8 +142,10 @@ function ProductSupplierIndexController($scope, $http) {
 
         $http.post('/product-suppliers', $scope.addProductSupplierForm)
             .then(function (response) {
-                $scope.addProductSupplierForm = new addProductSupplierForm();
                 $scope.addProductSupplierForm.success = true;
+                $scope.addProductSupplierForm = new addProductSupplierForm();
+
+                $('#modal-add-product-supplier').modal('hide');
             })
             .catch(function (response) {
                 if (typeof response.data === 'object') {
@@ -177,6 +185,7 @@ function ProductSupplierIndexController($scope, $http) {
         $scope.editProductSupplierForm.to_date = productSupplier.to_date;
         $scope.editProductSupplierForm.min_quantity = productSupplier.min_quantity;
         $scope.editProductSupplierForm.price_recommend = productSupplier.price_recommend;
+        $scope.editProductSupplierForm.state = productSupplier.state.toString();
 
         $('#modal-edit-product-supplier').modal('show');
     }
@@ -200,6 +209,21 @@ function ProductSupplierIndexController($scope, $http) {
                     $scope.editProductSupplierForm.errors = ['Something went wrong. Please try again.'];
                 }
                 $scope.editProductSupplierForm.disabled = false;
+            });
+    }
+
+    $scope.showUpdatePricesToMagentoModal = function () {
+        $('#modal-update-prices-to-magento').modal('show');
+    }
+
+    $scope.updatePricesToMagento = function () {
+        $scope.updatePricesToMagentoForm.disabled = true;
+
+        $http.post('/product-suppliers/update-prices-to-magento')
+            .then(function (response) {
+                $scope.updatePricesToMagentoForm.disabled = false;
+
+                $('#modal-update-prices-to-magento').modal('hide');
             });
     }
 }

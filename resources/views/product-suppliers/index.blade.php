@@ -2,6 +2,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="/vendor/ace/assets/css/datepicker.css" />
+<link rel="stylesheet" href="/vendor/ace/assets/css/select2.css">
 @endsection
 
 @section('content')
@@ -36,12 +37,23 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
-            <a class="btn btn-primary pull-right" ng-click="showAddProductSupplierModal()">
-                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Thêm</span>
-            </a>
         </h1>
     </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-12">
+            <p class="text-right">
+                <button class="btn btn-primary" ng-click="showAddProductSupplierModal()">
+                    <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                    <span class="hidden-xs">Thêm</span>
+                </button>
+                <button class="btn btn-info" ng-click="showUpdatePricesToMagentoModal()">
+                    <i class="ace-icon fa fa-save" aria-hidden="true"></i>
+                    <span class="hidden-xs">Cập nhật giá sang Magento</span>
+                </button>
+            </p>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-xs-12">
@@ -53,34 +65,48 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
-                            <select class="form-control" ng-model="searchProductSupplierForm.category_id" ng-change="refreshData()">
-                                <option value="">-- Danh mục --</option>
-                                @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="form-control" ng-model="searchProductSupplierForm.manufacturer_id" ng-change="refreshData()">
-                                <option value="">-- Nhà sản xuất --</option>
-                                @foreach ($manufacturers as $manufacturer)
-                                <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="form-control" ng-model="searchProductSupplierForm.supplier_id" ng-change="refreshData()">
-                                <option value="">-- Nhà cung cấp --</option>
-                                @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                @endforeach
-                            </select>
-                            <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
-                            <select class="form-control" ng-model="searchProductSupplierForm.state" ng-change="refreshData()">
-                                <option value="">-- Trạng thái hàng --</option>
-                                @foreach (config('teko.product.state') as $k => $v)
-                                <option value="{{ $k }}">{{ $v }}</option>
-                                @endforeach
-                            </select>
-                            <!-- <button type="button" class="btn btn-purple btn-sm" ng-click="refreshData()">
-                                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                            </button> -->
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <select class="select2" ng-model="searchProductSupplierForm.category_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Danh mục --</option>
+                                        @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchProductSupplierForm.manufacturer_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Nhà sản xuất --</option>
+                                        @foreach ($manufacturers as $manufacturer)
+                                        <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchProductSupplierForm.supplier_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Nhà cung cấp --</option>
+                                        @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchProductSupplierForm.state" ng-change="refreshData()" select2>
+                                        <option value="">-- Trạng thái hàng --</option>
+                                        @foreach (config('teko.product.state') as $k => $v)
+                                        <option value="{{ $k }}">{{ $v }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" class="btn btn-purple btn-sm" ng-click="refreshData()">
+                                        <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -318,6 +344,25 @@
         </div>
     </div>
 
+    <div class="modal fade" id="modal-update-prices-to-magento" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Cập nhật giá sang Magento</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.</p>
+                    <p>Bạn có đồng ý cập nhật giá không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success" ng-click="updatePricesToMagento()" ng-disabled="updatePricesToMagentoForm.disabled"><i class="fa fa-save"></i> Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="modal-edit-product-supplier" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -404,5 +449,6 @@
 @endsection
 
 @section('scripts')
-    <script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
+<script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
+<script src="/vendor/ace/assets/js/select2.js"></script>
 @endsection

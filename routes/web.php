@@ -130,6 +130,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables');
 
         Route::post('product-suppliers', 'ProductSuppliersController@store');
+        Route::put('product-suppliers/{id}', 'ProductSuppliersController@update');
 
         // update price to magento
         Route::get('product-suppliers/update-price', 'ProductSuppliersController@updatePriceToMagento')->name('product-suppliers.update-price');

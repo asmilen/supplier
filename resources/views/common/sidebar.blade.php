@@ -145,12 +145,6 @@
             </li>
         @endif
 
-        @if ($currentUser->hasAccess('suppliers.index'))
-            <li class="{{ (Request::is('suppliers') || Request::is('suppliers/*')) ? 'active' : '' }}">
-                <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm theo NCC</span></a>
-            </li>
-        @endif
-
         @if ($currentUser->hasAccess('supplier.updatePrice'))
             <li class="{{ (Request::is('supplier') || Request::is('supplier/updatePrice')) ? 'active' : '' }}">
                 <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-wrench"></i> <span class="menu-text"> NCC Cập nhật giá </span></a>

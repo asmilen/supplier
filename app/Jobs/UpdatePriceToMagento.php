@@ -45,15 +45,14 @@ class UpdatePriceToMagento implements ShouldQueue
      */
     public function handle()
     {
-        if($this->check == 0){
-            $this->updatePrice();
-//            $count = ProductSupplier::where('supplier_id', '!=', 0)
-//                ->where('state', 1)->count();
-//            for ($i = 0; $i < $count; $i = $i + 100){
-//                $this->dispatch(new PostPriceToMagento($this->user_id, $i));
-//            }
-        }
-        else{
+        if ($this->check == 0) {
+//            $this->updatePrice();
+            $count = ProductSupplier::where('supplier_id', '!=', 0)
+                ->where('state', 1)->count();
+            for ($i = 0; $i < $count; $i = $i + 100) {
+                dispatch(new PostPriceToMagento($this->user_id, $i));
+            }
+        } else {
             $this->postPrice();
         }
     }
@@ -212,18 +211,16 @@ class UpdatePriceToMagento implements ShouldQueue
                                     ]
                                 ]
                             ];
-                            $checkLog = PostPriceToMgtLog::where('post_data', json_encode($post_data))->first();
-                            if (!$checkLog) {
-                                $response = $this->callApi($post_data);
 
-                                PostPriceToMgtLog::create([
-                                    'user_id' => $this->user_id,
-                                    'product_id' => $product->id,
-                                    'detail' => json_encode($detail[0]),
-                                    'post_data' => json_encode($post_data),
-                                    'response' => json_encode($response)
-                                ]);
-                            }
+                            $response = $this->callApi($post_data);
+
+                            PostPriceToMgtLog::create([
+                                'user_id' => $this->user_id,
+                                'product_id' => $product->id,
+                                'detail' => json_encode($detail[0]),
+                                'post_data' => json_encode($post_data),
+                                'response' => json_encode($response)
+                            ]);
                         }
                     }
                 }

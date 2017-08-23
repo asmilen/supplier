@@ -59,4 +59,61 @@ class ProductSuppliersController extends Controller
 
         return $productSupplier;
     }
+
+    public function index()
+    {
+        $page = request('page', 1);
+
+        $limit = request('limit', 10);
+
+        $builder = $this->getProductsListBuilder();
+
+        $totalItems = $builder->count();
+
+        $productSuppliers = $builder
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $productSuppliers,
+            'total_items' => $totalItems,
+        ]);
+    }
+
+    protected function getProductsListBuilder()
+    {
+        $builder = ProductSupplier::with('product', 'product.category', 'product.manufacturer', 'supplier', 'creater', 'updater')
+            ->canManage()
+            ->orderBy('name', 'asc');
+
+        if (! empty(request('category_id'))) {
+            $builder->whereHas('product', function ($query) {
+                $query->where('category_id', request('category_id'));
+            });
+        }
+
+        if (! empty(request('manufacturer_id'))) {
+            $builder->whereHas('product', function ($query) {
+                $query->where('manufacturer_id', request('manufacturer_id'));
+            });
+        }
+
+        if (! empty(request('supplier_id'))) {
+            $builder->where('supplier_id', request('supplier_id'));
+        }
+
+        if (! empty(request('q'))) {
+            $builder->whereHas('product', function ($query) {
+                $query->where('name', 'like', '%'.request('q').'%')
+                    ->orWhere('sku', 'like', '%'.request('q').'%');
+            });
+        }
+
+        if (request('state') != '') {
+            $builder->where('state', request('state'));
+        }
+
+        return $builder;
+    }
 }

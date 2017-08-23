@@ -46,6 +46,7 @@ class ProductSuppliersController extends Controller
             'to_date' => request('to_date'),
             'min_quantity' => request('min_quantity', 0),
             'price_recommend' => request('price_recommend', 0),
+            'state' => 1,
         ]);
 
         return $productSupplier;

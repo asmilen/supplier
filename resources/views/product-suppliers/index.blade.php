@@ -178,7 +178,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá nhập (có VAT)</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)" format="number" />
                             </div>
                         </div>
 
@@ -349,7 +349,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá nhập (có VAT)</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="editProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)">
+                                <input type="text" class="form-control" ng-model="editProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)" format="number" />
                             </div>
                         </div>
 

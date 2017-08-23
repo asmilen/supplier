@@ -27,3 +27,4 @@ require('./controllers/productSupplierIndex.controller.js');
 
 require('./directives/fileread.directive.js');
 require('./directives/select2.directive.js');
+require('./directives/format.directive.js');

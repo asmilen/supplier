@@ -53,6 +53,6 @@ class ProductSuppliersController extends Controller
 
     public function updatePriceToMagento()
     {
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id));
+        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, 0));
     }
 }

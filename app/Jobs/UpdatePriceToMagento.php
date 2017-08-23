@@ -46,12 +46,12 @@ class UpdatePriceToMagento implements ShouldQueue
     public function handle()
     {
         if($this->check == 0){
-            $this->updatePrice();
-//            $count = ProductSupplier::where('supplier_id', '!=', 0)
-//                ->where('state', 1)->count();
-//            for ($i = 0; $i < $count; $i = $i + 100){
-//                $this->dispatch(new PostPriceToMagento($this->user_id, $i));
-//            }
+//            $this->updatePrice();
+            $count = ProductSupplier::where('supplier_id', '!=', 0)
+                ->where('state', 1)->count();
+            for ($i = 0; $i < $count; $i = $i + 100){
+                dispatch(new PostPriceToMagento($this->user_id, $i));
+            }
         }
         else{
             $this->postPrice();

@@ -56,7 +56,6 @@ class PostPriceToMagento
      */
     public function handle()
     {
-        dd(123);
         $this->updatePrice();
     }
 
@@ -79,7 +78,7 @@ class PostPriceToMagento
     public function updatePrice()
     {
         ProductSupplier::where('supplier_id', '!=', 0)
-//            ->where('state', 1)
+            ->where('state', 1)
             ->offset($this->count)
             ->limit(100)
             ->chunk(10, function ($products) {

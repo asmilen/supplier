@@ -51,6 +51,27 @@ class ProductSuppliersController extends Controller
         return $productSupplier;
     }
 
+    public function update($id)
+    {
+        $productSupplier = ProductSupplier::findOrFail($id);
+
+        $this->validate(request(), [
+            'import_price' => 'required',
+            'from_date' => 'required',
+            'to_date' => 'required',
+        ]);
+
+        $productSupplier->forceFill([
+            'import_price' => request('import_price'),
+            'from_date' => request('from_date'),
+            'to_date' => request('to_date'),
+            'min_quantity' => request('min_quantity', 0),
+            'price_recommend' => request('price_recommend', 0),
+        ])->save();
+
+        return $productSupplier;
+    }
+
     public function updatePriceToMagento()
     {
         dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, 0));

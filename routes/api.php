@@ -40,4 +40,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('products/suppliers/update-price-from-google-sheet', 'ProductSuppliersController@updatePriceFromGoolgeSheet');
 
     Route::post('products/deactivate-errors-from-google-sheet', 'ProductsController@deactivateErrorsFromGoogleSheet');
+
+    Route::get('product-suppliers', 'ProductSuppliersController@index');
 });

@@ -28,7 +28,7 @@ function ProductSupplierIndexController($scope, $http) {
         this.from_date = '';
         this.to_date = '';
         this.min_quantity = 0;
-        this.price_recommend = '';
+        this.price_recommend = 0;
         this.success = false;
         this.errors = [];
         this.disabled = false;
@@ -39,7 +39,7 @@ function ProductSupplierIndexController($scope, $http) {
         this.from_date = '';
         this.to_date = '';
         this.min_quantity = 0;
-        this.price_recommend = '';
+        this.price_recommend = 0;
         this.state = '';
         this.errors = [];
         this.disabled = false;

@@ -127,8 +127,8 @@
                         <td class="text-right">@{{ item.import_price | number:0 }}</td>
                         <td class="text-right">@{{ item.from_date }}</td>
                         <td class="text-right">@{{ item.to_date }}</td>
-                        <td class="text-right">@{{ item.min_quantity }}</td>
-                        <td class="text-right">@{{ item.price_recommend }}</td>
+                        <td class="text-right">@{{ item.min_quantity | number:0 }}</td>
+                        <td class="text-right">@{{ item.price_recommend | number:0 }}</td>
                         <td>@{{ stateText(item.state) }}</td>
                         <td>@{{ item.updater.name ? item.updater.name : item.creater.name }}</td>
                         <td class="text-right">@{{ item.updated_at }}</td>
@@ -198,14 +198,14 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Số lượng tối thiểu</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu" format="number">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá bán khuyến nghị</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="addProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
+                                <input type="text" class="form-control" ng-model="addProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị" format="number">
                             </div>
                         </div>
                     </form>
@@ -369,14 +369,14 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Số lượng tối thiểu</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="editProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu">
+                                <input type="text" class="form-control" ng-model="editProductSupplierForm.min_quantity" placeholder="Số lượng tối thiểu" format="number">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá bán khuyến nghị</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" ng-model="editProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
+                                <input type="text" class="form-control" ng-model="editProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị" format="number">
                             </div>
                         </div>
 

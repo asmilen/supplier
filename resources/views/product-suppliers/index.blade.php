@@ -36,10 +36,14 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
+
             <a class="btn btn-primary pull-right" ng-click="showAddProductSupplierModal()">
                 <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
                 <span class="hidden-xs">Thêm</span>
             </a>
+            <button type="submit" class="btn btn-success btn-sm pull-right" id="btn_show"  style="margin-right: 10px; height: 42px">
+                Update Price to Magento
+            </button>
         </h1>
     </div><!-- /.page-header -->
 
@@ -82,14 +86,6 @@
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button> -->
                         </form>
-
-
-{{--                        <form class="form-inline" action="{{ url('product-suppliers/update-price') }}" method="get" style="margin-top: 10px">--}}
-                        <button type="submit" class="btn btn-success btn-sm" id="btn_show"  style="margin-top: 10px">
-                            Update Price to Magento
-                        </button>
-                        {{--</form>--}}
-
                     </div>
                 </div>
             </div>
@@ -422,73 +418,4 @@
 
 @section('scripts')
     <script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
-@endsection
-
-
-@section('inline_scripts')
-<script>
-$(function () {
-    var datatable = $("#dataTables-product-suppliers").DataTable({
-        searching: false,
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: '{!! url('/product-suppliers/datatables') !!}',
-            data: function (d) {
-                d.category_id = $('select[name=category_id]').val();
-                d.manufacturer_id = $('select[name=manufacturer_id]').val();
-                d.supplier_id = $('select[name=supplier_id]').val();
-                d.keyword = $('input[name=keyword]').val();
-                d.state = $('select[name=state]').val();
-            }
-        },
-        columns: [
-            // {data: 'action', name: 'action', orderable: false, searchable: false},
-            {data: 'category_name', name: 'category_name', orderable: false},
-            {data: 'manufacturer_name', name: 'manufacturer_name', orderable: false},
-            {data: 'sku', name: 'sku', orderable: false},
-            {data: 'product_name', name: 'product_name', orderable: false},
-            {data: 'supplier_name', name: 'supplier_name', orderable: false},
-            {data: 'import_price', name: 'import_price'},
-            {data: 'from_date', name: 'from_date'},
-            {data: 'to_date', name: 'to_date'},
-            {data: 'min_quantity', name: 'min_quantity'},
-            {data: 'price_recommend', name: 'price_recommend'},
-            {data: 'state', name: 'state'},
-            {data: 'updated_by', name: 'updated_by'},
-            {data: 'updated_at', name: 'updated_at'},
-        ],
-        columnDefs: [
-            {className: 'text-right', 'targets': [5,6,7,8,9]}
-        ],
-        pageLength: 50,
-        order: [12, 'desc']
-    });
-
-    $('#search-form').on('submit', function(e) {
-        datatable.draw();
-        e.preventDefault();
-    });
-});
-
-$(document).ready(function () {
-    $(document).on("click", "#btn_show", function () {
-        $('#myModalRunJob').modal('show');
-    });
-
-    $(document).on("click", "#btn_price", function () {
-        $.ajax({
-            headers: {'X-CSRF-Token': $('input[name="_token"]').val()},
-            url: '{{ url('product-suppliers/update-price') }}',
-            type: 'GET',
-            success: function (res) {
-                if (res.status == 'success') {
-
-                }
-            }
-        });
-    });
-});
-
-</script>
 @endsection

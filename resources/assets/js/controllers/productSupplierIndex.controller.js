@@ -40,6 +40,7 @@ function ProductSupplierIndexController($scope, $http) {
         this.to_date = '';
         this.min_quantity = 0;
         this.price_recommend = '';
+        this.state = '';
         this.errors = [];
         this.disabled = false;
     }
@@ -177,6 +178,7 @@ function ProductSupplierIndexController($scope, $http) {
         $scope.editProductSupplierForm.to_date = productSupplier.to_date;
         $scope.editProductSupplierForm.min_quantity = productSupplier.min_quantity;
         $scope.editProductSupplierForm.price_recommend = productSupplier.price_recommend;
+        $scope.editProductSupplierForm.state = productSupplier.state.toString();
 
         $('#modal-edit-product-supplier').modal('show');
     }

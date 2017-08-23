@@ -379,6 +379,18 @@
                                 <input type="text" class="form-control" ng-model="editProductSupplierForm.price_recommend" placeholder="Giá bán khuyến nghị">
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Trạng thái hàng</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" ng-model="editProductSupplierForm.state">
+                                    <option value="">-- Trạng thái hàng --</option>
+                                    @foreach (config('teko.product.state') as $k => $v)
+                                    <option value="{{ $k }}">{{ $v }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">

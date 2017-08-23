@@ -49,6 +49,8 @@ class ProductSuppliersController extends Controller
             'state' => 1,
         ]);
 
+        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, $productSupplier->id));
+
         return $productSupplier;
     }
 

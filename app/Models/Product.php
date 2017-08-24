@@ -80,6 +80,11 @@ class Product extends Model
         return $this->hasMany(Product::class, 'parent_id');
     }
 
+    public function productSuppliers()
+    {
+        return $this->hasMany(ProductSupplier::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', true);

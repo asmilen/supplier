@@ -1,5 +1,6 @@
-angular.module('directives.select2', [])
-       .directive("select2", select2);
+angular
+    .module('directives.select2', [])
+    .directive('select2', select2);
 
 function select2($timeout, $parse) {
     return {

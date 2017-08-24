@@ -63,14 +63,14 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 14);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -87,8 +87,10 @@ __webpack_require__(11);
 __webpack_require__(5);
 __webpack_require__(10);
 
-__webpack_require__(12);
 __webpack_require__(13);
+__webpack_require__(15);
+__webpack_require__(14);
+__webpack_require__(12);
 
 /***/ }),
 /* 1 */
@@ -8365,21 +8367,49 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 angular.module('controllers.productSupplierIndex', []).controller('ProductSupplierIndexController', ProductSupplierIndexController);
 
-ProductSupplierIndexController.$inject = ['$scope', '$http'];
+ProductSupplierIndexController.$inject = ['$scope', '$http', '$window', '$filter'];
 
 /* @ngInject */
-function ProductSupplierIndexController($scope, $http) {
+function ProductSupplierIndexController($scope, $http, $window, $filter) {
+    $scope.productSuppliersLoaded = false;
+
+    function searchProductSupplierForm() {
+        this.category_id = '';
+        this.manufacturer_id = '';
+        this.supplier_id = '';
+        this.q = '';
+        this.state = '';
+        this.page = 1;
+        this.limit = 50;
+        this.total_items = 0;
+    }
+
     function addProductSupplierForm() {
+        var now = new Date();
+        var to = new Date();
+        to.setDate(now.getDate() + 7);
+
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
         this.supplier_name = '';
         this.import_price = '';
+        this.from_date = $filter('date')(now, 'yyyy-MM-dd');
+        this.to_date = $filter('date')(to, 'yyyy-MM-dd');
+        this.min_quantity = 0;
+        this.price_recommend = 0;
+        this.success = false;
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    function editProductSupplierForm() {
+        this.import_price = '';
         this.from_date = '';
         this.to_date = '';
         this.min_quantity = 0;
-        this.price_recommend = '';
-        this.success = false;
+        this.price_recommend = 0;
+        this.state = '';
         this.errors = [];
         this.disabled = false;
     }
@@ -8398,9 +8428,26 @@ function ProductSupplierIndexController($scope, $http) {
         this.total_items = 0;
     }
 
+    function exportForm() {
+        this.disabled = false;
+    }
+
+    $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
+    $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
+    $scope.exportForm = new exportForm();
+
+    $scope.refreshData = function () {
+        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
+            $scope.productSuppliers = response.data.data;
+            $scope.productSuppliersLoaded = true;
+            $scope.searchProductSupplierForm.total_items = response.data.total_items;
+        });
+    };
+
+    $scope.refreshData();
 
     $scope.showAddProductSupplierModal = function () {
         $('#modal-add-product-supplier').modal('show');
@@ -8414,7 +8461,7 @@ function ProductSupplierIndexController($scope, $http) {
         $('#modal-select-supplier').modal('show');
     };
 
-    $scope.getProductsList = function (currentPage) {
+    $scope.getProductsList = function () {
         if ($scope.productsListForm.q.length < 2) {
             return;
         }
@@ -8452,8 +8499,10 @@ function ProductSupplierIndexController($scope, $http) {
         $scope.addProductSupplierForm.disabled = true;
 
         $http.post('/product-suppliers', $scope.addProductSupplierForm).then(function (response) {
-            $scope.addProductSupplierForm = new addProductSupplierForm();
             $scope.addProductSupplierForm.success = true;
+            $scope.addProductSupplierForm = new addProductSupplierForm();
+
+            $('#modal-add-product-supplier').modal('hide');
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.addProductSupplierForm.errors = _.flatten(_.toArray(response.data));
@@ -8468,6 +8517,68 @@ function ProductSupplierIndexController($scope, $http) {
         format: 'yyyy-mm-dd',
         autoclose: true
     });
+
+    $scope.stateText = function (state) {
+        if (state == 0) {
+            return 'Hết hàng';
+        }
+
+        if (state == 1) {
+            return 'Còn hàng';
+        }
+
+        if (state == 2) {
+            return 'Đặt hàng';
+        }
+
+        return 'N/A';
+    };
+
+    $scope.showEditProductSupplierModal = function (productSupplier) {
+        $scope.editProductSupplier = productSupplier;
+        $scope.editProductSupplierForm.import_price = productSupplier.import_price;
+        $scope.editProductSupplierForm.from_date = productSupplier.from_date;
+        $scope.editProductSupplierForm.to_date = productSupplier.to_date;
+        $scope.editProductSupplierForm.min_quantity = productSupplier.min_quantity;
+        $scope.editProductSupplierForm.price_recommend = productSupplier.price_recommend;
+        $scope.editProductSupplierForm.state = productSupplier.state.toString();
+
+        $('#modal-edit-product-supplier').modal('show');
+    };
+
+    $scope.updateProductSupplier = function (productSupplier) {
+        $scope.editProductSupplierForm.errors = [];
+        $scope.editProductSupplierForm.disabled = true;
+
+        $http.put('/product-suppliers/' + productSupplier.id, $scope.editProductSupplierForm).then(function (response) {
+            $scope.editProductSupplierForm = new editProductSupplierForm();
+
+            $scope.refreshData();
+
+            $('#modal-edit-product-supplier').modal('hide');
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editProductSupplierForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editProductSupplierForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editProductSupplierForm.disabled = false;
+        });
+    };
+
+    $scope.exportToExcel = function () {
+        $scope.exportForm.disabled = true;
+
+        $http.post('/suppliers/exportExcel').then(function (response) {
+            $scope.exportForm = new exportForm();
+
+            $window.location = response.data.path;
+        });
+    };
+
+    $scope.showImportFromExcelModal = function () {
+        $('#modal-import-from-excel').modal('show');
+    };
 }
 
 /***/ }),
@@ -8529,6 +8640,50 @@ function TransportFeeIndexController($scope, $http) {
 /* 12 */
 /***/ (function(module, exports) {
 
+angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
+
+currencyInput.$inject = ['$filter', '$browser'];
+
+function currencyInput($filter, $browser) {
+    console.log('fdsfds');
+    return {
+        require: 'ngModel',
+        link: function link($scope, $element, $attrs, ngModelCtrl) {
+            var listener = function listener() {
+                var value = $element.val().replace(/,/g, '');
+                $element.val($filter('number')(value, false));
+            };
+
+            // This runs when we update the text field
+            ngModelCtrl.$parsers.push(function (viewValue) {
+                return viewValue.replace(/,/g, '');
+            });
+
+            // This runs when the model gets updated on the scope directly and keeps our view in sync
+            ngModelCtrl.$render = function () {
+                $element.val($filter('number')(ngModelCtrl.$viewValue, false));
+            };
+
+            $element.bind('change', listener);
+            $element.bind('keydown', function (event) {
+                var key = event.keyCode;
+                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
+                // This lets us support copy and paste too
+                if (key == 91 || 15 < key && key < 19 || 37 <= key && key <= 40) return;
+                $browser.defer(listener); // Have to do this or changes don't get picked up properly
+            });
+
+            $element.bind('paste cut', function () {
+                $browser.defer(listener);
+            });
+        }
+    };
+};
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports) {
+
 angular.module('directives.fileread', []).directive("fileread", fileread);
 
 function fileread() {
@@ -8547,10 +8702,37 @@ function fileread() {
 }
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
-angular.module('directives.select2', []).directive("select2", select2);
+angular.module('directives.format', []).directive('format', format);
+
+format.$inject = ['$filter'];
+
+function format($filter) {
+    return {
+        require: '?ngModel',
+        link: function link(scope, elem, attrs, ctrl) {
+            if (!ctrl) return;
+
+            ctrl.$formatters.unshift(function (a) {
+                return $filter(attrs.format)(ctrl.$modelValue);
+            });
+
+            ctrl.$parsers.unshift(function (viewValue) {
+                var plainNumber = viewValue.replace(/[^\d|\-+|\.+]/g, '');
+                elem.val($filter(attrs.format)(plainNumber));
+                return plainNumber;
+            });
+        }
+    };
+};
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+angular.module('directives.select2', []).directive('select2', select2);
 
 function select2($timeout, $parse) {
     return {
@@ -8597,7 +8779,7 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(0);

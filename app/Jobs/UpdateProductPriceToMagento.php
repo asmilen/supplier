@@ -13,6 +13,8 @@ class UpdateProductPriceToMagento implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected $product;
+
     /**
      * Create a new job instance.
      *

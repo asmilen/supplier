@@ -457,6 +457,32 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-import-from-excel" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Import giá nhập - NCC</h4>
+                </div>
+                <form class="form-horizontal" role="form" action="{{ url('/suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        {{ csrf_field() }}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Chọn file</label>
+                            <div class="col-sm-9">
+                                <input type="file" name="file" id="fileUpload">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 

@@ -2,10 +2,10 @@ angular
     .module('controllers.productSupplierIndex', [])
     .controller('ProductSupplierIndexController', ProductSupplierIndexController);
 
-ProductSupplierIndexController.$inject = ['$scope', '$http'];
+ProductSupplierIndexController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
-function ProductSupplierIndexController($scope, $http) {
+function ProductSupplierIndexController($scope, $http, $window) {
     $scope.productSuppliersLoaded = false;
 
     function searchProductSupplierForm() {
@@ -59,11 +59,16 @@ function ProductSupplierIndexController($scope, $http) {
         this.total_items = 0;
     }
 
+    function exportForm() {
+        this.disabled = false;
+    }
+
     $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
+    $scope.exportForm = new exportForm();
 
     $scope.refreshData = function () {
         $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page +
@@ -205,5 +210,16 @@ function ProductSupplierIndexController($scope, $http) {
                 }
                 $scope.editProductSupplierForm.disabled = false;
             });
+    }
+
+    $scope.exportToExcel = function () {
+        $scope.exportForm.disabled = true;
+
+        $http.post('/suppliers/exportExcel')
+            .then(function (response) {
+                $scope.exportForm = new exportForm();
+
+                $window.location = response.data.path;
+            })
     }
 }

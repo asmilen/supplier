@@ -41,14 +41,26 @@
     </div><!-- /.page-header -->
 
     <div class="row">
-        <div class="col-xs-12">
-            <p class="text-right">
+        <div class="col-sm-6">
+            <p class="text-left">
                 <button class="btn btn-primary" ng-click="showAddProductSupplierModal()">
                     <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
                     <span class="hidden-xs">Thêm</span>
                 </button>
-                <button class="btn btn-info" ng-click="showUpdatePricesToMagentoModal()">
-                    <i class="ace-icon fa fa-save" aria-hidden="true"></i>
+                <button class="btn btn-xlg btn-white btn-default" ng-click="showImportFromExcelModal()">
+                    <i class="ace-icon fa fa-cloud-upload" aria-hidden="true"></i>
+                    <span class="hidden-xs">Import</span>
+                </button>
+                <button class="btn btn-xlg btn-white btn-success" ng-click="exportToExcel()" ng-disabled="exportForm.disabled">
+                    <i class="ace-icon fa fa-cloud-download" aria-hidden="true"></i>
+                    <span class="hidden-xs">Export</span>
+                </button>
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <p class="text-right">
+                <button class="btn btn-info text-right" ng-click="showUpdatePricesToMagentoModal()">
+                    <i class="ace-icon fa fa-flask" aria-hidden="true"></i>
                     <span class="hidden-xs">Cập nhật giá sang Magento</span>
                 </button>
             </p>

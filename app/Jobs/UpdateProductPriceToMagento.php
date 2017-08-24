@@ -18,7 +18,7 @@ class UpdateProductPriceToMagento implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @param Product $product
      */
     public function __construct(Product $product)
     {

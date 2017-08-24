@@ -7918,9 +7918,9 @@ function CategoryIndexController($scope, $http) {
     function marginsForm() {
         this.category_id = '';
         this.margins = {
-            1: 0,
-            2: 0,
-            3: 0
+            1: 5,
+            2: 5,
+            3: 5
         };
         this.errors = [];
         this.disabled = false;

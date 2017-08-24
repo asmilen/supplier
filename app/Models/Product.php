@@ -13,11 +13,6 @@ class Product extends Model
 {
     use SoftDeletes, Trackable, HasUpdater;
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected $dates = ['deleted_at'];
 
     protected $casts = [
@@ -231,5 +226,10 @@ class Product extends Model
         }
 
         return $sku;
+    }
+
+    public function updatePriceToMagento()
+    {
+        //
     }
 }

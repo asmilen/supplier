@@ -7,6 +7,7 @@ use Sentinel;
 use Datatables;
 use App\Models\SupplierProductLog;
 use Illuminate\Database\Eloquent\Model;
+use App\Jobs\UpdateProductPriceToMagento;
 
 class ProductSupplier extends Model
 {
@@ -61,9 +62,6 @@ class ProductSupplier extends Model
         parent::boot();
 
         static::updating(function ($productsupplier) {
-            /**
-             * @var ProductSupplier $productsupplier
-             */
             SupplierProductLog::forceCreate([
                 'product_id' => $productsupplier->product_id,
                 'supplier_id' => $productsupplier->supplier_id,
@@ -71,6 +69,10 @@ class ProductSupplier extends Model
                 'update_data' => json_encode($productsupplier),
                 'created_by' => Sentinel::getUser()->id,
             ]);
+        });
+
+        static::saved(function ($model) {
+            dispatch(new UpdateProductPriceToMagento($model->product));
         });
     }
 

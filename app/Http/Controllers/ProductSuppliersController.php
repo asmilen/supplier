@@ -49,8 +49,6 @@ class ProductSuppliersController extends Controller
             'state' => 1,
         ]);
 
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, $productSupplier->id));
-
         return $productSupplier;
     }
 
@@ -73,8 +71,6 @@ class ProductSuppliersController extends Controller
             'price_recommend' => request('price_recommend', 0),
             'state' => request('state'),
         ])->save();
-
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, $id));
 
         return $productSupplier;
     }

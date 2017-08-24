@@ -8569,7 +8569,7 @@ function ProductSupplierIndexController($scope, $http) {
     $scope.updatePricesToMagento = function () {
         $scope.updatePricesToMagentoForm.disabled = true;
 
-        $http.post('/product-suppliers/update-prices-to-magento').then(function (response) {
+        $http.post('/product-suppliers/update-all-prices-to-magento').then(function (response) {
             $scope.updatePricesToMagentoForm.disabled = false;
 
             $('#modal-update-prices-to-magento').modal('hide');

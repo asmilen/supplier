@@ -46,10 +46,12 @@
                     <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
                     <span class="hidden-xs">Thêm</span>
                 </button>
+                @if (Sentinel::getUser()->hasAccess('product-suppliers.update-all-prices-to-magento'))
                 <button class="btn btn-info" ng-click="showUpdatePricesToMagentoModal()">
                     <i class="ace-icon fa fa-save" aria-hidden="true"></i>
-                    <span class="hidden-xs">Cập nhật giá sang Magento</span>
+                    <span class="hidden-xs">Cập nhật toàn bộ giá sang Magento</span>
                 </button>
+                @endif
             </p>
         </div>
     </div>
@@ -334,10 +336,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Cập nhật giá sang Magento</h4>
+                    <h4 class="modal-title">Cập nhật toàn bộ giá sang Magento</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.</p>
+                    <p>Cập nhật toàn bộ giá sang Magento sẽ mất thời gian chạy ngầm.</p>
                     <p>Bạn có đồng ý cập nhật giá không?</p>
                 </div>
                 <div class="modal-footer">

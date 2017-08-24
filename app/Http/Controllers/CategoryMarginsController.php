@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\UpdatePriceToMagento;
 use App\Models\Category;
 use App\Models\MarginRegionCategory;
-use Sentinel;
+use App\Jobs\UpdateCategoryPriceToMagento;
 
 class CategoryMarginsController extends Controller
 {
@@ -37,6 +36,6 @@ class CategoryMarginsController extends Controller
             ]);
         }
 
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, 0));
+        dispatch(new UpdateCategoryPriceToMagento($category));
     }
 }

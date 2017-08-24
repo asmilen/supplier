@@ -6,8 +6,7 @@ use App\Models\Category;
 use App\Models\Supplier;
 use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
-use App\Jobs\UpdatePriceToMagento;
-use Sentinel;
+use App\Jobs\UpdateAllProductPricesToMagento;
 
 class ProductSuppliersController extends Controller
 {
@@ -72,13 +71,11 @@ class ProductSuppliersController extends Controller
             'state' => request('state'),
         ])->save();
 
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, $id));
-
         return $productSupplier;
     }
 
-    public function updatePriceToMagento()
+    public function updateAllPricesToMagento()
     {
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, 0));
+        dispatch(new UpdateAllProductPricesToMagento());
     }
 }

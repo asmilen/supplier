@@ -328,7 +328,7 @@ class Product extends Model
                                         if ($detail != $log->detail) {
                                             $response = $this->callApi($post_data);
                                             PostPriceToMgtLog::create([
-                                                'user_id' => Sentinel::getUser()->id,
+//                                                'user_id' => Sentinel::getUser()->id,
                                                 'product_id' => $product->id,
                                                 'detail' => $region ? $region->region_id : 0,
                                                 'post_data' => json_encode($post_data),
@@ -338,7 +338,7 @@ class Product extends Model
                                     } else {
                                         $response = $this->callApi($post_data);
                                         PostPriceToMgtLog::create([
-                                            'user_id' => Sentinel::getUser()->id,
+//                                            'user_id' => Sentinel::getUser()->id,
                                             'product_id' => $product->id,
                                             'detail' => $region ? $region->region_id : 0,
                                             'post_data' => json_encode($post_data),
@@ -348,7 +348,7 @@ class Product extends Model
                                 } else{
                                     $response = $this->callApi($post_data);
                                     PostPriceToMgtLog::create([
-                                        'user_id' => Sentinel::getUser()->id,
+//                                        'user_id' => Sentinel::getUser()->id,
                                         'product_id' => $product->id,
                                         'detail' => $region ? $region->region_id : 0,
                                         'post_data' => json_encode($post_data),

@@ -42,10 +42,14 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <p class="text-right">
+            <p class="">
                 <button class="btn btn-primary" ng-click="showAddProductSupplierModal()">
                     <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
                     <span class="hidden-xs">Thêm</span>
+                </button>
+                <button class="btn btn-default" ng-click="exportToExcel()">
+                    <i class="ace-icon fa fa-export" aria-hidden="true"></i>
+                    <span class="hidden-xs">Export</span>
                 </button>
                 <button class="btn btn-info" ng-click="showUpdatePricesToMagentoModal()">
                     <i class="ace-icon fa fa-save" aria-hidden="true"></i>

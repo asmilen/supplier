@@ -8367,10 +8367,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 angular.module('controllers.productSupplierIndex', []).controller('ProductSupplierIndexController', ProductSupplierIndexController);
 
-ProductSupplierIndexController.$inject = ['$scope', '$http'];
+ProductSupplierIndexController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
-function ProductSupplierIndexController($scope, $http) {
+function ProductSupplierIndexController($scope, $http, $window) {
     $scope.productSuppliersLoaded = false;
 
     function searchProductSupplierForm() {
@@ -8424,11 +8424,16 @@ function ProductSupplierIndexController($scope, $http) {
         this.total_items = 0;
     }
 
+    function exportForm() {
+        this.disabled = false;
+    }
+
     $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
+    $scope.exportForm = new exportForm();
 
     $scope.refreshData = function () {
         $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
@@ -8554,6 +8559,16 @@ function ProductSupplierIndexController($scope, $http) {
                 $scope.editProductSupplierForm.errors = ['Something went wrong. Please try again.'];
             }
             $scope.editProductSupplierForm.disabled = false;
+        });
+    };
+
+    $scope.exportToExcel = function () {
+        $scope.exportForm.disabled = true;
+
+        $http.post('/suppliers/exportExcel').then(function (response) {
+            $scope.exportForm = new exportForm();
+
+            $window.location = response.data.path;
         });
     };
 }

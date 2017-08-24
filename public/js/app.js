@@ -8367,10 +8367,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 angular.module('controllers.productSupplierIndex', []).controller('ProductSupplierIndexController', ProductSupplierIndexController);
 
-ProductSupplierIndexController.$inject = ['$scope', '$http', '$window'];
+ProductSupplierIndexController.$inject = ['$scope', '$http', '$window', '$filter'];
 
 /* @ngInject */
-function ProductSupplierIndexController($scope, $http, $window) {
+function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.productSuppliersLoaded = false;
 
     function searchProductSupplierForm() {
@@ -8385,13 +8385,17 @@ function ProductSupplierIndexController($scope, $http, $window) {
     }
 
     function addProductSupplierForm() {
+        var now = new Date();
+        var to = new Date();
+        to.setDate(now.getDate() + 7);
+
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
         this.supplier_name = '';
         this.import_price = '';
-        this.from_date = '';
-        this.to_date = '';
+        this.from_date = $filter('date')(now, 'yyyy-MM-dd');
+        this.to_date = $filter('date')(to, 'yyyy-MM-dd');
         this.min_quantity = 0;
         this.price_recommend = 0;
         this.success = false;

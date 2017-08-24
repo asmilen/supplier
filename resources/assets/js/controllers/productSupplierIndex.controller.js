@@ -222,4 +222,8 @@ function ProductSupplierIndexController($scope, $http, $window) {
                 $window.location = response.data.path;
             })
     }
+
+    $scope.showImportFromExcelModal = function () {
+        $('#modal-import-from-excel').modal('show');
+    }
 }

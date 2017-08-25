@@ -8579,6 +8579,20 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.showImportFromExcelModal = function () {
         $('#modal-import-from-excel').modal('show');
     };
+
+    $scope.showUpdatePricesToMagentoModal = function () {
+        $('#modal-update-prices-to-magento').modal('show');
+    };
+
+    $scope.updatePricesToMagento = function () {
+        $scope.updatePricesToMagentoForm.disabled = true;
+
+        $http.post('/product-suppliers/update-all-prices-to-magento').then(function (response) {
+            $scope.updatePricesToMagentoForm.disabled = false;
+
+            $('#modal-update-prices-to-magento').modal('hide');
+        });
+    };
 }
 
 /***/ }),

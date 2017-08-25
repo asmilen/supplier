@@ -15,11 +15,11 @@ class CreateLogPostPriceToMgtTable extends Migration
     {
         Schema::create('post_price_to_mgt_logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('user_id');
-            $table->string('product_id');
-            $table->string('detail', 255);
-            $table->string('post_data', 255);
-            $table->string('response', 255);
+            $table->integer('region_id');
+            $table->integer('product_id');
+            $table->text('detail');
+            $table->text('post_data');
+            $table->text('response');
             $table->timestamps();
         });
     }

@@ -71,6 +71,7 @@
                     <thead>
                     <tr>
                         <th>Tên</th>
+                        <th>Tên đầy đủ</th>
                         <th>Địa chỉ</th>
                         <th>Địa bàn cung cấp</th>
                         <th>Mã số thuế</th>
@@ -111,6 +112,7 @@
                 },
                 columns: [
                     {data: 'name', name: 'name'},
+                    {data: 'full_name', name: 'full_name'},
                     {data: 'address', name: 'address', orderable: false},
                     {data: 'province', name: 'province', orderable: false},
                     {data: 'tax_number', name: 'tax_number'},

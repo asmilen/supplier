@@ -442,6 +442,7 @@ class SuppliersController extends Controller
         $this->validate(request(), [
             'address' => 'required|max:255',
             'name' => 'required|max:255',
+            'full_name' => 'required|max:255',
             'phone' => 'required',
             'fax' => 'required',
             'tax_number' => 'required',
@@ -451,16 +452,17 @@ class SuppliersController extends Controller
             'sup_type' => 'required',
             'email' => 'required|email|max:255|unique:users',
         ], [
-            'name.required' => "Vui lòng nhập tên.",
-            'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
-            'address.max' => "Địa chỉ nhà cung cấp quá dài, tối đa 255 kí tự.",
-            'address.required' => "Vui lòng nhập địa chỉ.",
-            'phone.required' => "Vui lòng nhập số điện thoại.",
-            'fax.required' => "Vui lòng nhập số fax.",
-            'tax_number.required' => "Vui lòng nhập số tax.",
-            'province_id.required' => "Vui lòng nhập tỉnh thành.",
-            'type.required' => "Vui lòng nhập loại hóa đơn.",
-            'sup_type.required' => "Vui lòng nhập loại nhà cung cấp.",
+            'name.required' => 'Vui lòng nhập tên.',
+            'full_name.required' => 'Vui lòng nhập tên đầy đủ.',
+            'name.max' => 'Tên của bạn quá dài, tối đa 255 kí tự.',
+            'address.max' => 'Địa chỉ nhà cung cấp quá dài, tối đa 255 kí tự.',
+            'address.required' => 'Vui lòng nhập địa chỉ.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'fax.required' => 'Vui lòng nhập số fax.',
+            'tax_number.required' => 'Vui lòng nhập số tax.',
+            'province_id.required' => 'Vui lòng nhập tỉnh thành.',
+            'type.required' => 'Vui lòng nhập loại hóa đơn.',
+            'sup_type.required' => 'Vui lòng nhập loại nhà cung cấp.',
             'email.required' => 'Vui lòng nhập email.',
             'email.email' => 'Vui lòng nhập đúng định dạng email.',
             'email.max' => 'Email quá dài, tối đa 255 kí tự.',
@@ -469,6 +471,7 @@ class SuppliersController extends Controller
 
         $supplier = Supplier::forceCreate([
             'name' => request('name'),
+            'full_name' => request('full_name'),
             'code' => strtoupper(request('code')),
             'status' => !!request('status'),
             'phone' => request('phone'),
@@ -523,7 +526,7 @@ class SuppliersController extends Controller
         // MQ
 
         $jsonSend = [
-            "id"        => $supplier->id,
+            'id'        => $supplier->id,
             "name"      => $supplier->name,
             "code"      => $supplier->code,
             "status"    => $supplier->status == true ? 'active' : 'inactive',
@@ -592,6 +595,7 @@ class SuppliersController extends Controller
         $this->validate(request(), [
             'address' => 'required',
             'name' => 'required|max:255',
+            'full_name' => 'required|max:255',
             'phone' => 'required',
             'fax' => 'required',
             'tax_number' => 'required',
@@ -601,14 +605,15 @@ class SuppliersController extends Controller
             'sup_type' => 'required',
             'email' => 'required|email|max:255|unique:users',
         ], [
-            'name.required' => "Vui lòng nhập tên.",
-            'name.max' => "Tên của bạn quá dài, tối đa 255 kí tự.",
-            'address.required' => "Vui lòng nhập địa chỉ.",
-            'phone.required' => "Vui lòng nhập số điện thoại.",
-            'tax_number.required' => "Vui lòng nhập số tax.",
-            'province_id.required' => "Vui lòng nhập tỉnh thành.",
-            'type.required' => "Vui lòng nhập loại hóa đơn.",
-            'sup_type.required' => "Vui lòng nhập loại nhà cung cấp.",
+            'name.required' => 'Vui lòng nhập tên.',
+            'full_name.required' => 'Vui lòng nhập tên đầy đủ.',
+            'name.max' => 'Tên của bạn quá dài, tối đa 255 kí tự.',
+            'address.required' => 'Vui lòng nhập địa chỉ.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'tax_number.required' => 'Vui lòng nhập số tax.',
+            'province_id.required' => 'Vui lòng nhập tỉnh thành.',
+            'type.required' => 'Vui lòng nhập loại hóa đơn.',
+            'sup_type.required' => 'Vui lòng nhập loại nhà cung cấp.',
             'email.required' => 'Vui lòng nhập email.',
             'email.email' => 'Vui lòng nhập đúng định dạng email.',
             'email.max' => 'Email quá dài, tối đa 255 kí tự.',
@@ -617,6 +622,7 @@ class SuppliersController extends Controller
 
         $supplier->forceFill([
             'name' => request('name'),
+            'full_name' => request('full_name'),
             'code' => strtoupper(request('code')),
             'status' => !!request('status'),
             'phone' => request('phone'),
@@ -717,7 +723,7 @@ class SuppliersController extends Controller
         // MQ
 
         $jsonSend = [
-            "id"        => $supplier->id,
+            'id'        => $supplier->id,
             "name"      => $supplier->name,
             "code"      => $supplier->code,
             "status"    => $supplier->status == true ? 'active' : 'inactive',

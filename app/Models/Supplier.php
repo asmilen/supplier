@@ -32,8 +32,8 @@ class Supplier extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id','name','code','tax_number','status','type','sup_type','price_active_time'
-        ])->with('addresses','suppliers_supported_provinces');
+            'id', 'name', 'full_name', 'code', 'tax_number', 'status', 'type', 'sup_type', 'price_active_time'
+        ])->with('addresses', 'suppliers_supported_provinces');
 
         return Datatables::eloquent($model)
             ->filter(function ($query) {

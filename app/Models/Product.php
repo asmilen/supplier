@@ -252,8 +252,6 @@ class Product extends Model
                             ->leftJoin('provinces', 'provinces.id', '=', 'supplier_supported_province.province_id')
                             ->first();
 
-                        $detail = $region ? $region->region_id : 0;
-
                         $province_id = Province::where('region_id', $region->region_id)->pluck('id');
                         $provinceFee = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
                         /**
@@ -320,37 +318,28 @@ class Product extends Model
                                 ];
 
                                 $log = PostPriceToMgtLog::where('product_id', $product->id)
+                                    ->where('region_id', $region ? $region->region_id : 0)
                                     ->orderBy('created_at', 'DESC')
                                     ->first();
 
                                 if ($log) {
-                                    if ($log->product_id == $product->id && json_encode($post_data) == $log->post_data) {
-                                        if ($detail != $log->detail) {
-                                            $response = $this->callApi($post_data);
-                                            PostPriceToMgtLog::create([
-//                                                'user_id' => Sentinel::getUser()->id,
-                                                'product_id' => $product->id,
-                                                'detail' => $region ? $region->region_id : 0,
-                                                'post_data' => json_encode($post_data),
-                                                'response' => json_encode($response)
-                                            ]);
-                                        }
-                                    } else {
+                                    if (json_encode($post_data) !=  $log->post_data ){
                                         $response = $this->callApi($post_data);
                                         PostPriceToMgtLog::create([
-//                                            'user_id' => Sentinel::getUser()->id,
+                                            'region_id' => $region ? $region->region_id : 0,
                                             'product_id' => $product->id,
-                                            'detail' => $region ? $region->region_id : 0,
+                                            'detail' => $minPrice,
                                             'post_data' => json_encode($post_data),
                                             'response' => json_encode($response)
                                         ]);
                                     }
                                 } else{
+                                    \Log::info(3);
                                     $response = $this->callApi($post_data);
                                     PostPriceToMgtLog::create([
-//                                        'user_id' => Sentinel::getUser()->id,
+                                        'region_id' => $region ? $region->region_id : 0,
                                         'product_id' => $product->id,
-                                        'detail' => $region ? $region->region_id : 0,
+                                        'detail' => $minPrice,
                                         'post_data' => json_encode($post_data),
                                         'response' => json_encode($response)
                                     ]);

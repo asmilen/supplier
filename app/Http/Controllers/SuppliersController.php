@@ -563,7 +563,8 @@ class SuppliersController extends Controller
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
 
         flash()->success('Success!', 'Suppliers successfully created.');
-        return redirect()->route('suppliers.getList');
+
+        return redirect()->route('suppliers.index');
     }
 
     public function edit(Supplier $supplier)
@@ -760,7 +761,8 @@ class SuppliersController extends Controller
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
 
         flash()->success('Success!', 'Suppliers successfully created.');
-        return redirect()->route('suppliers.getList');
+
+        return redirect()->route('suppliers.index');
     }
 
     public function exportExcel()

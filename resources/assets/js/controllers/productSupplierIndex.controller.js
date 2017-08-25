@@ -67,12 +67,17 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.disabled = false;
     }
 
+    function updatePricesToMagentoForm() {
+        this.disabled = false;
+    }
+
     $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
     $scope.exportForm = new exportForm();
+    $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
 
     $scope.refreshData = function () {
         $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page +

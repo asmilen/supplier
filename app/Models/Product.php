@@ -246,7 +246,6 @@ class Product extends Model
                 ->where('state', 1)
                 ->chunk(10, function ($products) {
                     foreach ($products as $product) {
-
                         $region = ProductSupplier::where('product_supplier.id', $product->id)
                             ->leftJoin('supplier_supported_province', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
                             ->leftJoin('provinces', 'provinces.id', '=', 'supplier_supported_province.province_id')
@@ -269,6 +268,7 @@ class Product extends Model
                                     ->where('product_supplier.state', '=', 1);
                             })
                             ->findOrFail($product->product_id);
+
                         if ($product) {
                             $margin = MarginRegionCategory::where('category_id', $product->category_id)
                                 ->where('region_id', $region->region_id)->first();
@@ -279,7 +279,8 @@ class Product extends Model
                                 ->orderBy('product_supplier.import_price')
                                 ->first();
 
-                            $import_price = ceil(($importPrice ? $importPrice->import_price : 0) * (1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2) / 1000) * 1000;
+                            $import_price = ceil(intval(($importPrice ? $importPrice->import_price : 0) * (1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2)) / 1000) * 1000;
+
                             $Price = ProductSupplier::where('product_id', $product->id)
                                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                                 ->where('product_supplier.state', '=', 1)
@@ -323,22 +324,51 @@ class Product extends Model
                                     ->first();
 
                                 if ($log) {
-                                    if (json_encode($post_data) !=  $log->post_data ){
+                                    if (json_encode($post_data) != $log->post_data) {
+
+                                        $supplier_ids = ProductSupplier::where('product_id', $product->id)
+                                            ->pluck('id');
+                                        $detail = [];
+                                        for ($i = 0; $i < $supplier_ids->count(); $i++) {
+                                            $detail = array_merge([[
+                                                ProductSupplier::where('product_supplier.id', $supplier_ids[$i])
+                                                    ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
+                                                    ->leftJoin('provinces', 'provinces.id', 'supplier_supported_province.province_id')
+                                                    ->select(DB::raw('product_supplier.*, provinces.region_id'))
+                                                    ->first()
+
+                                            ]], is_array($detail) ? $detail : []);
+                                        }
+
                                         $response = $this->callApi($post_data);
                                         PostPriceToMgtLog::create([
                                             'region_id' => $region ? $region->region_id : 0,
                                             'product_id' => $product->id,
-                                            'detail' => $minPrice,
+                                            'detail' => json_encode($detail),
                                             'post_data' => json_encode($post_data),
                                             'response' => json_encode($response)
                                         ]);
                                     }
-                                } else{
+                                } else {
+                                    $supplier_ids = ProductSupplier::where('product_id', $product->id)
+                                        ->pluck('id');
+                                    $detail = [];
+                                    for ($i = 0; $i < $supplier_ids->count(); $i++) {
+                                        $detail = array_merge([[
+                                            ProductSupplier::where('product_supplier.id', $supplier_ids[$i])
+                                                ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
+                                                ->leftJoin('provinces', 'provinces.id', 'supplier_supported_province.province_id')
+                                                ->select(DB::raw('product_supplier.*, provinces.region_id'))
+                                                ->first()
+
+                                        ]], is_array($detail) ? $detail : []);
+                                    }
+
                                     $response = $this->callApi($post_data);
                                     PostPriceToMgtLog::create([
                                         'region_id' => $region ? $region->region_id : 0,
                                         'product_id' => $product->id,
-                                        'detail' => $minPrice,
+                                        'detail' => json_encode($detail),
                                         'post_data' => json_encode($post_data),
                                         'response' => json_encode($response)
                                     ]);

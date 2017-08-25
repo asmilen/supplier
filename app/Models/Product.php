@@ -334,7 +334,6 @@ class Product extends Model
                                         ]);
                                     }
                                 } else{
-                                    \Log::info(3);
                                     $response = $this->callApi($post_data);
                                     PostPriceToMgtLog::create([
                                         'region_id' => $region ? $region->region_id : 0,

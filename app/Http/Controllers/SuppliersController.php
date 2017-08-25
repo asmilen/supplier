@@ -40,17 +40,7 @@ class SuppliersController extends Controller
      */
     public function index()
     {
-        $user_id = Sentinel::getUser()->id;
-        $suppliers = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
-            ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
-            ->join('suppliers', 'supplier_supported_province.supplier_id', '=', 'suppliers.id')
-            ->orderBy('suppliers.name', 'asc')
-            ->where('user_supported_province.supported_id', $user_id)
-            ->where('suppliers.status', true)
-            ->select(DB::raw('distinct suppliers.id as supplier_id,suppliers.name as supplier_name,suppliers.code as supplier_code'))
-            ->get();
-        $products = Product::all();
-        return view('suppliers.index', compact('suppliers', 'products'));
+        return view('suppliers.index');
     }
 
 

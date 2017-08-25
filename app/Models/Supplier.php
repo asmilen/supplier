@@ -19,6 +19,11 @@ class Supplier extends Model
         return $this->hasMany(SupplierAddress::class);
     }
 
+    public function address()
+    {
+        return $this->hasOne(SupplierAddress::class);
+    }
+
     public function suppliers_supported_provinces()
     {
         return $this->belongsToMany(Province::class,'supplier_supported_province','supplier_id','province_id');
@@ -33,7 +38,7 @@ class Supplier extends Model
     {
         $model = static::select([
             'id', 'name', 'full_name', 'code', 'tax_number', 'status', 'type', 'sup_type', 'price_active_time'
-        ])->with('addresses', 'suppliers_supported_provinces');
+        ])->with('addresses', 'address', 'suppliers_supported_provinces');
 
         return Datatables::eloquent($model)
             ->filter(function ($query) {
@@ -59,12 +64,12 @@ class Supplier extends Model
                 return $model->suppliers_supported_provinces ? $model->suppliers_supported_provinces->first()['name'] : '';
             })
             ->editColumn('address', function ($model) {
-                return $model->addresses()->first() ? $model->addresses()->first()->address : '';
+                return $model->address ? $model->address->address : '';
             })
             ->editColumn('info_person', function ($model) {
-                $string = $model->addresses()->first() ? $model->addresses()->first()->contact_name : '';
+                $string = $model->address ? $model->address->contact_name : '';
                 $string .= ' - ';
-                $string .= $model->addresses()->first() ? $model->addresses()->first()->contact_phone : '';
+                $string .= $model->address ? $model->address->contact_phone : '';
                 return $string;
             })
             ->editColumn('price_active_time', function ($model) {

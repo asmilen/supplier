@@ -15,7 +15,7 @@
                 <a href="{{ url('/dashboard') }}">Dashboard</a>
             </li>
             <li>
-                <a href="{{ route('suppliers.getList') }}">Nhà cung cấp</a>
+                <a href="{{ url('/suppliers') }}">Nhà cung cấp</a>
             </li>
             <li class="active">Tạo mới</li>
         </ul><!-- /.breadcrumb -->
@@ -69,7 +69,7 @@
                 width:'100%',
             });
         });
-        
+
         function loadDistrictsByProvince(provinceId) {
             $.ajax({
                 url: "/provinces/" + provinceId + "/districts",

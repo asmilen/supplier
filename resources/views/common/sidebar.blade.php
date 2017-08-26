@@ -44,8 +44,8 @@
             <a href="{{ url('/dashboard') }}"><i class="menu-icon fa fa-tachometer"></i> <span class="menu-text"> Dashboard </span></a>
         </li>
 
-        @if ($currentUser->hasAccess('categories.index') || $currentUser->hasAccess('manufacturers.index') || $currentUser->hasAccess('colors.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('suppliers.getList'))
-            <li class="{{ (Request::is('categories') || Request::is('categories/*') || Request::is('manufacturers') || Request::is('manufacturers/*') || Request::is('colors') || Request::is('colors/*') || Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active open' : '' }}">
+        @if ($currentUser->hasAccess('categories.index') || $currentUser->hasAccess('manufacturers.index') || $currentUser->hasAccess('colors.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('suppliers.index'))
+            <li class="{{ (Request::is('categories') || Request::is('categories/*') || Request::is('manufacturers') || Request::is('manufacturers/*') || Request::is('colors') || Request::is('colors/*') || Request::is('suppliers') || Request::is('suppliers/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-list"></i>
                     <span class="menu-text"> Quản lý danh mục </span>
@@ -74,9 +74,9 @@
                         </li>
                     @endif
 
-                    @if ($currentUser->hasAccess('suppliers.getList'))
-                        <li class="{{ (Request::is('suppliers/getList') || Request::is('suppliers/*')) ? 'active' : '' }}">
-                            <a href="{{ url('/suppliers/getList') }}"><i class="menu-icon fa fa-users"></i> <span class="menu-text"> Nhà cung cấp </span></a>
+                    @if ($currentUser->hasAccess('suppliers.index'))
+                        <li class="{{ (Request::is('suppliers') || Request::is('suppliers/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/suppliers') }}"><i class="menu-icon fa fa-users"></i> <span class="menu-text"> Nhà cung cấp </span></a>
                         </li>
                     @endif
                 </ul>

@@ -54,9 +54,9 @@ class BundleProduct extends Model
 
     public function getProduct($supplierIds, $regionId)
     {
-        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`,`products`.`category_id`, `product_supplier`.`state`, `products`.`status`,`products`.`updated_at` as 'last_update_info',`product_supplier`.`updated_at` as 'last_update_price'"))
+        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, if(sum(`product_supplier`.`state`) > 0, 1, 0) as 'state', `products`.`status`,`products`.`updated_at` as 'last_update_info', max(`product_supplier`.`updated_at`) as 'last_update_price'"))
             ->join('product_supplier', function ($q) use ($supplierIds) {
-                $q->leftJoin('product_supplier.product_id', '=', 'products.id')
+                $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds);
             })
             ->findOrFail($this->id_product);

@@ -67,12 +67,17 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.disabled = false;
     }
 
+    function updatePricesToMagentoForm() {
+        this.disabled = false;
+    }
+
     $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
     $scope.exportForm = new exportForm();
+    $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
 
     $scope.refreshData = function () {
         $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page +
@@ -229,5 +234,20 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 
     $scope.showImportFromExcelModal = function () {
         $('#modal-import-from-excel').modal('show');
+    }
+
+    $scope.showUpdatePricesToMagentoModal = function () {
+        $('#modal-update-prices-to-magento').modal('show');
+    }
+
+    $scope.updatePricesToMagento = function () {
+        $scope.updatePricesToMagentoForm.disabled = true;
+
+        $http.post('/product-suppliers/update-all-prices-to-magento')
+            .then(function (response) {
+                $scope.updatePricesToMagentoForm.disabled = false;
+
+                $('#modal-update-prices-to-magento').modal('hide');
+            });
     }
 }

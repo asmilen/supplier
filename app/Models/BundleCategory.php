@@ -12,7 +12,7 @@ class BundleCategory extends Model
 
     public function bundle()
     {
-        return $this->belongsTo(Bundle::class,'id_bundle');
+        return $this->belongsTo(Bundle::class, 'id_bundle');
     }
 
     public function category()
@@ -22,30 +22,39 @@ class BundleCategory extends Model
 
     public function products()
     {
-        return $this->belongsToMany(Product::class,'bundle_product','id_bundleCategory','id_product')->withPivot('is_default', 'quantity','id_bundle');
+        return $this->belongsToMany(Product::class, 'bundle_product', 'id_bundleCategory', 'id_product')->withPivot('is_default', 'quantity', 'id_bundle');
     }
 
     public static function getDatatables()
     {
         $model = static::select([
-            'bundle_category.id', 'bundle_category.name','bundle_category.id_bundle','bundle_category.isRequired'
+            'bundle_category.id', 'bundle_category.name', 'bundle_category.id_bundle', 'bundle_category.isRequired'
         ])->with('bundle');
         return Datatables::eloquent($model)
             ->editColumn('price', function ($bundle) {
                 return number_format($bundle->price);
             })
             ->filter(function ($query) {
-                $query->leftJoin('bundles','bundles.id','=','bundle_category.id_bundle');
+                $query->leftJoin('bundles', 'bundles.id', '=', 'bundle_category.id_bundle');
                 if (request('search.value')) {
-                    $query->where('bundles.name', 'like', '%'.request('search.value').'%')
-                          ->orWhere('bundle_category.name', 'like', '%'.request('search.value').'%');
+                    $query->where('bundles.name', 'like', '%' . request('search.value') . '%')
+                        ->orWhere('bundle_category.name', 'like', '%' . request('search.value') . '%');
                 }
             })
             ->editColumn('bundles.name', function ($model) {
                 return $model->bundle ? $model->bundle->name : '';
             })
             ->editColumn('totalProduct', function ($model) {
-                return count($model->products) ? count($model->products) : 0;
+                $count = 0;
+                for ($i = 0; $i < count($model->products) ? count($model->products) : 0; $i++) {
+                    if ($model->products[$i]->status == true) {
+                        $check = ProductSupplier::where('product_id', $model->products[$i]->id)->where('state', 1)->count();
+                        if ($check > 0) {
+                            $count += 1;
+                        }
+                    }
+                }
+                return $count;
             })
             ->addColumn('action', 'bundleCategories.datatables.action')
             ->rawColumns(['action'])
@@ -87,7 +96,7 @@ class BundleCategory extends Model
             ->leftJoin('margin_region_category', function ($q) use ($regionId) {
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->where('margin_region_category.region_id', $regionId);
-            })->whereNotIn('products.id',$productIds)
+            })->whereNotIn('products.id', $productIds)
             ->groupBy('products.id', 'products.name', 'products.code',
                 'products.sku', 'products.source_url', 'products.best_price',
                 'products.category_id')->get();

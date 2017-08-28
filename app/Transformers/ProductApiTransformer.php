@@ -60,8 +60,9 @@ class ProductApiTransformer extends TransformerAbstract
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->orderBy('transport_fees.percent_fee')
             ->first();
-        $ship_province = $province->toArray();
-        if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province)) {
+        $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
+
+        if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
         } else {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;

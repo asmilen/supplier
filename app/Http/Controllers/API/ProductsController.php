@@ -196,9 +196,9 @@ class ProductsController extends Controller
                 ->orderBy('transport_fees.percent_fee')
                 ->first();
 
-            $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier->id)->where('status', 1)->pluck('province_id');
+            $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
 
-            if (in_array($province[0], $supportedProvince->toArray())) {
+            if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
                 $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
             } else {
                 $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;

@@ -196,17 +196,14 @@ class ProductsController extends Controller
                 ->orderBy('transport_fees.percent_fee')
                 ->first();
 
-                $ship_province = $province->toArray();
-            $a = SupplierSupportedProvince::whereIn('province_id', $province)->where('status', 1)->pluck('supplier_id');
-            $b = ProductSupplier::where('product_id', $id) ->pluck('supplier_id');
-//            dd($minPrice->supplier->id);
-//                if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province)) {
-                if (in_array($minPrice ? $minPrice->supplier->id : 0, $ship_province)) {
-                    $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
-                } else {
-                    $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
-                }
-            $w_margin = ($margin ? $margin->margin : 5) * 0.01 ;
+            $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier->id)->where('status', 1)->pluck('province_id');
+
+            if (in_array($province[0], $supportedProvince->toArray())) {
+                $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
+            } else {
+                $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
+            }
+            $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
             $product->best_price = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -363,26 +360,28 @@ class ProductsController extends Controller
         }
     }
 
-    public function getProductQuotation(){
+    public function getProductQuotation()
+    {
         $isIncludeOutStock = request('include_out_stock');
-        
+
         $query = 'select p.id,p.sku,p.name,c.name as cname,m.name as mname,ps.supplier_name,ps.import_price,"" as location,ps.updated_at from products as p
                     left join categories as c on p.category_id = c.id
                     left join manufacturers as m on p.manufacturer_id = m.id
                     inner join (select ps.*,s.name as supplier_name from product_supplier as ps
                     left join suppliers as s on ps.supplier_id = s.id ' .
-                    ( !$isIncludeOutStock ? 'where ps.state = 1' : '') .
-                    ') as ps on p.id = ps.product_id
+            (!$isIncludeOutStock ? 'where ps.state = 1' : '') .
+            ') as ps on p.id = ps.product_id
                     where p.status = 1
                     order by ps.supplier_name asc
-                    limit :limit offset :offset' ;
+                    limit :limit offset :offset';
 
-        $products = DB::select($query,['limit' => request('limit'),'offset' => request('offset')]);
+        $products = DB::select($query, ['limit' => request('limit'), 'offset' => request('offset')]);
 
         return $products;
     }
 
-    public function getProductWithCategoryManufacturer(){
+    public function getProductWithCategoryManufacturer()
+    {
 
         $products = Product::active()
             ->with('category')
@@ -406,7 +405,7 @@ class ProductsController extends Controller
                 $q = request('q');
 
                 $query->where('id', $q)
-                    ->orWhere('sku', 'like', '%'.$q.'%');
+                    ->orWhere('sku', 'like', '%' . $q . '%');
             });
 
         $totalItems = $builder->count();

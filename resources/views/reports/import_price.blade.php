@@ -33,6 +33,41 @@
         </div><!-- /.page-header -->
 
         <div class="row">
+            <div class="col-sm-12 infobox-container">
+                <div class="infobox infobox-red">
+                    <div class="infobox-icon">
+                        <i class="ace-icon fa fa-cube"></i>
+                    </div>
+                    <div class="infobox-data">
+                        <span class="infobox-data-number">{{ $listProduct->total() }}</span>
+                        <div class="infobox-content">Sản phẩm quá hạn</div>
+                    </div>
+                </div>
+                <div class="infobox infobox-orange">
+                    <div class="infobox-icon">
+                        <i class="ace-icon fa fa-calendar-times-o"></i>
+                    </div>
+                    <div class="infobox-data">
+                        <span class="infobox-data-number">{{ $maxTime }} ngày</span>
+                        <div class="infobox-content">Thời gian quá hạn nhập giá lâu nhất</div>
+                    </div>
+                </div>
+                <div class="infobox infobox-red">
+                    <div class="infobox-icon">
+                        <i class="ace-icon fa fa-calendar-times-o"></i>
+                    </div>
+                    <div class="infobox-data">
+                        <span class="infobox-data-number">{{ number_format( $avgTime , 2 ) }} ngày</span>
+                        <div class="infobox-content">Thời gian quá hạn nhập giá trung bình</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="row">
             <div class="col-xs-12">
                 <div class="widget-box">
                     <div class="widget-header">
@@ -54,6 +89,13 @@
                                         <option value="{{ $supplier->id }}" {{(app('request')->input('supplier_id') == $supplier->id) ? 'selected' : ''}}>{{ $supplier->name }}</option>
                                     @endforeach
                                 </select>
+                                <select class="form-control" name="paginate">
+                                    <option value="">-- Số bản ghi hiển thị  --</option>
+                                    <option value="10" {{(app('request')->input('paginate') == 10) ? 'selected' : ''}}>10</option>
+                                    <option value="25" {{(app('request')->input('paginate') == 25) ? 'selected' : ''}}>25</option>
+                                    <option value="50" {{(app('request')->input('paginate') == 50) ? 'selected' : ''}}>50</option>
+                                    <option value="100" {{(app('request')->input('paginate') == 100) ? 'selected' : ''}}>100</option>
+                                </select>
                                 <button type="submit" class="btn btn-purple btn-sm">
                                     <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                                 </button>
@@ -63,40 +105,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-12 infobox-container">
-                    <div class="infobox infobox-green">
-                        <div class="infobox-icon">
-                            <i class="ace-icon fa fa-cube"></i>
-                        </div>
-                        <div class="infobox-data">
-                            <span class="infobox-data-number">{{ $listProduct->total() }}</span>
-                            <div class="infobox-content">Sản phẩm quá hạn</div>
-                        </div>
-                    </div>
-                    <div class="infobox infobox-blue">
-                        <div class="infobox-icon">
-                            <i class="ace-icon fa fa-calendar-times-o"></i>
-                        </div>
-                        <div class="infobox-data">
-                            <span class="infobox-data-number">{{ $maxTime }} ngày</span>
-                            <div class="infobox-content">Thời gian quá hạn nhập giá lâu nhất</div>
-                        </div>
-                    </div>
-                    <div class="infobox infobox-red">
-                        <div class="infobox-icon">
-                            <i class="ace-icon fa fa-calendar-times-o"></i>
-                        </div>
-                        <div class="infobox-data">
-                            <span class="infobox-data-number">{{ number_format( $avgTime , 2 ) }} ngày</span>
-                            <div class="infobox-content">Thời gian quá hạn nhập giá trung bình</div>
-                        </div>
-                    </div>
-            </div>
-        </div>
 
-        <br>
-        <br>
 
         <div class="row">
             <div class="col-xs-12">

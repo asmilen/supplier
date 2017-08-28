@@ -197,7 +197,11 @@ class ProductsController extends Controller
                 ->first();
 
                 $ship_province = $province->toArray();
-                if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province)) {
+            $a = SupplierSupportedProvince::whereIn('province_id', $province)->where('status', 1)->pluck('supplier_id');
+            $b = ProductSupplier::where('product_id', $id) ->pluck('supplier_id');
+//            dd($minPrice->supplier->id);
+//                if (in_array($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->province_id : 0, $ship_province)) {
+                if (in_array($minPrice ? $minPrice->supplier->id : 0, $ship_province)) {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
                 } else {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
@@ -232,8 +236,8 @@ class ProductsController extends Controller
                 $supplier = Supplier::whereIn('id', $suppliers ? $suppliers : 0)
                     ->get();
                 $province = SupplierSupportedProvince::whereIn('supplier_id', $suppliers ? $suppliers : 0)
-                        ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')
-                        ->get();
+                    ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')
+                    ->get();
             } else {
                 $supplier = Supplier::where('id', $provinceFeeMin ? $provinceFeeMin->supplier_id : 0)
                     ->get();

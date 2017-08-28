@@ -32,23 +32,26 @@ class ReportsController extends Controller
             ->get()
             ->pluck('supplier_id');
 
+        $paginate = request('paginate') ? request('paginate') : 10;
         $listProduct = ProductSupplier::where('to_date','<',Carbon::now())
                 ->join('suppliers','suppliers.id','=','product_supplier.supplier_id')
                 ->whereIn('supplier_id', $supplierIds)
-                ->select('product_supplier.name as product_name','product_supplier.updated_at','product_supplier.to_date','suppliers.name as supplier_name',DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW()) as out_dated_time'))
-                ->paginate(10);
+                ->where('product_supplier.state','=',1)
+                ->select('product_supplier.name as product_name','product_supplier.updated_at','product_supplier.to_date','suppliers.name as supplier_name',DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,DATE_ADD(NOW(),INTERVAL 1 DAY)) as out_dated_time'))
+                ->paginate($paginate);
 
         $maxTime = DB::table('product_supplier')
             ->where('to_date','<',Carbon::now())
             ->join('suppliers','suppliers.id','=','product_supplier.supplier_id')
             ->whereIn('supplier_id', $supplierIds)
-            ->max(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW())'));
+            ->where('product_supplier.state','=',1)
+            ->max(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,DATE_ADD(NOW(),INTERVAL 1 DAY))'));
 
         $avgTime = ProductSupplier::where('to_date','<',Carbon::now())
             ->join('suppliers','suppliers.id','=','product_supplier.supplier_id')
             ->whereIn('supplier_id', $supplierIds)
-            ->select(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW()) as out_dated_time'))
-            ->avg(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW())'));
+            ->where('product_supplier.state','=',1)
+            ->avg(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,DATE_ADD(NOW(),INTERVAL 1 DAY))'));
 
         return view('reports.import_price', compact('suppliers','countProduct','listProduct','maxTime','avgTime'));
     }

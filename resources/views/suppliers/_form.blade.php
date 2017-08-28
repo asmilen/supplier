@@ -9,6 +9,14 @@
 </div>
 
 <div class="form-group">
+    <label class="col-sm-3 control-label no-padding-right">Tên đầy đủ</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" name="full_name" placeholder="Tên đầy đủ"
+               value="{{ old('full_name', $supplier->full_name) }}">
+    </div>
+</div>
+
+<div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Mã nhà cung cấp</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="code" placeholder="Mã nhà cung cấp"

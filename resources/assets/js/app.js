@@ -10,6 +10,7 @@ var app = angular.module('app', [
     'controllers.productSupplierIndex',
     'directives.format',
     'directives.currencyInput',
+    'directives.select2',
 ]);
 
 app.config(['$httpProvider', function ($httpProvider) {

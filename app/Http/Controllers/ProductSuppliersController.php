@@ -36,6 +36,16 @@ class ProductSuppliersController extends Controller
             'to_date' => 'required',
         ]);
 
+        $exists = ProductSupplier::where('product_id', request('product_id'))
+            ->where('supplier_id', request('supplier_id'))
+            ->first();
+
+        if ($exists) {
+            return response()->json([
+                'error' => 'Sản phẩm theo NCC này đã tồn tại, vui lòng tìm kiếm và sửa.'
+            ], 422);
+        }
+
         $productSupplier = ProductSupplier::forceCreate([
             'product_id' => request('product_id'),
             'supplier_id' => request('supplier_id'),

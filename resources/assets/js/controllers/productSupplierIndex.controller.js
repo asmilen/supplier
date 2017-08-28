@@ -2,10 +2,10 @@ angular
     .module('controllers.productSupplierIndex', [])
     .controller('ProductSupplierIndexController', ProductSupplierIndexController);
 
-ProductSupplierIndexController.$inject = ['$scope', '$http'];
+ProductSupplierIndexController.$inject = ['$scope', '$http', '$window', '$filter'];
 
 /* @ngInject */
-function ProductSupplierIndexController($scope, $http) {
+function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.productSuppliersLoaded = false;
 
     function searchProductSupplierForm() {
@@ -20,13 +20,17 @@ function ProductSupplierIndexController($scope, $http) {
     }
 
     function addProductSupplierForm() {
+        var now = new Date();
+        var to = new Date();
+        to.setDate(now.getDate() + 7);
+
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
         this.supplier_name = '';
         this.import_price = '';
-        this.from_date = '';
-        this.to_date = '';
+        this.from_date = $filter('date')(now, 'yyyy-MM-dd');
+        this.to_date = $filter('date')(to, 'yyyy-MM-dd');
         this.min_quantity = 0;
         this.price_recommend = 0;
         this.success = false;
@@ -59,6 +63,10 @@ function ProductSupplierIndexController($scope, $http) {
         this.total_items = 0;
     }
 
+    function exportForm() {
+        this.disabled = false;
+    }
+
     function updatePricesToMagentoForm() {
         this.disabled = false;
     }
@@ -68,6 +76,7 @@ function ProductSupplierIndexController($scope, $http) {
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
+    $scope.exportForm = new exportForm();
     $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
 
     $scope.refreshData = function () {
@@ -210,6 +219,21 @@ function ProductSupplierIndexController($scope, $http) {
                 }
                 $scope.editProductSupplierForm.disabled = false;
             });
+    }
+
+    $scope.exportToExcel = function () {
+        $scope.exportForm.disabled = true;
+
+        $http.post('/suppliers/exportExcel')
+            .then(function (response) {
+                $scope.exportForm = new exportForm();
+
+                $window.location = response.data.path;
+            })
+    }
+
+    $scope.showImportFromExcelModal = function () {
+        $('#modal-import-from-excel').modal('show');
     }
 
     $scope.showUpdatePricesToMagentoModal = function () {

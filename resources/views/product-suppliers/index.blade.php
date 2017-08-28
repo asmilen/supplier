@@ -2,6 +2,7 @@
 
 @section('styles')
 <link rel="stylesheet" href="/vendor/ace/assets/css/datepicker.css" />
+<link rel="stylesheet" href="/vendor/ace/assets/css/select2.css">
 @endsection
 
 @section('content')
@@ -40,16 +41,28 @@
     </div><!-- /.page-header -->
 
     <div class="row">
-        <div class="col-xs-12">
-            <p class="text-right">
+        <div class="col-sm-6">
+            <p class="text-left">
                 <button class="btn btn-primary" ng-click="showAddProductSupplierModal()">
                     <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
                     <span class="hidden-xs">Thêm</span>
                 </button>
+                <button class="btn btn-xlg btn-white btn-default" ng-click="showImportFromExcelModal()">
+                    <i class="ace-icon fa fa-cloud-upload" aria-hidden="true"></i>
+                    <span class="hidden-xs">Import</span>
+                </button>
+                <button class="btn btn-xlg btn-white btn-success" ng-click="exportToExcel()" ng-disabled="exportForm.disabled">
+                    <i class="ace-icon fa fa-cloud-download" aria-hidden="true"></i>
+                    <span class="hidden-xs">Export</span>
+                </button>
+            </p>
+        </div>
+        <div class="col-sm-6">
+            <p class="text-right">
                 @if (Sentinel::getUser()->hasAccess('product-suppliers.update-all-prices-to-magento'))
-                <button class="btn btn-info" ng-click="showUpdatePricesToMagentoModal()">
-                    <i class="ace-icon fa fa-save" aria-hidden="true"></i>
-                    <span class="hidden-xs">Cập nhật toàn bộ giá sang Magento</span>
+                <button class="btn btn-info text-right" ng-click="showUpdatePricesToMagentoModal()">
+                    <i class="ace-icon fa fa-flask" aria-hidden="true"></i>
+                    <span class="hidden-xs">Cập nhật giá sang Magento</span>
                 </button>
                 @endif
             </p>
@@ -66,34 +79,48 @@
                 <div class="widget-body">
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
-                            <select class="form-control" ng-model="searchProductSupplierForm.category_id" ng-change="refreshData()">
-                                <option value="">-- Danh mục --</option>
-                                @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="form-control" ng-model="searchProductSupplierForm.manufacturer_id" ng-change="refreshData()">
-                                <option value="">-- Nhà sản xuất --</option>
-                                @foreach ($manufacturers as $manufacturer)
-                                <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="form-control" ng-model="searchProductSupplierForm.supplier_id" ng-change="refreshData()">
-                                <option value="">-- Nhà cung cấp --</option>
-                                @foreach ($suppliers as $supplier)
-                                <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
-                                @endforeach
-                            </select>
-                            <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
-                            <select class="form-control" ng-model="searchProductSupplierForm.state" ng-change="refreshData()">
-                                <option value="">-- Trạng thái hàng --</option>
-                                @foreach (config('teko.product.state') as $k => $v)
-                                <option value="{{ $k }}">{{ $v }}</option>
-                                @endforeach
-                            </select>
-                            <!-- <button type="button" class="btn btn-purple btn-sm" ng-click="refreshData()">
-                                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                            </button> -->
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <select class="select2" ng-model="searchProductSupplierForm.category_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Danh mục --</option>
+                                        @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchProductSupplierForm.manufacturer_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Nhà sản xuất --</option>
+                                        @foreach ($manufacturers as $manufacturer)
+                                        <option value="{{ $manufacturer->id }}">{{ $manufacturer->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchProductSupplierForm.supplier_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Nhà cung cấp --</option>
+                                        @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchProductSupplierForm.state" ng-change="refreshData()" select2>
+                                        <option value="">-- Trạng thái hàng --</option>
+                                        @foreach (config('teko.product.state') as $k => $v)
+                                        <option value="{{ $k }}">{{ $v }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="button" class="btn btn-purple btn-sm" ng-click="refreshData()">
+                                        <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -336,10 +363,10 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Cập nhật toàn bộ giá sang Magento</h4>
+                    <h4 class="modal-title">Cập nhật giá sang Magento</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Cập nhật toàn bộ giá sang Magento sẽ mất thời gian chạy ngầm.</p>
+                    <p>Cập nhật giá sang Magento sẽ mất thời gian chạy ngầm.</p>
                     <p>Bạn có đồng ý cập nhật giá không?</p>
                 </div>
                 <div class="modal-footer">
@@ -432,9 +459,36 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-import-from-excel" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Import giá nhập - NCC</h4>
+                </div>
+                <form class="form-horizontal" role="form" action="{{ url('/suppliers/importExcel') }}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        {{ csrf_field() }}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Chọn file</label>
+                            <div class="col-sm-9">
+                                <input type="file" name="file" id="fileUpload">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Import</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
 @section('scripts')
-    <script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
+<script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
+<script src="/vendor/ace/assets/js/select2.js"></script>
 @endsection

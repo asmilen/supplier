@@ -15,7 +15,7 @@
                 <a href="{{ url('/dashboard') }}">Dashboard</a>
             </li>
             <li>
-                <a href="{{ route('suppliers.getList') }}">Nhà cung cấp</a>
+                <a href="{{ url('/suppliers') }}">Nhà cung cấp</a>
             </li>
             <li class="active">Tạo mới</li>
         </ul><!-- /.breadcrumb -->
@@ -31,7 +31,7 @@
                     <i class="ace-icon fa fa-angle-double-right"></i>
                     Tạo mới
                 </small>
-                <a class="btn btn-primary pull-right" href="{{ route('suppliers.getList') }}">
+                <a class="btn btn-primary pull-right" href="{{ url('/suppliers') }}">
                     <i class="ace-icon fa fa-list" aria-hidden="true"></i>
                     <span class="hidden-xs">Danh sách</span>
                 </a>
@@ -69,7 +69,7 @@
                 width:'100%',
             });
         });
-        
+
         function loadDistrictsByProvince(provinceId) {
             $.ajax({
                 url: "/provinces/" + provinceId + "/districts",

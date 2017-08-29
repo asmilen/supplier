@@ -37,6 +37,46 @@
         </div><!-- /.page-header -->
 
         <div class="row">
+            <div class="col-xs-12">
+                <div class="widget-box">
+                    <div class="widget-header">
+                        <h5 class="widget-title">Search</h5>
+                    </div>
+
+                    <div class="widget-body">
+                        <div class="widget-main">
+                            <form class="form-inline" id="search-form" action="">
+                                <select class="form-control select2" name="region_id" id="region_id">
+                                    <option value="">-- Miền --</option>
+                                    @foreach (config('teko.regions') as $key => $region)
+                                        <option value="{{ $key }}" {{(app('request')->input('region_id') == $key) ? 'selected' : ''}}>{{ $region }}</option>
+                                    @endforeach
+                                </select>
+                                <select name="supplier_id" class="form-control select2" id="supplier_id">
+                                    <option value="">-- Nhà cung cấp --</option>
+                                    @foreach ($suppliers as $supplier)
+                                        <option value="{{ $supplier->id }}" {{(app('request')->input('supplier_id') == $supplier->id) ? 'selected' : ''}}>{{ $supplier->name }}</option>
+                                    @endforeach
+                                </select>
+                                <select class="form-control select2" name="paginate" id="paginate">
+                                    <option value="">-- Số bản ghi hiển thị  --</option>
+                                    <option value="10" {{(app('request')->input('paginate') == 10) ? 'selected' : ''}}>10</option>
+                                    <option value="25" {{(app('request')->input('paginate') == 25) ? 'selected' : ''}}>25</option>
+                                    <option value="50" {{(app('request')->input('paginate') == 50) ? 'selected' : ''}}>50</option>
+                                    <option value="100" {{(app('request')->input('paginate') == 100) ? 'selected' : ''}}>100</option>
+                                </select>
+                                <input class="form-control" name="product_name" placeholder="-- Tên sản phẩm --" value="{{app('request')->input('product_name')}}">
+                                <button type="submit" class="btn btn-purple btn-sm">
+                                    <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-12 infobox-container">
                 <div class="infobox infobox-red">
                     <div class="infobox-icon">
@@ -52,7 +92,7 @@
                         <i class="ace-icon fa fa-calendar-times-o"></i>
                     </div>
                     <div class="infobox-data">
-                        <span class="infobox-data-number">{{ $maxTime }} ngày</span>
+                        <span class="infobox-data-number">{{ number_format( $maxTime , 0 ) }} ngày</span>
                         <div class="infobox-content">Thời gian quá hạn nhập giá lâu nhất</div>
                     </div>
                 </div>
@@ -70,46 +110,6 @@
 
         <br>
         <br>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="widget-box">
-                    <div class="widget-header">
-                        <h5 class="widget-title">Search</h5>
-                    </div>
-
-                    <div class="widget-body">
-                        <div class="widget-main">
-                            <form class="form-inline" id="search-form" action="">
-                                <select class="form-control select2" name="region_id" id="region_id">
-                                    <option value="">-- Miền --</option>
-                                    @foreach (config('teko.regions') as $key => $region)
-                                        <option value="{{ $key }}" {{(app('request')->input('region_id') == $key) ? 'selected' : ''}}>{{ $region }}</option>
-                                    @endforeach
-                                </select>
-                                <select name="supplier_id" class="form-control select2">
-                                    <option value="">-- Nhà cung cấp --</option>
-                                    @foreach ($suppliers as $supplier)
-                                        <option value="{{ $supplier->id }}" {{(app('request')->input('supplier_id') == $supplier->id) ? 'selected' : ''}}>{{ $supplier->name }}</option>
-                                    @endforeach
-                                </select>
-                                <select class="form-control select2" name="paginate" id="paginate">
-                                    <option value="">-- Số bản ghi hiển thị  --</option>
-                                    <option value="10" {{(app('request')->input('paginate') == 10) ? 'selected' : ''}}>10</option>
-                                    <option value="25" {{(app('request')->input('paginate') == 25) ? 'selected' : ''}}>25</option>
-                                    <option value="50" {{(app('request')->input('paginate') == 50) ? 'selected' : ''}}>50</option>
-                                    <option value="100" {{(app('request')->input('paginate') == 100) ? 'selected' : ''}}>100</option>
-                                </select>
-                                <button type="submit" class="btn btn-purple btn-sm">
-                                    <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
         <div class="row">
             <div class="col-xs-12">
@@ -148,7 +148,13 @@
             $('.select2').select2();
 
             $('#region_id').change(function () {
-                $('#search-form').submit();
+                $.get('{{ url('api/suppliers/regions/')  }}' + '?region_id=' + $('#region_id').val(),function (data) {
+                    $('#supplier_id').empty();
+                    $('#supplier_id').append('<option value="">-- Nhà cung cấp --</option>');
+                    for(var i = 0; i < data.length; i++) {
+                        $('#supplier_id').append('<option value='+data[i].id+'>'+data[i].name+'</option>');
+                    }
+                });
             })
         });
     </script>

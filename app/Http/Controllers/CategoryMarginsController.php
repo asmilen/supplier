@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\UpdatePriceToMagento;
 use App\Models\Category;
 use App\Models\MarginRegionCategory;
-use Sentinel;
+use App\Jobs\UpdateCategoryPriceToMagento;
 
 class CategoryMarginsController extends Controller
 {
@@ -17,9 +16,22 @@ class CategoryMarginsController extends Controller
     public function update(Category $category)
     {
         $this->validate(request(), [
-            'north_region' => 'required|numeric|min:1|max:100',
-            'middle_region' => 'required|numeric|min:1|max:100',
-            'south_region' => 'required|numeric|min:1|max:100',
+            'north_region' => 'required|numeric|min:0.1|max:100',
+            'middle_region' => 'required|numeric|min:0.1|max:100',
+            'south_region' => 'required|numeric|min:0.1|max:100',
+        ], [
+            'north_region.required' => 'Vui lòng nhập margin.',
+            'north_region.max' => 'Margin quá lớn, tối đa 100.',
+            'north_region.min' => 'Margin phải lớn hơn 0.',
+            'north_region.numeric' => 'Margin phải là số.',
+            'middle_region.required' => 'Vui lòng nhập margin.',
+            'middle_region.max' => 'Margin quá lớn, tối đa 100.',
+            'middle_region.min' => 'Margin phải lớn hơn 0.',
+            'middle_region.numeric' => 'Margin phải là số.',
+            'south_region.required' => 'Vui lòng nhập margin.',
+            'south_region.max' => 'Margin quá lớn, tối đa 100.',
+            'south_region.min' => 'Margin phải lớn hơn 0.',
+            'south_region.numeric' => 'Margin phải là số.',
         ]);
 
         $mapToRegions = [
@@ -37,6 +49,6 @@ class CategoryMarginsController extends Controller
             ]);
         }
 
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, 0));
+        dispatch(new UpdateCategoryPriceToMagento($category));
     }
 }

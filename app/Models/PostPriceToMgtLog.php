@@ -9,7 +9,7 @@ class PostPriceToMgtLog extends Model
 
     protected $table = 'post_price_to_mgt_logs';
     protected $fillable = [
-        'user_id',
+        'region_id',
         'product_id',
         'detail',
         'post_data',

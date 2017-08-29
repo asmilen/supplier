@@ -21,6 +21,10 @@ class ProductSupplierPricesController extends Controller
             $supplier = Supplier::where('name', request('supplier_name'))->firstOrFail();
 
             foreach (request('products', []) as $productData) {
+                if (empty($productData['import_price'])) {
+                    continue;
+                }
+
                 $product = Product::findOrFail($productData['id']);
 
                 $productSupplier = ProductSupplier::where('supplier_id', $supplier->id)

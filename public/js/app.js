@@ -70,7 +70,7 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -8367,10 +8367,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 angular.module('controllers.productSupplierIndex', []).controller('ProductSupplierIndexController', ProductSupplierIndexController);
 
-ProductSupplierIndexController.$inject = ['$scope', '$http'];
+ProductSupplierIndexController.$inject = ['$scope', '$http', '$window', '$filter'];
 
 /* @ngInject */
-function ProductSupplierIndexController($scope, $http) {
+function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.productSuppliersLoaded = false;
 
     function searchProductSupplierForm() {
@@ -8385,13 +8385,17 @@ function ProductSupplierIndexController($scope, $http) {
     }
 
     function addProductSupplierForm() {
+        var now = new Date();
+        var to = new Date();
+        to.setDate(now.getDate() + 7);
+
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
         this.supplier_name = '';
         this.import_price = '';
-        this.from_date = '';
-        this.to_date = '';
+        this.from_date = $filter('date')(now, 'yyyy-MM-dd');
+        this.to_date = $filter('date')(to, 'yyyy-MM-dd');
         this.min_quantity = 0;
         this.price_recommend = 0;
         this.success = false;
@@ -8424,6 +8428,10 @@ function ProductSupplierIndexController($scope, $http) {
         this.total_items = 0;
     }
 
+    function exportForm() {
+        this.disabled = false;
+    }
+
     function updatePricesToMagentoForm() {
         this.disabled = false;
     }
@@ -8433,6 +8441,7 @@ function ProductSupplierIndexController($scope, $http) {
     $scope.editProductSupplierForm = new editProductSupplierForm();
     $scope.productsListForm = new productsListForm();
     $scope.suppliersListForm = new suppliersListForm();
+    $scope.exportForm = new exportForm();
     $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
 
     $scope.refreshData = function () {
@@ -8562,6 +8571,20 @@ function ProductSupplierIndexController($scope, $http) {
         });
     };
 
+    $scope.exportToExcel = function () {
+        $scope.exportForm.disabled = true;
+
+        $http.post('/suppliers/exportExcel').then(function (response) {
+            $scope.exportForm = new exportForm();
+
+            $window.location = response.data.path;
+        });
+    };
+
+    $scope.showImportFromExcelModal = function () {
+        $('#modal-import-from-excel').modal('show');
+    };
+
     $scope.showUpdatePricesToMagentoModal = function () {
         $('#modal-update-prices-to-magento').modal('show');
     };
@@ -8569,7 +8592,7 @@ function ProductSupplierIndexController($scope, $http) {
     $scope.updatePricesToMagento = function () {
         $scope.updatePricesToMagentoForm.disabled = true;
 
-        $http.post('/product-suppliers/update-prices-to-magento').then(function (response) {
+        $http.post('/product-suppliers/update-all-prices-to-magento').then(function (response) {
             $scope.updatePricesToMagentoForm.disabled = false;
 
             $('#modal-update-prices-to-magento').modal('hide');
@@ -8728,7 +8751,7 @@ function format($filter) {
 /* 15 */
 /***/ (function(module, exports) {
 
-angular.module('directives.select2', []).directive("select2", select2);
+angular.module('directives.select2', []).directive('select2', select2);
 
 function select2($timeout, $parse) {
     return {

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('styles')
+    <link href="/css/select2.min.css" rel="stylesheet" />
+@endsection
+
 @section('content')
     <!-- #section:basics/content.breadcrumbs -->
     <div class="breadcrumbs" id="breadcrumbs">
@@ -77,19 +81,19 @@
                     <div class="widget-body">
                         <div class="widget-main">
                             <form class="form-inline" id="search-form" action="">
-                                <select class="form-control" name="region_id">
+                                <select class="form-control select2" name="region_id" id="region_id">
                                     <option value="">-- Miền --</option>
                                     @foreach (config('teko.regions') as $key => $region)
                                         <option value="{{ $key }}" {{(app('request')->input('region_id') == $key) ? 'selected' : ''}}>{{ $region }}</option>
                                     @endforeach
                                 </select>
-                                <select class="form-control" name="supplier_id">
+                                <select name="supplier_id" class="form-control select2">
                                     <option value="">-- Nhà cung cấp --</option>
                                     @foreach ($suppliers as $supplier)
                                         <option value="{{ $supplier->id }}" {{(app('request')->input('supplier_id') == $supplier->id) ? 'selected' : ''}}>{{ $supplier->name }}</option>
                                     @endforeach
                                 </select>
-                                <select class="form-control" name="paginate">
+                                <select class="form-control select2" name="paginate" id="paginate">
                                     <option value="">-- Số bản ghi hiển thị  --</option>
                                     <option value="10" {{(app('request')->input('paginate') == 10) ? 'selected' : ''}}>10</option>
                                     <option value="25" {{(app('request')->input('paginate') == 25) ? 'selected' : ''}}>25</option>
@@ -138,7 +142,14 @@
 @endsection
 
 @section('inline_scripts')
+    <script src="/js/select2.min.js"></script>
     <script>
+        $(document).ready(function () {
+            $('.select2').select2();
 
+            $('#region_id').change(function () {
+                $('#search-form').submit();
+            })
+        });
     </script>
 @endsection

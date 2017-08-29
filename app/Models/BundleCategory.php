@@ -47,10 +47,20 @@ class BundleCategory extends Model
             ->editColumn('totalProduct', function ($model) {
                 $count = 0;
                 for ($i = 0; $i < count($model->products) ? count($model->products) : 0; $i++) {
-                    if ($model->products[$i]->status == true) {
-                        $check = ProductSupplier::where('product_id', $model->products[$i]->id)->where('state', 1)->count();
-                        if ($check > 0) {
-                            $count += 1;
+                    if ($model->products[$i]->status == true && $model->products[$i]->deleted_at == null) {
+                        $productSupplier = ProductSupplier::where('product_id', $model->products[$i]->id)
+                            ->where('state', 1)
+                            ->get();
+                        if ($productSupplier) {
+                            $supplier_ids = $productSupplier->pluck('supplier_id');
+                            $province_ids = SupplierSupportedProvince::whereIn('supplier_id', $supplier_ids)
+                                ->where('status', 1)
+                                ->pluck('province_id');
+                            $region_ids = Province::whereIn('id', $province_ids)->pluck('region_id');
+                            $check = Bundle::where('id', $model->bundle->id)->whereIn('region_id', $region_ids)->count();
+                            if ($check > 0) {
+                                $count += 1;
+                            }
                         }
                     }
                 }

@@ -46,6 +46,7 @@ class BundleCategory extends Model
             })
             ->editColumn('totalProduct', function ($model) {
                 $count = 0;
+                $region_id = Bundle::where('id', $model->bundle->id)->pluck('region_id');
                 for ($i = 0; $i < count($model->products) ? count($model->products) : 0; $i++) {
                     if ($model->products[$i]->status == true && $model->products[$i]->deleted_at == null) {
                         $productSupplier = ProductSupplier::where('product_id', $model->products[$i]->id)
@@ -54,11 +55,10 @@ class BundleCategory extends Model
                         if ($productSupplier) {
                             $supplier_ids = $productSupplier->pluck('supplier_id');
                             $province_ids = SupplierSupportedProvince::whereIn('supplier_id', $supplier_ids)
-                                ->where('status', 1)
+//                                ->where('status', 1)
                                 ->pluck('province_id');
                             $region_ids = Province::whereIn('id', $province_ids)->pluck('region_id');
-                            $check = Bundle::where('id', $model->bundle->id)->whereIn('region_id', $region_ids)->count();
-                            if ($check > 0) {
+                            if (in_array($region_id[0], $region_ids->toArray())) {
                                 $count += 1;
                             }
                         }

@@ -250,23 +250,33 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.updateValidTime = function () {
         $scope.updateValidTimeForm.disabled = true;
         $scope.updateValidTimeForm.errors = [];
-        $scope.updateValidTimeForm.productSupplierIds = $scope.productSuppliers.map(function (array) {
-            return array.id;
-        });
 
-        $http.post('product-suppliers/update-valid-time', $scope.updateValidTimeForm)
+        $http.get('/api/product-suppliers/get-ids?category_id=' + $scope.searchProductSupplierForm.category_id +
+            '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id +
+            '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id +
+            '&q=' + $scope.searchProductSupplierForm.q +
+            '&state=' + $scope.searchProductSupplierForm.state)
             .then(function (response) {
-                $scope.updateValidTimeForm = new updateValidTimeForm();
-                $scope.refreshData();
-                $('#modal-update-valid-time').modal('hide');
-                swal("Success!", "Cập nhật thành công " + response.data + " sản phẩm", "success");
+                $scope.updateValidTimeForm.productSupplierIds = response.data.data;
+
+                $http.post('product-suppliers/update-valid-time', $scope.updateValidTimeForm)
+                    .then(function (response) {
+                        $scope.updateValidTimeForm = new updateValidTimeForm();
+                        $scope.refreshData();
+                        $('#modal-update-valid-time').modal('hide');
+                        swal("Success!", "Cập nhật thành công " + response.data + " sản phẩm", "success");
+                    })
+                    .catch(function (response) {
+                        if (typeof response.data === 'object') {
+                            $scope.updateValidTimeForm.errors = _.flatten(_.toArray(response.data));
+                        } else {
+                            $scope.updateValidTimeForm.errors = ['Something went wrong. Please try again.'];
+                        }
+                        $scope.updateValidTimeForm.disabled = false;
+                    });
             })
             .catch(function (response) {
-                if (typeof response.data === 'object') {
-                    $scope.updateValidTimeForm.errors = _.flatten(_.toArray(response.data));
-                } else {
-                    $scope.updateValidTimeForm.errors = ['Something went wrong. Please try again.'];
-                }
+                $scope.updateValidTimeForm.errors = ['Something went wrong. Please try again.'];
                 $scope.updateValidTimeForm.disabled = false;
             });
     }

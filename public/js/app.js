@@ -8436,6 +8436,12 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.disabled = false;
     }
 
+    function updateValidTimeForm() {
+        this.from_date = '';
+        this.to_date = '';
+        this.disabled = false;
+    }
+
     $scope.searchProductSupplierForm = new searchProductSupplierForm();
     $scope.addProductSupplierForm = new addProductSupplierForm();
     $scope.editProductSupplierForm = new editProductSupplierForm();
@@ -8443,6 +8449,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.suppliersListForm = new suppliersListForm();
     $scope.exportForm = new exportForm();
     $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
+    $scope.updateValidTimeForm = new updateValidTimeForm();
 
     $scope.refreshData = function () {
         $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
@@ -8583,6 +8590,32 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 
     $scope.showImportFromExcelModal = function () {
         $('#modal-import-from-excel').modal('show');
+    };
+
+    $scope.showUpdateValidTimeModal = function () {
+        $('#modal-update-valid-time').modal('show');
+    };
+
+    $scope.updateValidTime = function () {
+        $scope.updateValidTimeForm.disabled = true;
+        $scope.updateValidTimeForm.errors = [];
+        $scope.updateValidTimeForm.productSupplierIds = $scope.productSuppliers.map(function (array) {
+            return array.id;
+        });
+
+        $http.post('product-suppliers/update-valid-time', $scope.updateValidTimeForm).then(function (response) {
+            $scope.updateValidTimeForm = new updateValidTimeForm();
+            $scope.refreshData();
+            $('#modal-update-valid-time').modal('hide');
+            swal("Success!", "Cập nhật thành công " + response.data + " sản phẩm", "success");
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.updateValidTimeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.updateValidTimeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.updateValidTimeForm.disabled = false;
+        });
     };
 
     $scope.showUpdatePricesToMagentoModal = function () {

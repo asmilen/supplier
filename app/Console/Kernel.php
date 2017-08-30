@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
@@ -36,7 +36,7 @@ class Kernel extends ConsoleKernel
             ->dailyAt('19:00')
             ->sendOutputTo('queue-send_.log', true);
 
-            $schedule->command('email:alert')
+        $schedule->command('email:alert')
             ->dailyAt('01:30')
             ->sendOutputTo('email-alert.log', true);
     }

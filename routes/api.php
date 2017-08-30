@@ -43,4 +43,5 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('products/deactivate-errors-from-google-sheet', 'ProductsController@deactivateErrorsFromGoogleSheet');
 
     Route::get('product-suppliers', 'ProductSuppliersController@index');
+    Route::get('product-suppliers/get-ids', 'ProductSuppliersController@getIds');
 });

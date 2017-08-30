@@ -81,6 +81,17 @@ class ProductSuppliersController extends Controller
         ]);
     }
 
+    public function getIds()
+    {
+        $builder = $this->getProductsListBuilder();
+
+        $productSuppliers = $builder->pluck('id');
+
+        return response()->json([
+            'data' => $productSuppliers,
+        ]);
+    }
+
     protected function getProductsListBuilder()
     {
         $builder = ProductSupplier::with('product', 'product.category', 'product.manufacturer', 'supplier', 'creater', 'updater')

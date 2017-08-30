@@ -45,7 +45,6 @@ class SendQueue extends Command
      */
     public function handle()
     {
-        
         $from = Carbon::yesterday('Asia/Ho_Chi_Minh')->setTimezone('UTC')->format('Y-m-d H:i:s');
         $to = Carbon::now('Asia/Ho_Chi_Minh')->setTime(0,0,0)->setTimezone('UTC')->format('Y-m-d H:i:s');
         $messages = MessageQueueLog::where('created_at', '>=', $from)

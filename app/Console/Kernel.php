@@ -30,8 +30,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
         $schedule->command('queue:send')
             ->dailyAt('19:00')
             ->sendOutputTo('queue-send_.log', true);

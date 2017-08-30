@@ -6,9 +6,9 @@
 /******/ 	function __webpack_require__(moduleId) {
 /******/
 /******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId])
+/******/ 		if(installedModules[moduleId]) {
 /******/ 			return installedModules[moduleId].exports;
-/******/
+/******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
@@ -32,9 +32,6 @@
 /******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
 /******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
@@ -63,11 +60,19 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 16);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(1);
+module.exports = __webpack_require__(16);
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
@@ -76,30 +81,33 @@ app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
 
-__webpack_require__(3);
+__webpack_require__(2);
 
 __webpack_require__(4);
+__webpack_require__(5);
 __webpack_require__(6);
-__webpack_require__(9);
 __webpack_require__(7);
 __webpack_require__(8);
-__webpack_require__(11);
-__webpack_require__(5);
+__webpack_require__(9);
 __webpack_require__(10);
+__webpack_require__(11);
 
-__webpack_require__(13);
-__webpack_require__(15);
-__webpack_require__(14);
 __webpack_require__(12);
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
+__webpack_require__(13);
+__webpack_require__(14);
+__webpack_require__(15);
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(3);
+
+module.exports = 'ui.bootstrap';
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 /*
@@ -7880,15 +7888,6 @@ angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInl
 angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(2);
-
-module.exports = 'ui.bootstrap';
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports) {
 
@@ -7903,77 +7902,6 @@ function AppController($scope, $http) {
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
-
-CategoryIndexController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function CategoryIndexController($scope, $http) {
-    $scope.categoriesLoaded = false;
-
-    function marginsForm() {
-        this.category_id = '';
-        this.margins = {
-            1: 5,
-            2: 5,
-            3: 5
-        };
-        this.errors = [];
-        this.disabled = false;
-    }
-
-    $scope.refreshData = function () {
-        $http.get('/categories/all').then(function (response) {
-            $scope.categories = response.data;
-            $scope.categoriesLoaded = true;
-        });
-    };
-
-    $scope.refreshData();
-
-    $scope.showEditMarginsModal = function (category) {
-        $scope.marginCategoryName = category.name;
-
-        $scope.marginsForm = new marginsForm();
-        $scope.marginsForm.category_id = category.id;
-
-        $http.get('/categories/' + category.id + '/margins').then(function (response) {
-            _.each(response.data, function (margin, regionId) {
-                $scope.marginsForm.margins[regionId] = margin.margin;
-            });
-        });
-
-        $('#modal-edit-margins').modal('show');
-    };
-
-    $scope.updateMargins = function () {
-        $scope.marginsForm.errors = [];
-        $scope.marginsForm.disabled = true;
-
-        $http.put('/categories/' + $scope.marginsForm.category_id + '/margins', {
-            'north_region': this.marginsForm.margins[1],
-            'middle_region': this.marginsForm.margins[2],
-            'south_region': this.marginsForm.margins[3]
-        }).then(function (response) {
-            $scope.marginsForm = new marginsForm();
-            $('#modal-edit-margins').modal('hide');
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.marginsForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8080,6 +8008,64 @@ function ProductCreateController($scope, $http, $window) {
             $scope.productForm.disabled = false;
         });
     };
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
+
+ProductSupplierController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function ProductSupplierController($scope, $http, $window) {
+
+    function productForm() {
+        this.category_id = '';
+        this.manufacturer_id = '';
+        this.color_id = '';
+        this.type = 'simple';
+        this.parent_id = '0';
+        this.name = '';
+        this.code = '';
+        this.source_url = '';
+        this.image = {};
+        this.description = '';
+        this.status = true;
+        this.attributes = {};
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    };
+
+    $scope.productForm = new productForm();
+    $scope.getCategories = function () {
+        $http.get('/api/categories').then(function (response) {
+            $scope.categories = response.data;
+        });
+    };
+
+    $scope.getManufacturers = function () {
+        $http.get('/api/manufacturers').then(function (response) {
+            $scope.manufacturers = response.data;
+        });
+    };
+
+    $scope.refreshData = function () {
+        if (categoryId = $scope.productForm.category_id) {
+            $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
+                $scope.attributes = response.data;
+                _.each($scope.attributes, function (attribute) {
+                    $scope.productForm.attributes[attribute.slug] = '';
+                });
+            });
+        }
+    };
+
+    $scope.getCategories();
+    $scope.getManufacturers();
+    $scope.refreshData();
 }
 
 /***/ }),
@@ -8305,62 +8291,130 @@ function ProductSalepriceController($scope, $http, $window) {
 /* 9 */
 /***/ (function(module, exports) {
 
-angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-ProductSupplierController.$inject = ['$scope', '$http', '$window'];
+angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
+
+TransportFeeIndexController.$inject = ['$scope', '$http'];
 
 /* @ngInject */
-function ProductSupplierController($scope, $http, $window) {
+function TransportFeeIndexController($scope, $http) {
+    $scope.transportFeesLoaded = false;
 
-    function productForm() {
-        this.category_id = '';
-        this.manufacturer_id = '';
-        this.color_id = '';
-        this.type = 'simple';
-        this.parent_id = '0';
-        this.name = '';
-        this.code = '';
-        this.source_url = '';
-        this.image = {};
-        this.description = '';
-        this.status = true;
-        this.attributes = {};
+    function transportFeeForm() {
+        this.percentFees = {};
         this.errors = [];
         this.disabled = false;
         this.successful = false;
-    };
+    }
 
-    $scope.productForm = new productForm();
-    $scope.getCategories = function () {
-        $http.get('/api/categories').then(function (response) {
-            $scope.categories = response.data;
-        });
-    };
-
-    $scope.getManufacturers = function () {
-        $http.get('/api/manufacturers').then(function (response) {
-            $scope.manufacturers = response.data;
-        });
-    };
+    $scope.transportFeeForm = new transportFeeForm();
 
     $scope.refreshData = function () {
-        if (categoryId = $scope.productForm.category_id) {
-            $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
-                $scope.attributes = response.data;
-                _.each($scope.attributes, function (attribute) {
-                    $scope.productForm.attributes[attribute.slug] = '';
-                });
+        $http.get('/api/transport-fees').then(function (response) {
+            $scope.transportFees = response.data;
+            $scope.transportFeesLoaded = true;
+
+            _.each($scope.transportFees, function (transportFee) {
+                $scope.transportFeeForm.percentFees[transportFee.province_id] = transportFee.percent_fee;
             });
-        }
+        });
     };
 
-    $scope.getCategories();
-    $scope.getManufacturers();
     $scope.refreshData();
+
+    $scope.updatePercentFee = function (provinceId) {
+        $scope.transportFeeForm.errors = [];
+        $scope.transportFeeForm.disabled = true;
+        $scope.transportFeeForm.successful = false;
+
+        $http.put('/api/provinces/' + provinceId + '/transport-fee', { percent_fee: $scope.transportFeeForm.percentFees[provinceId] }).then(function () {
+            $scope.transportFeeForm.successful = true;
+            $scope.transportFeeForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.transportFeeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.transportFeeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.transportFeeForm.disabled = false;
+        });
+    };
 }
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
+
+CategoryIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function CategoryIndexController($scope, $http) {
+    $scope.categoriesLoaded = false;
+
+    function marginsForm() {
+        this.category_id = '';
+        this.margins = {
+            1: 5,
+            2: 5,
+            3: 5
+        };
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.refreshData = function () {
+        $http.get('/categories/all').then(function (response) {
+            $scope.categories = response.data;
+            $scope.categoriesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.showEditMarginsModal = function (category) {
+        $scope.marginCategoryName = category.name;
+
+        $scope.marginsForm = new marginsForm();
+        $scope.marginsForm.category_id = category.id;
+
+        $http.get('/categories/' + category.id + '/margins').then(function (response) {
+            _.each(response.data, function (margin, regionId) {
+                $scope.marginsForm.margins[regionId] = margin.margin;
+            });
+        });
+
+        $('#modal-edit-margins').modal('show');
+    };
+
+    $scope.updateMargins = function () {
+        $scope.marginsForm.errors = [];
+        $scope.marginsForm.disabled = true;
+
+        $http.put('/categories/' + $scope.marginsForm.category_id + '/margins', {
+            'north_region': this.marginsForm.margins[1],
+            'middle_region': this.marginsForm.margins[2],
+            'south_region': this.marginsForm.margins[3]
+        }).then(function (response) {
+            $scope.marginsForm = new marginsForm();
+            $('#modal-edit-margins').modal('hide');
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.marginsForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8634,106 +8688,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 }
 
 /***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
-
-TransportFeeIndexController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function TransportFeeIndexController($scope, $http) {
-    $scope.transportFeesLoaded = false;
-
-    function transportFeeForm() {
-        this.percentFees = {};
-        this.errors = [];
-        this.disabled = false;
-        this.successful = false;
-    }
-
-    $scope.transportFeeForm = new transportFeeForm();
-
-    $scope.refreshData = function () {
-        $http.get('/api/transport-fees').then(function (response) {
-            $scope.transportFees = response.data;
-            $scope.transportFeesLoaded = true;
-
-            _.each($scope.transportFees, function (transportFee) {
-                $scope.transportFeeForm.percentFees[transportFee.province_id] = transportFee.percent_fee;
-            });
-        });
-    };
-
-    $scope.refreshData();
-
-    $scope.updatePercentFee = function (provinceId) {
-        $scope.transportFeeForm.errors = [];
-        $scope.transportFeeForm.disabled = true;
-        $scope.transportFeeForm.successful = false;
-
-        $http.put('/api/provinces/' + provinceId + '/transport-fee', { percent_fee: $scope.transportFeeForm.percentFees[provinceId] }).then(function () {
-            $scope.transportFeeForm.successful = true;
-            $scope.transportFeeForm.disabled = false;
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.transportFeeForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.transportFeeForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.transportFeeForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
 /* 12 */
-/***/ (function(module, exports) {
-
-angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
-
-currencyInput.$inject = ['$filter', '$browser'];
-
-function currencyInput($filter, $browser) {
-    console.log('fdsfds');
-    return {
-        require: 'ngModel',
-        link: function link($scope, $element, $attrs, ngModelCtrl) {
-            var listener = function listener() {
-                var value = $element.val().replace(/,/g, '');
-                $element.val($filter('number')(value, false));
-            };
-
-            // This runs when we update the text field
-            ngModelCtrl.$parsers.push(function (viewValue) {
-                return viewValue.replace(/,/g, '');
-            });
-
-            // This runs when the model gets updated on the scope directly and keeps our view in sync
-            ngModelCtrl.$render = function () {
-                $element.val($filter('number')(ngModelCtrl.$viewValue, false));
-            };
-
-            $element.bind('change', listener);
-            $element.bind('keydown', function (event) {
-                var key = event.keyCode;
-                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
-                // This lets us support copy and paste too
-                if (key == 91 || 15 < key && key < 19 || 37 <= key && key <= 40) return;
-                $browser.defer(listener); // Have to do this or changes don't get picked up properly
-            });
-
-            $element.bind('paste cut', function () {
-                $browser.defer(listener);
-            });
-        }
-    };
-};
-
-/***/ }),
-/* 13 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -8754,34 +8709,7 @@ function fileread() {
 }
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports) {
-
-angular.module('directives.format', []).directive('format', format);
-
-format.$inject = ['$filter'];
-
-function format($filter) {
-    return {
-        require: '?ngModel',
-        link: function link(scope, elem, attrs, ctrl) {
-            if (!ctrl) return;
-
-            ctrl.$formatters.unshift(function (a) {
-                return $filter(attrs.format)(ctrl.$modelValue);
-            });
-
-            ctrl.$parsers.unshift(function (viewValue) {
-                var plainNumber = viewValue.replace(/[^\d|\-+|\.+]/g, '');
-                elem.val($filter(attrs.format)(plainNumber));
-                return plainNumber;
-            });
-        }
-    };
-};
-
-/***/ }),
-/* 15 */
+/* 13 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive('select2', select2);
@@ -8831,12 +8759,81 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+angular.module('directives.format', []).directive('format', format);
+
+format.$inject = ['$filter'];
+
+function format($filter) {
+    return {
+        require: '?ngModel',
+        link: function link(scope, elem, attrs, ctrl) {
+            if (!ctrl) return;
+
+            ctrl.$formatters.unshift(function (a) {
+                return $filter(attrs.format)(ctrl.$modelValue);
+            });
+
+            ctrl.$parsers.unshift(function (viewValue) {
+                var plainNumber = viewValue.replace(/[^\d|\-+|\.+]/g, '');
+                elem.val($filter(attrs.format)(plainNumber));
+                return plainNumber;
+            });
+        }
+    };
+};
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
+
+currencyInput.$inject = ['$filter', '$browser'];
+
+function currencyInput($filter, $browser) {
+    console.log('fdsfds');
+    return {
+        require: 'ngModel',
+        link: function link($scope, $element, $attrs, ngModelCtrl) {
+            var listener = function listener() {
+                var value = $element.val().replace(/,/g, '');
+                $element.val($filter('number')(value, false));
+            };
+
+            // This runs when we update the text field
+            ngModelCtrl.$parsers.push(function (viewValue) {
+                return viewValue.replace(/,/g, '');
+            });
+
+            // This runs when the model gets updated on the scope directly and keeps our view in sync
+            ngModelCtrl.$render = function () {
+                $element.val($filter('number')(ngModelCtrl.$viewValue, false));
+            };
+
+            $element.bind('change', listener);
+            $element.bind('keydown', function (event) {
+                var key = event.keyCode;
+                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
+                // This lets us support copy and paste too
+                if (key == 91 || 15 < key && key < 19 || 37 <= key && key <= 40) return;
+                $browser.defer(listener); // Have to do this or changes don't get picked up properly
+            });
+
+            $element.bind('paste cut', function () {
+                $browser.defer(listener);
+            });
+        }
+    };
+};
+
+/***/ }),
 /* 16 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-__webpack_require__(0);
-module.exports = __webpack_require__(1);
-
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

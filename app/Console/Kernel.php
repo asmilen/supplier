@@ -32,12 +32,11 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-
         $schedule->command('queue:send')
-            ->dailyAt('02:00')
+            ->dailyAt('19:00')
             ->sendOutputTo('queue-send_.log', true);
 
-        $schedule->command('email:alert')
+            $schedule->command('email:alert')
             ->dailyAt('01:30')
             ->sendOutputTo('email-alert.log', true);
     }

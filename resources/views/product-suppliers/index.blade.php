@@ -55,6 +55,10 @@
                     <i class="ace-icon fa fa-cloud-download" aria-hidden="true"></i>
                     <span class="hidden-xs">Export</span>
                 </button>
+                <button class="btn btn-xlg btn-white btn-info2" ng-click="showUpdateValidTimeModal()" >
+                    <i class="ace-icon fa fa-calendar-check-o" aria-hidden="true"></i>
+                    <span class="hidden-xs">Valid Time</span>
+                </button>
             </p>
         </div>
         <div class="col-sm-6">
@@ -482,6 +486,48 @@
                         <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Import</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-update-valid-time" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Cập nhật hiệu lực giá sản phẩm</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" ng-show="updateValidTimeForm.errors.length > 0">
+                        <ul>
+                            <li ng-repeat="error in updateValidTimeForm.errors">@{{ error }}</li>
+                        </ul>
+                    </div>
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
+                            <div class="col-sm-9">
+                                <div class="input-daterange input-group">
+                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.from_date" placeholder="Từ" />
+                                    <span class="input-group-addon">
+                                        <i class="fa fa-exchange"></i>
+                                    </span>
+                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.to_date" placeholder="Đến" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Tổng số sản phẩm</label>
+                            <div class="col-sm-3">
+                                <label class="col-sm-3 control-label no-padding-right"> <strong>@{{ searchProductSupplierForm.total_items }} </strong> </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-success" ng-click="updateValidTime()" ng-disabled="updateValidTimeForm.disabled"><i class="fa fa-save"></i> Cập nhật</button>
+                </div>
             </div>
         </div>
     </div>

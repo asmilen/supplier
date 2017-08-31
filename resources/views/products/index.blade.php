@@ -85,6 +85,7 @@
                                 <option value="1">Configurable</option>
                             </select>
                             <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
+                            <input type="text" class="form-control" name="id" placeholder="ID Sản phẩm" />
                             <button type="submit" class="btn btn-purple btn-sm">
                                 <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
                             </button>
@@ -145,6 +146,7 @@ $(function () {
         ajax: {
             url: '{!! route('products.datatables') !!}',
             data: function (d) {
+                d.id = $('input[name=id]').val();
                 d.category_id = $('select[name=category_id]').val();
                 d.manufacturer_id = $('select[name=manufacturer_id]').val();
                 d.keyword = $('input[name=keyword]').val();

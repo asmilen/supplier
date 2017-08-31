@@ -230,11 +230,11 @@
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.from_date" placeholder="Từ" />
+                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.from_date" placeholder="Từ" readonly/>
                                     <span class="input-group-addon">
                                         <i class="fa fa-exchange"></i>
                                     </span>
-                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.to_date" placeholder="Đến" />
+                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.to_date" placeholder="Đến" readonly/>
                                 </div>
                             </div>
                         </div>
@@ -420,11 +420,11 @@
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.from_date" placeholder="Từ" />
+                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.from_date" placeholder="Từ" readonly/>
                                     <span class="input-group-addon">
                                         <i class="fa fa-exchange"></i>
                                     </span>
-                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.to_date" placeholder="Đến" />
+                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.to_date" placeholder="Đến" readonly/>
                                 </div>
                             </div>
                         </div>
@@ -508,11 +508,11 @@
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.from_date" placeholder="Từ" />
+                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.from_date" placeholder="Từ" readonly/>
                                     <span class="input-group-addon">
                                         <i class="fa fa-exchange"></i>
                                     </span>
-                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.to_date" placeholder="Đến" />
+                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.to_date" placeholder="Đến" readonly/>
                                 </div>
                             </div>
                         </div>

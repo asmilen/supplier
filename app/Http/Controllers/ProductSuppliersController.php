@@ -7,6 +7,8 @@ use App\Models\Supplier;
 use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
 use App\Jobs\UpdateAllProductPricesToMagento;
+use Carbon\Carbon;
+use Sentinel;
 
 class ProductSuppliersController extends Controller
 {
@@ -87,5 +89,23 @@ class ProductSuppliersController extends Controller
     public function updateAllPricesToMagento()
     {
         dispatch(new UpdateAllProductPricesToMagento());
+    }
+
+    public function updateValidTime()
+    {
+        $this->validate(request(), [
+            'from_date' => 'required',
+            'to_date' => 'required',
+        ]);
+
+        $affected = ProductSupplier::whereIn('id',request('productSupplierIds'))
+            ->update([
+                'from_date' => request('from_date'),
+                'to_date' => request('to_date'),
+                'updated_by' => Sentinel::getUser()->id,
+                'updated_at' => Carbon::now(),
+            ]);
+
+        return $affected;
     }
 }

@@ -15,14 +15,17 @@ class ReportsController extends Controller
     //
     public function importPrice()
     {
-        $suppliers = Supplier::all();
-
         $provinceIds = Province::where(function ($query) {
                 if (request()->has('region_id'))
                     $query->where('region_id',request('region_id'));
             })
             ->get()
             ->pluck('id');
+
+        $suppliers = Supplier::join('supplier_supported_province', 'suppliers.id','=','supplier_supported_province.supplier_id')
+                        ->whereIn('supplier_supported_province.province_id', $provinceIds)
+                        ->select('suppliers.id','suppliers.name')
+                        ->get();
 
         $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
             ->where(function ($query) {
@@ -32,23 +35,30 @@ class ReportsController extends Controller
             ->get()
             ->pluck('supplier_id');
 
-        $listProduct = ProductSupplier::where('to_date','<',Carbon::now())
+        $paginate = request('paginate') ? request('paginate') : 10;
+
+        $listProduct = ProductSupplier::whereRaw('DATEDIFF(CURRENT_DATE,DATE(product_supplier.to_date)) > 0')
                 ->join('suppliers','suppliers.id','=','product_supplier.supplier_id')
                 ->whereIn('supplier_id', $supplierIds)
-                ->select('product_supplier.name as product_name','product_supplier.updated_at','product_supplier.to_date','suppliers.name as supplier_name',DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW()) as out_dated_time'))
-                ->paginate(10);
+                ->where(function ($query) {
+                    if (request()->has('product_name'))
+                        $query->where('product_supplier.name','like', '%'.request('product_name').'%');
+                })
+                ->where('product_supplier.state','=',1)
+                ->select('product_supplier.name as product_name','product_supplier.updated_at','product_supplier.to_date','suppliers.name as supplier_name',DB::raw('DATEDIFF(CURRENT_DATE,DATE(product_supplier.to_date)) as out_dated_time'))
+                ->paginate($paginate);
 
-        $maxTime = DB::table('product_supplier')
-            ->where('to_date','<',Carbon::now())
+        $maxTime = ProductSupplier::whereRaw('DATEDIFF(CURRENT_DATE,DATE(product_supplier.to_date)) > 0')
             ->join('suppliers','suppliers.id','=','product_supplier.supplier_id')
             ->whereIn('supplier_id', $supplierIds)
-            ->max(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW())'));
+            ->where('product_supplier.state','=',1)
+            ->max(DB::raw('DATEDIFF(CURRENT_DATE,DATE(product_supplier.to_date))'));
 
-        $avgTime = ProductSupplier::where('to_date','<',Carbon::now())
+        $avgTime = ProductSupplier::whereRaw('DATEDIFF(CURRENT_DATE,DATE(product_supplier.to_date)) > 0')
             ->join('suppliers','suppliers.id','=','product_supplier.supplier_id')
             ->whereIn('supplier_id', $supplierIds)
-            ->select(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW()) as out_dated_time'))
-            ->avg(DB::raw('TIMESTAMPDIFF(DAY,product_supplier.to_date,NOW())'));
+            ->where('product_supplier.state','=',1)
+            ->avg(DB::raw('DATEDIFF(CURRENT_DATE,DATE(product_supplier.to_date))'));
 
         return view('reports.import_price', compact('suppliers','countProduct','listProduct','maxTime','avgTime'));
     }

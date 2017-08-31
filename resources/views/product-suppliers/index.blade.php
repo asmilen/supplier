@@ -138,44 +138,44 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Danh mục</th>
-                        <th>Nhà sản xuất</th>
+                        <th class="hidden-sm hidden-xs">Danh mục</th>
+                        <th class="hidden-sm hidden-xs">Nhà sản xuất</th>
                         <th>SKU</th>
                         <th>Tên</th>
                         <th>NCC</th>
                         <th>Giá nhập</th>
-                        <th>Hiệu lực từ</th>
-                        <th>Hiệu lực đến</th>
-                        <th>Số lượng tối thiểu</th>
-                        <th>Giá bán khuyến nghị</th>
-                        <th>Tình trạng</th>
-                        <th>Người cập nhật</th>
-                        <th>Cập nhật lần cuối</th>
+                        <th class="hidden-sm hidden-xs">Hiệu lực từ</th>
+                        <th class="hidden-sm hidden-xs">Hiệu lực đến</th>
+                        <th class="hidden-sm hidden-xs">Số lượng tối thiểu</th>
+                        <th class="hidden-sm hidden-xs">Giá bán khuyến nghị</th>
+                        <th class="hidden-sm hidden-xs">Tình trạng</th>
+                        <th class="hidden-sm hidden-xs">Người cập nhật</th>
+                        <th class="hidden-sm hidden-xs">Cập nhật lần cuối</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     <tr ng-repeat="item in productSuppliers">
                         <td>
-                            <div class="hidden-sm hidden-xs btn-group">
+                            <div class="btn-group">
                                 <button class="btn btn-xs btn-info" ng-click="showEditProductSupplierModal(item)">
                                     <i class="ace-icon fa fa-pencil bigger-120"></i>
                                 </button>
                             </div>
                         </td>
-                        <td>@{{ item.product.category.name }}</td>
-                        <td>@{{ item.product.manufacturer.name }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ item.product.category.name }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ item.product.manufacturer.name }}</td>
                         <td>@{{ item.product.sku }}</td>
                         <td>@{{ item.product.name }}</td>
                         <td>@{{ item.supplier.name }}</td>
                         <td class="text-right">@{{ item.import_price | number:0 }}</td>
-                        <td class="text-right">@{{ item.from_date }}</td>
-                        <td class="text-right">@{{ item.to_date }}</td>
-                        <td class="text-right">@{{ item.min_quantity | number:0 }}</td>
-                        <td class="text-right">@{{ item.price_recommend | number:0 }}</td>
-                        <td>@{{ stateText(item.state) }}</td>
-                        <td>@{{ item.updater.name ? item.updater.name : item.creater.name }}</td>
-                        <td class="text-right">@{{ item.updated_at }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.from_date }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.to_date }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.min_quantity | number:0 }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.price_recommend | number:0 }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ stateText(item.state) }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ item.updater.name ? item.updater.name : item.creater.name }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.updated_at }}</td>
                     </tr>
                 </tbody>
             </table>

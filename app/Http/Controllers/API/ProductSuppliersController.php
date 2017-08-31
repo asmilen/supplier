@@ -98,6 +98,14 @@ class ProductSuppliersController extends Controller
             ->canManage()
             ->orderBy('name', 'asc');
 
+        $builder->whereHas('product', function ($query) {
+            $query->where('status', true);
+        });
+
+        $builder->whereHas('supplier', function ($query) {
+            $query->where('status', true);
+        });
+
         if (! empty(request('category_id'))) {
             $builder->whereHas('product', function ($query) {
                 $query->where('category_id', request('category_id'));

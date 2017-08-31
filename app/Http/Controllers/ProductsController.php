@@ -83,7 +83,7 @@ class ProductsController extends Controller
             'type' => request('type') == 'simple' ? 0 : 1,
             'parent_id' => request('parent_id', 0),
             'name' => request('name'),
-            'status' => !! request('status'),
+            'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
             'image' => url('/') . '/storage/' .$filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
@@ -141,7 +141,7 @@ class ProductsController extends Controller
         $product->forceFill([
             'parent_id' => request('parent_id', 0),
             'name' => request('name'),
-            'status' => !! request('status'),
+            'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ])->save();

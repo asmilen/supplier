@@ -134,23 +134,23 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top" ng-if="productSuppliersLoaded">
+            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top dataTable no-footer" ng-if="productSuppliersLoaded">
                 <thead>
                     <tr>
                         <th></th>
                         <th class="hidden-sm hidden-xs">Danh mục</th>
                         <th class="hidden-sm hidden-xs">Nhà sản xuất</th>
                         <th>SKU</th>
-                        <th>Tên</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('name') }}" ng-click="updateSorting('name')">Tên</th>
                         <th>NCC</th>
-                        <th>Giá nhập</th>
-                        <th class="hidden-sm hidden-xs">Hiệu lực từ</th>
-                        <th class="hidden-sm hidden-xs">Hiệu lực đến</th>
-                        <th class="hidden-sm hidden-xs">Số lượng tối thiểu</th>
-                        <th class="hidden-sm hidden-xs">Giá bán khuyến nghị</th>
-                        <th class="hidden-sm hidden-xs">Tình trạng</th>
-                        <th class="hidden-sm hidden-xs">Người cập nhật</th>
-                        <th class="hidden-sm hidden-xs">Cập nhật lần cuối</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('import_price') }}" ng-click="updateSorting('import_price')">Giá nhập</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('from_date') }}" ng-click="updateSorting('from_date')">Hiệu lực từ</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('to_date') }}" ng-click="updateSorting('to_date')">Hiệu lực đến</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('min_quantity') }}" ng-click="updateSorting('min_quantity')">Số lượng tối thiểu</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('price_recommend') }}" ng-click="updateSorting('price_recommend')">Giá bán khuyến nghị</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('state') }}" ng-click="updateSorting('state')">Tình trạng</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('updated_by') }}" ng-click="updateSorting('updated_by')">Người cập nhật</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('updated_at') }}" ng-click="updateSorting('updated_at')">Cập nhật lần cuối</th>
                     </tr>
                 </thead>
 

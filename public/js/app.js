@@ -8436,6 +8436,8 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.page = 1;
         this.limit = 50;
         this.total_items = 0;
+        this.sorting = 'name';
+        this.direction = 'asc';
     }
 
     function addProductSupplierForm() {
@@ -8506,7 +8508,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.updateValidTimeForm = new updateValidTimeForm();
 
     $scope.refreshData = function () {
-        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
+        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state + '&sorting=' + $scope.searchProductSupplierForm.sorting + '&direction=' + $scope.searchProductSupplierForm.direction).then(function (response) {
             $scope.productSuppliers = response.data.data;
             $scope.productSuppliersLoaded = true;
             $scope.searchProductSupplierForm.total_items = response.data.total_items;
@@ -8688,6 +8690,30 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 
             $('#modal-update-prices-to-magento').modal('hide');
         });
+    };
+
+    $scope.getSortingDirectionClassHeader = function (sorting) {
+        if ($scope.searchProductSupplierForm.sorting != sorting) {
+            return '';
+        }
+
+        return '_' + $scope.searchProductSupplierForm.direction;
+    };
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchProductSupplierForm.sorting == sorting) {
+            if ($scope.searchProductSupplierForm.direction == 'asc') {
+                $scope.searchProductSupplierForm.direction = 'desc';
+            } else {
+                $scope.searchProductSupplierForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchProductSupplierForm.direction = 'asc';
+        }
+
+        $scope.searchProductSupplierForm.sorting = sorting;
+
+        $scope.refreshData();
     };
 }
 

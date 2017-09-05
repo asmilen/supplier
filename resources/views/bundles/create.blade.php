@@ -79,6 +79,16 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
+                    <div class="col-sm-6">
+                        <label>
+                            <input type="checkbox" name="status" value="1" class="ace ace-switch ace-switch-6"{{ old('status', !! $bundle->status) ? ' checked=checked' : '' }}>
+                            <span class="lbl"></span>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
                         <button type="submit" class="btn btn-success">

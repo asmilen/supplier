@@ -45,6 +45,7 @@
                         <th>Miền</th>
                         <th>Label</th>
                         <th>Giá</th>
+                        <th>Trạng thái</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -78,8 +79,29 @@ $(function () {
             {data: 'region_id', name: 'region_id'},
             {data: 'label', name: 'label'},
             {data: 'price', name: 'price'},
+            {data: 'status', name: 'status', orderable: false, searchable: false},
             {data: 'action', name: 'action', orderable: false, searchable: false}
         ]
+    });
+
+    datatable.on('click', '[id^="btn-toggle-"]', function (e) {
+        e.preventDefault();
+
+        var url = $(this).data('url');
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            beforeSend: function (xhr) {
+                return xhr.setRequestHeader('X-CSRF-TOKEN', window.Laradmin.csrfToken);
+            },
+            success: function (districts) {
+                var row = $(this).closest('tr');
+                datatable.row(row).draw(false);
+            },
+            error: function () {
+            }
+        });
     });
 });
 </script>

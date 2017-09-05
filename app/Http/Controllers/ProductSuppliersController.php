@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
+use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
 use App\Jobs\UpdateAllProductPricesToMagento;
@@ -21,11 +22,6 @@ class ProductSuppliersController extends Controller
         return view('product-suppliers.index', compact('categories', 'manufacturers', 'suppliers'));
     }
 
-    public function getDatatables()
-    {
-        return ProductSupplier::getDatatables();
-    }
-
     public function store()
     {
         $this->validate(request(), [
@@ -36,8 +32,12 @@ class ProductSuppliersController extends Controller
             'to_date' => 'required',
         ]);
 
-        $exists = ProductSupplier::where('product_id', request('product_id'))
-            ->where('supplier_id', request('supplier_id'))
+        $product = Product::active()->findOrFail(request('product_id'));
+
+        $supplier = Supplier::active()->findOrFail(request('supplier_id'));
+
+        $exists = ProductSupplier::where('product_id', $product->id)
+            ->where('supplier_id', $supplier->id)
             ->first();
 
         if ($exists) {
@@ -47,8 +47,8 @@ class ProductSuppliersController extends Controller
         }
 
         $productSupplier = ProductSupplier::forceCreate([
-            'product_id' => request('product_id'),
-            'supplier_id' => request('supplier_id'),
+            'product_id' => $product->id,
+            'supplier_id' => $supplier->id,
             'name' => request('product_name'),
             'import_price' => request('import_price'),
             'from_date' => request('from_date'),
@@ -64,6 +64,10 @@ class ProductSuppliersController extends Controller
     public function update($id)
     {
         $productSupplier = ProductSupplier::findOrFail($id);
+
+        $product = Product::active()->findOrFail($productSupplier->product_id);
+
+        $supplier = Supplier::active()->findOrFail($productSupplier->supplier_id);
 
         $this->validate(request(), [
             'import_price' => 'required',
@@ -87,5 +91,21 @@ class ProductSuppliersController extends Controller
     public function updateAllPricesToMagento()
     {
         dispatch(new UpdateAllProductPricesToMagento());
+    }
+
+    public function updateValidTime()
+    {
+        $this->validate(request(), [
+            'from_date' => 'required',
+            'to_date' => 'required',
+        ]);
+
+        $affected = ProductSupplier::whereIn('id', request('productSupplierIds'))
+            ->update([
+                'from_date' => request('from_date'),
+                'to_date' => request('to_date'),
+            ]);
+
+        return $affected;
     }
 }

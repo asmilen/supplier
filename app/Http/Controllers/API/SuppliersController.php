@@ -131,4 +131,21 @@ class SuppliersController extends Controller
             'total_items' => $totalItems,
         ]);
     }
+
+    public function getSuppliersByRegionId()
+    {
+        $provinceIds = Province::where(function ($query) {
+            if (request()->has('region_id'))
+                $query->where('region_id',request('region_id'));
+        })
+            ->get()
+            ->pluck('id');
+
+        $suppliers = Supplier::join('supplier_supported_province', 'suppliers.id','=','supplier_supported_province.supplier_id')
+            ->whereIn('supplier_supported_province.province_id', $provinceIds)
+            ->select('suppliers.id','suppliers.name')
+            ->get();
+
+        return $suppliers;
+    }
 }

@@ -63,3 +63,9 @@ body {
 .action-link {
   cursor:pointer;
 }
+
+.input-daterange input[readonly] {
+  cursor: pointer !important;
+  background-color: white !important;
+}
+

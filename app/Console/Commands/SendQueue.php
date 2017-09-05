@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\MessageQueueLog;
+use Carbon\Carbon;
 use GuzzleHttp;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
@@ -44,9 +45,10 @@ class SendQueue extends Command
      */
     public function handle()
     {
-        $date = date_create(date('Y-m-d H:i:s'));
-        date_sub($date, date_interval_create_from_date_string("1 days"));
-        $messages = MessageQueueLog::where('created_at', 'like', '%' . trim(date_format($date, "Y-m-d")) . '%')
+        $from = Carbon::yesterday('Asia/Ho_Chi_Minh')->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $to = Carbon::now('Asia/Ho_Chi_Minh')->setTime(0,0,0)->setTimezone('UTC')->format('Y-m-d H:i:s');
+        $messages = MessageQueueLog::where('created_at', '>=', $from)
+            ->where('created_at', '<', $to)
             ->select(DB::raw('routingKey, count(1) as count'))
             ->groupBy('routingKey')
             ->get();
@@ -68,7 +70,7 @@ class SendQueue extends Command
         ];
 
         try {
-            $url = 'https://msgqueue-checksum.appspot.com/api/message_log/';
+            $url = env('MESSAGE_QUEUE_URL');
             $client = new GuzzleHttp\Client([
                 'headers' => ['Content-Type' => 'application/json']
             ]);

@@ -130,8 +130,8 @@ Route::group(['middleware' => 'auth'], function () {
         // Product Suppliers
         Route::post('product-suppliers/update-all-prices-to-magento', 'ProductSuppliersController@updateAllPricesToMagento')->name('product-suppliers.update-all-prices-to-magento');
         Route::get('product-suppliers', 'ProductSuppliersController@index')->name('product-suppliers.index');
-        Route::get('product-suppliers/datatables', 'ProductSuppliersController@getDatatables')->name('product-suppliers.datatables');
         Route::post('product-suppliers', 'ProductSuppliersController@store')->name('product-suppliers.store');
+        Route::post('product-suppliers/update-valid-time', 'ProductSuppliersController@updateValidTime')->name('product-suppliers.updateValidTime');
         Route::put('product-suppliers/{id}', 'ProductSuppliersController@update')->name('product-suppliers.update');
 
         // Report

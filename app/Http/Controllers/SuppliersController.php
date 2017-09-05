@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 
+use App\Jobs\OffProductToMagento;
 use App\Jobs\UpdatePriceToMagento;
 use App\Models\District;
+use App\Models\LogOffSupplier;
 use DB;
 use Auth;
 use Carbon\Carbon;
@@ -588,32 +590,6 @@ class SuppliersController extends Controller
 
     public function update(Supplier $supplier)
     {
-        if (!!request('status') == false) {
-            $product_ids = ProductSupplier::where('supplier_id', $supplier->id)
-                ->where('state', 1)
-                ->pluck('product_id');
-            $product_list = array();
-
-            for ($i = 0; $i < $product_ids->count(); $i++) {
-                $supplier_ids = ProductSupplier::where('product_id', $product_ids[$i])
-                    ->where('state', 1)
-                    ->pluck('supplier_id');
-                for ($j = 0; $j < $supplier_ids->count(); $j++) {
-                    $supplier_check = Supplier::where('id', $supplier_ids[$j])
-                        ->where('id', '!=', $supplier->id)
-                        ->get();
-//                    dd($supplier_check);
-                    if($supplier_check->count() > 0){
-                        if ($supplier_check[0]->status == 1) {
-                            array_push($product_list, $product_ids[$i]);
-                        }
-                    }
-                }
-            }
-            $sku = Product::whereIn('id', array_unique($product_list))->pluck('sku');
-
-            dd($sku);
-        }
         $this->validate(request(), [
             'address' => 'required',
             'name' => 'required|max:255',
@@ -790,6 +766,12 @@ class SuppliersController extends Controller
 
         $messSend = json_encode($jsonSend);
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
+
+        if (!!request('status') == false) {
+            dispatch(new OffProductToMagento($supplier, 0));
+        }else{
+            dispatch(new OffProductToMagento($supplier, 1));
+        }
 
         flash()->success('Success!', 'Suppliers successfully created.');
 

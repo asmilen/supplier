@@ -18,8 +18,9 @@ class ProductSuppliersController extends Controller
 
         $manufacturers = Manufacturer::all();
 
-        $suppliers = Supplier::all();
-
+//        $suppliers = Supplier::all();
+        $suppliers = Supplier::where('status', 1)->get();
+//dd($suppliers->count());
         return view('product-suppliers.index', compact('categories', 'manufacturers', 'suppliers'));
     }
 

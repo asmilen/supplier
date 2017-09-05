@@ -108,9 +108,12 @@ class ProductSupplier extends Model
 
     public static function getDatatables()
     {
-        $model = static::select('*')->with('product', 'product.category', 'product.manufacturer', 'supplier', 'creater', 'updater')
+        
+        $model = static::select('*')->with(['product', 'product.category', 'product.manufacturer', 'supplier', 'creater', 'updater' => function($query){
+            $query->where('suppliers.status', 1);
+        }])
             ->canManage();
-
+        
         return Datatables::eloquent($model)
             ->filter(function ($query) {
                 if (request()->has('category_id')) {

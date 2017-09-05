@@ -44,7 +44,7 @@
                         <th>Tên</th>
                         <th>Tên nhóm sản phẩm</th>
                         <th>Số sản phẩm</th>
-                        <th>trạng thái</th>
+                        <th>Trạng thái</th>
                         <th></th>
                     </tr>
                 </thead>

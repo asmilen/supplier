@@ -53,7 +53,7 @@ class BundleCategory extends Model
             })
             ->editColumn('status', 'bundleCategories.datatables.status')
             ->addColumn('action', 'bundleCategories.datatables.action')
-            ->rawColumns(['action'])
+            ->rawColumns(['action','status'])
             ->make(true);
     }
 

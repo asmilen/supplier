@@ -64,6 +64,16 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
+                    <div class="col-sm-6">
+                        <label>
+                            <input type="checkbox" name="status" value="1" class="ace ace-switch ace-switch-6"{{ old('status', !! $bundleCategory->status) ? ' checked=checked' : '' }}>
+                            <span class="lbl"></span>
+                        </label>
+                    </div>
+                </div>
+
                 <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
                 <br>
                 <div>
@@ -86,7 +96,7 @@
                                     <td class="name">{{ $bundleProduct->name }}</td>
                                     <td class="sku">{{ $bundleProduct->sku }}</td>
                                     <td class="price">{{ $bundleProduct->price }}</td>
-                                    <td><input name="quantity[]" type="number" min = 0 value="{{ $bundleProduct->quantity }}"/></td>
+                                    <td><input name="quantity[]" type="number" min = 1 value="{{ $bundleProduct->quantity }}"/></td>
                                     <td><input type="radio" name="default"  value="{{ $bundleProduct->id }}" {{ $bundleProduct->is_default ? ' checked=checked' : '' }}/></td>
                                     <td><a class="deleteProduct" data-categoryId ="{{ $bundleCategory->id }}" data-productId ="{{ $bundleProduct->id }}" data-bundleId = "{{  $bundleProduct->id_bundle  }}" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></td>
                                 </tr>

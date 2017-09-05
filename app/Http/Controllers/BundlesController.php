@@ -55,6 +55,7 @@ class BundlesController extends Controller
             'price' => request('price', 0),
             'region_id' => request('region_id'),
             'label' => request('label'),
+            'status' => request('status',false),
         ]);
 
         flash()->success('Success!', 'Bundle successfully created.');
@@ -109,6 +110,7 @@ class BundlesController extends Controller
             'price' => request('price', 0),
             'region_id' => request('region_id'),
             'label' => request('label'),
+            'status' => request('status',false),
         ])->save();
 
         flash()->success('Success!', 'Bundle successfully updated.');
@@ -133,5 +135,9 @@ class BundlesController extends Controller
         }
         
         return $bundle->listProductBySuppliers($supplierIds, $productIds, $bundle->region_id);
+    }
+
+    public function toggleStatus(Bundle $bundle) {
+        $bundle->forceFill(['status' => ! $bundle->status])->save();
     }
 }

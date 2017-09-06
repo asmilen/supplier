@@ -128,7 +128,7 @@ class Supplier extends Model
 
         $post_data = [
             'data' => [
-                'status' => 1,
+                'status' => 0,
                 'products' => $sku
             ]
         ];

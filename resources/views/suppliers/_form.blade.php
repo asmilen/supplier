@@ -88,8 +88,8 @@
     <div class="col-sm-6">
         <select name="sup_type" class="form-control">
             <option value="">--Chọn Loại Nhà cung cấp--</option>
-            <option value="0" {{ 0 === $supplier->sup_type ? ' selected=selected' : '' }}>Hàng mua</option>
-            <option value="1" {{ 1 === $supplier->sup_type ? ' selected=selected' : '' }}>Ký gửi</option>
+            <option value="1" {{ 1 === $supplier->sup_type ? ' selected=selected' : '' }}>Hàng mua</option>
+            <option value="2" {{ 2 === $supplier->sup_type ? ' selected=selected' : '' }}>Ký gửi</option>
         </select>
     </div>
 </div>

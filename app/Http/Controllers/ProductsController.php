@@ -59,7 +59,7 @@ class ProductsController extends Controller
         ], [
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($code) {
-            if (! empty($code)) {
+            if (!empty($code)) {
                 $check = Product::where('category_id', request('category_id'))
                     ->where('manufacturer_id', request('manufacturer_id'))
                     ->where('code', $code)
@@ -79,12 +79,12 @@ class ProductsController extends Controller
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id',0),
+            'color_id' => request('color_id', 0),
             'type' => request('type') == 'simple' ? 0 : 1,
             'parent_id' => request('parent_id', 0),
             'name' => request('name'),
             'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
-            'image' => url('/') . '/storage/' .$filename,
+            'image' => url('/') . '/storage/' . $filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
         ]);
@@ -97,7 +97,7 @@ class ProductsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function show(Product $product)
@@ -108,7 +108,7 @@ class ProductsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product)
@@ -119,7 +119,7 @@ class ProductsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function update(Product $product)
@@ -127,7 +127,7 @@ class ProductsController extends Controller
         $code = strtoupper(request('code'));
 
         $rules = [
-            'name' => 'required|max:255|unique:products,name,'.$product->id,
+            'name' => 'required|max:255|unique:products,name,' . $product->id,
         ];
 
         if (request()->file('image')) {
@@ -138,12 +138,22 @@ class ProductsController extends Controller
             'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
         ])->validate();
 
+        $channel_choose = str_replace(",","",request('channel'));
+
+        $channel = array();
+        for ($i = 0; $i < strlen($channel_choose); $i++){
+            if ($channel_choose[$i] == 1){
+                array_push($channel, $i+1);
+            }
+        }
+
         $product->forceFill([
             'parent_id' => request('parent_id', 0),
             'name' => request('name'),
             'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
+            'channel' => implode(",",$channel),
         ])->save();
 
         if (request()->file('image')) {
@@ -152,7 +162,7 @@ class ProductsController extends Controller
             Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
 
             $product->forceFill([
-                'image' => url('/') . '/storage/' .$filename,
+                'image' => url('/') . '/storage/' . $filename,
             ])->save();
         }
 
@@ -186,14 +196,16 @@ class ProductsController extends Controller
         return response()->json(['status' => 'success']);
     }
 
-    public function removeChild(Product $product, $childId){
+    public function removeChild(Product $product, $childId)
+    {
         $productChild = Product::findOrFail($childId);
         $productChild->forceFill(['parent_id' => 0])->save();
 
         return response()->json(['status' => 'success']);
     }
 
-    public function toggleStatus(Product $product) {
-        $product->forceFill(['status' => ! $product->status])->save();
+    public function toggleStatus(Product $product)
+    {
+        $product->forceFill(['status' => !$product->status])->save();
     }
 }

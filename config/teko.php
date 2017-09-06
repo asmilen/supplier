@@ -14,6 +14,12 @@ return [
             3 => 'Yêu cầu ưu tiên lấy hàng',
             4 => 'Không ưu tiên lấy hàng'
         ],
+        'channel' => [
+            1 => 'Online',
+            2 => 'Offline',
+            3 => 'Cả hai (online và offline)'
+        ],
+
     ],
 
     'stores' => [
@@ -56,8 +62,8 @@ return [
 
     'supplier' => [
         'sup_type' => [
-            0 => 'Hàng mua',
-            1 => 'Ký gửi',
+            1 => 'Hàng mua',
+            2 => 'Ký gửi',
         ],
     ],
 ];

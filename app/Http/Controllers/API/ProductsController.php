@@ -262,6 +262,8 @@ class ProductsController extends Controller
 
     public function show(Product $product)
     {
+        $product->product_options = config('teko.product.channel', []);
+        $product->channels = explode(",", $product->channel);
         return $product;
     }
 

@@ -62,6 +62,10 @@ class ProductSuppliersController extends Controller
 
     public function index()
     {
+        $sorting = request('sorting', 'name');
+
+        $direction = request('direction', 'asc');
+
         $page = request('page', 1);
 
         $limit = request('limit', 10);
@@ -71,6 +75,7 @@ class ProductSuppliersController extends Controller
         $totalItems = $builder->count();
 
         $productSuppliers = $builder
+            ->orderBy($sorting, $direction)
             ->skip(($page - 1) * $limit)
             ->take($limit)
             ->get();
@@ -95,8 +100,15 @@ class ProductSuppliersController extends Controller
     protected function getProductsListBuilder()
     {
         $builder = ProductSupplier::with('product', 'product.category', 'product.manufacturer', 'supplier', 'creater', 'updater')
-            ->canManage()
-            ->orderBy('name', 'asc');
+            ->canManage();
+
+        $builder->whereHas('product', function ($query) {
+            $query->where('status', true);
+        });
+
+        $builder->whereHas('supplier', function ($query) {
+            $query->where('status', true);
+        });
 
         if (! empty(request('category_id'))) {
             $builder->whereHas('product', function ($query) {

@@ -101,6 +101,10 @@ class Product extends Model
 
         return Datatables::eloquent($model)
             ->filter(function ($query) {
+                if (request()->has('id')) {
+                    $query->where('id', request('id'));
+                }
+
                 if (request()->has('keyword')) {
                     $query->where(function ($query) {
                         $query->where('name', 'like', '%' . request('keyword') . '%')
@@ -268,7 +272,7 @@ class Product extends Model
                                         ->where('product_supplier.state', '=', 1);
                                 })
                                 ->findOrFail($this->id);
-                            
+
                             if ($product) {
                                 $margin = MarginRegionCategory::where('category_id', $product->category_id)
                                     ->where('region_id', $region[$j]->region_id)->first();

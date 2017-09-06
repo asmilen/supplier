@@ -30,7 +30,7 @@ class BundleCategory extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'bundle_category.id', 'bundle_category.name', 'bundle_category.id_bundle', 'bundle_category.isRequired'
+            'bundle_category.id', 'bundle_category.name', 'bundle_category.id_bundle', 'bundle_category.isRequired','bundle_category.status'
         ])->with('bundle', 'products', 'products.productSuppliers');
 
         return Datatables::eloquent($model)
@@ -51,8 +51,9 @@ class BundleCategory extends Model
             ->editColumn('totalProduct', function ($model) {
                 return $model->getTotalProducts();
             })
+            ->editColumn('status', 'bundleCategories.datatables.status')
             ->addColumn('action', 'bundleCategories.datatables.action')
-            ->rawColumns(['action'])
+            ->rawColumns(['action','status'])
             ->make(true);
     }
 
@@ -63,7 +64,9 @@ class BundleCategory extends Model
 
     public static function getListByBundleId($bundleId)
     {
-        return static::where('id_bundle', $bundleId)->get();
+        return static::where('id_bundle', $bundleId)
+            ->where('status',true)
+            ->get();
     }
 
     public function getBundleProducts($supplierIds, $regionId)
@@ -123,22 +126,12 @@ class BundleCategory extends Model
 
     public function getTotalProducts()
     {
-        $count = 0;
+        $supplierIds = SupplierSupportedProvince::whereIn(
+            'province_id', Province::getListByRegion($this->bundle()->pluck('region_id'))
+        )->pluck('supplier_id')->all();
 
-        foreach ($this->products as $product) {
-            $regionIds = array_map(function ($item) {
-                return $item->region_id;
-            }, DB::select('select region_id from provinces where id in (
-                select province_id from supplier_supported_province where supplier_id in (
-                    select supplier_id from product_supplier where product_id = ? and state = 1
-                )
-            )', [$product->id]));
+        $bundleProducts = $this->listProducts($supplierIds, $this->id, $this->bundle()->pluck('region_id'));
 
-            if (in_array($this->bundle->region_id, $regionIds)) {
-                ++$count;
-            }
-        }
-
-        return $count;
+        return count($bundleProducts);
     }
 }

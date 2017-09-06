@@ -57,7 +57,7 @@
                 </button>
                 <button class="btn btn-xlg btn-white btn-info2" ng-click="showUpdateValidTimeModal()" >
                     <i class="ace-icon fa fa-calendar-check-o" aria-hidden="true"></i>
-                    <span class="hidden-xs">Valid Time</span>
+                    <span class="hidden-xs">Cập nhật hiệu lực giá</span>
                 </button>
             </p>
         </div>
@@ -134,48 +134,48 @@
 
     <div class="row">
         <div class="col-xs-12">
-            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top" ng-if="productSuppliersLoaded">
+            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top dataTable no-footer" ng-if="productSuppliersLoaded">
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Danh mục</th>
-                        <th>Nhà sản xuất</th>
+                        <th class="hidden-sm hidden-xs">Danh mục</th>
+                        <th class="hidden-sm hidden-xs">Nhà sản xuất</th>
                         <th>SKU</th>
-                        <th>Tên</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('name') }}" ng-click="updateSorting('name')">Tên</th>
                         <th>NCC</th>
-                        <th>Giá nhập</th>
-                        <th>Hiệu lực từ</th>
-                        <th>Hiệu lực đến</th>
-                        <th>Số lượng tối thiểu</th>
-                        <th>Giá bán khuyến nghị</th>
-                        <th>Tình trạng</th>
-                        <th>Người cập nhật</th>
-                        <th>Cập nhật lần cuối</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('import_price') }}" ng-click="updateSorting('import_price')">Giá nhập</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('from_date') }}" ng-click="updateSorting('from_date')">Hiệu lực từ</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('to_date') }}" ng-click="updateSorting('to_date')">Hiệu lực đến</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('min_quantity') }}" ng-click="updateSorting('min_quantity')">Số lượng tối thiểu</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('price_recommend') }}" ng-click="updateSorting('price_recommend')">Giá bán khuyến nghị</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('state') }}" ng-click="updateSorting('state')">Tình trạng</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('updated_by') }}" ng-click="updateSorting('updated_by')">Người cập nhật</th>
+                        <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('updated_at') }}" ng-click="updateSorting('updated_at')">Cập nhật lần cuối</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     <tr ng-repeat="item in productSuppliers">
                         <td>
-                            <div class="hidden-sm hidden-xs btn-group">
+                            <div class="btn-group">
                                 <button class="btn btn-xs btn-info" ng-click="showEditProductSupplierModal(item)">
                                     <i class="ace-icon fa fa-pencil bigger-120"></i>
                                 </button>
                             </div>
                         </td>
-                        <td>@{{ item.product.category.name }}</td>
-                        <td>@{{ item.product.manufacturer.name }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ item.product.category.name }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ item.product.manufacturer.name }}</td>
                         <td>@{{ item.product.sku }}</td>
                         <td>@{{ item.product.name }}</td>
                         <td>@{{ item.supplier.name }}</td>
                         <td class="text-right">@{{ item.import_price | number:0 }}</td>
-                        <td class="text-right">@{{ item.from_date }}</td>
-                        <td class="text-right">@{{ item.to_date }}</td>
-                        <td class="text-right">@{{ item.min_quantity | number:0 }}</td>
-                        <td class="text-right">@{{ item.price_recommend | number:0 }}</td>
-                        <td>@{{ stateText(item.state) }}</td>
-                        <td>@{{ item.updater.name ? item.updater.name : item.creater.name }}</td>
-                        <td class="text-right">@{{ item.updated_at }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.from_date }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.to_date }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.min_quantity | number:0 }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.price_recommend | number:0 }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ stateText(item.state) }}</td>
+                        <td class="hidden-sm hidden-xs">@{{ item.updater.name ? item.updater.name : item.creater.name }}</td>
+                        <td class="text-right hidden-sm hidden-xs">@{{ item.updated_at }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -230,11 +230,11 @@
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.from_date" placeholder="Từ" />
+                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.from_date" placeholder="Từ" readonly/>
                                     <span class="input-group-addon">
                                         <i class="fa fa-exchange"></i>
                                     </span>
-                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.to_date" placeholder="Đến" />
+                                    <input type="text" class="input-sm form-control" ng-model="addProductSupplierForm.to_date" placeholder="Đến" readonly/>
                                 </div>
                             </div>
                         </div>
@@ -420,11 +420,11 @@
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.from_date" placeholder="Từ" />
+                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.from_date" placeholder="Từ" readonly/>
                                     <span class="input-group-addon">
                                         <i class="fa fa-exchange"></i>
                                     </span>
-                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.to_date" placeholder="Đến" />
+                                    <input type="text" class="input-sm form-control" ng-model="editProductSupplierForm.to_date" placeholder="Đến" readonly/>
                                 </div>
                             </div>
                         </div>
@@ -508,11 +508,11 @@
                             <label class="col-sm-3 control-label no-padding-right">Hiệu lực giá</label>
                             <div class="col-sm-9">
                                 <div class="input-daterange input-group">
-                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.from_date" placeholder="Từ" />
+                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.from_date" placeholder="Từ" readonly/>
                                     <span class="input-group-addon">
                                         <i class="fa fa-exchange"></i>
                                     </span>
-                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.to_date" placeholder="Đến" />
+                                    <input type="text" class="input-sm form-control" ng-model="updateValidTimeForm.to_date" placeholder="Đến" readonly/>
                                 </div>
                             </div>
                         </div>

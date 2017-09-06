@@ -63,6 +63,16 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
+                    <div class="col-sm-6">
+                        <label>
+                            <input type="checkbox" name="status" value="1" class="ace ace-switch ace-switch-6"{{ old('status', !! $bundleCategory->status) ? ' checked=checked' : '' }}>
+                            <span class="lbl"></span>
+                        </label>
+                    </div>
+                </div>
+
 
                 <label class="control-label no-padding-right">Sản phẩm trong nhóm sản phẩm</label>
                 <br>

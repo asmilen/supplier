@@ -66,6 +66,7 @@ class BundleCategoriesController extends Controller
             'id_bundle' => request('bundle_id'),
             'category' => $category ? $category->category_id : 0,
             'isRequired' => request('isRequired', 0),
+            'status' => request('status',false),
         ]);
 
         if (request()->has('productIds')) {
@@ -131,6 +132,7 @@ class BundleCategoriesController extends Controller
             'id_bundle' => request('bundle_id'),
             'category' => $category ? $category->category_id : 0,
             'isRequired' => request('isRequired', 0),
+            'status' => request('status',false),
         ])->save();
 
         if (request()->has('productIds')) {
@@ -166,5 +168,9 @@ class BundleCategoriesController extends Controller
     public function getDatatables()
     {
         return BundleCategory::getDatatables();
+    }
+
+    public function toggleStatus(BundleCategory $bundleCategory) {
+        $bundleCategory->forceFill(['status' => ! $bundleCategory->status])->save();
     }
 }

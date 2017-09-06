@@ -127,8 +127,10 @@ class Supplier extends Model
         $sku = Product::whereIn('id', array_unique($product_list))->pluck('sku');
 
         $post_data = [
-            'type' => 0,
-            'sku' => $sku
+            'data' => [
+                'status' => 1,
+                'products' => $sku
+            ]
         ];
         $response = $this->callApi($post_data);
         LogOffSupplier::create([
@@ -137,7 +139,6 @@ class Supplier extends Model
             'post_data' => json_encode($post_data),
             'response' => json_encode($response)
         ]);
-        dd($post_data);
     }
 
     public function onProductToMagento()
@@ -166,8 +167,10 @@ class Supplier extends Model
         $sku = Product::whereIn('id', array_unique($product_list))->pluck('sku');
 
         $post_data = [
-            'type' => 1,
-            'sku' => $sku
+            'data' => [
+                'status' => 1,
+                'products' => $sku
+            ]
         ];
         $response = $this->callApi($post_data);
         LogOffSupplier::create([
@@ -176,16 +179,15 @@ class Supplier extends Model
             'post_data' => json_encode($post_data),
             'response' => json_encode($response)
         ]);
-        dd($post_data);
     }
 
     private function callApi($data)
     {
-        $client = new Client(['base_uri' => env('UPDATE_PRICE_URL_BASE'), 'verify' => false]);
+        $client = new Client(['base_uri' => env('OFF_PRODUCT_URL_BASE'), 'verify' => false]);
         /**
          * @var \GuzzleHttp\Psr7\Response $result
          */
-        $result = $client->post(env('UPDATE_PRICE_TO_MAGENTO_URL'), [
+        $result = $client->post(env('OFF_PRODUCT_URL'), [
             'body' => json_encode($data),
         ]);
 

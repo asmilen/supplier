@@ -31,6 +31,8 @@ class ProductApiTransformer extends TransformerAbstract
             ->orderBy('percent_fee')
             ->first();
         $supplierIds = SupplierSupportedProvince::whereIn('province_id', $this->provinceIds)
+            ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
+            ->where('suppliers.status', 1)
             ->get()
             ->pluck('supplier_id');
 

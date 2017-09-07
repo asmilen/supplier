@@ -1,7 +1,3 @@
-@if ($channel == 1)
-    Online
-@elseif($channel == 2)
-    Offline
-@else
-    Cả hai (online và offline)
-@endif
+@foreach(explode(",",$channel) as $channel)
+    {{config('teko.product.channel')[$channel]}} @if (!$loop->last), @endif
+@endforeach

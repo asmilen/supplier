@@ -17,7 +17,7 @@ return [
         'channel' => [
             1 => 'Online',
             2 => 'Offline',
-            3 => 'Cả hai (online và offline)'
+            3 => 'tekshop',
         ],
 
     ],

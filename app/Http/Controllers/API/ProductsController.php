@@ -165,7 +165,7 @@ class ProductsController extends Controller
                 ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
                 ->where('suppliers.status', 1)
                 ->get()
-                ->pluck('supplier_supported_province.supplier_id');
+                ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
                 ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))

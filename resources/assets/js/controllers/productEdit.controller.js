@@ -155,7 +155,7 @@ function ProductEditController($scope, $http, $window) {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
-            // $window.location.href = '/products';
+            $window.location.href = '/products';
         }).catch(function (response) {
             if (typeof response.data === 'object') {
                 $scope.productForm.errors = _.flatten(_.toArray(response.data));

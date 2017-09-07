@@ -44,7 +44,7 @@
     <label class="col-sm-3 control-label no-padding-right">Email</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="email" placeholder="email ..."
-               value="{{ old('fax', $supplier->email) }}">
+               value="{{ old('email', $supplier->email) }}">
     </div>
 </div>
 

@@ -162,8 +162,10 @@ class ProductsController extends Controller
              * @var array $supplierIds
              */
             $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
+                ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
+                ->where('suppliers.status', 1)
                 ->get()
-                ->pluck('supplier_id');
+                ->pluck('supplier_supported_province.supplier_id');
 
             $product = Product::with('manufacturer', 'category')
                 ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
@@ -231,6 +233,7 @@ class ProductsController extends Controller
                     ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
                     ->pluck('supplier_id');
                 $supplier = Supplier::whereIn('id', $suppliers ? $suppliers : 0)
+                    ->where('status', 1)
                     ->get();
                 $province = SupplierSupportedProvince::whereIn('supplier_id', $suppliers ? $suppliers : 0)
                     ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')

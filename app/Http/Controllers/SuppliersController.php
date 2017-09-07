@@ -766,11 +766,11 @@ class SuppliersController extends Controller
 
         $messSend = json_encode($jsonSend);
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
-
+        $user = Sentinel::getUser();
         if (!!request('status') == false) {
-            dispatch(new OffProductToMagento($supplier, 0));
+            dispatch(new OffProductToMagento($supplier, 0, $user));
         }else{
-            dispatch(new OffProductToMagento($supplier, 1));
+            dispatch(new OffProductToMagento($supplier, 1, $user));
         }
 
         flash()->success('Success!', 'Suppliers successfully created.');

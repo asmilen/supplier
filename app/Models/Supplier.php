@@ -77,10 +77,11 @@ class Supplier extends Model
                 return ($model->price_active_time / 24) . ' ngày';
             })
             ->editColumn('sup_type', function ($model) {
-                if ($model->sup_type === 1) {
+                if ($model->sup_type == 2){
                     return 'Ký gửi';
-                } else
-                    return 'Hàng mua';
+                }elseif($model->sup_type == 1)
+                return 'Hàng mua';
+
             })
             ->editColumn('status', 'products.datatables.status')
             ->addColumn('action', 'suppliers.datatables.action')

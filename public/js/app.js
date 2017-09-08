@@ -8097,6 +8097,7 @@ function ProductEditController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.channel = '';
     };
 
     $scope.productForm = new productForm();
@@ -8126,6 +8127,13 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
+        $scope.productForm.channel = $scope.product.channel.toString();
+        $scope.channel = $scope.product.product_options;
+        $scope.channels = $scope.product.channels;
+        $scope.productForm.channel = [];
+        $.each($scope.product.product_options, function (index, value) {
+            if ($scope.channels.indexOf(index.toString()) >= 0) $scope.productForm.channel[index] = 1;else $scope.productForm.channel[index] = 0;
+        });
     };
 
     $scope.getCategories = function () {

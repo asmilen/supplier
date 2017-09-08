@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
+        <!-- #section:basics/content.breadcrumbs -->
 <div class="breadcrumbs" id="breadcrumbs">
     <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+        try {
+            ace.settings.check('breadcrumbs', 'fixed')
+        } catch (e) {
+        }
     </script>
 
     <ul class="breadcrumb">
@@ -48,40 +51,45 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Danh mục</label>
                     <div class="col-sm-6">
-                        <p class="form-control-static"><strong>{{($product->category) ? $product->category->name : ""}}</strong></p>
+                        <p class="form-control-static">
+                            <strong>{{($product->category) ? $product->category->name : ""}}</strong></p>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Nhà SX</label>
                     <div class="col-sm-6">
-                        <p class="form-control-static"><strong>{{($product->manufacturer) ? $product->manufacturer->name : ""}}</strong></p>
+                        <p class="form-control-static">
+                            <strong>{{($product->manufacturer) ? $product->manufacturer->name : ""}}</strong></p>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Màu sắc</label>
                     <div class="col-sm-6">
-                        <p class="form-control-static"><strong>{{($product->color) ? $product->color->name : ""}}</strong></p>
+                        <p class="form-control-static">
+                            <strong>{{($product->color) ? $product->color->name : ""}}</strong></p>
                     </div>
                 </div>
 
                 @if($product->type == 0)
-                <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right">Sản phẩm cha</label>
-                    <div class="col-sm-6">
-                        <select name="parent_id" class="form-control" ng-model="productForm.parent_id">
-                            <option value="">--Chọn Sản Phẩm Cha--</option>
-                            <option ng-repeat="product in productConfigurables" value="@{{ product.id }}">@{{ product.name }}</option>
-                        </select>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Sản phẩm cha</label>
+                        <div class="col-sm-6">
+                            <select name="parent_id" class="form-control" ng-model="productForm.parent_id">
+                                <option value="">--Chọn Sản Phẩm Cha--</option>
+                                <option ng-repeat="product in productConfigurables"
+                                        value="@{{ product.id }}">@{{ product.name }}</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Tên sản phẩm</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm" ng-model="productForm.name">
+                        <input type="text" class="form-control" name="name" placeholder="Tên sản phẩm"
+                               ng-model="productForm.name">
                     </div>
                 </div>
 
@@ -89,7 +97,8 @@
                     <label class="col-sm-3 control-label no-padding-right">Mã sản phẩm</label>
                     <div class="col-sm-6">
                         <div class="col-sm-6">
-                            <p class="form-control-static"><strong>{{($product->code) ? $product->code : ""}}</strong></p>
+                            <p class="form-control-static"><strong>{{($product->code) ? $product->code : ""}}</strong>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -97,7 +106,8 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">URL</label>
                     <div class="col-sm-6">
-                        <input type="text" class="form-control" name="source_url" placeholder="URL" ng-model="productForm.source_url">
+                        <input type="text" class="form-control" name="source_url" placeholder="URL"
+                               ng-model="productForm.source_url">
                         <span class="help-block">
                             URL nguồn sản phẩm.
                         </span>
@@ -107,23 +117,25 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Ảnh sản phẩm</label>
                     <div class="col-sm-6">
-                        <input type="file" class="form-control" name="image" placeholder="Image" fileread="productForm.image">
+                        <input type="file" class="form-control" name="image" placeholder="Image"
+                               fileread="productForm.image">
                     </div>
                 </div>
 
                 @if($product->image)
-                <div class="form-group">
-                    <label class="col-sm-3 control-label no-padding-right"></label>
-                    <div class="col-sm-6">
-                        <img src="{{$product->image}}" style="height: 80px;">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right"></label>
+                        <div class="col-sm-6">
+                            <img src="{{$product->image}}" style="height: 80px;">
+                        </div>
                     </div>
-                </div>
                 @endif
 
                 <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Mô tả</label>
                     <div class="col-sm-6">
-                        <textarea class="form-control" name="description" placeholder="Mô tả sản phẩm" rows="5" ng-model="productForm.description"></textarea>
+                        <textarea class="form-control" name="description" placeholder="Mô tả sản phẩm" rows="5"
+                                  ng-model="productForm.description"></textarea>
                     </div>
                 </div>
 
@@ -142,10 +154,22 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="col-sm-3 control-label no-padding-right">Kênh bán hàng</label><br>
+                    <div class="col-sm-6">
+                        <label ng-repeat="(key, value) in channel" style="margin-right: 10px">
+                            <input type="checkbox" ng-model="productForm.channel[key]"
+                                   ng-true-value="1" ng-false-value="0">@{{ value }}
+                        </label>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
                     <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
                     <div class="col-sm-6">
                         <label>
-                            <input type="checkbox" name="status" value="1" class="ace ace-switch ace-switch-6" ng-model="productForm.status">
+                            <input type="checkbox" name="status" value="1" class="ace ace-switch ace-switch-6"
+                                   ng-model="productForm.status">
                             <span class="lbl"></span>
                         </label>
                     </div>
@@ -157,22 +181,26 @@
                     <div class="form-group" ng-repeat="attribute in attributes">
                         <label class="col-sm-3 control-label no-padding-right">@{{ attribute.name }}</label>
                         <div class="col-sm-6">
-                            <input type="text" class="form-control" name="attributes" placeholder="@{{ attribute.name }}" ng-model="productForm.attributes[attribute.slug]">
+                            <input type="text" class="form-control" name="attributes"
+                                   placeholder="@{{ attribute.name }}"
+                                   ng-model="productForm.attributes[attribute.slug]">
                         </div>
                     </div>
                 </div>
 
                 <div class="clearfix form-actions">
                     <div class="col-md-offset-3 col-md-9">
-                        <button type="submit" class="btn btn-success" ng-click="updateProduct()" ng-disabled="productForm.disabled">
+                        <button type="submit" class="btn btn-success" ng-click="updateProduct()"
+                                ng-disabled="productForm.disabled">
                             <i class="ace-icon fa fa-save bigger-110"></i>Lưu
                         </button>
                         @if($product->type == 1)
-                            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModalProduct">
+                            <button type="button" class="btn btn-success" data-toggle="modal"
+                                    data-target="#myModalProduct">
                                 <i class="ace-icon fa fa-save bigger-110"></i>Chọn sản phẩm con
                             </button>
-                        @endif
-                            <!-- Modal Product to Connect -->
+                            @endif
+                                    <!-- Modal Product to Connect -->
 
                     </div>
                 </div>
@@ -190,14 +218,15 @@
                     <h4 class="modal-title">Chọn sản phẩm con</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="product-childs" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                    <table id="product-childs"
+                           class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
                         <thead>
                         <tr>
                             <th>ID</th>
                             <th>Tên</th>
                             <th>SKU</th>
                             <th>Trạng thái</th>
-                            <th>Thao tác </th>
+                            <th>Thao tác</th>
                         </tr>
                         </thead>
                     </table>
@@ -205,7 +234,7 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label no-padding-left"></label>
                         <button type="button" class="btn btn-default" data-dismiss="modal">
-                           Xong
+                            Xong
                         </button>
                     </div>
                 </div>
@@ -215,31 +244,34 @@
     </div>
 
     @if($product->children)
-    <div class="row">
-        <h3>Sản phẩm con </h3>
-        <div class="col-xs-12">
-            <table id="products-table" class="table table-bordered table-hover">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Sản phẩm</th>
-                    <th>SKU</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-                <tbody id="productChildren">
-                @foreach($product->children as $key => $value)
+        <div class="row">
+            <h3>Sản phẩm con </h3>
+            <div class="col-xs-12">
+                <table id="products-table" class="table table-bordered table-hover">
+                    <thead>
                     <tr>
-                        <td>{{ $value->id }}</td>
-                        <td>{{ $value->name }}</td>
-                        <td>{{ $value->sku }}</td>
-                        <td><button ng-click="removeChild({{$value->id}})"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+                        <th>ID</th>
+                        <th>Sản phẩm</th>
+                        <th>SKU</th>
+                        <th>Thao tác</th>
                     </tr>
-                @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="productChildren">
+                    @foreach($product->children as $key => $value)
+                        <tr>
+                            <td>{{ $value->id }}</td>
+                            <td>{{ $value->name }}</td>
+                            <td>{{ $value->sku }}</td>
+                            <td>
+                                <button ng-click="removeChild({{$value->id}})"><i class="fa fa-trash-o"
+                                                                                  aria-hidden="true"></i></button>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
     @endif
 
 </div><!-- /.page-content -->
@@ -252,60 +284,60 @@
 @endsection
 
 @section('inline_scripts')
-<script type="text/javascript">
-    var PRODUCT_ID = '{{ $product->id }}';
-    $(function ()  {
+    <script type="text/javascript">
+        var PRODUCT_ID = '{{ $product->id }}';
+        $(function () {
 
-        $('#myModalProduct').on('hidden.bs.modal', function () {
-           window.location.reload();
-        })
+            $('#myModalProduct').on('hidden.bs.modal', function () {
+                window.location.reload();
+            })
 
-        var table = $("#product-childs").DataTable({
-            searching: true,
-            autoWidth: false,
-            processing: true,
-            serverSide: true,
-            pageLength: 10,
-            ajax: {
-                url: "{!! route('products.getSimpleProduct') !!}",
-                data: function (d) {
+            var table = $("#product-childs").DataTable({
+                searching: true,
+                autoWidth: false,
+                processing: true,
+                serverSide: true,
+                pageLength: 10,
+                ajax: {
+                    url: "{!! route('products.getSimpleProduct') !!}",
+                    data: function (d) {
+                    },
                 },
-            },
-            columns: [
-                {data: 'id', name: 'id'},
-                {data: 'name', name: 'name', className:'productName', "searchable": true},
-                {data: 'sku', name: 'sku', className:'productSku', "searchable": true},
-                {data: 'status', name: 'status'},
-                {data: 'add', name: 'add', orderable: false, searchable: false, className:'addChild'},
-            ],
-        });
+                columns: [
+                    {data: 'id', name: 'id'},
+                    {data: 'name', name: 'name', className: 'productName', "searchable": true},
+                    {data: 'sku', name: 'sku', className: 'productSku', "searchable": true},
+                    {data: 'status', name: 'status'},
+                    {data: 'add', name: 'add', orderable: false, searchable: false, className: 'addChild'},
+                ],
+            });
 
-        $(document).on('click', '.addChild', function(e) {
-            var productChild = table.row( this ).data().id ;
-            $.ajax({
-                url: "/products/" + PRODUCT_ID + "/addChild",
-                type: "POST",
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    productChild: productChild,
-                } ,
-                success: function (response) {
-                    if (response.status == 'success') {
-                        swal({
-                            title: "Thành công!",
-                            text: "Thêm sản phẩm con thành công",
-                            type: "success",
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
+            $(document).on('click', '.addChild', function (e) {
+                var productChild = table.row(this).data().id;
+                $.ajax({
+                    url: "/products/" + PRODUCT_ID + "/addChild",
+                    type: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        productChild: productChild,
+                    },
+                    success: function (response) {
+                        if (response.status == 'success') {
+                            swal({
+                                title: "Thành công!",
+                                text: "Thêm sản phẩm con thành công",
+                                type: "success",
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        console.log(textStatus, errorThrown);
                     }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(textStatus, errorThrown);
-                }
+                });
             });
         });
-});
 
-</script>
+    </script>
 @endsection

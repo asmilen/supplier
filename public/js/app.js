@@ -8640,7 +8640,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         $http.post('/api/product-suppliers/exportExcel', $scope.searchProductSupplierForm).then(function (response) {
             $scope.exportForm = new exportForm();
 
-            //$window.location = response.data.path;
+            $window.location = response.data.path;
         }).catch(function (response) {
             $scope.exportForm = new exportForm();
 

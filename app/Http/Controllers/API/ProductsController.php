@@ -165,7 +165,7 @@ class ProductsController extends Controller
                 ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
                 ->where('suppliers.status', 1)
                 ->get()
-                ->pluck('supplier_supported_province.supplier_id');
+                ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
                 ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
@@ -178,17 +178,23 @@ class ProductsController extends Controller
 
             $margin = MarginRegionCategory::where('category_id', $product->category_id)
                 ->whereIn('region_id', $regions)->first();
+            $marginValue = ($margin ? 1 + 0.01 * $margin->margin : 1.05);
 
             $province = Province::whereIn('code', request('province_ids'))->pluck('id');
             $provinceFee = TransportFee::whereIn('province_id', $province)
                 ->orderBy('percent_fee')
                 ->first();
+            $provinceFee_index = TransportFee::where('province_id', $province ? $province[0] : 0)->first();
+
+            $feeValue = ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
+
             $minPrice = ProductSupplier::where('product_id', $id)
                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                 ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
                 ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
                 ->where('product_supplier.state', '=', 1)
-                ->orderBy('product_supplier.import_price')
+                ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
+                    $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee) end ))))'))
                 ->orderBy('transport_fees.percent_fee')
                 ->first();
 

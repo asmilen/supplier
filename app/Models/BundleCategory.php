@@ -69,14 +69,14 @@ class BundleCategory extends Model
             ->get();
     }
 
-    public function getBundleProducts($supplierIds, $regionId)
+    public function getBundleProducts($supplierIds, $regionId, $provinceId)
     {
         $bundleProducts = BundleProduct::where('id_bundle', $this->id_bundle)
             ->where('id_bundleCategory', $this->id)
             ->get();
 
-        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds, $regionId) {
-            return $bundleProduct->getProduct($supplierIds, $regionId);
+        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds, $regionId, $provinceId) {
+            return $bundleProduct->getProduct($supplierIds, $regionId, $provinceId);
         });
     }
 

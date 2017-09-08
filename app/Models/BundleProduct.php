@@ -93,28 +93,25 @@ class BundleProduct extends Model
         return $product;
     }
 
-    protected function getProductMarginFee($product, $supplierIds, $regionId, $provinceCode)
+    protected function getProductMarginFee($product, $supplierIds, $regionId, $provinceId)
     {
         $margin = MarginRegionCategory::where('category_id', $product->category_id)
             ->where('region_id', $regionId)
             ->first();
-        $marginValue = ($margin ? 1 + 0.01 * $margin->margin : 1.05);
-        $province = Province::where('region_id', $regionId)
-            ->where('code', $provinceCode)
-            ->first();
-        $provinceId = $province ? $province->id : 0;
 
-        $provinceFee_index = TransportFee::where('province_id', $provinceId)->first();
-
-        $feeValue = ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
+        $provinceFee_index = TransportFee::where(
+            'province_id',
+            Province::where('region_id', $regionId)
+                ->where('code', $provinceId)
+                ->pluck('id')
+        )->first();
 
         $minPrice = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)
-            ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
-                $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $provinceId . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee) end ))))'))
+            ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . 1 . '/1000) * 1000))'))
             ->orderBy('transport_fees.percent_fee')
             ->first();
 
@@ -131,10 +128,10 @@ class BundleProduct extends Model
 
         $provinceFee = TransportFee::where('province_id', $provinceFeeMin ? $provinceFeeMin->province_id : 0)->first();
 
-        if (in_array($provinceId, $supportProvince ? $supportProvince->toArray() : [])) {
-            $productMarginFee = $marginValue + $feeValue;
+        if (in_array($provinceFee_index->province_id, $supportProvince ? $supportProvince->toArray() : [])) {
+            $productMarginFee = ($margin ? 1 + 0.01 * $margin->margin : 1.05) + ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
         } else {
-            $productMarginFee = $marginValue + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + $feeValue;
+            $productMarginFee = ($margin ? 1 + 0.01 * $margin->margin : 1.05) + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
         }
 
         return $productMarginFee;

@@ -166,7 +166,7 @@ class ProductsController extends Controller
                 ->pluck('supplier_id');
 
             $product = Product::with('manufacturer', 'category')
-                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
+                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`,  `products`.`description`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
                 ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->whereIn('product_supplier.supplier_id', $supplierIds)

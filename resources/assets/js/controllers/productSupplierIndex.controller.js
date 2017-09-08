@@ -12,6 +12,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.category_id = '';
         this.manufacturer_id = '';
         this.supplier_id = '';
+        this.region_id = '';
         this.q = '';
         this.state = '';
         this.page = 1;
@@ -29,6 +30,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
+        this.region_id = '';
         this.supplier_name = '';
         this.import_price = '';
         this.from_date = $filter('date')(now, 'yyyy-MM-dd');
@@ -94,6 +96,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
             '&category_id=' + $scope.searchProductSupplierForm.category_id +
             '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id +
             '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id +
+            '&region_id=' + $scope.searchProductSupplierForm.region_id +
             '&q=' + $scope.searchProductSupplierForm.q +
             '&state=' + $scope.searchProductSupplierForm.state +
             '&sorting=' + $scope.searchProductSupplierForm.sorting +
@@ -198,6 +201,10 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         return 'N/A';
     }
 
+    $scope.regionText = function (region_id) {
+        return window.Laradmin.regions[region_id];
+    }
+
     $scope.showEditProductSupplierModal = function (productSupplier) {
         $scope.editProductSupplier = productSupplier;
         $scope.editProductSupplierForm.import_price = productSupplier.import_price;
@@ -258,6 +265,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         $http.get('/api/product-suppliers/get-ids?category_id=' + $scope.searchProductSupplierForm.category_id +
             '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id +
             '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id +
+            '&region_id=' + $scope.searchProductSupplierForm.region_id +
             '&q=' + $scope.searchProductSupplierForm.q +
             '&state=' + $scope.searchProductSupplierForm.state)
             .then(function (response) {

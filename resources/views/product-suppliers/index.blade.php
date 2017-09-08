@@ -57,7 +57,7 @@
                 </button>
                 <button class="btn btn-xlg btn-white btn-info2" ng-click="showUpdateValidTimeModal()" >
                     <i class="ace-icon fa fa-calendar-check-o" aria-hidden="true"></i>
-                    <span class="hidden-xs">Valid Time</span>
+                    <span class="hidden-xs">Cập nhật hiệu lực giá</span>
                 </button>
             </p>
         </div>

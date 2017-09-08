@@ -20,7 +20,7 @@ class Bundle extends Model
     public static function getDatatables()
     {
         $model = static::select([
-            'id', 'name', 'price', 'region_id', 'label'
+            'id', 'name', 'price', 'region_id', 'label','status'
         ]);
 
         return Datatables::eloquent($model)
@@ -29,8 +29,9 @@ class Bundle extends Model
             ->editColumn('price', function ($bundle) {
                 return number_format($bundle->price);
             })
+            ->editColumn('status', 'bundles.datatables.status')
             ->addColumn('action', 'bundles.datatables.action')
-            ->rawColumns(['action'])
+            ->rawColumns(['action','status'])
             ->make(true);
     }
 

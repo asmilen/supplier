@@ -81,10 +81,12 @@ Route::group(['middleware' => 'auth'], function () {
         // Bundles
         Route::get('bundles/datatables', 'BundlesController@getDatatables')->name('bundles.datatables');
         Route::resource('bundles', 'BundlesController', ['except' => 'destroy']);
+        Route::post('bundles/{bundle}/toggleStatus', 'BundlesController@toggleStatus')->name('bundles.status.toggle');
 
         // BundleCateogories
         Route::get('bundleCategories/datatables', 'BundleCategoriesController@getDatatables')->name('bundleCategories.datatables');
         Route::resource('bundleCategories', 'BundleCategoriesController', ['except' => 'destroy']);
+        Route::post('bundleCategories/{bundleCategory}/toggleStatus', 'BundleCategoriesController@toggleStatus')->name('bundleCategories.status.toggle');
         Route::get('bundleProducts/{bundleCategory}/create', 'BundleProductsController@create')->name('bundleProducts.create');
         Route::put('bundleProducts/{bundleCategory}/store', 'BundleProductsController@store')->name('bundleProducts.store');
 

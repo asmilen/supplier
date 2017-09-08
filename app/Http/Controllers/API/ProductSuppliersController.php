@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use DB;
 use Sentinel;
 use Carbon\Carbon;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\ProductSupplier;
 use App\Http\Controllers\Controller;
+use Excel;
 
 class ProductSuppliersController extends Controller
 {
@@ -141,5 +143,41 @@ class ProductSuppliersController extends Controller
         }
 
         return $builder;
+    }
+
+    public function exportExcel()
+    {
+        $builder = $this->getProductsListBuilder();
+
+        $productSuppliers = $builder->get();
+
+        $productSuppliers->transform(function ($item,$key){
+            return [
+                'id' => $item->id,
+                'Danh mục' => $item->product->category ? $item->product->category->name : '',
+                'Nhà Sản xuất' => $item->product->manufacturer ? $item->product->manufacturer->name : '',
+                'sku' => $item->product->sku,
+                'Tên' => $item->product->name,
+                'Nhà cung cấp' => $item->supplier->name,
+                'Giá nhập' => $item->import_price,
+                'Hiệu lực từ' => $item->from_date,
+                'Hiệu lực đến' => $item->to_date,
+                'Số lượng tối thiểu' => $item->min_quantity,
+                'Giá bán khuyến nghị' => $item->recommend_price,
+                'Tình trạng' => config('teko.product.state')[$item->state],
+                'Cập nhật lần cuối' => $item->updated_at,
+            ];
+        });
+
+        Excel::create('supplier_product', function ($excel) use ($productSuppliers) {
+            $excel->sheet('Sheet 232', function ($sheet) use ($productSuppliers) {
+                $sheet->fromArray($productSuppliers);
+            });
+        })->store('xlsx', 'exports');
+
+        return [
+            'success' => true,
+            'path' => 'http://' . request()->getHttpHost() . '/exports/supplier_product.xlsx'
+        ];
     }
 }

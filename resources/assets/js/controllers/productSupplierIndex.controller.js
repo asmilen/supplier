@@ -235,12 +235,17 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.exportToExcel = function () {
         $scope.exportForm.disabled = true;
 
-        $http.post('/suppliers/exportExcel')
+        $http.post('/api/product-suppliers/exportExcel',$scope.searchProductSupplierForm)
             .then(function (response) {
                 $scope.exportForm = new exportForm();
 
                 $window.location = response.data.path;
             })
+            .catch(function (response) {
+                $scope.exportForm = new exportForm();
+
+                swal("Error!", "Có lỗi xảy ra, vui lòng thử lại sau", "error");
+            });
     }
 
     $scope.showImportFromExcelModal = function () {

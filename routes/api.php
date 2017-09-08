@@ -44,4 +44,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('product-suppliers', 'ProductSuppliersController@index');
     Route::get('product-suppliers/get-ids', 'ProductSuppliersController@getIds');
+    Route::post('product-suppliers/exportExcel', 'ProductSuppliersController@exportExcel');
 });

@@ -7984,6 +7984,12 @@ function ProductCreateController($scope, $http, $window) {
     $scope.getProductConfig();
 
     $scope.addProduct = function () {
+        var array = [];
+        $.map($scope.productForm.channel, function (value, index) {
+            array[index] = value;
+        });
+        $scope.productForm.channel = array;
+
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;

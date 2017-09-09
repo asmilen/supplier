@@ -76,6 +76,16 @@ class ProductsController extends Controller
         $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
         Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
 
+
+        $channel_choose = str_replace(",","",request('channel'));
+
+        $channel = array();
+        for ($i = 0; $i < strlen($channel_choose); $i++){
+            if ($channel_choose[$i] == 1){
+                array_push($channel, $i+1);
+            }
+        }
+
         $product = Product::forceCreate([
             'category_id' => request('category_id'),
             'manufacturer_id' => request('manufacturer_id'),
@@ -87,6 +97,7 @@ class ProductsController extends Controller
             'image' => url('/') . '/storage/' . $filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
+            'channel' => implode(",",$channel),
         ]);
 
         flash()->success('Success!', 'Product successfully created.');

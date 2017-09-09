@@ -161,7 +161,6 @@
                                    ng-true-value="1" ng-false-value="0">@{{ value }}
                         </label>
                     </div>
-
                 </div>
 
                 <div class="form-group">

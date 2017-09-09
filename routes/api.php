@@ -10,6 +10,7 @@ Route::get('productConfigurables', 'ProductConfigurablesController@index');
 Route::get('products/search', 'ProductsController@search');
 Route::get('suppliers/search', 'SuppliersController@search');
 Route::get('products', 'ProductsController@index');
+Route::get('products/config', 'ProductsController@getConfig');
 Route::get('products/getConfigurableList', 'ProductsController@getConfigurableList');
 Route::get('products/min-import-price-list', 'ProductsController@getMinImportPriceList');
 Route::get('products/get-quotation','ProductsController@getProductQuotation');

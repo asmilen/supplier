@@ -139,6 +139,16 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Kênh bán hàng</label><br>
+                        <div class="col-sm-6">
+                            <label ng-repeat="(key, value) in channel" style="margin-right: 10px">
+                                <input type="checkbox" ng-model="productForm.channel[key]"
+                                       ng-true-value="1" ng-false-value="0">@{{ value }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
                         <div class="col-sm-6">
                             <label>

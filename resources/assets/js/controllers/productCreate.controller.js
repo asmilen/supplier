@@ -25,6 +25,7 @@ function ProductCreateController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.channel = '';
     };
 
     $scope.productForm = new productForm();
@@ -57,6 +58,13 @@ function ProductCreateController($scope, $http, $window) {
             });
     };
 
+    $scope.getProductConfig = function () {
+        $http.get('/api/products/config')
+            .then(function (response) {
+                $scope.channel = response.data;
+            });
+    };
+
     $scope.refreshData = function () {
         categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
 
@@ -75,6 +83,7 @@ function ProductCreateController($scope, $http, $window) {
     $scope.getColors();
     $scope.getProductConfigurables();
     $scope.refreshData();
+    $scope.getProductConfig();
 
     $scope.addProduct = function () {
         $scope.productForm.errors = [];

@@ -322,6 +322,30 @@ class ProductsController extends Controller
         ]);
     }
 
+    public function updateNameBySku()
+    {
+        $results = [];
+        foreach (request('form_data') as $productData) {
+            try {
+                $product = Product::where('sku',$productData['sku'])->first();
+
+                if ($product)
+                {
+                    $product->name = $productData['name'];
+                    $product->save();
+                    array_push($results, ['Cập nhật thành công.']);
+                } else {
+                    array_push($results, ['Lỗi: Sku ko tồn tại']);
+                }
+
+            } catch (\Exception $e) {
+                array_push($results, ['Lỗi: ' . $e->getMessage()]);
+            }
+        }
+
+        return response()->json($results);
+    }
+
     public function getConfigurableList()
     {
         return Product::where('type', 1)->get();

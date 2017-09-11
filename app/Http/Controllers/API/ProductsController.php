@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Supplier;
 use DB;
+use Illuminate\Support\Facades\Log;
 use Validator;
 use Datatables;
 use App\Models\Color;
@@ -315,6 +316,31 @@ class ProductsController extends Controller
             'code' => $productData['code'],
             'status' => 0,
         ]);
+    }
+
+    public function updateNameBySku()
+    {
+        $results = [];
+        Log::info(request('form_data'));
+        foreach (request('form_data') as $productData) {
+            try {
+                $product = Product::where('sku',$productData['sku'])->first();
+
+                if ($product)
+                {
+                    $product->name = $productData['name'];
+                    $product->save();
+                    array_push($results, ['Cập nhật thành công.']);
+                } else {
+                    array_push($results, ['Lỗi: Sku ko tồn tại']);
+                }
+
+            } catch (\Exception $e) {
+                array_push($results, ['Lỗi: ' . $e->getMessage()]);
+            }
+        }
+
+        return response()->json($results);
     }
 
     public function getConfigurableList()

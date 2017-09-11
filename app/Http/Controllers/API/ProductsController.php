@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Models\Supplier;
 use DB;
-use Illuminate\Support\Facades\Log;
 use Validator;
 use Datatables;
 use App\Models\Color;
@@ -321,7 +320,6 @@ class ProductsController extends Controller
     public function updateNameBySku()
     {
         $results = [];
-        Log::info(request('form_data'));
         foreach (request('form_data') as $productData) {
             try {
                 $product = Product::where('sku',$productData['sku'])->first();

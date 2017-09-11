@@ -127,7 +127,7 @@ class ProductSuppliersController extends Controller
         if (! empty(request('supplier_id'))) {
             $builder->where('supplier_id', request('supplier_id'));
         }
-
+        
         if (! empty(request('q'))) {
             $builder->whereHas('product', function ($query) {
                 $query->where('name', 'like', '%'.request('q').'%')

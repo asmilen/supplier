@@ -62,7 +62,13 @@ class BundleProduct extends Model
             ->where('products.channel', 'like', '%' . 2 . '%')
             ->findOrFail($this->id_product);
 
+        $margin = MarginRegionCategory::where('category_id', $product->category_id)
+            ->where('region_id', $regionId)
+            ->first();
+
         $productMarginFee = $this->getProductMarginFee($product, $supplierIds, $regionId, $provinceId);
+
+        $marginValue = $productMarginFee - ($margin ? $margin->margin * 0.01 : 0.05);
 
         $product->best_price = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -72,7 +78,7 @@ class BundleProduct extends Model
         $product->import_price = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)
             ->where('state', 1)
-            ->min(DB::raw('(ceil(product_supplier.import_price/1000) * 1000)'));
+            ->min(DB::raw('(ceil(product_supplier.import_price * (' . $marginValue . ')/1000) * 1000)'));
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $product->id)
             ->whereIn('product_supplier.supplier_id', $supplierIds)

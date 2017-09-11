@@ -31,6 +31,7 @@ Route::post('products/create-from-google-sheet', 'ProductsController@createFromG
 Route::get('suppliers', 'SuppliersController@index');
 Route::get('suppliers/regions/', 'SuppliersController@getSuppliersByRegionId');
 Route::post('products/imports/import-from-google-sheet', 'ProductImportsController@importFromGoogleSheet');
+Route::post('products/update-name-by-sku','ProductsController@updateNameBySku');
 Route::post('suppliers/update-price-valid-time-google-sheet','SuppliersController@updatePriceValidTimeFromGoolgeSheet');
 
 
@@ -44,4 +45,5 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::get('product-suppliers', 'ProductSuppliersController@index');
     Route::get('product-suppliers/get-ids', 'ProductSuppliersController@getIds');
+    Route::post('product-suppliers/exportExcel', 'ProductSuppliersController@exportExcel');
 });

@@ -77,10 +77,11 @@ class Supplier extends Model
                 return ($model->price_active_time / 24) . ' ngày';
             })
             ->editColumn('sup_type', function ($model) {
-                if ($model->sup_type === 1) {
+                if ($model->sup_type == 2){
                     return 'Ký gửi';
-                } else
-                    return 'Hàng mua';
+                }elseif($model->sup_type == 1)
+                return 'Hàng mua';
+
             })
             ->editColumn('status', 'products.datatables.status')
             ->addColumn('action', 'suppliers.datatables.action')
@@ -125,20 +126,22 @@ class Supplier extends Model
         }
 
         $sku = Product::whereIn('id', array_unique($product_list))->pluck('sku');
+        foreach ($sku as $product){
+            $post_data = [
+                'data' => [
+                    'status' => 0,
+                    'products' => $product
+                ]
+            ];
+            $response = $this->callApi($post_data);
+            LogOffSupplier::create([
+                'supplier_id' => $this ? $this->id : 0,
+                'type' => 'OFF',
+                'post_data' => json_encode($post_data),
+                'response' => json_encode($response)
+            ]);
+        }
 
-        $post_data = [
-            'data' => [
-                'status' => 0,
-                'products' => $sku
-            ]
-        ];
-        $response = $this->callApi($post_data);
-        LogOffSupplier::create([
-            'supplier_id' => $this ? $this->id : 0,
-            'type' => 'OFF',
-            'post_data' => json_encode($post_data),
-            'response' => json_encode($response)
-        ]);
     }
 
     public function onProductToMagento()
@@ -165,20 +168,21 @@ class Supplier extends Model
         }
 
         $sku = Product::whereIn('id', array_unique($product_list))->pluck('sku');
-
-        $post_data = [
-            'data' => [
-                'status' => 1,
-                'products' => $sku
-            ]
-        ];
-        $response = $this->callApi($post_data);
-        LogOffSupplier::create([
-            'supplier_id' => $this ? $this->id : 0,
-            'type' => 'ON',
-            'post_data' => json_encode($post_data),
-            'response' => json_encode($response)
-        ]);
+        foreach ($sku as $product){
+            $post_data = [
+                'data' => [
+                    'status' => 1,
+                    'products' => $product
+                ]
+            ];
+            $response = $this->callApi($post_data);
+            LogOffSupplier::create([
+                'supplier_id' => $this ? $this->id : 0,
+                'type' => 'ON',
+                'post_data' => json_encode($post_data),
+                'response' => json_encode($response)
+            ]);
+        }
     }
 
     private function callApi($data)

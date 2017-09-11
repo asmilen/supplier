@@ -629,6 +629,7 @@ class SuppliersController extends Controller
             'website' => request('website'),
             'tax_number' => request('tax_number'),
             'type' => request('type'),
+            'sup_type' => request('sup_type'),
             'price_active_time' => request('price_active_time') * 24,
             'created_by' => Sentinel::getUser()->id
         ])->save();

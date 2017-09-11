@@ -16,7 +16,7 @@ class BundlesController extends Controller
     {
         $labels = config('teko.bundleLabels');
 
-        $bundles = Bundle::withCount(['products','categories' => function ($query){
+        $bundles = Bundle::withCount(['products','categories' => function ($query) {
                 $query->where('bundle_category.status',true);
             }])
             ->where('bundles.status',true)

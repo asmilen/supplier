@@ -167,7 +167,7 @@ class ProductsController extends Controller
                 ->pluck('supplier_id'); // tìm tất cả các nhà cung cấp cung cấp cho miền của người mua hàng
 
             $product = Product::with('manufacturer', 'category')
-                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
+                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`,  `products`.`description`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
                 ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -271,6 +271,8 @@ class ProductsController extends Controller
 
     public function show(Product $product)
     {
+        $product->product_options = config('teko.product.channel', []);
+        $product->channels = explode(",", $product->channel);
         return $product;
     }
 
@@ -324,6 +326,30 @@ class ProductsController extends Controller
             'code' => $productData['code'],
             'status' => 0,
         ]);
+    }
+
+    public function updateNameBySku()
+    {
+        $results = [];
+        foreach (request('form_data') as $productData) {
+            try {
+                $product = Product::where('sku',$productData['sku'])->first();
+
+                if ($product)
+                {
+                    $product->name = $productData['name'];
+                    $product->save();
+                    array_push($results, ['Cập nhật thành công.']);
+                } else {
+                    array_push($results, ['Lỗi: Sku ko tồn tại']);
+                }
+
+            } catch (\Exception $e) {
+                array_push($results, ['Lỗi: ' . $e->getMessage()]);
+            }
+        }
+
+        return response()->json($results);
     }
 
     public function getConfigurableList()

@@ -244,7 +244,6 @@ class Product extends Model
     {
         $supplier_ids = ProductSupplier::where('product_id', $this->id)
             ->leftJoin('products', 'product_supplier.product_id', 'products.id')
-            ->where('channel', 2)
             ->pluck('id');
         for ($i = 0; $i < $supplier_ids->count(); $i++) {
             ProductSupplier::where('supplier_id', '!=', 0)

@@ -59,6 +59,7 @@ class BundleProduct extends Model
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.supplier_id', $supplierIds);
             })
+            ->where('products.channel', 'like', '%' . 2 . '%')
             ->findOrFail($this->id_product);
 
         $productMarginFee = $this->getProductMarginFee($product, $supplierIds, $regionId, $provinceId);

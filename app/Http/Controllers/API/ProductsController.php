@@ -65,6 +65,7 @@ class ProductsController extends Controller
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->whereIn('margin_region_category.region_id', $regions);
             })
+            ->where('products.channel', 'like', '%' . 2 . '%')
             ->where('products.status', 1);
         
         return Datatables::eloquent($model)
@@ -172,6 +173,7 @@ class ProductsController extends Controller
                         ->whereIn('product_supplier.supplier_id', $supplierIds)
                         ->where('product_supplier.state', '=', 1);
                 })
+                ->where('products.channel', 'like', '%' . 2 . '%')
                 ->findOrFail($id); // kiểm tra thông tin sản phẩm cần mua
 
             $margin = MarginRegionCategory::where('category_id', $product->category_id)

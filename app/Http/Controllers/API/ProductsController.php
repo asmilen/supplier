@@ -265,13 +265,9 @@ class ProductsController extends Controller
 
     public function show(Product $product)
     {
-        $product->product_options = config('teko.product.channel', []);
+        $product->product_options = config('teko.stores', []);
         $product->channels = explode(",", $product->channel);
         return $product;
-    }
-    public function getConfig()
-    {
-        return config('teko.product.channel');
     }
 
     public function createFromGoogleSheet()

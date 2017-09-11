@@ -141,10 +141,14 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Kênh bán hàng</label><br>
                         <div class="col-sm-6">
-                            <label ng-repeat="(key, value) in channel" style="margin-right: 10px">
-                                <input type="checkbox" ng-model="productForm.channel[key]"
-                                       ng-true-value="1" ng-false-value="0">@{{ value }}
-                            </label>
+                            @foreach (config('teko.stores') as $k => $v)
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="form-field-checkbox" type="checkbox" class="ace" ng-model="productForm.channels[{{ $k }}]" value="{{ $k }}" />
+                                        <span class="lbl"> {{ $v }}</span>
+                                    </label>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
 

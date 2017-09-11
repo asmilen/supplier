@@ -244,12 +244,12 @@ class Product extends Model
     {
         $supplier_ids = ProductSupplier::where('product_id', $this->id)
             ->leftJoin('products', 'product_supplier.product_id', 'products.id')
-            ->pluck('id');
+            ->pluck('product_supplier.id');
         for ($i = 0; $i < $supplier_ids->count(); $i++) {
             ProductSupplier::where('supplier_id', '!=', 0)
                 ->where('id', $supplier_ids[$i])
                 ->where('state', 1)
-                ->chunk(10, function ($products) use ($supplier_ids) {
+                ->chunk(10, function ($products) {
                     foreach ($products as $product) {
                         $region_id = ProductSupplier::where('product_supplier.id', $product->id)
                             ->pluck('region_id');
@@ -290,6 +290,8 @@ class Product extends Model
                         and `product_supplier`.`price_recommend` <  $import_price then `product_supplier`.`price_recommend` else $import_price end as min_price"))
                                 ->orderBy('min_price')
                                 ->first();
+                            'if((if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
+								(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price';
                             $PriceRecommend = ProductSupplier::where('product_id', $product->id)
                                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                                 ->where('product_supplier.state', '=', 1)
@@ -297,7 +299,6 @@ class Product extends Model
                         then `product_supplier`.`price_recommend` else 1000000000 end as min_price"))
                                 ->orderBy('min_price')
                                 ->first();
-
                             $count = ProductSupplier::where('product_id', $product->id)
                                 ->whereIn('product_supplier.supplier_id', $supplierIds)
                                 ->where('product_supplier.state', '=', 1)
@@ -328,18 +329,22 @@ class Product extends Model
                                 if ($log) {
                                     if (json_encode($post_data) != $log->post_data) {
 
-                                        $supplier_ids = ProductSupplier::where('product_id', $product->id)
+                                        $product_supplier_ids = ProductSupplier::where('product_id', $product->id)
                                             ->pluck('id');
                                         $detail = [];
-                                        for ($i = 0; $i < $supplier_ids->count(); $i++) {
-                                            $detail = array_merge([[
-                                                ProductSupplier::where('product_supplier.id', $supplier_ids[$i])
-                                                    ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
-                                                    ->leftJoin('provinces', 'provinces.id', 'supplier_supported_province.province_id')
-                                                    ->select(DB::raw('product_supplier.*, provinces.region_id'))
-                                                    ->first()
-
-                                            ]], is_array($detail) ? $detail : []);
+                                        for ($i = 0; $i < $product_supplier_ids->count(); $i++) {
+                                            $productValue = ProductSupplier::where('product_supplier.id', $product_supplier_ids[$i])
+                                                ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
+                                                ->where('product_supplier.region_id', $region_id[0])
+                                                ->select(DB::raw('product_supplier.*'))
+                                                ->first();
+                                            if ($productValue) {
+                                                $detail = array_merge([[
+                                                    'product' => $productValue,
+                                                    'margin' => ($margin ? $margin->margin : 5) * 0.01,
+                                                    'fee' => ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2
+                                                ]], is_array($detail) ? $detail : []);
+                                            }
                                         }
 
                                         $response = $this->callApi($post_data);
@@ -352,18 +357,22 @@ class Product extends Model
                                         ]);
                                     }
                                 } else {
-                                    $supplier_ids = ProductSupplier::where('product_id', $product->id)
+                                    $product_supplier_ids = ProductSupplier::where('product_id', $product->id)
                                         ->pluck('id');
                                     $detail = [];
-                                    for ($i = 0; $i < $supplier_ids->count(); $i++) {
-                                        $detail = array_merge([[
-                                            ProductSupplier::where('product_supplier.id', $supplier_ids[$i])
-                                                ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
-                                                ->leftJoin('provinces', 'provinces.id', 'supplier_supported_province.province_id')
-                                                ->select(DB::raw('product_supplier.*, provinces.region_id'))
-                                                ->first()
-
-                                        ]], is_array($detail) ? $detail : []);
+                                    for ($i = 0; $i < $product_supplier_ids->count(); $i++) {
+                                        $productValue = ProductSupplier::where('product_supplier.id', $product_supplier_ids[$i])
+                                            ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
+                                            ->where('product_supplier.region_id', $region_id[0])
+                                            ->select(DB::raw('product_supplier.*'))
+                                            ->first();
+                                        if ($productValue) {
+                                            $detail = array_merge([[
+                                                'product' => $productValue,
+                                                'margin' => ($margin ? $margin->margin : 5) * 0.01,
+                                                'fee' => ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2
+                                            ]], is_array($detail) ? $detail : []);
+                                        }
                                     }
 
                                     $response = $this->callApi($post_data);

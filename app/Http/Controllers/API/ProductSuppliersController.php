@@ -122,12 +122,7 @@ class ProductSuppliersController extends Controller
             });
         }
 
-        if (! empty(request('supplier_id'))) {
-            $builder->where('supplier_id', request('supplier_id'));
-        }else{
-            $builder->leftJoin('suppliers', 'product_supplier.supplier_id', 'suppliers.id')
-                ->where('suppliers.status', 1);
-        }
+        
 
         if (! empty(request('q'))) {
             $builder->whereHas('product', function ($query) {

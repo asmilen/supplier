@@ -243,117 +243,92 @@ class Product extends Model
     public function updatePriceToMagento()
     {
         $supplier_ids = ProductSupplier::where('product_id', $this->id)
+            ->leftJoin('products', 'product_supplier.product_id', 'products.id')
+            ->where('channel', 2)
             ->pluck('id');
         for ($i = 0; $i < $supplier_ids->count(); $i++) {
             ProductSupplier::where('supplier_id', '!=', 0)
                 ->where('id', $supplier_ids[$i])
                 ->where('state', 1)
-                ->chunk(10, function ($products) {
+                ->chunk(10, function ($products) use ($supplier_ids) {
                     foreach ($products as $product) {
-                        $region = ProductSupplier::where('product_supplier.id', $product->id)
-                            ->leftJoin('supplier_supported_province', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
-                            ->leftJoin('provinces', 'provinces.id', '=', 'supplier_supported_province.province_id')
-                            ->get();
-                        for ($j = 0; $j < $region->count(); $j++) {
-                            $province_id = Province::where('region_id', $region[$j]->region_id)->pluck('id');
-                            $provinceFee = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
-                            /**
-                             * @var array $supplierIds
-                             */
-                            $supplierIds = SupplierSupportedProvince::whereIn('province_id', $province_id)
-                                ->get()
-                                ->pluck('supplier_id');
+                        $region_id = ProductSupplier::where('product_supplier.id', $product->id)
+                            ->pluck('region_id');
+                        $province_id = Province::where('region_id', $region_id[0])->pluck('id');
+                        $provinceFee = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
+                        /**
+                         * @var array $supplierIds
+                         */
+                        $supplierIds = SupplierSupportedProvince::whereIn('province_id', $province_id)
+                            ->get()
+                            ->pluck('supplier_id');
 
-                            $product = Product::with('manufacturer', 'category')
-                                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
-                                ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
-                                    $q->on('product_supplier.product_id', '=', 'products.id')
-                                        ->whereIn('product_supplier.supplier_id', $supplierIds)
-                                        ->where('product_supplier.state', '=', 1);
-                                })
-                                ->findOrFail($this->id);
-
-                            if ($product) {
-                                $margin = MarginRegionCategory::where('category_id', $product->category_id)
-                                    ->where('region_id', $region[$j]->region_id)->first();
-
-                                $importPrice = ProductSupplier::where('product_id', $product->id)
+                        $product = Product::with('manufacturer', 'category')
+                            ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
+                            ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
+                                $q->on('product_supplier.product_id', '=', 'products.id')
                                     ->whereIn('product_supplier.supplier_id', $supplierIds)
-                                    ->where('product_supplier.state', '=', 1)
-                                    ->orderBy('product_supplier.import_price')
-                                    ->first();
+                                    ->where('product_supplier.state', '=', 1);
+                            })
+                            ->findOrFail($this->id);
 
-                                $import_price = ceil(intval(($importPrice ? $importPrice->import_price : 0) * (1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2)) / 1000) * 1000;
+                        if ($product) {
+                            $margin = MarginRegionCategory::where('category_id', $product->category_id)
+                                ->where('region_id', $region_id[0])->first();
 
-                                $Price = ProductSupplier::where('product_id', $product->id)
-                                    ->whereIn('product_supplier.supplier_id', $supplierIds)
-                                    ->where('product_supplier.state', '=', 1)
-                                    ->select(DB::raw(" * , case when `product_supplier`.`price_recommend` > 0
+                            $importPrice = ProductSupplier::where('product_id', $product->id)
+                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.state', '=', 1)
+                                ->orderBy('product_supplier.import_price')
+                                ->first();
+
+                            $import_price = ceil(intval(($importPrice ? $importPrice->import_price : 0) * (1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2)) / 1000) * 1000;
+
+                            $Price = ProductSupplier::where('product_id', $product->id)
+                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.state', '=', 1)
+                                ->select(DB::raw(" * , case when `product_supplier`.`price_recommend` > 0
                         and `product_supplier`.`price_recommend` <  $import_price then `product_supplier`.`price_recommend` else $import_price end as min_price"))
-                                    ->orderBy('min_price')
-                                    ->first();
-                                $PriceRecommend = ProductSupplier::where('product_id', $product->id)
-                                    ->whereIn('product_supplier.supplier_id', $supplierIds)
-                                    ->where('product_supplier.state', '=', 1)
-                                    ->select(DB::raw(" * , case when `product_supplier`.`price_recommend` > 0
+                                ->orderBy('min_price')
+                                ->first();
+                            $PriceRecommend = ProductSupplier::where('product_id', $product->id)
+                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.state', '=', 1)
+                                ->select(DB::raw(" * , case when `product_supplier`.`price_recommend` > 0
                         then `product_supplier`.`price_recommend` else 1000000000 end as min_price"))
-                                    ->orderBy('min_price')
+                                ->orderBy('min_price')
+                                ->first();
+
+                            $count = ProductSupplier::where('product_id', $product->id)
+                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.state', '=', 1)
+                                ->where('product_supplier.price_recommend', 0)->count();
+
+                            if ($count === 0) {
+                                $minPrice = $PriceRecommend;
+                            } else {
+                                $minPrice = $Price;
+                            }
+
+                            if ($minPrice) {
+                                $post_data = [
+                                    'data' => [
+                                        [
+                                            'region_id' => $region_id ? $region_id[0] : 0,
+                                            'sku' => $product ? $product->sku : 0,
+                                            'price' => $minPrice ? $minPrice->min_price : 0
+                                        ]
+                                    ]
+                                ];
+
+                                $log = PostPriceToMgtLog::where('product_id', $product->id)
+                                    ->where('region_id', $region_id ? $region_id[0] : 0)
+                                    ->orderBy('created_at', 'DESC')
                                     ->first();
 
-                                $count = ProductSupplier::where('product_id', $product->id)
-                                    ->whereIn('product_supplier.supplier_id', $supplierIds)
-                                    ->where('product_supplier.state', '=', 1)
-                                    ->where('product_supplier.price_recommend', 0)->count();
+                                if ($log) {
+                                    if (json_encode($post_data) != $log->post_data) {
 
-                                if ($count === 0) {
-                                    $minPrice = $PriceRecommend;
-                                } else {
-                                    $minPrice = $Price;
-                                }
-
-                                if ($minPrice) {
-                                    $post_data = [
-                                        'data' => [
-                                            [
-                                                'region_id' => $region ? $region[$j]->region_id : 0,
-                                                'sku' => $product ? $product->sku : 0,
-                                                'price' => $minPrice ? $minPrice->min_price : 0
-                                            ]
-                                        ]
-                                    ];
-
-                                    $log = PostPriceToMgtLog::where('product_id', $product->id)
-                                        ->where('region_id', $region ? $region[$j]->region_id : 0)
-                                        ->orderBy('created_at', 'DESC')
-                                        ->first();
-
-                                    if ($log) {
-                                        if (json_encode($post_data) != $log->post_data) {
-
-                                            $supplier_ids = ProductSupplier::where('product_id', $product->id)
-                                                ->pluck('id');
-                                            $detail = [];
-                                            for ($i = 0; $i < $supplier_ids->count(); $i++) {
-                                                $detail = array_merge([[
-                                                    ProductSupplier::where('product_supplier.id', $supplier_ids[$i])
-                                                        ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
-                                                        ->leftJoin('provinces', 'provinces.id', 'supplier_supported_province.province_id')
-                                                        ->select(DB::raw('product_supplier.*, provinces.region_id'))
-                                                        ->first()
-
-                                                ]], is_array($detail) ? $detail : []);
-                                            }
-
-                                            $response = $this->callApi($post_data);
-                                            PostPriceToMgtLog::create([
-                                                'region_id' => $region ? $region[$j]->region_id : 0,
-                                                'product_id' => $product->id,
-                                                'detail' => json_encode($detail),
-                                                'post_data' => json_encode($post_data),
-                                                'response' => json_encode($response)
-                                            ]);
-                                        }
-                                    } else {
                                         $supplier_ids = ProductSupplier::where('product_id', $product->id)
                                             ->pluck('id');
                                         $detail = [];
@@ -370,15 +345,38 @@ class Product extends Model
 
                                         $response = $this->callApi($post_data);
                                         PostPriceToMgtLog::create([
-                                            'region_id' => $region ? $region[$j]->region_id : 0,
+                                            'region_id' => $region_id ? $region_id[0] : 0,
                                             'product_id' => $product->id,
                                             'detail' => json_encode($detail),
                                             'post_data' => json_encode($post_data),
                                             'response' => json_encode($response)
                                         ]);
                                     }
+                                } else {
+                                    $supplier_ids = ProductSupplier::where('product_id', $product->id)
+                                        ->pluck('id');
+                                    $detail = [];
+                                    for ($i = 0; $i < $supplier_ids->count(); $i++) {
+                                        $detail = array_merge([[
+                                            ProductSupplier::where('product_supplier.id', $supplier_ids[$i])
+                                                ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
+                                                ->leftJoin('provinces', 'provinces.id', 'supplier_supported_province.province_id')
+                                                ->select(DB::raw('product_supplier.*, provinces.region_id'))
+                                                ->first()
 
+                                        ]], is_array($detail) ? $detail : []);
+                                    }
+
+                                    $response = $this->callApi($post_data);
+                                    PostPriceToMgtLog::create([
+                                        'region_id' => $region_id ? $region_id[0] : 0,
+                                        'product_id' => $product->id,
+                                        'detail' => json_encode($detail),
+                                        'post_data' => json_encode($post_data),
+                                        'response' => json_encode($response)
+                                    ]);
                                 }
+
                             }
                         }
                     }

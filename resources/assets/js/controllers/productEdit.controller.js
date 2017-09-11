@@ -60,10 +60,8 @@ function ProductEditController($scope, $http, $window) {
         $scope.channel = $scope.product.product_options;
         $scope.channels = $scope.product.channels;
         $scope.productForm.channel = [];
-        console.log($scope.product.product_options);
 
         $.each($scope.product.product_options, function (index, value) {
-            console.log($scope.channels.indexOf(index.toString()));
             if($scope.channels.indexOf(index.toString()) >= 0)
                 $scope.productForm.channel[index] = true;
             else

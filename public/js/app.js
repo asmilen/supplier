@@ -7929,6 +7929,11 @@ function ProductCreateController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.channels = {
+            1: false,
+            2: false,
+            3: false
+        };
     };
 
     $scope.productForm = new productForm();
@@ -7979,26 +7984,12 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-        $http({
-            method: 'POST',
-            url: '/products',
-            processData: false,
-            transformRequest: function transformRequest(data) {
-                var formData = new FormData();
-                for (var key in data) {
-                    formData.append(key, data[key]);
-                }
-                return formData;
-            },
-            data: $scope.productForm,
-            headers: {
-                'Content-Type': undefined
-            }
-        }).success(function (response) {
+
+        $http.post('/products', $scope.productForm).then(function () {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
-            $window.location.href = '/products';
+            // $window.location.href = '/products';
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productForm.errors = _.flatten(_.toArray(response.data));
@@ -8131,8 +8122,9 @@ function ProductEditController($scope, $http, $window) {
         $scope.channel = $scope.product.product_options;
         $scope.channels = $scope.product.channels;
         $scope.productForm.channel = [];
+
         $.each($scope.product.product_options, function (index, value) {
-            if ($scope.channels.indexOf(index.toString()) >= 0) $scope.productForm.channel[index] = 1;else $scope.productForm.channel[index] = 0;
+            if ($scope.channels.indexOf(index.toString()) >= 0) $scope.productForm.channel[index] = true;else $scope.productForm.channel[index] = false;
         });
     };
 

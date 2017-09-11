@@ -1,3 +1,3 @@
 @foreach(explode(",",$channel) as $channel)
-    {{config('teko.product.channel')[$channel]}} @if (!$loop->last), @endif
+    {{config('teko.stores')[$channel]}} @if (!$loop->last), @endif
 @endforeach

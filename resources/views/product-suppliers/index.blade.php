@@ -230,6 +230,20 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Miền</label>
+                            <div class="col-sm-9">
+                                @foreach (config('teko.regions') as $k => $v)
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="form-field-checkbox" type="checkbox" class="ace" ng-model="addProductSupplierForm.regions[{{ $k }}]" value="{{ $k }}" />
+                                            <span class="lbl"> {{ $v }}</span>
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="col-sm-3 control-label no-padding-right">Giá nhập (có VAT)</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" ng-model="addProductSupplierForm.import_price" placeholder="Giá nhập (có VAT)" format="number" />
@@ -416,6 +430,13 @@
                             <label class="col-sm-3 control-label no-padding-right">Nhà cung cấp</label>
                             <div class="col-sm-9">
                                 <p class="form-control-static">@{{ editProductSupplier.supplier.name }}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Miền</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-static">@{{ regionText(editProductSupplier.region_id) }}</p>
                             </div>
                         </div>
 

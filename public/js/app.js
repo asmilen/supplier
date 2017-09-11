@@ -8449,7 +8449,11 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
-        this.region_id = '';
+        this.regions = {
+            1: false,
+            2: false,
+            3: false
+        };
         this.supplier_name = '';
         this.import_price = '';
         this.from_date = $filter('date')(now, 'yyyy-MM-dd');
@@ -8470,6 +8474,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.state = '';
         this.errors = [];
         this.disabled = false;
+        this.region_id = '';
     }
 
     function productsListForm() {

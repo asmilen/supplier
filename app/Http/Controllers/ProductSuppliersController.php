@@ -24,6 +24,7 @@ class ProductSuppliersController extends Controller
 
     public function store()
     {
+
         $this->validate(request(), [
             'product_id' => 'required',
             'supplier_id' => 'required',
@@ -32,7 +33,9 @@ class ProductSuppliersController extends Controller
             'to_date' => 'required',
         ]);
 
+
         $product = Product::active()->findOrFail(request('product_id'));
+
 
         $supplier = Supplier::active()->findOrFail(request('supplier_id'));
 

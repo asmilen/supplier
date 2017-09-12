@@ -57,7 +57,7 @@ class ProductsController extends Controller
             'image' => 'image|mimes:jpg,png,jpeg|max:2000',
             'code' => 'alpha_num|max:255',
         ], [
-            'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
+            'name.unique' => 'Tên sản phẩm đã tồn tại.',
         ])->after(function ($validator) use ($code) {
             if (!empty($code)) {
                 $check = Product::where('category_id', request('category_id'))
@@ -135,7 +135,7 @@ class ProductsController extends Controller
         }
 
         Validator::make(request()->all(), $rules, [
-            'name.unique' => 'Tên nhà sản phẩm đã tồn tại.',
+            'name.unique' => 'Tên sản phẩm đã tồn tại.',
         ])->validate();
 
         $channel_choose = str_replace(",","",request('channel'));

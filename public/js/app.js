@@ -8578,6 +8578,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
             $scope.addProductSupplierForm = new addProductSupplierForm();
 
             $('#modal-add-product-supplier').modal('hide');
+            swal("Success!", "Thêm giá nhập Sản phẩm theo Nhà cung cấp thành công", "success");
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.addProductSupplierForm.errors = _.flatten(_.toArray(response.data));

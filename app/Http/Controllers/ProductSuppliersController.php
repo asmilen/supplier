@@ -24,7 +24,6 @@ class ProductSuppliersController extends Controller
 
     public function store()
     {
-
         $this->validate(request(), [
             'product_id' => 'required',
             'supplier_id' => 'required',
@@ -33,33 +32,42 @@ class ProductSuppliersController extends Controller
             'to_date' => 'required',
         ]);
 
+        if (!in_array(true, request('regions'))) {
+            return response()->json([
+                'error' => 'Bạn phải chọn ít nhất 1 miền.'
+            ],422);
+        }
 
         $product = Product::active()->findOrFail(request('product_id'));
 
-
         $supplier = Supplier::active()->findOrFail(request('supplier_id'));
 
-        $exists = ProductSupplier::where('product_id', $product->id)
-            ->where('supplier_id', $supplier->id)
-            ->first();
+        foreach (request('regions') as $regionId => $flagRegion) {
+            if ($flagRegion) {
+                $productSupplier = ProductSupplier::where('product_id', $product->id)
+                    ->where('supplier_id', $supplier->id)
+                    ->where('region_id',$regionId)
+                    ->first();
 
-        if ($exists) {
-            return response()->json([
-                'error' => 'Sản phẩm theo NCC này đã tồn tại, vui lòng tìm kiếm và sửa.'
-            ], 422);
+                if (!$productSupplier) {
+                    $productSupplier = ProductSupplier::forceCreate([
+                        'product_id' => $product->id,
+                        'supplier_id' => $supplier->id,
+                        'name' => request('product_name'),
+                        'region_id' => $regionId,
+                    ]);
+                }
+
+                $productSupplier->forceFill([
+                    'import_price' => request('import_price'),
+                    'from_date' => request('from_date'),
+                    'to_date' => request('to_date'),
+                    'min_quantity' => request('min_quantity', 0),
+                    'price_recommend' => request('price_recommend', 0),
+                    'state' => 1,
+                ])->save();
+            }
         }
-
-        $productSupplier = ProductSupplier::forceCreate([
-            'product_id' => $product->id,
-            'supplier_id' => $supplier->id,
-            'name' => request('product_name'),
-            'import_price' => request('import_price'),
-            'from_date' => request('from_date'),
-            'to_date' => request('to_date'),
-            'min_quantity' => request('min_quantity', 0),
-            'price_recommend' => request('price_recommend', 0),
-            'state' => 1,
-        ]);
 
         return $productSupplier;
     }

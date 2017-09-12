@@ -139,6 +139,20 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-sm-3 control-label no-padding-right">Kênh bán hàng</label><br>
+                        <div class="col-sm-6">
+                            @foreach (config('teko.stores') as $k => $v)
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="form-field-checkbox" type="checkbox" class="ace" ng-model="productForm.channels[{{ $k }}]" value="{{ $k }}" />
+                                        <span class="lbl"> {{ $v }}</span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
                         <div class="col-sm-6">
                             <label>

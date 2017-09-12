@@ -16,7 +16,7 @@ class BundlesController extends Controller
     {
         $labels = config('teko.bundleLabels');
 
-        $bundles = Bundle::withCount(['products','categories' => function ($query){
+        $bundles = Bundle::withCount(['products','categories' => function ($query) {
                 $query->where('bundle_category.status',true);
             }])
             ->where('bundles.status',true)
@@ -36,6 +36,7 @@ class BundlesController extends Controller
 
     public function getBundleProduct($bundleId)
     {
+        $provinceId = request('province_id');
         try {
             $bundle = Bundle::findOrFail($bundleId);
 
@@ -43,10 +44,10 @@ class BundlesController extends Controller
                 'province_id', Province::getListByRegion($bundle->region_id)
             )->pluck('supplier_id')->all();
 
-            return BundleCategory::getListByBundleId($bundle->id)->map(function ($bundleCategory) use ($bundle, $supplierIds) {
+            return BundleCategory::getListByBundleId($bundle->id)->map(function ($bundleCategory) use ($bundle, $supplierIds, $provinceId) {
                 return [
                     'title' => $bundleCategory->name,
-                    'data' => $bundleCategory->getBundleProducts($supplierIds, $bundle->region_id),
+                    'data' => $bundleCategory->getBundleProducts($supplierIds, $bundle->region_id, $provinceId),
                 ];
             });
         } catch (\Exception $e) {

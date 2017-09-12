@@ -5,7 +5,6 @@ namespace App\Models;
 use DB;
 use Sentinel;
 use Datatables;
-use App\Models\SupplierProductLog;
 use Illuminate\Database\Eloquent\Model;
 use App\Jobs\UpdateProductPriceToMagento;
 
@@ -60,16 +59,6 @@ class ProductSupplier extends Model
     public static function boot()
     {
         parent::boot();
-
-        static::updating(function ($productsupplier) {
-            SupplierProductLog::forceCreate([
-                'product_id' => $productsupplier->product_id,
-                'supplier_id' => $productsupplier->supplier_id,
-                'current_data' => json_encode($productsupplier->getOriginal()),
-                'update_data' => json_encode($productsupplier),
-                'created_by' => Sentinel::getUser()->id,
-            ]);
-        });
 
         static::saved(function ($model) {
             dispatch(new UpdateProductPriceToMagento($model->product));

@@ -26,13 +26,13 @@ class ProductApiTransformer extends TransformerAbstract
      */
     public function transform($data)
     {
-        $province = Province::whereIn('code', $this->code)->pluck('id');
-        $provinceFee = TransportFee::whereIn('province_id', $province)
-            ->orderBy('percent_fee')
-            ->first();
+        $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id'); // tìm miền của tỉnh mua hàng
+
         $supplierIds = SupplierSupportedProvince::whereIn('province_id', $this->provinceIds)
+            ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
+            ->where('suppliers.status', 1)
             ->get()
-            ->pluck('supplier_id');
+            ->pluck('supplier_id');// tìm tất cả các nhà cung cấp cung cấp cho miền của người mua hàng
 
         $product = Product::with('manufacturer', 'category')
             ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
@@ -41,26 +41,37 @@ class ProductApiTransformer extends TransformerAbstract
                     ->whereIn('product_supplier.supplier_id', $supplierIds)
                     ->where('product_supplier.state', '=', 1);
             })
-            ->findOrFail($data['id']);
-        $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id');
+            ->findOrFail($data['id']);// kiểm tra thông tin sản phẩm cần mua
+
         $margin = MarginRegionCategory::where('category_id', $product->category_id)
-            ->whereIn('region_id', $regions)->first();
+            ->whereIn('region_id', $regions)->first(); // tính margin của category sản phẩm
+
+        $marginValue = ($margin ? 1 + 0.01 * $margin->margin : 1.05); // giá trị của margin
+
+        $province = Province::whereIn('code', request('province_ids'))->pluck('id'); // tìm tỉnh mua hàng
+
+        $provinceFee = TransportFee::where('province_id', $province ? $province[0] : 0)->first();// phí ship của tỉnh mua hàng
+
+        $feeValue = ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01; //giá trị của phí ship của tỉnh mua hàng
+
 
         $minPrice = ProductSupplier::where('product_id', $data['id'])
             ->whereIn('product_supplier.supplier_id', $supplierIds)
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)
-            ->orderBy('product_supplier.import_price')
+            ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
+                $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee) end ))))'))
             ->orderBy('transport_fees.percent_fee')
-            ->first();
+            ->first();// giá tốt nhất tìm được trong miền sau khi cộng margin và fee
 
         $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
             ->where('supplier_id', $minPrice->supplier->id)
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->orderBy('transport_fees.percent_fee')
-            ->first();
+            ->first(); // lấy phí vận chuyển thấp nhất của ncc cung cấp sản phẩm với giá tốt nhất
         $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
+        //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
         if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;

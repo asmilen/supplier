@@ -7929,6 +7929,11 @@ function ProductCreateController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.channels = {
+            1: false,
+            2: false,
+            3: false
+        };
     };
 
     $scope.productForm = new productForm();
@@ -7979,26 +7984,12 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-        $http({
-            method: 'POST',
-            url: '/products',
-            processData: false,
-            transformRequest: function transformRequest(data) {
-                var formData = new FormData();
-                for (var key in data) {
-                    formData.append(key, data[key]);
-                }
-                return formData;
-            },
-            data: $scope.productForm,
-            headers: {
-                'Content-Type': undefined
-            }
-        }).success(function (response) {
+
+        $http.post('/products', $scope.productForm).then(function () {
             $scope.productForm.successful = true;
             $scope.productForm.disabled = false;
 
-            $window.location.href = '/products';
+            // $window.location.href = '/products';
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.productForm.errors = _.flatten(_.toArray(response.data));
@@ -8097,6 +8088,7 @@ function ProductEditController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.channel = '';
     };
 
     $scope.productForm = new productForm();
@@ -8126,6 +8118,14 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
+        $scope.productForm.channel = $scope.product.channel.toString();
+        $scope.channel = $scope.product.product_options;
+        $scope.channels = $scope.product.channels;
+        $scope.productForm.channel = [];
+
+        $.each($scope.product.product_options, function (index, value) {
+            if ($scope.channels.indexOf(index.toString()) >= 0) $scope.productForm.channel[index] = true;else $scope.productForm.channel[index] = false;
+        });
     };
 
     $scope.getCategories = function () {
@@ -8649,10 +8649,14 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.exportToExcel = function () {
         $scope.exportForm.disabled = true;
 
-        $http.post('/suppliers/exportExcel').then(function (response) {
+        $http.post('/api/product-suppliers/exportExcel', $scope.searchProductSupplierForm).then(function (response) {
             $scope.exportForm = new exportForm();
 
             $window.location = response.data.path;
+        }).catch(function (response) {
+            $scope.exportForm = new exportForm();
+
+            swal("Error!", "Có lỗi xảy ra, vui lòng thử lại sau", "error");
         });
     };
 

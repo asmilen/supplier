@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 
+use App\Jobs\OffProductToMagento;
 use App\Jobs\UpdatePriceToMagento;
 use App\Models\District;
+use App\Models\LogOffSupplier;
 use DB;
 use Auth;
 use Carbon\Carbon;
@@ -59,7 +61,7 @@ class SuppliersController extends Controller
             'state' => 'required',
             'import_price' => 'required|integer|min:0',
             'from_date' => 'required',
-            'to_date'  => 'required',
+            'to_date' => 'required',
 //            'vat' => 'required|integer|min:0',
 //            'price_recommend' => 'required|integer|min:0',
 //            'image' => 'required|mimes:jpeg,bmp,png|image|max:1024',
@@ -104,7 +106,7 @@ class SuppliersController extends Controller
                 $response['status'] = 'exists';
             } else {
                 $filename = '';
-                if(isset($file)){
+                if (isset($file)) {
                     $file = request()->file('image');
                     $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
                     Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
@@ -381,7 +383,7 @@ class SuppliersController extends Controller
             'price_recommend' => $recommend_price,
         ]);
 
-        $sku = Product::where('id',$product->product_id)->pluck('sku');
+        $sku = Product::where('id', $product->product_id)->pluck('sku');
 
         $jsonSend = [
             'product_id' => $product_id,
@@ -488,12 +490,12 @@ class SuppliersController extends Controller
             'district_id' => request('district_id'),
             'province_name' => isset($province->name) ? $province->name : '',
             'district_name' => isset($district->name) ? $district->name : '',
-            'address' => request('address',''),
-            'addressCode' => request('addressCode',''),
-            'contact_name' => request('contact_name',''),
-            'contact_mobile' => request('contact_mobile',''),
-            'contact_phone' => request('contact_phone',''),
-            'contact_email' => request('contact_email',''),
+            'address' => request('address', ''),
+            'addressCode' => request('addressCode', ''),
+            'contact_name' => request('contact_name', ''),
+            'contact_mobile' => request('contact_mobile', ''),
+            'contact_phone' => request('contact_phone', ''),
+            'contact_email' => request('contact_email', ''),
             'status' => !!request('status'),
             'is_default' => !!request('is_default'),
             'created_by' => Sentinel::getUser()->id
@@ -501,49 +503,50 @@ class SuppliersController extends Controller
 
         $supplier_bank_account = SupplierBankAccount::forceCreate([
             'supplier_id' => $supplier->id,
-            'bank_name' => request('bank_name',''),
-            'bank_code' => request('bank_code',''),
-            'bank_account' => request('bank_account',''),
-            'bank_branch' => request('bank_branch',''),
-            'bank_province' => request('bank_province',''),
-            'bank_account_name' => request('bank_account_name',''),
+            'bank_name' => request('bank_name', ''),
+            'bank_code' => request('bank_code', ''),
+            'bank_account' => request('bank_account', ''),
+            'bank_branch' => request('bank_branch', ''),
+            'bank_province' => request('bank_province', ''),
+            'bank_account_name' => request('bank_account_name', ''),
             'status' => !!request('status'),
             'is_default' => !!request('is_default'),
         ]);
 
         $supplier_supported_province = SupplierSupportedProvince::forceCreate([
             'supplier_id' => $supplier->id,
-            'province_id' => request('province_id',''),
+            'province_id' => request('province_id', ''),
             'status' => !!request('status'),
         ]);
 
         // MQ
 
         $jsonSend = [
-            'id'        => $supplier->id,
-            "name"      => $supplier->name,
-            "code"      => $supplier->code,
-            "status"    => $supplier->status == true ? 'active' : 'inactive',
-            "phone"     => $supplier->phone,
-            "fax"       => $supplier->fax,
-            "email"     => $supplier->email,
-            "website"   => $supplier->website,
-            "tax_number"   => $supplier->tax_number,
-            "contactName"   => $supplier_address->contact_name,
-            "contactMobile"   => $supplier_address->contact_mobile,
-            "contactPhone"   => $supplier_address->contact_phone,
-            "contactEmail"   => $supplier_address->contact_email,
+            "id" => $supplier->id,
+            "name" => $supplier->name,
+            "code" => $supplier->code,
+            "status" => $supplier->status == true ? 'active' : 'inactive',
+            "phone" => $supplier->phone,
+            "fax" => $supplier->fax,
+            "email" => $supplier->email,
+            "website" => $supplier->website,
+            "tax_number" => $supplier->tax_number,
+            "contactName" => $supplier_address->contact_name,
+            "contactMobile" => $supplier_address->contact_mobile,
+            "contactPhone" => $supplier_address->contact_phone,
+            "contactEmail" => $supplier_address->contact_email,
+
             "createdAt" => strtotime($supplier->created_at),
             "addresses" => [
                 "default" => [
                     "province" => $supplier_address->province_name,
-                  "district" => $supplier_address->district_name,
-                  "address"  => $supplier_address->address,
-                  "addressCode" => $supplier_address->addressCode,
-                  "contactName"   => $supplier_address->contact_name,
-                  "contactMobile"   => $supplier_address->contact_mobile,
-                  "contactPhone"   => $supplier_address->contact_phone,
-                  "contactEmail"   => $supplier_address->contact_email,
+                    "district" => $supplier_address->district_name,
+                    "address" => $supplier_address->address,
+                    "addressCode" => $supplier_address->addressCode,
+                    "contactName" => $supplier_address->contact_name,
+                    "contactMobile" => $supplier_address->contact_mobile,
+                    "contactPhone" => $supplier_address->contact_phone,
+                    "contactEmail" => $supplier_address->contact_email,
                 ],
                 "others" => []
             ],
@@ -575,7 +578,7 @@ class SuppliersController extends Controller
     {
         $address = $supplier->addresses()->first();
 
-        if(isset($address)){
+        if (isset($address)) {
             $distristList = District::where('province_id', $address->province_id)->get();
         } else {
             $address = new SupplierAddress();
@@ -626,6 +629,7 @@ class SuppliersController extends Controller
             'website' => request('website'),
             'tax_number' => request('tax_number'),
             'type' => request('type'),
+            'sup_type' => request('sup_type'),
             'price_active_time' => request('price_active_time') * 24,
             'created_by' => Sentinel::getUser()->id
         ])->save();
@@ -642,12 +646,12 @@ class SuppliersController extends Controller
                 'district_id' => request('district_id'),
                 'province_name' => isset($province->name) ? $province->name : '',
                 'district_name' => isset($district->name) ? $district->name : '',
-                'address' => request('address',''),
-                'addressCode' => request('addressCode',''),
-                'contact_name' => request('contact_name',''),
-                'contact_mobile' => request('contact_mobile',''),
-                'contact_phone' => request('contact_phone',''),
-                'contact_email' => request('contact_email',''),
+                'address' => request('address', ''),
+                'addressCode' => request('addressCode', ''),
+                'contact_name' => request('contact_name', ''),
+                'contact_mobile' => request('contact_mobile', ''),
+                'contact_phone' => request('contact_phone', ''),
+                'contact_email' => request('contact_email', ''),
                 'status' => !!request('status'),
                 'is_default' => !!request('is_default'),
                 'updated_by' => Sentinel::getUser()->id
@@ -659,12 +663,12 @@ class SuppliersController extends Controller
                 'district_id' => request('district_id'),
                 'province_name' => isset($province->name) ? $province->name : '',
                 'district_name' => isset($district->name) ? $district->name : '',
-                'address' => request('address',''),
-                'addressCode' => request('addressCode',''),
-                'contact_name' => request('contact_name',''),
-                'contact_mobile' => request('contact_mobile',''),
-                'contact_phone' => request('contact_phone',''),
-                'contact_email' => request('contact_email',''),
+                'address' => request('address', ''),
+                'addressCode' => request('addressCode', ''),
+                'contact_name' => request('contact_name', ''),
+                'contact_mobile' => request('contact_mobile', ''),
+                'contact_phone' => request('contact_phone', ''),
+                'contact_email' => request('contact_email', ''),
                 'status' => !!request('status'),
                 'is_default' => !!request('is_default'),
                 'created_by' => Sentinel::getUser()->id
@@ -676,24 +680,24 @@ class SuppliersController extends Controller
         if (count($supplier_bank_account) > 0) {
             $supplier_bank_account->forceFill([
                 'supplier_id' => $supplier->id,
-                'bank_name' => request('bank_name',''),
-                'bank_code' => request('bank_code',''),
-                'bank_account' => request('bank_account',''),
-                'bank_branch' => request('bank_branch',''),
-                'bank_province' => request('bank_province',''),
-                'bank_account_name' => request('bank_account_name',''),
+                'bank_name' => request('bank_name', ''),
+                'bank_code' => request('bank_code', ''),
+                'bank_account' => request('bank_account', ''),
+                'bank_branch' => request('bank_branch', ''),
+                'bank_province' => request('bank_province', ''),
+                'bank_account_name' => request('bank_account_name', ''),
                 'status' => !!request('status'),
                 'is_default' => !!request('is_default'),
             ])->save();
         } else {
             $supplier_bank_account = SupplierBankAccount::forceCreate([
                 'supplier_id' => $supplier->id,
-                'bank_name' => request('bank_name',''),
-                'bank_code' => request('bank_code',''),
-                'bank_account' => request('bank_account',''),
-                'bank_branch' => request('bank_branch',''),
-                'bank_province' => request('bank_province',''),
-                'bank_account_name' => request('bank_account_name',''),
+                'bank_name' => request('bank_name', ''),
+                'bank_code' => request('bank_code', ''),
+                'bank_account' => request('bank_account', ''),
+                'bank_branch' => request('bank_branch', ''),
+                'bank_province' => request('bank_province', ''),
+                'bank_account_name' => request('bank_account_name', ''),
                 'status' => !!request('status'),
                 'is_default' => !!request('is_default'),
             ]);
@@ -710,7 +714,7 @@ class SuppliersController extends Controller
         } else {
             $supplier_supported_province = SupplierSupportedProvince::forceCreate([
                 'supplier_id' => $supplier->id,
-                'province_id' => request('province_id',''),
+                'province_id' => request('province_id', ''),
                 'status' => !!request('status'),
             ]);
         }
@@ -718,30 +722,30 @@ class SuppliersController extends Controller
         // MQ
 
         $jsonSend = [
-            'id'        => $supplier->id,
-            "name"      => $supplier->name,
-            "code"      => $supplier->code,
-            "status"    => $supplier->status == true ? 'active' : 'inactive',
-            "phone"     => $supplier->phone,
-            "fax"       => $supplier->fax,
-            "email"     => $supplier->email,
-            "website"   => $supplier->website,
-            "tax_number"   => $supplier->tax_number,
-            "contactName"   => $supplier_address->contact_name,
-            "contactMobile"   => $supplier_address->contact_mobile,
-            "contactPhone"   => $supplier_address->contact_phone,
-            "contactEmail"   => $supplier_address->contact_email,
+            "id" => $supplier->id,
+            "name" => $supplier->name,
+            "code" => $supplier->code,
+            "status" => $supplier->status == true ? 'active' : 'inactive',
+            "phone" => $supplier->phone,
+            "fax" => $supplier->fax,
+            "email" => $supplier->email,
+            "website" => $supplier->website,
+            "tax_number" => $supplier->tax_number,
+            "contactName" => $supplier_address->contact_name,
+            "contactMobile" => $supplier_address->contact_mobile,
+            "contactPhone" => $supplier_address->contact_phone,
+            "contactEmail" => $supplier_address->contact_email,
             "createdAt" => strtotime($supplier->updated_at),
             "addresses" => [
                 "default" => [
                     "province" => $supplier_address->province_name,
                     "district" => $supplier_address->district_name,
-                    "address"  => $supplier_address->address,
+                    "address" => $supplier_address->address,
                     "addressCode" => $supplier_address->addressCode,
-                    "contactName"   => $supplier_address->contact_name,
-                    "contactMobile"   => $supplier_address->contact_mobile,
-                    "contactPhone"   => $supplier_address->contact_phone,
-                    "contactEmail"   => $supplier_address->contact_email,
+                    "contactName" => $supplier_address->contact_name,
+                    "contactMobile" => $supplier_address->contact_mobile,
+                    "contactPhone" => $supplier_address->contact_phone,
+                    "contactEmail" => $supplier_address->contact_email,
                 ],
                 "others" => []
             ],
@@ -763,6 +767,12 @@ class SuppliersController extends Controller
 
         $messSend = json_encode($jsonSend);
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
+        $user = Sentinel::getUser();
+        if (!!request('status') == false) {
+            dispatch(new OffProductToMagento($supplier, 0, $user));
+        }else{
+            dispatch(new OffProductToMagento($supplier, 1, $user));
+        }
 
         flash()->success('Success!', 'Suppliers successfully created.');
 
@@ -771,120 +781,120 @@ class SuppliersController extends Controller
 
     public function exportExcel()
     {
-    $user_id = Sentinel::getUser()->id;
-    $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
-        ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
-        ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
-        ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
-        ->leftJoin('products', 'product_supplier.product_id', '=', 'products.id')
-        ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
-        ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
-        ->where('user_supported_province.supported_id', $user_id)
-        ->orderBy('product_supplier.updated_at', 'desc')
-        ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,product_supplier.supplier_id as id_supplier,categories.name as cat_name, products.sku as sku,
+        $user_id = Sentinel::getUser()->id;
+        $products = UserSupportedProvince::join('provinces', 'user_supported_province.region_id', '=', 'provinces.region_id')
+            ->join('supplier_supported_province', 'provinces.id', '=', 'supplier_supported_province.province_id')
+            ->join('product_supplier', 'supplier_supported_province.supplier_id', '=', 'product_supplier.supplier_id')
+            ->join('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
+            ->leftJoin('products', 'product_supplier.product_id', '=', 'products.id')
+            ->leftJoin('categories', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('manufacturers', 'products.manufacturer_id', '=', 'manufacturers.id')
+            ->where('user_supported_province.supported_id', $user_id)
+            ->orderBy('product_supplier.updated_at', 'desc')
+            ->select(DB::raw('distinct product_supplier.id as id,product_supplier.product_id as id_product,product_supplier.supplier_id as id_supplier,categories.name as cat_name, products.sku as sku,
                     product_supplier.name as product_name,product_supplier.import_price as import_price,product_supplier.status as status,
                     product_supplier.price_recommend as recommend_price, manufacturers.name as manufacturer_name,product_supplier.min_quantity as supplier_min_quantity,
                     product_supplier.updated_at as updated_at,product_supplier.state as status_product,suppliers.name as supplier_name'));
 
-            if (request()->has('category_name')) {
-                $products->where('categories.name', 'like', '%' . request('category_name') . '%');
-            }
+        if (request()->has('category_name')) {
+            $products->where('categories.name', 'like', '%' . request('category_name') . '%');
+        }
 
-            if (request()->has('manufacture_name')) {
-                $products->where('manufacturers.name', 'like', '%' . request('manufacture_name') . '%');
-            }
+        if (request()->has('manufacture_name')) {
+            $products->where('manufacturers.name', 'like', '%' . request('manufacture_name') . '%');
+        }
 
-            if (request()->has('product_sku')) {
-                $products->where('products.sku', 'like', '%' . request('product_sku') . '%');
-            }
+        if (request()->has('product_sku')) {
+            $products->where('products.sku', 'like', '%' . request('product_sku') . '%');
+        }
 
-            if (request()->has('product_name')) {
-                $products->where('products.name', 'like', '%' . request('product_name') . '%');
-            }
+        if (request()->has('product_name')) {
+            $products->where('products.name', 'like', '%' . request('product_name') . '%');
+        }
 
-            if (request()->has('product_import_price')) {
-                $products->where('product_supplier.import_price', request('product_import_price'));
-            }
+        if (request()->has('product_import_price')) {
+            $products->where('product_supplier.import_price', request('product_import_price'));
+        }
 
-            if (request()->has('recommend_price')) {
-                $products->where('product_supplier.price_recommend', request('recommend_price'));
-            }
+        if (request()->has('recommend_price')) {
+            $products->where('product_supplier.price_recommend', request('recommend_price'));
+        }
 
-            if (request()->has('status')) {
-                $products->where('product_supplier.status', request('status'));
-            }
+        if (request()->has('status')) {
+            $products->where('product_supplier.status', request('status'));
+        }
 
-            if (request()->has('supplier_name')) {
-                $products->where('suppliers.name', 'like', '%' . request('supplier_name') . '%');
-            }
+        if (request()->has('supplier_name')) {
+            $products->where('suppliers.name', 'like', '%' . request('supplier_name') . '%');
+        }
 
-            if (request()->has('supplier_min_quantity')) {
-                $products->where('product_supplier.min_quantity', request('supplier_min_quantity'));
-            }
+        if (request()->has('supplier_min_quantity')) {
+            $products->where('product_supplier.min_quantity', request('supplier_min_quantity'));
+        }
 
-            if (request()->has('state')) {
-                $products->where('product_supplier.state', request('state'));
-            }
+        if (request()->has('state')) {
+            $products->where('product_supplier.state', request('state'));
+        }
 
-            if (request()->has('updated_at')) {
-                $date = request('updated_at');
+        if (request()->has('updated_at')) {
+            $date = request('updated_at');
 
-                $from = trim(explode(' - ', $date)[0]);
-                $from = Carbon::createFromFormat('d/m/Y', $from)->startOfDay()->toDateTimeString();
+            $from = trim(explode(' - ', $date)[0]);
+            $from = Carbon::createFromFormat('d/m/Y', $from)->startOfDay()->toDateTimeString();
 
-                $to = trim(explode('-', $date)[1]);
-                $to = Carbon::createFromFormat('d/m/Y', $to)->endOfDay()->toDateTimeString();
+            $to = trim(explode('-', $date)[1]);
+            $to = Carbon::createFromFormat('d/m/Y', $to)->endOfDay()->toDateTimeString();
 
-                $products->where('product_supplier.updated_at', '>', $from);
-                $products->where('product_supplier.updated_at', '<', $to);
-            }
+            $products->where('product_supplier.updated_at', '>', $from);
+            $products->where('product_supplier.updated_at', '<', $to);
+        }
 
-    $products = $products->get();
+        $products = $products->get();
 
-    Excel::create('supplier_product', function ($excel) use($products) {
-    $excel->sheet('Sheet 1',function ($sheet) use ($products) {
-            $sheet->fromArray($products);
-        });
-    })->store('xlsx','exports');
-    return [
-        'success' => true,
-        'path' => 'http://'.request()->getHttpHost().'/exports/supplier_product.xlsx'
-    ];
+        Excel::create('supplier_product', function ($excel) use ($products) {
+            $excel->sheet('Sheet 1', function ($sheet) use ($products) {
+                $sheet->fromArray($products);
+            });
+        })->store('xlsx', 'exports');
+        return [
+            'success' => true,
+            'path' => 'http://' . request()->getHttpHost() . '/exports/supplier_product.xlsx'
+        ];
     }
 
     public function importExcel()
     {
         $this->validate(request(), [
-            'file'=>'required|max:50000|mimes:xlsx'
+            'file' => 'required|max:50000|mimes:xlsx'
         ]);
 
         $file = request()->file('file');
-        Excel::load($file,function($reader) {
-              $reader->each(function ($sheet){
-                  $supplier_product = ProductSupplier::where('product_id', $sheet->id_product)->where('supplier_id', $sheet->id_supplier)->first();
-                  if(count($supplier_product) > 0) {
-                      $supplier_product->forceFill([
-                          'name' => $sheet->product_name ? $sheet->product_name : $supplier_product->name,
-                          'code' => request('code',''),
-                          'import_price' => $sheet->import_price ? $sheet->import_price : $supplier_product->import_price,
-                          'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : $supplier_product->price_recommend,
-                          'state' => $sheet->status_product ? $sheet->status_product : 1,
-                          'updated_by' => Sentinel::getUser()->id,
-                      ])->save();
-                  } else {
-                      ProductSupplier::forceCreate([
-                          'product_id' => $sheet->id_product ? $sheet->id_product : 0,
-                          'supplier_id' =>  $sheet->id_supplier ? $sheet->id_supplier : 0,
-                          'name' => $sheet->product_name ? $sheet->product_name : '',
-                          'code' => request('code',''),
-                          'import_price' => $sheet->import_price ? $sheet->import_price : 0,
-                          'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : 0,
-                          'state' => $sheet->status_product ? $sheet->status_product : 1,
-                          'created_by' => Sentinel::getUser()->id,
-                      ]);
-                  }
-              });
-          });
+        Excel::load($file, function ($reader) {
+            $reader->each(function ($sheet) {
+                $supplier_product = ProductSupplier::where('product_id', $sheet->id_product)->where('supplier_id', $sheet->id_supplier)->first();
+                if (count($supplier_product) > 0) {
+                    $supplier_product->forceFill([
+                        'name' => $sheet->product_name ? $sheet->product_name : $supplier_product->name,
+                        'code' => request('code', ''),
+                        'import_price' => $sheet->import_price ? $sheet->import_price : $supplier_product->import_price,
+                        'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : $supplier_product->price_recommend,
+                        'state' => $sheet->status_product ? $sheet->status_product : 1,
+                        'updated_by' => Sentinel::getUser()->id,
+                    ])->save();
+                } else {
+                    ProductSupplier::forceCreate([
+                        'product_id' => $sheet->id_product ? $sheet->id_product : 0,
+                        'supplier_id' => $sheet->id_supplier ? $sheet->id_supplier : 0,
+                        'name' => $sheet->product_name ? $sheet->product_name : '',
+                        'code' => request('code', ''),
+                        'import_price' => $sheet->import_price ? $sheet->import_price : 0,
+                        'price_recommend' => $sheet->recommend_price ? $sheet->recommend_price : 0,
+                        'state' => $sheet->status_product ? $sheet->status_product : 1,
+                        'created_by' => Sentinel::getUser()->id,
+                    ]);
+                }
+            });
+        });
 
         flash()->success('Success!', 'Product Supplier successfully updated.');
 
@@ -986,9 +996,7 @@ class SuppliersController extends Controller
                 'title' => 'Success!',
                 'message' => 'Cập nhật thành công ' . $affected . ' Sản phẩm',
             ]);
-        }
-        catch (Exception $e)
-        {
+        } catch (Exception $e) {
             return response()->json([
                 'type' => 'error',
                 'title' => 'Error!',

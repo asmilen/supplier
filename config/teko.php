@@ -56,8 +56,8 @@ return [
 
     'supplier' => [
         'sup_type' => [
-            0 => 'Hàng mua',
-            1 => 'Ký gửi',
+            1 => 'Hàng mua',
+            2 => 'Ký gửi',
         ],
     ],
 ];

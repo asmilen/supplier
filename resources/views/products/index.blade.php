@@ -105,6 +105,7 @@
                         <th>SKU</th>
                         <th>Danh mục</th>
                         <th>Nhà SX</th>
+                        <th>Kênh bán hàng</th>
                         <th>Mã</th>
                         <th>Ảnh</th>
                         <th>Trạng thái</th>
@@ -152,6 +153,7 @@ $(function () {
                 d.keyword = $('input[name=keyword]').val();
                 d.status = $('select[name=status]').val();
                 d.type = $('select[name=type]').val();
+                d.channel = $('select[name=channel]').val();
             }
         },
         columns: [
@@ -160,6 +162,7 @@ $(function () {
             {data: 'sku', name: 'sku'},
             {data: 'category_id', name: 'category_id'},
             {data: 'manufacturer_id', name: 'manufacturer_id'},
+            {data: 'channel', name: 'channel'},
             {data: 'code', name: 'code'},
             {data: 'image', name: 'image'},
             {data: 'status', name: 'status'},

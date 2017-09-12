@@ -84,7 +84,7 @@
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
                             <div class="row">
-                                <div class="col-sm-3">
+                                <div class="col-sm-2">
                                     <select class="select2" ng-model="searchProductSupplierForm.category_id" ng-change="refreshData()" select2>
                                         <option value="">-- Danh mục --</option>
                                         @foreach ($categories as $category)
@@ -108,8 +108,16 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="col-sm-1">
+                                    <select class="select2" ng-model="searchProductSupplierForm.region_id" ng-change="refreshData()" select2>
+                                        <option value="">-- Miền --</option>
+                                        @foreach (config('teko.regions') as $key => $region)
+                                            <option value="{{ $key }}">{{ $region }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <div class="col-sm-2">
-                                    <input type="text" class="form-control" placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
+                                    <input type="text"  placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
                                 </div>
                                 <div class="col-sm-2">
                                     <select class="select2" ng-model="searchProductSupplierForm.state" ng-change="refreshData()" select2>
@@ -143,6 +151,7 @@
                         <th>SKU</th>
                         <th class="sorting@{{ getSortingDirectionClassHeader('name') }}" ng-click="updateSorting('name')">Tên</th>
                         <th>NCC</th>
+                        <th>Miền</th>
                         <th class="sorting@{{ getSortingDirectionClassHeader('import_price') }}" ng-click="updateSorting('import_price')">Giá nhập</th>
                         <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('from_date') }}" ng-click="updateSorting('from_date')">Hiệu lực từ</th>
                         <th class="hidden-sm hidden-xs sorting@{{ getSortingDirectionClassHeader('to_date') }}" ng-click="updateSorting('to_date')">Hiệu lực đến</th>
@@ -168,6 +177,7 @@
                         <td>@{{ item.product.sku }}</td>
                         <td>@{{ item.product.name }}</td>
                         <td>@{{ item.supplier.name }}</td>
+                        <td>@{{ regionText(item.region_id) }}</td>
                         <td class="text-right">@{{ item.import_price | number:0 }}</td>
                         <td class="text-right hidden-sm hidden-xs">@{{ item.from_date }}</td>
                         <td class="text-right hidden-sm hidden-xs">@{{ item.to_date }}</td>
@@ -216,6 +226,20 @@
                                 <p class="form-control-static">
                                     <a class="action-link" ng-click="showSelectSupplierModal()">@{{ addProductSupplierForm.supplier_id ? addProductSupplierForm.supplier_name : 'Chọn nhà cung cấp' }}</a>
                                 </p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Miền</label>
+                            <div class="col-sm-9">
+                                @foreach (config('teko.regions') as $k => $v)
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="form-field-checkbox" type="checkbox" class="ace" ng-model="addProductSupplierForm.regions[{{ $k }}]" value="{{ $k }}" />
+                                            <span class="lbl"> {{ $v }}</span>
+                                        </label>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
 
@@ -406,6 +430,13 @@
                             <label class="col-sm-3 control-label no-padding-right">Nhà cung cấp</label>
                             <div class="col-sm-9">
                                 <p class="form-control-static">@{{ editProductSupplier.supplier.name }}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label no-padding-right">Miền</label>
+                            <div class="col-sm-9">
+                                <p class="form-control-static">@{{ regionText(editProductSupplier.region_id) }}</p>
                             </div>
                         </div>
 

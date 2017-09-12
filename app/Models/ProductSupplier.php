@@ -88,10 +88,9 @@ class ProductSupplier extends Model
             return $query;
         }
 
-        $supplierIds = collect(DB::select('select supplier_id from supplier_supported_province where province_id in (select id from provinces where region_id in (select region_id from user_supported_province where supported_id = ?))', [$user->id]))
-            ->pluck('supplier_id')
+        $regionIds = collect(DB::select('select region_id from user_supported_province where supported_id = ?', [$user->id]))
+            ->pluck('region_id')
             ->toArray();
-
-        return $query->whereIn('supplier_id', $supplierIds);
+        return $query->whereIn('region_id', $regionIds);
     }
 }

@@ -61,6 +61,7 @@
     <script>
         window.Laradmin = {!! json_encode([
             'csrfToken' => csrf_token(),
+            'regions' => config('teko.regions')
         ]) !!};
     </script>
 </head>

@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\ConsumeMessage::class,
         Commands\ImportProducts::class,
         Commands\MigrateValidTimeProductSupplier::class,
+        Commands\MigrateRegionIdProductSupplier::class,
         Commands\EmailAlert::class,
         SendQueue::class,
     ];

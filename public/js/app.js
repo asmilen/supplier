@@ -8431,6 +8431,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.category_id = '';
         this.manufacturer_id = '';
         this.supplier_id = '';
+        this.region_id = '';
         this.q = '';
         this.state = '';
         this.page = 1;
@@ -8448,6 +8449,11 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.product_id = '';
         this.product_name = '';
         this.supplier_id = '';
+        this.regions = {
+            1: false,
+            2: false,
+            3: false
+        };
         this.supplier_name = '';
         this.import_price = '';
         this.from_date = $filter('date')(now, 'yyyy-MM-dd');
@@ -8468,6 +8474,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.state = '';
         this.errors = [];
         this.disabled = false;
+        this.region_id = '';
     }
 
     function productsListForm() {
@@ -8508,7 +8515,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.updateValidTimeForm = new updateValidTimeForm();
 
     $scope.refreshData = function () {
-        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state + '&sorting=' + $scope.searchProductSupplierForm.sorting + '&direction=' + $scope.searchProductSupplierForm.direction).then(function (response) {
+        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&region_id=' + $scope.searchProductSupplierForm.region_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state + '&sorting=' + $scope.searchProductSupplierForm.sorting + '&direction=' + $scope.searchProductSupplierForm.direction).then(function (response) {
             $scope.productSuppliers = response.data.data;
             $scope.productSuppliersLoaded = true;
             $scope.searchProductSupplierForm.total_items = response.data.total_items;
@@ -8571,6 +8578,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
             $scope.addProductSupplierForm = new addProductSupplierForm();
 
             $('#modal-add-product-supplier').modal('hide');
+            swal("Success!", "Thêm giá nhập Sản phẩm theo Nhà cung cấp thành công", "success");
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.addProductSupplierForm.errors = _.flatten(_.toArray(response.data));
@@ -8600,6 +8608,10 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         }
 
         return 'N/A';
+    };
+
+    $scope.regionText = function (region_id) {
+        return window.Laradmin.regions[region_id];
     };
 
     $scope.showEditProductSupplierModal = function (productSupplier) {
@@ -8660,7 +8672,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         $scope.updateValidTimeForm.disabled = true;
         $scope.updateValidTimeForm.errors = [];
 
-        $http.get('/api/product-suppliers/get-ids?category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
+        $http.get('/api/product-suppliers/get-ids?category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&region_id=' + $scope.searchProductSupplierForm.region_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
             $scope.updateValidTimeForm.productSupplierIds = response.data.data;
 
             $http.post('product-suppliers/update-valid-time', $scope.updateValidTimeForm).then(function (response) {

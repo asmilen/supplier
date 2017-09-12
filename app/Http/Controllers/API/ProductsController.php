@@ -67,7 +67,7 @@ class ProductsController extends Controller
             })
             ->where('products.channel', 'like', '%' . 2 . '%')
             ->where('products.status', 1);
-        
+
         return Datatables::eloquent($model)
             ->setTransformer(new ProductApiTransformer($provinceIds, request('province_ids')))
             ->filter(function ($query) {
@@ -163,7 +163,6 @@ class ProductsController extends Controller
             $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
                 ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
                 ->where('suppliers.status', 1)
-                ->get()
                 ->pluck('supplier_id'); // tìm tất cả các nhà cung cấp cung cấp cho miền của người mua hàng
 
             $product = Product::with('manufacturer', 'category')
@@ -197,73 +196,78 @@ class ProductsController extends Controller
                 ->orderBy('transport_fees.percent_fee')
                 ->first(); // giá tốt nhất tìm được trong miền sau khi cộng margin và fee
 
-            $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
-                ->where('supplier_id', $minPrice ? $minPrice->supplier->id : 0)
-                ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
-                ->orderBy('transport_fees.percent_fee')
-                ->first(); // lấy phí vận chuyển thấp nhất của ncc cung cấp sản phẩm với giá tốt nhất
+            if ($minPrice){
+                $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
+                    ->where('supplier_id', $minPrice ? $minPrice->supplier->id : 0)
+                    ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
+                    ->orderBy('transport_fees.percent_fee')
+                    ->first(); // lấy phí vận chuyển thấp nhất của ncc cung cấp sản phẩm với giá tốt nhất
 
-            $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
-            //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
+                $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
+                //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
-            if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
-                $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
-            } else {
-                $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
+                if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
+                    $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
+                } else {
+                    $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
+                }
+                $w_margin = ($margin ? $margin->margin : 5) * 0.01;
+
+                $product->best_price = ProductSupplier::where('product_id', $id)
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1)
+                    ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
+                $product->import_price = ProductSupplier::where('product_id', $id)
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1)
+                    ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
+
+                $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1)
+                    ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
+
+                $product->recommended_price = ProductSupplier::where('product_id', $id)
+                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.state', '=', 1)
+                    ->where('price_recommend', $product->best_price)
+                    ->min('product_supplier.price_recommend');
+
+                if ($product->recommended_price == $product->best_price) {
+                    $suppliers = ProductSupplier::where('price_recommend', $product->best_price)
+                        ->where('product_id', $id)
+                        ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
+                        ->pluck('supplier_id');
+                    $supplier = Supplier::whereIn('id', $suppliers ? $suppliers : 0)
+                        ->where('status', 1)
+                        ->get();
+                    $province = SupplierSupportedProvince::whereIn('supplier_id', $suppliers ? $suppliers : 0)
+                        ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')
+                        ->get();
+                } else {
+                    $supplier = Supplier::where('id', $provinceFeeMin ? $provinceFeeMin->supplier_id : 0)
+                        ->get();
+                    $province = Province::where('id', $provinceFeeMin ? $provinceFeeMin->province_id : 0)
+                        ->get();
+                }
+                for ($i = 0; $i < $supplier->count(); $i++) {
+                    $product->suppliers = array_merge([[
+                        'id' => isset($supplier[$i]) ? $supplier[$i]->id : null,
+                        'name' => isset($supplier[$i]) ? $supplier[$i]->name : null,
+                        'import_price' => ProductSupplier::where('product_id', $id)
+                            ->where('product_supplier.supplier_id', $supplier[$i]->id)
+                            ->where('product_supplier.state', '=', 1)
+                            ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000')),
+                        'province_name' => isset($province[$i]) ? $province[$i]->name : null,
+                        'province_code' => isset($province[$i]) ? $province[$i]->code : null
+                    ]], is_array($product->suppliers) ? $product->suppliers : []);
+                }
+
+                return $product;
+            }else{
+                return api_response(['message' => 'Sản phẩm không tồn tại hoặc không có nhà cung cấp'], 404);
             }
-            $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
-            $product->best_price = ProductSupplier::where('product_id', $id)
-                ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->where('product_supplier.state', '=', 1)
-                ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
-            $product->import_price = ProductSupplier::where('product_id', $id)
-                ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->where('product_supplier.state', '=', 1)
-                ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
-
-            $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
-                ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->where('product_supplier.state', '=', 1)
-                ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
-
-            $product->recommended_price = ProductSupplier::where('product_id', $id)
-                ->whereIn('product_supplier.supplier_id', $supplierIds)
-                ->where('product_supplier.state', '=', 1)
-                ->where('price_recommend', $product->best_price)
-                ->min('product_supplier.price_recommend');
-
-            if ($product->recommended_price == $product->best_price) {
-                $suppliers = ProductSupplier::where('price_recommend', $product->best_price)
-                    ->where('product_id', $id)
-                    ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
-                    ->pluck('supplier_id');
-                $supplier = Supplier::whereIn('id', $suppliers ? $suppliers : 0)
-                    ->where('status', 1)
-                    ->get();
-                $province = SupplierSupportedProvince::whereIn('supplier_id', $suppliers ? $suppliers : 0)
-                    ->leftJoin('provinces', 'supplier_supported_province.province_id', '=', 'provinces.id')
-                    ->get();
-            } else {
-                $supplier = Supplier::where('id', $provinceFeeMin ? $provinceFeeMin->supplier_id : 0)
-                    ->get();
-                $province = Province::where('id', $provinceFeeMin ? $provinceFeeMin->province_id : 0)
-                    ->get();
-            }
-            for ($i = 0; $i < $supplier->count(); $i++) {
-                $product->suppliers = array_merge([[
-                    'id' => isset($supplier[$i]) ? $supplier[$i]->id : null,
-                    'name' => isset($supplier[$i]) ? $supplier[$i]->name : null,
-                    'import_price' => ProductSupplier::where('product_id', $id)
-                        ->where('product_supplier.supplier_id', $supplier[$i]->id)
-                        ->where('product_supplier.state', '=', 1)
-                        ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000')),
-                    'province_name' => isset($province[$i]) ? $province[$i]->name : null,
-                    'province_code' => isset($province[$i]) ? $province[$i]->code : null
-                ]], is_array($product->suppliers) ? $product->suppliers : []);
-            }
-
-            return $product;
         } catch (\Exception $e) {
             return api_response(['message' => $e->getMessage()], 500);
         }

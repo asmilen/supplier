@@ -9,7 +9,7 @@ class AddChannelProduct extends Migration
     public function up()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->text('channel');
+            $table->string('channel')->default('1,2');
         });
     }
 

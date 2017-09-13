@@ -4,6 +4,7 @@ namespace App\Models;
 
 use DB;
 use Sentinel;
+use GuzzleHttp\Client;
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
 use App\Jobs\UpdateProductPriceToMagento;
@@ -45,7 +46,6 @@ class ProductSupplier extends Model
     public static $STATUS_KHONG_UU_TIEN_LAY_HANG = 4;
 
 
-
     public function product()
     {
         return $this->belongsTo(Product::class);
@@ -73,7 +73,7 @@ class ProductSupplier extends Model
                 WHERE supplier_id IN (
                     SELECT supplier_id FROM supplier_supported_province
                     WHERE province_id IN (
-                        SELECT id FROM provinces WHERE region_id = '.$regionId.'
+                        SELECT id FROM provinces WHERE region_id = ' . $regionId . '
                     )
                 )
                 ORDER BY updated_at DESC, created_at DESC
@@ -92,5 +92,70 @@ class ProductSupplier extends Model
             ->pluck('region_id')
             ->toArray();
         return $query->whereIn('region_id', $regionIds);
+    }
+
+    public function offProductToMagento()
+    {
+        $product = Product::where('id', $this->product_id)->pluck('sku');
+
+        $post_data = [
+            'data' => [
+                'status' => 0,
+                'products' => $product
+            ]
+        ];
+
+        $this->status = 0;
+        $this->state = 2;
+        $this->save();
+
+        $response = $this->callApi($post_data);
+
+        LogOffSupplier::create([
+            'supplier_id' => $this ? $this->supplier_id : 0,
+            'type' => 'OFF',
+            'post_data' => json_encode($post_data),
+            'response' => json_encode($response)
+        ]);
+    }
+    public function onProductToMagento()
+    {
+        $product = Product::where('id', $this->product_id)->pluck('sku');
+
+        $post_data = [
+            'data' => [
+                'status' => 1,
+                'products' => $product
+            ]
+        ];
+
+        $this->status = 1;
+        $this->state = 1;
+        $this->save();
+
+        $response = $this->callApi($post_data);
+
+        LogOffSupplier::create([
+            'supplier_id' => $this ? $this->supplier_id : 0,
+            'type' => 'ON',
+            'post_data' => json_encode($post_data),
+            'response' => json_encode($response)
+        ]);
+    }
+
+    private function callApi($data)
+    {
+        $client = new Client(['base_uri' => env('OFF_PRODUCT_URL_BASE'), 'verify' => false]);
+        /**
+         * @var \GuzzleHttp\Psr7\Response $result
+         */
+        $result = $client->post(env('OFF_PRODUCT_URL'), [
+            'body' => json_encode($data),
+        ]);
+
+        if (null === $decodedResult = json_decode($result->getBody()->getContents(), true)) {
+            return array('errorMessage' => 'Could not decode json');
+        }
+        return $decodedResult;
     }
 }

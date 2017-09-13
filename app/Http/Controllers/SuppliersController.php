@@ -767,11 +767,31 @@ class SuppliersController extends Controller
 
         $messSend = json_encode($jsonSend);
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
-        $user = Sentinel::getUser();
+
         if (!!request('status') == false) {
-            dispatch(new OffProductToMagento($supplier, 0, $user));
-        }else{
-            dispatch(new OffProductToMagento($supplier, 1, $user));
+            $user = Sentinel::getUser();
+
+            $product_ids = ProductSupplier::where('supplier_id', $supplier->id)
+                ->where('state', 1)
+                ->where('status', '!=', 0)
+                ->pluck('product_id');
+
+            foreach ($product_ids as $product_id) {
+                $suppliers = ProductSupplier::where('product_supplier.product_id', $product_id)
+                    ->leftJoin('suppliers', 'product_supplier.supplier_id', 'suppliers.id')
+                    ->where('product_supplier.state', 1)
+                    ->where('suppliers.status', 1)
+                    ->where('suppliers.id', '!=', $supplier->id)
+                    ->count();
+
+                if ($suppliers == 0) {
+                    $productSupplier = ProductSupplier::where('product_id', $product_id)
+                        ->where('supplier_id', $supplier->id)
+                        ->first();
+
+                    dispatch(new OffProductToMagento($productSupplier, 0, $user));
+                }
+            }
         }
 
         flash()->success('Success!', 'Suppliers successfully created.');

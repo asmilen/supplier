@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\OffProductToMagento;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Models\ProductSupplier;
 use App\Jobs\UpdateAllProductPricesToMagento;
+use Sentinel;
 
 class ProductSuppliersController extends Controller
 {
@@ -86,6 +88,13 @@ class ProductSuppliersController extends Controller
             'to_date' => 'required',
             'state' => 'required',
         ]);
+
+        $user = Sentinel::getUser();
+        if (request('state') == 1) {
+            dispatch(new OffProductToMagento($productSupplier, 1, $user));
+        }elseif(request('state') == 0){
+            dispatch(new OffProductToMagento($productSupplier, 0, $user));
+        }
 
         $productSupplier->forceFill([
             'import_price' => request('import_price'),

@@ -785,11 +785,8 @@ class SuppliersController extends Controller
                     ->count();
 
                 if ($suppliers == 0) {
-                    $productSupplier = ProductSupplier::where('product_id', $product_id)
-                        ->where('supplier_id', $supplier->id)
-                        ->first();
-
-                    dispatch(new OffProductToMagento($productSupplier, 0, $user));
+                    $product = Product::where('id', $product_id)->first();
+                    dispatch(new OffProductToMagento($product, 0, $user));
                 }
             }
         }

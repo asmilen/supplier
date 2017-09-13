@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Product;
 use App\Models\ProductSupplier;
 use Sentinel;
 use Illuminate\Bus\Queueable;
@@ -14,20 +15,20 @@ class OffProductToMagento implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $productSupplier;
+    protected $product;
     protected $type;
     protected $user;
 
     /**
      * Create a new job instance.
      *
-     * @param ProductSupplier $productSupplier
+     * @param Product $product
      * @param $type
      * @param $user
      */
-    public function __construct(ProductSupplier $productSupplier, $type, $user)
+    public function __construct(Product $product, $type, $user)
     {
-        $this->productSupplier = $productSupplier;
+        $this->product = $product;
         $this->type = $type;
         $this->user = $user;
     }
@@ -41,9 +42,9 @@ class OffProductToMagento implements ShouldQueue
     {
         Sentinel::login($this->user);
         if ($this->type == 0){
-            $this->productSupplier->offProductToMagento();
+            $this->product->offProductToMagento();
         }else{
-            $this->productSupplier->onProductToMagento();
+            $this->product->onProductToMagento();
         }
     }
 }

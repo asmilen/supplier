@@ -91,7 +91,12 @@ class ProductSuppliersController extends Controller
 
         $user = Sentinel::getUser();
         if (request('state') == 1) {
-            dispatch(new OffProductToMagento($productSupplier, 1, $user));
+            $product = Product::where('id', $productSupplier->product_id)->first();
+            dispatch(new OffProductToMagento($product, 1, $user));
+
+            $productSupplier->status = 1;
+            $productSupplier->state = 1;
+            $productSupplier->save();
         }elseif(request('state') == 0){
             $suppliers = ProductSupplier::where('product_supplier.product_id', $productSupplier->product_id)
                 ->leftJoin('suppliers', 'product_supplier.supplier_id', 'suppliers.id')
@@ -100,7 +105,12 @@ class ProductSuppliersController extends Controller
                 ->where('suppliers.id', '!=', $productSupplier->supplier_id)
                 ->count();
             if ($suppliers == 0) {
-                dispatch(new OffProductToMagento($productSupplier, 0, $user));
+                $product = Product::where('id', $productSupplier->product_id)->first();
+                dispatch(new OffProductToMagento($product, 0, $user));
+
+                $productSupplier->status = 0;
+                $productSupplier->state = 0;
+                $productSupplier->save();
             }
         }
 

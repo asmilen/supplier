@@ -408,4 +408,59 @@ class Product extends Model
         }
         return $decodedResult;
     }
+
+    //off product to magento
+    public function offProductToMagento()
+    {
+        $post_data = [
+            'data' => [
+                'status' => 0,
+                'products' => $this->sku
+            ]
+        ];
+
+        $response = $this->callApiOffProduct($post_data);
+
+        LogOffSupplier::create([
+            'supplier_id' => $this ? $this->id : 0,
+            'type' => 'OFF',
+            'post_data' => json_encode($post_data),
+            'response' => json_encode($response)
+        ]);
+    }
+
+    public function onProductToMagento()
+    {
+        $post_data = [
+            'data' => [
+                'status' => 1,
+                'products' => $this->sku
+            ]
+        ];
+
+        $response = $this->callApiOffProduct($post_data);
+
+        LogOffSupplier::create([
+            'supplier_id' => $this ? $this->id : 0,
+            'type' => 'ON',
+            'post_data' => json_encode($post_data),
+            'response' => json_encode($response)
+        ]);
+    }
+
+    private function callApiOffProduct($data)
+    {
+        $client = new Client(['base_uri' => env('OFF_PRODUCT_URL_BASE'), 'verify' => false]);
+        /**
+         * @var \GuzzleHttp\Psr7\Response $result
+         */
+        $result = $client->post(env('OFF_PRODUCT_URL'), [
+            'body' => json_encode($data),
+        ]);
+
+        if (null === $decodedResult = json_decode($result->getBody()->getContents(), true)) {
+            return array('errorMessage' => 'Could not decode json');
+        }
+        return $decodedResult;
+    }
 }

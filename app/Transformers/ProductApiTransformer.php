@@ -27,9 +27,7 @@ class ProductApiTransformer extends TransformerAbstract
     public function transform($data)
     {
         $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id'); // tìm miền của tỉnh mua hàng
-        if (!$regions) {
-            return api_response(['message' => 'Mã tỉnh thành không tồn tại'], 404);
-        }
+        
         $product = Product::with('manufacturer', 'category')
             ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
             ->leftJoin('product_supplier', function ($q) use ($regions) {

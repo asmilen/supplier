@@ -61,7 +61,7 @@ class ProductSupplier extends Model
         parent::boot();
 
         static::saved(function ($model) {
-            dispatch(new UpdateProductPriceToMagento($model->product));
+            dispatch(new UpdateProductPriceToMagento($model));
         });
     }
 

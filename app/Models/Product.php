@@ -421,8 +421,8 @@ class Product extends Model
 
         $response = $this->callApiOffProduct($post_data);
 
-        LogOffSupplier::create([
-            'supplier_id' => $this ? $this->id : 0,
+        LogOffProduct::create([
+            'product_id' => $this ? $this->id : 0,
             'type' => 'OFF',
             'post_data' => json_encode($post_data),
             'response' => json_encode($response)
@@ -440,8 +440,8 @@ class Product extends Model
 
         $response = $this->callApiOffProduct($post_data);
 
-        LogOffSupplier::create([
-            'supplier_id' => $this ? $this->id : 0,
+        LogOffProduct::create([
+            'product_id' => $this ? $this->id : 0,
             'type' => 'ON',
             'post_data' => json_encode($post_data),
             'response' => json_encode($response)

@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LogOffSupplier extends Model
+class LogOffProduct extends Model
 {
 
-    protected $table = 'log_off_suppliers';
+    protected $table = 'log_off_products';
     protected $fillable = [
-        'supplier_id',
+        'product_id',
         'type',
         'post_data',
         'response',

@@ -93,7 +93,20 @@ class ProductSuppliersController extends Controller
         if (request('state') == 1) {
             dispatch(new OffProductToMagento($productSupplier, 1, $user));
         }elseif(request('state') == 0){
-            dispatch(new OffProductToMagento($productSupplier, 0, $user));
+            $suppliers = ProductSupplier::where('product_supplier.product_id', $productSupplier->product_id)
+                ->leftJoin('suppliers', 'product_supplier.supplier_id', 'suppliers.id')
+                ->where('product_supplier.state', 1)
+                ->where('suppliers.status', 1)
+                ->where('suppliers.id', '!=', $productSupplier->supplier_id)
+                ->count();
+
+            if ($suppliers == 0) {
+                $productSupplier = ProductSupplier::where('product_id', $productSupplier->product_id)
+                    ->where('supplier_id', $productSupplier->supplier_id)
+                    ->first();
+
+                dispatch(new OffProductToMagento($productSupplier, 0, $user));
+            }
         }
 
         $productSupplier->forceFill([

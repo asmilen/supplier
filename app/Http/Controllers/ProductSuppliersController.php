@@ -93,10 +93,7 @@ class ProductSuppliersController extends Controller
         if (request('state') == 1) {
             $product = Product::where('id', $productSupplier->product_id)->first();
             dispatch(new OffProductToMagento($product, 1, $user));
-
             $productSupplier->status = 1;
-            $productSupplier->state = 1;
-            $productSupplier->save();
         }elseif(request('state') == 0){
             $suppliers = ProductSupplier::where('product_supplier.product_id', $productSupplier->product_id)
                 ->leftJoin('suppliers', 'product_supplier.supplier_id', 'suppliers.id')
@@ -107,12 +104,12 @@ class ProductSuppliersController extends Controller
             if ($suppliers == 0) {
                 $product = Product::where('id', $productSupplier->product_id)->first();
                 dispatch(new OffProductToMagento($product, 0, $user));
-
                 $productSupplier->status = 0;
-                $productSupplier->state = 0;
-                $productSupplier->save();
             }
         }
+
+        $productSupplier->state = request('state');
+        $productSupplier->save();
 
         $productSupplier->forceFill([
             'import_price' => request('import_price'),

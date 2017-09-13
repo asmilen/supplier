@@ -763,26 +763,26 @@ class SuppliersController extends Controller
         $messSend = json_encode($jsonSend);
         dispatch(new PublishMessage('teko.sale', 'sale.supplier.upsert', $messSend));
 
-        if (!!request('status') == false) {
+        if (!request('status')) {
             $user = Sentinel::getUser();
 
-            $product_ids = ProductSupplier::where('supplier_id', $supplier->id)
-                ->where('state', 1)
-                ->where('status', '!=', 0)
-                ->pluck('product_id');
+            $productOffs = DB::select("select a.product_id, a.region_id from 
+                    (select product_id, region_id FROM `product_supplier` WHERE supplier_id = ? and state = 1 and `status` != 0 GROUP BY product_id) a
+                    left join (select product_id, region_id from product_supplier a left join suppliers b on a.supplier_id = b.id
+                    where a.state = 1 
+                    and b.status = 1
+                    and a.supplier_id <> ?
+                    group by a.product_id, region_id) b on a.product_id = b.product_id and a.region_id = b.region_id where b.product_id is null 
+                     ", [$supplier->id, $supplier->id]);
 
-            foreach ($product_ids as $product_id) {
-                $suppliers = ProductSupplier::where('product_supplier.product_id', $product_id)
-                    ->leftJoin('suppliers', 'product_supplier.supplier_id', 'suppliers.id')
-                    ->where('product_supplier.state', 1)
-                    ->where('suppliers.status', 1)
-                    ->where('suppliers.id', '!=', $supplier->id)
-                    ->count();
+            foreach ($productOffs as $productOff) {
+               $productIds[] = $productOff->product_id;
+            }
 
-                if ($suppliers == 0) {
-                    $product = Product::where('id', $product_id)->first();
-                    dispatch(new OffProductToMagento($product, 0, $user));
-                }
+            $products = Product::whereIn('id', $productIds)->get();
+
+            foreach ($products as $product) {
+                dispatch(new OffProductToMagento($product, 0, $user));
             }
         }
 

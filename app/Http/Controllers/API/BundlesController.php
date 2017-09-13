@@ -40,14 +40,10 @@ class BundlesController extends Controller
         try {
             $bundle = Bundle::findOrFail($bundleId);
 
-            $supplierIds = SupplierSupportedProvince::whereIn(
-                'province_id', Province::getListByRegion($bundle->region_id)
-            )->pluck('supplier_id')->all();
-
-            return BundleCategory::getListByBundleId($bundle->id)->map(function ($bundleCategory) use ($bundle, $supplierIds, $provinceId) {
+            return BundleCategory::getListByBundleId($bundle->id)->map(function ($bundleCategory) use ($bundle, $provinceId) {
                 return [
                     'title' => $bundleCategory->name,
-                    'data' => $bundleCategory->getBundleProducts($supplierIds, $bundle->region_id, $provinceId),
+                    'data' => $bundleCategory->getBundleProducts($bundle->region_id, $provinceId),
                 ];
             });
         } catch (\Exception $e) {

@@ -28,17 +28,11 @@ class ProductApiTransformer extends TransformerAbstract
     {
         $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id'); // tìm miền của tỉnh mua hàng
 
-        $supplierIds = SupplierSupportedProvince::whereIn('province_id', $this->provinceIds)
-            ->leftJoin('suppliers', 'suppliers.id', 'supplier_supported_province.supplier_id')
-            ->where('suppliers.status', 1)
-            ->get()
-            ->pluck('supplier_id');// tìm tất cả các nhà cung cấp cung cấp cho miền của người mua hàng
-
         $product = Product::with('manufacturer', 'category')
             ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
-            ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
+            ->leftJoin('product_supplier', function ($q) use ($regions) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1);
             })
             ->findOrFail($data['id']);// kiểm tra thông tin sản phẩm cần mua
@@ -56,7 +50,7 @@ class ProductApiTransformer extends TransformerAbstract
 
 
         $minPrice = ProductSupplier::where('product_id', $data['id'])
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id',  $regions[0])
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)
@@ -81,22 +75,22 @@ class ProductApiTransformer extends TransformerAbstract
         $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
         $product->best_price = ProductSupplier::where('product_id', $data['id'])
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
             ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productFee . '/1000) * 1000))'));
 
         $product->import_price = ProductSupplier::where('product_id', $data['id'])
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
             ->min(DB::raw('ceil(product_supplier.import_price * (' . $productFee . '-' . $w_margin . ')/1000) * 1000'));
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $data['id'])
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
             ->min(DB::raw('ceil(product_supplier.import_price * ' . $productFee . '/1000) * 1000'));
 
         $product->recommended_price = ProductSupplier::where('product_id', $data['id'])
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
             ->where('price_recommend', $product->best_price)
             ->min('product_supplier.price_recommend');

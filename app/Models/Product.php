@@ -257,9 +257,6 @@ class Product extends Model
                         /**
                          * @var array $supplierIds
                          */
-                        $supplierIds = SupplierSupportedProvince::whereIn('province_id', $province_id)
-                            ->get()
-                            ->pluck('supplier_id');
 
                         $product = Product::with('manufacturer', 'category')
                             ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
@@ -275,7 +272,7 @@ class Product extends Model
                                 ->where('region_id', $regionId)->first();
 
                             $importPrice = ProductSupplier::where('product_id', $product->id)
-                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.region_id', $regionId)
                                 ->where('product_supplier.state', '=', 1)
                                 ->orderBy('product_supplier.import_price')
                                 ->first();
@@ -283,7 +280,7 @@ class Product extends Model
                             $import_price = ceil(intval(($importPrice ? $importPrice->import_price : 0) * (1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 * 2)) / 1000) * 1000;
 
                             $Price = ProductSupplier::where('product_id', $product->id)
-                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.region_id', $regionId)
                                 ->where('product_supplier.state', '=', 1)
                                 ->select(DB::raw(" * , case when `product_supplier`.`price_recommend` > 0
                         and `product_supplier`.`price_recommend` <  $import_price then `product_supplier`.`price_recommend` else $import_price end as min_price"))
@@ -292,14 +289,14 @@ class Product extends Model
                             'if((if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
 								(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price';
                             $PriceRecommend = ProductSupplier::where('product_id', $product->id)
-                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.region_id', $regionId)
                                 ->where('product_supplier.state', '=', 1)
                                 ->select(DB::raw(" * , case when `product_supplier`.`price_recommend` > 0
                         then `product_supplier`.`price_recommend` else 1000000000 end as min_price"))
                                 ->orderBy('min_price')
                                 ->first();
                             $count = ProductSupplier::where('product_id', $product->id)
-                                ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                ->where('product_supplier.region_id', $regionId)
                                 ->where('product_supplier.state', '=', 1)
                                 ->where('product_supplier.price_recommend', 0)->count();
 

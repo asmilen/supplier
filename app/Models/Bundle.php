@@ -40,15 +40,15 @@ class Bundle extends Model
         return static::pluck('name', 'id')->all();
     }
 
-    public function listProductBySuppliers($supplierIds, $productIds, $regionId)
+    public function listProductBySuppliers($productIds, $regionId)
     {
         $products = Product::select([
             'products.id', 'products.name', 'products.sku'
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
         ])
-            ->join('product_supplier', function ($q) use ($supplierIds) {
+            ->join('product_supplier', function ($q) use ($regionId) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1);
             })
             ->leftJoin('margin_region_category', function ($q) use ($regionId) {

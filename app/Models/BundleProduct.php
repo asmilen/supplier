@@ -52,12 +52,12 @@ class BundleProduct extends Model
         return static::pluck('name', 'id')->all();
     }
 
-    public function getProduct($supplierIds, $regionId, $provinceId)
+    public function getProduct($regionId, $provinceId)
     {
         $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, if(sum(`product_supplier`.`state`) > 0, 1, 0) as 'state', `products`.`status`,`products`.`updated_at` as 'last_update_info', max(`product_supplier`.`updated_at`) as 'last_update_price'"))
-            ->join('product_supplier', function ($q) use ($supplierIds) {
+            ->join('product_supplier', function ($q) use ($regionId) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds);
+                    ->where('product_supplier.region_id', $regionId);
             })
             ->where('products.channel', 'like', '%' . 2 . '%')
             ->findOrFail($this->id_product);
@@ -66,27 +66,27 @@ class BundleProduct extends Model
             ->where('region_id', $regionId)
             ->first();
 
-        $productMarginFee = $this->getProductMarginFee($product, $supplierIds, $regionId, $provinceId);
+        $productMarginFee = $this->getProductMarginFee($product, $regionId, $provinceId);
 
         $marginValue = $productMarginFee - ($margin ? $margin->margin * 0.01 : 0.05);
 
         $product->best_price = ProductSupplier::where('product_id', $product->id)
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
             ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee . '/1000) * 1000))'));
 
         $product->import_price = ProductSupplier::where('product_id', $product->id)
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
             ->min(DB::raw('(ceil(product_supplier.import_price * (' . $marginValue . ')/1000) * 1000)'));
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $product->id)
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
             ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee . '/1000) * 1000))'));
 
         $product->recommended_price = ProductSupplier::where('product_id', $product->id)
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regionId)
             ->where('price_recommend', '!=', 0)
             ->where('state', 1)
             ->min(DB::raw('(ceil(product_supplier.price_recommend/1000) * 1000)'));
@@ -100,7 +100,7 @@ class BundleProduct extends Model
         return $product;
     }
 
-    protected function getProductMarginFee($product, $supplierIds, $regionId, $provinceCode)
+    protected function getProductMarginFee($product, $regionId, $provinceCode)
     {
         $margin = MarginRegionCategory::where('category_id', $product->category_id)
             ->where('region_id', $regionId)
@@ -116,7 +116,7 @@ class BundleProduct extends Model
         $feeValue = ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
 
         $minPrice = ProductSupplier::where('product_id', $product->id)
-            ->whereIn('product_supplier.supplier_id', $supplierIds)
+            ->where('product_supplier.region_id', $regionId)
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)

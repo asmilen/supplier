@@ -33,9 +33,9 @@ class ProductsController extends Controller
             return $validator->errors();
         }
 
-        $regions = Province::whereIn('code', request('province_ids'))->pluck('region_id');
+        $regionIds = Province::whereIn('code', request('province_ids'))->pluck('region_id');
 
-        $provinceIds = Province::whereIn('region_id', $regions)->pluck('id');
+        $provinceIds = Province::whereIn('region_id', $regionIds)->pluck('id');
 
         /**
          * @var array $supplierIds
@@ -53,14 +53,14 @@ class ProductsController extends Controller
 								(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
             ->with('category')
-            ->join('product_supplier', function ($q) use ($regions) {
+            ->join('product_supplier', function ($q) use ($regionIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.region_id', $regions)
+                    ->whereIn('product_supplier.region_id', $regionIds)
                     ->where('product_supplier.state', '=', 1);
             })
-            ->leftJoin('margin_region_category', function ($q) use ($regions) {
+            ->leftJoin('margin_region_category', function ($q) use ($regionIds) {
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
-                    ->whereIn('margin_region_category.region_id', $regions);
+                    ->whereIn('margin_region_category.region_id', $regionIds);
             })
             ->where('products.channel', 'like', '%' . 2 . '%')
             ->where('products.status', 1);
@@ -152,7 +152,9 @@ class ProductsController extends Controller
 
         try {
             $regions = Province::where('code', request('province_ids'))->pluck('region_id'); // tìm miền của tỉnh mua hàng
-
+            if (!$regions) {
+                return api_response(['message' => 'Mã tỉnh thành không tồn tại'], 404);
+            }
             $product = Product::with('manufacturer', 'category')
                 ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`,  `products`.`description`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
                 ->leftJoin('product_supplier', function ($q) use ($regions) {
@@ -180,11 +182,11 @@ class ProductsController extends Controller
                 ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
                 ->where('product_supplier.state', '=', 1)
                 ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
-                    $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee) end ))))'))
+                    $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee) end ))))'))
                 ->orderBy('transport_fees.percent_fee')
                 ->first(); // giá tốt nhất tìm được trong miền sau khi cộng margin và fee
 
-            if ($minPrice){
+            if ($minPrice) {
                 $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
                     ->where('supplier_id', $minPrice ? $minPrice->supplier->id : 0)
                     ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
@@ -252,7 +254,7 @@ class ProductsController extends Controller
                 }
 
                 return $product;
-            }else{
+            } else {
                 return api_response(['message' => 'Sản phẩm không tồn tại hoặc không có nhà cung cấp'], 404);
             }
 
@@ -325,10 +327,9 @@ class ProductsController extends Controller
         $results = [];
         foreach (request('form_data') as $productData) {
             try {
-                $product = Product::where('sku',$productData['sku'])->first();
+                $product = Product::where('sku', $productData['sku'])->first();
 
-                if ($product)
-                {
+                if ($product) {
                     $product->name = $productData['name'];
                     $product->save();
                     array_push($results, ['Cập nhật thành công.']);

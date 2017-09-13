@@ -340,7 +340,6 @@ class SuppliersController extends Controller
 
     public function updateIdProduct(Request $request)
     {
-
         $product_supplier_id = $request->input('product_supplier_id');
         $product_id = $request->input('product_id');
 
@@ -366,9 +365,6 @@ class SuppliersController extends Controller
         } else if ($status_product == 'Còn hàng') {
             $status_product = 1;
         }
-//         else if ($status_product == 'Đặt hàng') {
-//            $status_product = 2;
-//        }
 
         $product = ProductSupplier::findOrFail($id);
         $product_id = $product->product_id;
@@ -393,7 +389,6 @@ class SuppliersController extends Controller
             'createdAt' => strtotime($product->updated_at)
         ];
         $messSend = json_encode($jsonSend);
-        dispatch(new UpdatePriceToMagento(Sentinel::getUser()->id, $request->input('id')));
 
         dispatch(new PublishMessage('teko.sale', 'sale.price.import.update', $messSend));
 

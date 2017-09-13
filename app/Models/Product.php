@@ -241,7 +241,7 @@ class Product extends Model
         return $sku;
     }
 
-    public function updatePriceToMagento()
+    public function updatePriceToMagento($regionId)
     {
         $supplier_ids = ProductSupplier::where('product_id', $this->id)
             ->leftJoin('products', 'product_supplier.product_id', 'products.id')
@@ -250,11 +250,9 @@ class Product extends Model
             ProductSupplier::where('supplier_id', '!=', 0)
                 ->where('id', $supplier_ids[$i])
                 ->where('state', 1)
-                ->chunk(10, function ($products) {
-                    foreach ($products as $product) {
-                        $region_id = ProductSupplier::where('product_supplier.id', $product->id)
-                            ->pluck('region_id');
-                        $province_id = Province::where('region_id', $region_id[0])->pluck('id');
+                ->where('region_id', $regionId)
+                ->chunk(10, function ($productSupplier) use ($regionId) {
+                        $province_id = Province::where('region_id', $regionId)->pluck('id');
                         $provinceFee = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
                         /**
                          * @var array $supplierIds
@@ -265,16 +263,16 @@ class Product extends Model
 
                         $product = Product::with('manufacturer', 'category')
                             ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
-                            ->leftJoin('product_supplier', function ($q) use ($supplierIds) {
+                            ->leftJoin('product_supplier', function ($q) use ($regionId) {
                                 $q->on('product_supplier.product_id', '=', 'products.id')
-                                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                                    ->where('product_supplier.region_id', $regionId)
                                     ->where('product_supplier.state', '=', 1);
                             })
                             ->findOrFail($this->id);
 
                         if ($product) {
                             $margin = MarginRegionCategory::where('category_id', $product->category_id)
-                                ->where('region_id', $region_id[0])->first();
+                                ->where('region_id', $regionId)->first();
 
                             $importPrice = ProductSupplier::where('product_id', $product->id)
                                 ->whereIn('product_supplier.supplier_id', $supplierIds)
@@ -315,7 +313,7 @@ class Product extends Model
                                 $post_data = [
                                     'data' => [
                                         [
-                                            'region_id' => $region_id ? $region_id[0] : 0,
+                                            'region_id' => $regionId ? $regionId : 0,
                                             'sku' => $product ? $product->sku : 0,
                                             'price' => $minPrice ? $minPrice->min_price : 0
                                         ]
@@ -323,7 +321,7 @@ class Product extends Model
                                 ];
 
                                 $log = PostPriceToMgtLog::where('product_id', $product->id)
-                                    ->where('region_id', $region_id ? $region_id[0] : 0)
+                                    ->where('region_id', $regionId ? $regionId : 0)
                                     ->orderBy('created_at', 'DESC')
                                     ->first();
 
@@ -336,7 +334,7 @@ class Product extends Model
                                         for ($i = 0; $i < $product_supplier_ids->count(); $i++) {
                                             $productValue = ProductSupplier::where('product_supplier.id', $product_supplier_ids[$i])
                                                 ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
-                                                ->where('product_supplier.region_id', $region_id[0])
+                                                ->where('product_supplier.region_id', $regionId)
                                                 ->select(DB::raw('product_supplier.*'))
                                                 ->first();
                                             if ($productValue) {
@@ -350,7 +348,7 @@ class Product extends Model
 
                                         $response = $this->callApi($post_data);
                                         PostPriceToMgtLog::create([
-                                            'region_id' => $region_id ? $region_id[0] : 0,
+                                            'region_id' => $regionId ? $regionId : 0,
                                             'product_id' => $product->id,
                                             'detail' => json_encode($detail),
                                             'post_data' => json_encode($post_data),
@@ -364,7 +362,7 @@ class Product extends Model
                                     for ($i = 0; $i < $product_supplier_ids->count(); $i++) {
                                         $productValue = ProductSupplier::where('product_supplier.id', $product_supplier_ids[$i])
                                             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', 'supplier_supported_province.supplier_id')
-                                            ->where('product_supplier.region_id', $region_id[0])
+                                            ->where('product_supplier.region_id', $regionId)
                                             ->select(DB::raw('product_supplier.*'))
                                             ->first();
                                         if ($productValue) {
@@ -378,7 +376,7 @@ class Product extends Model
 
                                     $response = $this->callApi($post_data);
                                     PostPriceToMgtLog::create([
-                                        'region_id' => $region_id ? $region_id[0] : 0,
+                                        'region_id' => $regionId ? $regionId : 0,
                                         'product_id' => $product->id,
                                         'detail' => json_encode($detail),
                                         'post_data' => json_encode($post_data),
@@ -388,7 +386,6 @@ class Product extends Model
 
                             }
                         }
-                    }
                 });
         }
     }

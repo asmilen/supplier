@@ -35,6 +35,10 @@ class ProductsController extends Controller
 
         $regionIds = Province::whereIn('code', request('province_ids'))->pluck('region_id');
 
+        if (!$regionIds) {
+            return api_response(['message' => 'Mã tỉnh thành không tồn tại'], 404);
+        }
+
         $provinceIds = Province::whereIn('region_id', $regionIds)->pluck('id');
 
         /**

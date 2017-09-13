@@ -53,12 +53,6 @@ class ProductSalepriceController extends Controller
             }
             foreach (request('regions') as $regionId => $flagRegion) {
                 if ($flagRegion) {
-                    $provinceIds = Province::where('region_id', $regionId)->pluck('id');
-
-                    $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
-                        ->get()
-                        ->pluck('supplier_id');
-
                     $margin = MarginRegionCategory::where('category_id', $product->category_id)
                         ->where('region_id', $regionId)->first();
 
@@ -69,7 +63,7 @@ class ProductSalepriceController extends Controller
                     }
 
                     $minPrice = ProductSupplier::where('product_id', $product->id)
-                        ->whereIn('product_supplier.supplier_id', $supplierIds)
+                        ->where('product_supplier.region_id', $regionId)
                         ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
                     if (request('price') < $minPrice) {
                         $validator->errors()->add('price', 'Giá bán không hợp lệ cho ' . config('teko.regions')[$regionId]);

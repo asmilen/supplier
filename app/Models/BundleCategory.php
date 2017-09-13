@@ -69,26 +69,26 @@ class BundleCategory extends Model
             ->get();
     }
 
-    public function getBundleProducts($supplierIds, $regionId, $provinceId)
+    public function getBundleProducts($regionId, $provinceId)
     {
         $bundleProducts = BundleProduct::where('id_bundle', $this->id_bundle)
             ->where('id_bundleCategory', $this->id)
             ->get();
 
-        return $bundleProducts->map(function ($bundleProduct) use ($supplierIds, $regionId, $provinceId) {
-            return $bundleProduct->getProduct($supplierIds, $regionId, $provinceId);
+        return $bundleProducts->map(function ($bundleProduct) use ($regionId, $provinceId) {
+            return $bundleProduct->getProduct($regionId, $provinceId);
         });
     }
 
-    public function listProductBySuppliersNotExist($supplierIds, $productIds, $regionId)
+    public function listProductBySuppliersNotExist($productIds, $regionId)
     {
         return Product::select([
             'products.id', 'products.name', 'products.sku'
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
         ])
-            ->join('product_supplier', function ($q) use ($supplierIds) {
+            ->join('product_supplier', function ($q) use ($regionId) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1);
             })
             ->leftJoin('margin_region_category', function ($q) use ($regionId) {
@@ -100,7 +100,7 @@ class BundleCategory extends Model
                 'products.category_id')->get();
     }
 
-    public function listProducts($supplierIds, $idBundleCategory, $regionId)
+    public function listProducts($idBundleCategory, $regionId)
     {
         return Product::select([
             'products.id', 'products.name', 'products.sku', 'bundle_product.is_default as is_default', 'bundle_product.quantity as quantity', 'bundle_product.id_bundle as id_bundle'
@@ -110,9 +110,9 @@ class BundleCategory extends Model
                 $q->on('bundle_product.id_product', '=', 'products.id')
                     ->where('bundle_product.id_bundleCategory', '=', $idBundleCategory);
             })
-            ->join('product_supplier', function ($q) use ($supplierIds) {
+            ->join('product_supplier', function ($q) use ($regionId) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
-                    ->whereIn('product_supplier.supplier_id', $supplierIds)
+                    ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1);
             })
             ->leftJoin('margin_region_category', function ($q) use ($regionId) {

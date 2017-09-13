@@ -4,6 +4,7 @@ namespace App\Models;
 
 use DB;
 use Sentinel;
+use GuzzleHttp\Client;
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
 use App\Jobs\UpdateProductPriceToMagento;
@@ -45,7 +46,6 @@ class ProductSupplier extends Model
     public static $STATUS_KHONG_UU_TIEN_LAY_HANG = 4;
 
 
-
     public function product()
     {
         return $this->belongsTo(Product::class);
@@ -73,7 +73,7 @@ class ProductSupplier extends Model
                 WHERE supplier_id IN (
                     SELECT supplier_id FROM supplier_supported_province
                     WHERE province_id IN (
-                        SELECT id FROM provinces WHERE region_id = '.$regionId.'
+                        SELECT id FROM provinces WHERE region_id = ' . $regionId . '
                     )
                 )
                 ORDER BY updated_at DESC, created_at DESC

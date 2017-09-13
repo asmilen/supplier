@@ -5,7 +5,6 @@ return [
         'state' => [
             0 => 'Hết hàng',
             1 => 'Còn Hàng',
-            2 => 'Đặt Hàng',
         ],
         'status' => [
             0 => 'Chờ duyệt',

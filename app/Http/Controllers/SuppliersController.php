@@ -769,20 +769,28 @@ class SuppliersController extends Controller
             $productOffs = DB::select("select a.product_id, a.region_id from 
                     (select product_id, region_id FROM `product_supplier` WHERE supplier_id = ? and state = 1 and `status` != 0 GROUP BY product_id) a
                     left join (select product_id, region_id from product_supplier a left join suppliers b on a.supplier_id = b.id
-                    where a.state = 1 
+                    where a.state = 1
                     and b.status = 1
                     and a.supplier_id <> ?
                     group by a.product_id, region_id) b on a.product_id = b.product_id and a.region_id = b.region_id where b.product_id is null 
                      ", [$supplier->id, $supplier->id]);
 
-            foreach ($productOffs as $productOff) {
-               $productIds[] = $productOff->product_id;
+            $productRegions = [];
+            foreach ($productOffs as $product) {
+                $productRegions[$product->product_id][] = $product->region_id;
             }
 
-            $products = Product::whereIn('id', $productIds)->get();
+            $products = Product::whereIn('id', array_keys($productRegions))->get();
 
             foreach ($products as $product) {
-                dispatch(new OffProductToMagento($product, 0, $user));
+                foreach ($productRegions[$product->id] as $regionId) {
+                    dispatch(new OffProductToMagento($product, 0, $user, $regionId));
+                    $productSupplier = ProductSupplier::where('product_id', $product->id)
+                        ->where('region_id', $regionId)->first();
+                    $productSupplier->status = 0;
+                    $productSupplier->state = 0;
+                    $productSupplier->save;
+                }
             }
         }
 

@@ -18,6 +18,7 @@ class OffProductToMagento implements ShouldQueue
     protected $product;
     protected $type;
     protected $user;
+    protected $regionId;
 
     /**
      * Create a new job instance.
@@ -25,12 +26,14 @@ class OffProductToMagento implements ShouldQueue
      * @param Product $product
      * @param $type
      * @param $user
+     * @param $regionId
      */
-    public function __construct(Product $product, $type, $user)
+    public function __construct(Product $product, $type, $user, $regionId)
     {
         $this->product = $product;
         $this->type = $type;
         $this->user = $user;
+        $this->regionId = $regionId;
     }
 
     /**
@@ -42,9 +45,9 @@ class OffProductToMagento implements ShouldQueue
     {
         Sentinel::login($this->user);
         if ($this->type == 0){
-            $this->product->offProductToMagento();
+            $this->product->offProductToMagento($this->regionId);
         }else{
-            $this->product->onProductToMagento();
+            $this->product->onProductToMagento($this->regionId);
         }
     }
 }

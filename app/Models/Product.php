@@ -253,7 +253,7 @@ class Product extends Model
                 ->where('id', $supplier_ids[$i])
                 ->where('state', 1)
                 ->where('region_id', $regionId)
-                ->chunk(10, function ($productSupplier) use ($regionId) {
+                ->chunk(200, function ($productSupplier) use ($regionId) {
                     $province_id = Province::where('region_id', $regionId)->pluck('id');
                     $provinceFee = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
                     /**

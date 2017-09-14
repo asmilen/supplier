@@ -202,6 +202,7 @@ class ProductsController extends Controller
 
                 if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
+
                 } else {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
                 }
@@ -210,21 +211,26 @@ class ProductsController extends Controller
                 $product->best_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
+                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
                     ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
+
                 $product->import_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
+                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
                     ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
 
                 $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
+                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
                     ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
 
                 $product->recommended_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
                     ->where('price_recommend', $product->best_price)
+                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
                     ->min('product_supplier.price_recommend');
 
                 if ($product->recommended_price == $product->best_price) {

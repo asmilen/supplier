@@ -68,27 +68,31 @@ class BundleProduct extends Model
 
         $productMarginFee = $this->getProductMarginFee($product, $regionId, $provinceId);
 
-        $marginValue = $productMarginFee - ($margin ? $margin->margin * 0.01 : 0.05);
+        $marginValue = $productMarginFee['margin'] - ($margin ? $margin->margin * 0.01 : 0.05);
 
         $product->best_price = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
-            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee . '/1000) * 1000))'));
+            ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
+            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee['margin'] . '/1000) * 1000))'));
 
         $product->import_price = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
+            ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
             ->min(DB::raw('(ceil(product_supplier.import_price * (' . $marginValue . ')/1000) * 1000)'));
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
-            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee . '/1000) * 1000))'));
+            ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
+            ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee['margin'] . '/1000) * 1000))'));
 
         $product->recommended_price = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
             ->where('price_recommend', '!=', 0)
             ->where('state', 1)
+            ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
             ->min(DB::raw('(ceil(product_supplier.price_recommend/1000) * 1000)'));
 
         $product->quantity = $this->quantity;
@@ -137,11 +141,11 @@ class BundleProduct extends Model
             ->pluck('province_id');
 
         $provinceFee = TransportFee::where('province_id', $provinceFeeMin ? $provinceFeeMin->province_id : 0)->first();
-
+        $productMarginFee['supplierId'] = $minPrice ? $minPrice->supplier->id : 0;
         if (in_array($provinceId, $supportProvince ? $supportProvince->toArray() : [])) {
-            $productMarginFee = $marginValue + $feeValue;
+            $productMarginFee['margin'] = $marginValue + $feeValue;
         } else {
-            $productMarginFee = $marginValue + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + $feeValue;
+            $productMarginFee['margin'] = $marginValue + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + $feeValue;
         }
 
         return $productMarginFee;

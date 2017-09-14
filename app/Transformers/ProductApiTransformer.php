@@ -77,21 +77,25 @@ class ProductApiTransformer extends TransformerAbstract
         $product->best_price = ProductSupplier::where('product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
+            ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
             ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productFee . '/1000) * 1000))'));
 
         $product->import_price = ProductSupplier::where('product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
+            ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
             ->min(DB::raw('ceil(product_supplier.import_price * (' . $productFee . '-' . $w_margin . ')/1000) * 1000'));
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
+            ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
             ->min(DB::raw('ceil(product_supplier.import_price * ' . $productFee . '/1000) * 1000'));
 
         $product->recommended_price = ProductSupplier::where('product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
+            ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
             ->where('price_recommend', $product->best_price)
             ->min('product_supplier.price_recommend');
 

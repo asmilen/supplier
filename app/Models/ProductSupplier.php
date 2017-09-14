@@ -62,7 +62,7 @@ class ProductSupplier extends Model
 
         static::saved(function ($model) {
             if($model->product){
-                dispatch(new UpdateProductPriceToMagento($model));
+                dispatch(new UpdateProductPriceToMagento($model->product, $model->region_id));
             }
         });
     }

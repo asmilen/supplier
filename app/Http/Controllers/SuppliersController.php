@@ -786,7 +786,9 @@ class SuppliersController extends Controller
                 foreach ($productRegions[$product->id] as $regionId) {
                     dispatch(new OffProductToMagento($product, 0, $user, $regionId));
                     $productSupplier = ProductSupplier::where('product_id', $product->id)
-                        ->where('region_id', $regionId)->first();
+                        ->where('region_id', $regionId)
+                        ->where('supplier_id', $supplier->id)
+                        ->first();
                     $productSupplier->status = 0;
                     $productSupplier->state = 0;
                     $productSupplier->save();

@@ -789,7 +789,7 @@ class SuppliersController extends Controller
                         ->where('region_id', $regionId)->first();
                     $productSupplier->status = 0;
                     $productSupplier->state = 0;
-                    $productSupplier->save;
+                    $productSupplier->save();
                 }
             }
         }

@@ -200,7 +200,7 @@ class ProductsController extends Controller
                 $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
                 //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
-                if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {;
+                if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
 
                 } else {

@@ -245,7 +245,9 @@ class Product extends Model
     {
         $supplier_ids = ProductSupplier::where('product_id', $this->id)
             ->leftJoin('products', 'product_supplier.product_id', 'products.id')
+            ->where('product_supplier.state', 1)
             ->pluck('product_supplier.id');
+        \Log::info($supplier_ids);
         for ($i = 0; $i < $supplier_ids->count(); $i++) {
             ProductSupplier::where('supplier_id', '!=', 0)
                 ->where('id', $supplier_ids[$i])

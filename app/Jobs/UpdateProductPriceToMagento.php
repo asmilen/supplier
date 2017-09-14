@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Product;
-use App\Models\ProductSupplier;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -14,16 +13,19 @@ class UpdateProductPriceToMagento implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $productSupplier;
+    protected $product;
+    protected $regionId;
 
     /**
      * Create a new job instance.
      *
-     * @param ProductSupplier $productSupplier
+     * @param Product $product
+     * @param $regionId
      */
-    public function __construct(ProductSupplier $productSupplier)
+    public function __construct(Product $product, $regionId)
     {
-        $this->productSupplier = $productSupplier;
+        $this->product = $product;
+        $this->regionId = $regionId;
     }
 
     /**
@@ -33,6 +35,6 @@ class UpdateProductPriceToMagento implements ShouldQueue
      */
     public function handle()
     {
-        $this->productSupplier->product->updatePriceToMagento($this->productSupplier->region_id);
+        $this->product->updatePriceToMagento($this->regionId);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\OffProductToMagento;
+use App\Jobs\UpdateProductPriceToMagento;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Category;
@@ -80,8 +81,6 @@ class ProductSuppliersController extends Controller
 
         $product = Product::active()->findOrFail($productSupplier->product_id);
 
-        $supplier = Supplier::active()->findOrFail($productSupplier->supplier_id);
-
         $this->validate(request(), [
             'import_price' => 'required',
             'from_date' => 'required',
@@ -91,7 +90,6 @@ class ProductSuppliersController extends Controller
 
         $user = Sentinel::getUser();
         if (request('state') == 1) {
-            $product = Product::where('id', $productSupplier->product_id)->first();
             dispatch(new OffProductToMagento($product, 1, $user));
             $productSupplier->status = 1;
         }elseif(request('state') == 0){
@@ -102,14 +100,10 @@ class ProductSuppliersController extends Controller
                 ->where('suppliers.id', '!=', $productSupplier->supplier_id)
                 ->count();
             if ($suppliers == 0) {
-                $product = Product::where('id', $productSupplier->product_id)->first();
                 dispatch(new OffProductToMagento($product, 0, $user));
                 $productSupplier->status = 0;
             }
         }
-
-        $productSupplier->state = request('state');
-        $productSupplier->save();
 
         $productSupplier->forceFill([
             'import_price' => request('import_price'),

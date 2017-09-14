@@ -125,7 +125,7 @@ class BundleProduct extends Model
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)
             ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
-                $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $provinceId . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee) end ))))'))
+                $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $provinceId . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))))'))
             ->orderBy('transport_fees.percent_fee')
             ->first();
 

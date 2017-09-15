@@ -402,7 +402,14 @@ class ProductsController extends Controller
     {
         $isIncludeOutStock = request('include_out_stock');
 
-        $query = 'select p.id,p.sku,p.name,c.name as cname,m.name as mname,ps.supplier_name,ps.import_price,ps.price_recommend,ps.updated_at from products as p
+        $query = 'select p.id,p.sku,p.name,c.name as cname,m.name as mname,ps.supplier_name,ps.import_price,
+                         ps.price_recommend,ps.updated_at, case ps.region_id
+                           when 1 then "Miền Bắc"
+                           when 2 then "Miền Trung"
+                           when 3 then "Miền Nam"
+                           else "N/A"
+                         end as region_name
+                    from products as p
                     left join categories as c on p.category_id = c.id
                     left join manufacturers as m on p.manufacturer_id = m.id
                     inner join (select ps.*,s.name as supplier_name from product_supplier as ps

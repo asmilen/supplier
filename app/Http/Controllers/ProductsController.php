@@ -52,12 +52,20 @@ class ProductsController extends Controller
         $code = strtoupper(request('code'));
         Validator::make(request()->all(), [
             'category_id' => 'required',
+            'channels' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
             //'image' => 'image|mimes:jpg,png,jpeg|max:2000',
             'code' => 'alpha_num|max:255',
         ], [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
+            'name.required' => 'Bạn chưa nhập tên sản phẩm.',
+            'name.max' => 'Tên sản phẩm quá dài, tối đa 255 ký tự.',
+            'channels.required' => 'Bạn chưa chọn kênh bán hàng.',
+            'category_id.required' => 'Bạn chưa chọn danh mục.',
+            'manufacturer_id.required' => 'Bạn chưa chọn nhà sản xuất.',
+            'code.alpha_num' => 'Mã sản phẩm phải là số.',
+            'code.max' => 'Mã sản phẩm quá dài, tối đa 255 ký tự.',
         ])->after(function ($validator) use ($code) {
             if (!empty($code)) {
                 $check = Product::where('category_id', request('category_id'))
@@ -78,9 +86,8 @@ class ProductsController extends Controller
 
 
         $channelChoose = [];
-        foreach (request('channels') as $key => $channel)
-        {
-            if ($channel) array_push($channelChoose,$key);
+        foreach (request('channels') as $key => $channel) {
+            if ($channel) array_push($channelChoose, $key);
         }
 
         $product = Product::forceCreate([
@@ -94,7 +101,7 @@ class ProductsController extends Controller
 //            'image' => url('/') . '/storage/' . $filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
-            'channel' => implode(",",$channelChoose),
+            'channel' => implode(",", $channelChoose),
         ]);
 
         flash()->success('Success!', 'Product successfully created.');
@@ -142,15 +149,21 @@ class ProductsController extends Controller
             $rules['image'] = 'image|mimes:jpg,png,jpeg|max:2000';
         }
 
+        $channelChoose = [];
+        foreach (explode(',', request('channel')) as $key => $channel) {
+            if ($channel == 'true') {
+                array_push($channelChoose, $key);
+            }
+        }
+
         Validator::make(request()->all(), $rules, [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
-        ])->validate();
-
-        $channelChoose = [];
-        foreach (explode(',', request('channel')) as $key => $channel)
-        {
-            if ($channel) array_push($channelChoose,$key);
-        }
+            'channel.max' => 'Bạn chưa chọn kênh bán hàng.',
+        ])->after(function ($validator) use ($channelChoose) {
+            if (!$channelChoose) {
+                $validator->errors()->add('channel', 'Bạn chưa chọn kênh bán hàng.');
+            }
+        })->validate();
 
         $product->forceFill([
             'parent_id' => request('parent_id', 0),
@@ -158,7 +171,7 @@ class ProductsController extends Controller
             'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
-            'channel' => implode(",",$channelChoose),
+            'channel' => implode(",", $channelChoose),
         ])->save();
 
         if (request()->file('image')) {

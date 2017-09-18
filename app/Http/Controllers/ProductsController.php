@@ -52,12 +52,20 @@ class ProductsController extends Controller
         $code = strtoupper(request('code'));
         Validator::make(request()->all(), [
             'category_id' => 'required',
+            'channel' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
             //'image' => 'image|mimes:jpg,png,jpeg|max:2000',
             'code' => 'alpha_num|max:255',
         ], [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
+            'name.required' => 'Bạn chưa nhập tên sản phẩm.',
+            'name.max' => 'Tên sản phẩm quá dài, tối đa 255 ký tự.',
+            'channel.required' => 'Bạn chưa chọn kênh bán hàng.',
+            'category_id.required' => 'Bạn chưa chọn danh mục.',
+            'manufacturer_id.required' => 'Bạn chưa chọn nhà sản xuất.',
+            'code.alpha_num' => 'Mã sản phẩm phải là số.',
+            'code.max' => 'Mã sản phẩm quá dài, tối đa 255 ký tự.',
         ])->after(function ($validator) use ($code) {
             if (!empty($code)) {
                 $check = Product::where('category_id', request('category_id'))
@@ -141,7 +149,6 @@ class ProductsController extends Controller
         if (request()->file('image')) {
             $rules['image'] = 'image|mimes:jpg,png,jpeg|max:2000';
         }
-
         Validator::make(request()->all(), $rules, [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
         ])->validate();
@@ -149,9 +156,10 @@ class ProductsController extends Controller
         $channelChoose = [];
         foreach (explode(',', request('channel')) as $key => $channel)
         {
-            if ($channel) array_push($channelChoose,$key);
+            if ($channel == 'true'){
+                array_push($channelChoose,$key);
+            }
         }
-
         $product->forceFill([
             'parent_id' => request('parent_id', 0),
             'name' => request('name'),

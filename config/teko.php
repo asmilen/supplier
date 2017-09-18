@@ -18,7 +18,6 @@ return [
     'stores' => [
         1 => 'Online',
         2 => 'Offline',
-        3 => 'Phòng máy',
     ],
 
     'regions' => [

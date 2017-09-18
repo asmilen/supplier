@@ -25,11 +25,7 @@ function ProductCreateController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
-        this.channels = {
-            1 : false,
-            2 : false,
-            3 : false,
-        };
+        this.channels = {};
     };
 
     $scope.productForm = new productForm();

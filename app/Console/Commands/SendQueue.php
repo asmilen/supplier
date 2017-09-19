@@ -82,10 +82,7 @@ class SendQueue extends Command
                 )]
             );
 
-            LogMessageQueue::create([
-                'post_data' => json_encode($result),
-                'response' => json_encode($response)
-            ]);
+            \Log::info('post_data_message_queue: ' . json_encode($result));
             
         } catch (RequestException $e) {
             return false;

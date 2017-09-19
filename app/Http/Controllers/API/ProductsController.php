@@ -53,9 +53,9 @@ class ProductsController extends Controller
 
         $model = Product::select([
             'products.id', 'products.name', 'products.sku', 'products.image as source_url', 'products.image',
-            DB::raw('MIN(ceil(product_supplier.import_price  * (1 + '. $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/ 1000) * 1000) as import_price'),
-            DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + '. $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000) as import_price_w_margin')
-            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + '. $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000)) as price')
+            DB::raw('MIN(ceil(product_supplier.import_price  * (1 + ' . $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/ 1000) * 1000) as import_price'),
+            DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + ' . $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000) as import_price_w_margin')
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + ' . $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000)) as price')
             , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
 								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
@@ -71,7 +71,6 @@ class ProductsController extends Controller
             })
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
-//            ->where('products.channel', 'like', '%' . 2 . '%')
             ->where('products.status', 1);
 
         return Datatables::eloquent($model)
@@ -80,6 +79,13 @@ class ProductsController extends Controller
                 if (request()->has('sku')) {
                     $query->where('products.sku', 'like', '%' . request('sku') . '%');
                 }
+
+                $channels = request('channels', [2]);
+                $query->where(function ($q) use ($channels) {
+                    foreach ($channels as $key => $channel) {
+                        $q->orWhere('products.channel', 'like', '%' . $channel . '%');
+                    }
+                });
 
                 if (request()->has('name')) {
                     $query->where('products.name', 'like', '%' . request('name') . '%');
@@ -164,6 +170,9 @@ class ProductsController extends Controller
             if (!$regions) {
                 return api_response(['message' => 'Mã tỉnh thành không tồn tại'], 404);
             }
+
+            $channels = request('channels', [2]);
+
             $product = Product::with('manufacturer', 'category')
                 ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`,  `products`.`description`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
                 ->leftJoin('product_supplier', function ($q) use ($regions) {
@@ -171,7 +180,12 @@ class ProductsController extends Controller
                         ->where('product_supplier.region_id', $regions[0])
                         ->where('product_supplier.state', '=', 1);
                 })
-//                ->where('products.channel', 'like', '%' . 2 . '%')
+                ->where('products.channel', 'like', '%' . 2 . '%')
+                ->where(function ($q) use ($channels) {
+                    foreach ($channels as $key => $channel) {
+                        $q->orWhere('products.channel', 'like', '%' . $channel . '%');
+                    }
+                })
                 ->findOrFail($id); // kiểm tra thông tin sản phẩm cần mua
 
             $margin = MarginRegionCategory::where('category_id', $product->category_id)
@@ -216,26 +230,26 @@ class ProductsController extends Controller
                 $product->best_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
-                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
 
                 $product->import_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
-                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
 
                 $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
-                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
 
                 $product->recommended_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
                     ->where('price_recommend', $product->best_price)
-                    ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min('product_supplier.price_recommend');
 
                 if ($product->recommended_price == $product->best_price) {

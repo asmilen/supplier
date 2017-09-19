@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\LogMessageQueue;
 use App\Models\MessageQueueLog;
 use Carbon\Carbon;
 use GuzzleHttp;
@@ -80,6 +81,12 @@ class SendQueue extends Command
                     $result
                 )]
             );
+
+            LogMessageQueue::create([
+                'post_data' => json_encode($result),
+                'response' => json_encode($response)
+            ]);
+            
         } catch (RequestException $e) {
             return false;
         }

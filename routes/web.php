@@ -6,10 +6,6 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('login', function () {
-    return redirect('/auth/google');
-});
-
 Route::get('auth/google', 'Auth\AuthController@redirectToProvider');
 Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback');
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');

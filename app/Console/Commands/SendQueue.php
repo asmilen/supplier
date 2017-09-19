@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\LogMessageQueue;
 use App\Models\MessageQueueLog;
 use Carbon\Carbon;
 use GuzzleHttp;

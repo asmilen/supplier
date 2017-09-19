@@ -71,7 +71,7 @@ class ProductsController extends Controller
             })
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
-            ->where('products.channel', 'like', '%' . 2 . '%')
+//            ->where('products.channel', 'like', '%' . 2 . '%')
             ->where('products.status', 1);
 
         return Datatables::eloquent($model)
@@ -171,7 +171,7 @@ class ProductsController extends Controller
                         ->where('product_supplier.region_id', $regions[0])
                         ->where('product_supplier.state', '=', 1);
                 })
-                ->where('products.channel', 'like', '%' . 2 . '%')
+//                ->where('products.channel', 'like', '%' . 2 . '%')
                 ->findOrFail($id); // kiểm tra thông tin sản phẩm cần mua
 
             $margin = MarginRegionCategory::where('category_id', $product->category_id)

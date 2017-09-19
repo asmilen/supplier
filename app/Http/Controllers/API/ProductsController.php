@@ -180,7 +180,6 @@ class ProductsController extends Controller
                         ->where('product_supplier.region_id', $regions[0])
                         ->where('product_supplier.state', '=', 1);
                 })
-                ->where('products.channel', 'like', '%' . 2 . '%')
                 ->where(function ($q) use ($channels) {
                     foreach ($channels as $key => $channel) {
                         $q->orWhere('products.channel', 'like', '%' . $channel . '%');

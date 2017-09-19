@@ -13,7 +13,7 @@
             <a href="{{ url('/dashboard') }}">Dashboard</a>
         </li>
         <li>
-            <a href="{{ route('manufacturers.index') }}">Màu sắc </a>
+            <a href="{{ url('/colors') }}">Màu sắc </a>
         </li>
         <li class="active">Thay đổi</li>
     </ul><!-- /.breadcrumb -->

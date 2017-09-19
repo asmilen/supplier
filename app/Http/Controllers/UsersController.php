@@ -126,6 +126,7 @@ class UsersController extends Controller
             'email.max' => 'Email quá dài, tối đa 255 kí tự.',
             'password.min' => 'Mật khẩu phải có ít nhất 6 kí tự.',
             'password.confirmed' => 'Xác nhận mật khẩu không chính xác.',
+            'areas.required' => 'Bạn chưa chọn thông tin quản lí.',
         ]);
 
         $user->update(request()->all())

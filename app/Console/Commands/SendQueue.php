@@ -80,6 +80,10 @@ class SendQueue extends Command
                     $result
                 )]
             );
+
+            \Log::useDailyFiles(storage_path().'/logs/log-message-queue.log');
+            \Log::info('post_data_message_queue: ' . json_encode($result));
+            
         } catch (RequestException $e) {
             return false;
         }

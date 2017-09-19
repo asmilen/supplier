@@ -41,7 +41,7 @@ class ColorsController extends Controller
             'name.required' => 'Hãy nhập tên màu sắc.',
             'name.unique' => 'Tên màu sắc đã tồn tại.',
             'name.max' => 'Tên màu sắc quá dài, tối đa 255 ký tự.',
-            'code.unique' => 'Mã mau đã tồn tại.',
+            'code.unique' => 'Mã màu đã tồn tại.',
             'code.required' => 'Hãy nhập mã màu sắc.',
             'code.alpha_num' => 'Mã màu sắc không được chứa kí tự đặc biệt.',
             'code.min' => 'Mã màu sắc phải có ít nhất 3 ký tự.',

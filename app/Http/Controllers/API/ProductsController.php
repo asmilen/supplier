@@ -45,16 +45,19 @@ class ProductsController extends Controller
          * @var array $supplierIds
          */
 
+        $province = Province::whereIn('code', request('province_ids'))->pluck('id'); // tìm tỉnh mua hàng
+
+        $provinceFee = TransportFee::where('province_id', $province ? $province[0] : 0)->first();// phí ship của tỉnh mua hàng
+
+        $feeValue = ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01; //giá trị của phí ship của tỉnh mua hàng
+
         $model = Product::select([
-            'products.id', 'products.name', 'products.code',
-            'products.sku', 'products.source_url', 'products.best_price', 'products.category_id',
-            'products.manufacturer_id', 'product_supplier.supplier_id', 'product_supplier.quantity',
-            'products.image',
-            DB::raw('(ceil(product_supplier.import_price / 1000) * 1000) as import_price'),
-            DB::raw('(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000) as import_price_w_margin')
-            , DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5))/1000) * 1000)) as price')
-            , DB::raw('if((if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
-								(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
+            'products.id', 'products.name', 'products.sku', 'products.image as source_url', 'products.image',
+            DB::raw('MIN(ceil(product_supplier.import_price  * (1 + '. $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/ 1000) * 1000) as import_price'),
+            DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + '. $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000) as import_price_w_margin')
+            , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + '. $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000)) as price')
+            , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
+								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
             ->with('category')
             ->join('product_supplier', function ($q) use ($regionIds) {
@@ -66,11 +69,13 @@ class ProductsController extends Controller
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->whereIn('margin_region_category.region_id', $regionIds);
             })
+            ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
+            ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('products.channel', 'like', '%' . 2 . '%')
             ->where('products.status', 1);
 
         return Datatables::eloquent($model)
-            ->setTransformer(new ProductApiTransformer($provinceIds, request('province_ids')))
+//            ->setTransformer(new ProductApiTransformer($provinceIds, request('province_ids')))
             ->filter(function ($query) {
                 if (request()->has('sku')) {
                     $query->where('products.sku', 'like', '%' . request('sku') . '%');
@@ -102,7 +107,7 @@ class ProductsController extends Controller
             // return isset($margin) ? $model->best_import_price * (1 + 0.01 * $margin->margin) : $model->best_import_price * 1.05;
             // })
             ->groupBy('products.id', 'products.name', 'products.code',
-                'products.sku', 'products.source_url', 'products.best_price',
+                'products.sku', 'products.source_url',
                 'products.category_id')
             ->make(true);
     }

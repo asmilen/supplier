@@ -1,7 +1,7 @@
 {!! csrf_field() !!}
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Tên nhà cung cấp</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Tên nhà cung cấp</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="name" placeholder="Tên nhà cung cấp"
                value="{{ old('name', $supplier->name) }}">
@@ -9,7 +9,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Tên đầy đủ</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Tên đầy đủ</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="full_name" placeholder="Tên đầy đủ"
                value="{{ old('full_name', $supplier->full_name) }}">
@@ -17,7 +17,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Mã nhà cung cấp</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Mã nhà cung cấp</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="code" placeholder="Mã nhà cung cấp"
                value="{{ old('code', $supplier->code) }}">
@@ -25,7 +25,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Phone</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Phone</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="phone" placeholder="Phone..."
                value="{{ old('phone', $supplier->phone) }}">
@@ -33,7 +33,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Fax</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Fax</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="fax" placeholder="Fax ..."
                value="{{ old('fax', $supplier->fax) }}">
@@ -41,7 +41,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Email</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Email</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="email" placeholder="email ..."
                value="{{ old('email', $supplier->email) }}">
@@ -57,7 +57,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Tax Number</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Tax Number</label>
     <div class="col-sm-6">
         <input type="number" class="form-control" name="tax_number" placeholder="Tax Number ..."
                value="{{ old('tax_number', $supplier->tax_number) }}">
@@ -73,7 +73,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Type</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Type</label>
     <div class="col-sm-6">
         <select name="type" class="form-control">
             <option value="">--Chọn Loại hóa đơn--</option>
@@ -84,7 +84,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Loại nhà cung cấp</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Loại nhà cung cấp</label>
     <div class="col-sm-6">
         <select name="sup_type" class="form-control">
             <option value="">--Chọn Loại Nhà cung cấp--</option>
@@ -110,7 +110,7 @@
 
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Chọn Tỉnh</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Chọn Tỉnh</label>
     <div class="col-sm-6">
         <select name="province_id" id="province_id" class="provinces">
             <option value=""></option>
@@ -122,7 +122,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Chọn Huyện</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Chọn Huyện</label>
     <div class="col-sm-6">
         <select name="district_id" id="district_id" class="districts">
             <option value=""></option>
@@ -136,7 +136,7 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Địa chỉ</label>
+    <label class="col-sm-3 control-label no-padding-right"><span style="color: red;">*</span>Địa chỉ</label>
     <div class="col-sm-6">
         <input type="text" class="form-control" name="address" placeholder="Địa chỉ nhà cung cấp"
                value="{{ old('address', $address->address) }}">
@@ -146,7 +146,8 @@
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Mã địa chỉ Code</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="addressCode" id="addressCode" placeholder="Mã địa chỉ nhà cung cấp"
+        <input type="text" class="form-control" name="addressCode" id="addressCode"
+               placeholder="Mã địa chỉ nhà cung cấp"
                value="{{ old('addressCode', $address->addressCode) }}">
     </div>
 </div>
@@ -187,42 +188,48 @@
     <label class="col-sm-3 control-label no-padding-right">Bank Account</label>
     <div class="col-sm-6">
 
-        <input type="text" class="form-control" name="bank_account" placeholder="Bank Account ..." value="{{ old('bank_account', $supplier->supplier_bank['bank_account']) }}">
+        <input type="text" class="form-control" name="bank_account" placeholder="Bank Account ..."
+               value="{{ old('bank_account', $supplier->supplier_bank['bank_account']) }}">
     </div>
 </div>
 
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Bank Account Name</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="bank_account_name" placeholder="Bank Account Name ..." value="{{ old('bank_account_name', $supplier->supplier_bank['bank_account_name']) }}">
+        <input type="text" class="form-control" name="bank_account_name" placeholder="Bank Account Name ..."
+               value="{{ old('bank_account_name', $supplier->supplier_bank['bank_account_name']) }}">
     </div>
 </div>
 
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Bank Name</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="bank_name" placeholder="Bank Name ..." value="{{ old('bank_name', $supplier->supplier_bank['bank_name']) }}">
+        <input type="text" class="form-control" name="bank_name" placeholder="Bank Name ..."
+               value="{{ old('bank_name', $supplier->supplier_bank['bank_name']) }}">
     </div>
 </div>
 
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Bank Code</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="bank_code" placeholder="Bank Code ..." value="{{ old('bank_code', $supplier->supplier_bank['bank_code']) }}">
+        <input type="text" class="form-control" name="bank_code" placeholder="Bank Code ..."
+               value="{{ old('bank_code', $supplier->supplier_bank['bank_code']) }}">
     </div>
 </div>
 
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Bank Branch</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="bank_branch" placeholder="Bank Branch ..." value="{{ old('bank_branch', $supplier->supplier_bank['bank_branch']) }}">
+        <input type="text" class="form-control" name="bank_branch" placeholder="Bank Branch ..."
+               value="{{ old('bank_branch', $supplier->supplier_bank['bank_branch']) }}">
     </div>
 </div>
 
 <div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Bank Province</label>
     <div class="col-sm-6">
-        <input type="text" class="form-control" name="bank_province" placeholder="Bank Province ..." value="{{ old('bank_province', $supplier->supplier_bank['bank_province']) }}">
+        <input type="text" class="form-control" name="bank_province" placeholder="Bank Province ..."
+               value="{{ old('bank_province', $supplier->supplier_bank['bank_province']) }}">
     </div>
 </div>
 

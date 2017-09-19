@@ -13,7 +13,7 @@
     @if ($color->id)
         <p class="form-control-static"><strong>{{ $color->code }}</strong></p>
     @else
-        <input type="text" class="form-control" name="code" placeholder="Mã mau" value="{{ old('code', $color->code) }}">
+        <input type="text" class="form-control" name="code" placeholder="Mã màu" value="{{ old('code', $color->code) }}">
         <span class="help-block">
             Dài từ 3~6 kí tự bao gồm chữ cái và số. Dùng để sinh SKU, để trống để sinh tự động.
         </span>

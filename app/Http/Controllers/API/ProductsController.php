@@ -59,7 +59,7 @@ class ProductsController extends Controller
             , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
 								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
         ])
-            ->with('category')
+//            ->with('category')
             ->join('product_supplier', function ($q) use ($regionIds) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->whereIn('product_supplier.region_id', $regionIds)

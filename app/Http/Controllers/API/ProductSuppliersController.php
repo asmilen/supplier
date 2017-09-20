@@ -139,6 +139,12 @@ class ProductSuppliersController extends Controller
             });
         }
 
+        if (! empty(request('product_id'))) {
+            $builder->whereHas('product', function ($query) {
+                $query->where('products.id', request('product_id'));
+            });
+        }
+
         if (request('state') != '') {
             $builder->where('state', request('state'));
         }

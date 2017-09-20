@@ -66,6 +66,11 @@
                         <a href="{{ url('/auth/google') }}" class="btn btn-danger">
                             <i class="ace-icon fa fa-google-plus"></i> Login With Google
                         </a>
+
+                        <a href="{{ env('TEKO_ACC_URL').'/signin?_cont='.url('/auth/teko/callback') }}" class="btn btn-success">
+                            Login With Teko
+                        </a>
+
                     </div>
                 </div>
             </div>

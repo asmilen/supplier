@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use GuzzleHttp\Exception\ClientException;
 use Sentinel;
 use Closure;
 use App\Models\User;
@@ -33,6 +34,7 @@ class SSOLogin
     protected function loginViaTekoSSO()
     {
         if (! $userInfo = $this->getUserInfoByTekoSSOCookie()) {
+            unset($_COOKIE['_uat']);
             return false;
         }
 
@@ -56,14 +58,21 @@ class SSOLogin
             'base_uri' => env('TEKO_ACC_URL'),
         ]);
 
-        $response = $client->get('/api/validate_access_token?accessToken='.$_COOKIE['_uat']);
+        try{
+            $response = $client->get('/api/validate_access_token?accessToken='.$_COOKIE['_uat']);
 
-        $userInfo = json_decode($response->getBody()->getContents(), true);
+            $userInfo = json_decode($response->getBody()->getContents(), true);
 
-        if (isset($userInfo['error']) || empty($userInfo['email'])) {
-            return false;
+            if (isset($userInfo['error']) || empty($userInfo['email'])) {
+                return false;
+            }
+
+            return $userInfo;
+        }
+        catch (ClientException $e){
+
         }
 
-        return $userInfo;
+        return false;
     }
 }

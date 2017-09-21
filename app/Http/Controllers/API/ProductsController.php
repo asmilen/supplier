@@ -52,9 +52,7 @@ class ProductsController extends Controller
         $feeValue = ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01; //giá trị của phí ship của tỉnh mua hàng
 
         $model = Product::select([
-            'products.id', 'products.name', 'products.sku', 'products.image as source_url', 'products.image',
-            DB::raw('MIN(ceil(product_supplier.import_price  * (1 + ' . $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/ 1000) * 1000) as import_price'),
-            DB::raw('MIN(ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + ' . $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000) as import_price_w_margin')
+            'products.id', 'products.name', 'products.sku', 'products.image as source_url', 'products.image', 'products.category_id'
             , DB::raw('MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * (1 + 0.01 * IFNULL(margin_region_category.margin,5) + ' . $feeValue . '+ (case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))/1000) * 1000)) as price')
             , DB::raw('if(MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000)) = 10000000000, 0 ,
 								MIN(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, 10000000000))) as recommended_price')
@@ -74,7 +72,7 @@ class ProductsController extends Controller
             ->where('products.status', 1);
 
         return Datatables::eloquent($model)
-//            ->setTransformer(new ProductApiTransformer($provinceIds, request('province_ids')))
+            ->setTransformer(new ProductApiTransformer($provinceIds, request('province_ids'), $provinceFee, $feeValue))
             ->filter(function ($query) {
                 if (request()->has('sku')) {
                     $query->where('products.sku', 'like', '%' . request('sku') . '%');

@@ -18,7 +18,6 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \App\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\SSOLogin::class,
     ];
 
     /**
@@ -37,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ShareCurrentUser::class,
             \Gtk\LaravelTokenGuard\CreateFreshApiToken::class,
+            \App\Http\Middleware\SSOLogin::class,
         ],
 
         'api' => [

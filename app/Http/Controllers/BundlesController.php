@@ -133,8 +133,8 @@ class BundlesController extends Controller
         if (request()->has('productIds')){
             $productIds = request('productIds');
         }
-        
-        return $bundle->listProductBySuppliers($supplierIds, $productIds, $bundle->region_id);
+
+        return $bundle->listProductBySuppliers($productIds, $bundle->region_id);
     }
 
     public function toggleStatus(Bundle $bundle) {

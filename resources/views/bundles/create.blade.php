@@ -24,7 +24,7 @@
 <div class="page-content">
     <div class="page-header">
         <h1>
-            Màu sắc
+            Nhóm sản phẩm
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Tạo mới

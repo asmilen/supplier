@@ -234,8 +234,8 @@
 
             function loadProduct(bundleId,productIds) {
                 productIds = typeof productIds !== 'undefined' ? productIds : [];
-                table.destroy();
-                table = $("#tableproducts").DataTable({
+                productsTable.destroy();
+                productsTable = $("#products-table").DataTable({
                     searching: true,
                     autoWidth: false,
                     processing: true,

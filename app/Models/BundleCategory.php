@@ -126,11 +126,7 @@ class BundleCategory extends Model
 
     public function getTotalProducts()
     {
-        $supplierIds = SupplierSupportedProvince::whereIn(
-            'province_id', Province::getListByRegion($this->bundle()->pluck('region_id'))
-        )->pluck('supplier_id')->all();
-
-        $bundleProducts = $this->listProducts($supplierIds, $this->id, $this->bundle()->pluck('region_id'));
+        $bundleProducts = $this->listProducts($this->id, $this->bundle()->pluck('region_id'));
 
         return count($bundleProducts);
     }

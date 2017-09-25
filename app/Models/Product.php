@@ -417,10 +417,12 @@ class Product extends Model
         ];
 
         $logs = LogOffProduct::where('product_id', $this ? $this->id : 0)
+            ->where('post_data', json_encode($post_data))
+            ->orderBy('created_at', 'DESC')
             ->first();
 
         if ($logs){
-            if (json_encode($post_data) != $logs->post_data){
+            if ($logs->type != 'OFF'){
                 $response = $this->callApiOffProduct($post_data);
 
                 LogOffProduct::create([

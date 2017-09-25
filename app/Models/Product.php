@@ -414,14 +414,31 @@ class Product extends Model
             ]
         ];
 
-        $response = $this->callApiOffProduct($post_data);
+        $logs = LogOffProduct::where('product_id', $this ? $this->id : 0)
+            ->first();
 
-        LogOffProduct::create([
-            'product_id' => $this ? $this->id : 0,
-            'type' => 'OFF',
-            'post_data' => json_encode($post_data),
-            'response' => json_encode($response)
-        ]);
+        if ($logs){
+            if (json_encode($post_data) != $logs->post_data){
+                $response = $this->callApiOffProduct($post_data);
+
+                LogOffProduct::create([
+                    'product_id' => $this ? $this->id : 0,
+                    'type' => 'OFF',
+                    'post_data' => json_encode($post_data),
+                    'response' => json_encode($response)
+                ]);
+            }
+        }else{
+            $response = $this->callApiOffProduct($post_data);
+
+            LogOffProduct::create([
+                'product_id' => $this ? $this->id : 0,
+                'type' => 'OFF',
+                'post_data' => json_encode($post_data),
+                'response' => json_encode($response)
+            ]);
+        }
+
     }
 
     public function onProductToMagento($regionId)

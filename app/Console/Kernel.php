@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         Commands\MigrateRegionIdProductSupplier::class,
         Commands\EmailAlert::class,
         SendQueue::class,
+        Commands\UpdateStatusToMagento::class,
     ];
 
     /**

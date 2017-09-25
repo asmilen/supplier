@@ -64,13 +64,6 @@
         <div class="col-sm-6">
             <p class="text-right">
                 @if (Sentinel::getUser()->hasAccess('product-suppliers.update-all-prices-to-magento'))
-                    <button class="btn btn-success text-right" ng-click="showUpdateStatusToMagentoModal()">
-                        <i class="ace-icon fa fa-flask" aria-hidden="true"></i>
-                        <span class="hidden-xs">Cập nhật status sang Magento</span>
-                    </button>
-                @endif
-
-                @if (Sentinel::getUser()->hasAccess('product-suppliers.update-all-prices-to-magento'))
                 <button class="btn btn-info text-right" ng-click="showUpdatePricesToMagentoModal()">
                     <i class="ace-icon fa fa-flask" aria-hidden="true"></i>
                     <span class="hidden-xs">Cập nhật giá sang Magento</span>

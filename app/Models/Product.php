@@ -31,15 +31,6 @@ class Product extends Model
     {
         parent::boot();
 
-        static::created(function ($model) {
-            $code = $model->code ?: $model->id;
-
-            $model->forceFill([
-                'code' => $code,
-                'sku' => $model->generateSku($code),
-            ])->save();
-        });
-
         static::saved(function ($model) {
             if ($model->sku) {
                 dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
@@ -54,6 +45,13 @@ class Product extends Model
                     'sourceUrl' => $model->source_url,
                     'createdAt' => strtotime($model->created_at),
                 ])));
+            } else {
+                $code = $model->code ?: $model->id;
+
+                $model->forceFill([
+                    'code' => $code,
+                    'sku' => $model->generateSku($code),
+                ])->save();
             }
         });
     }

@@ -17,11 +17,6 @@ Route::get('products/getSimpleProduct', 'ProductsController@getSimpleProduct')->
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
-    Route::get('profile', 'ProfileController@edit');
-    Route::put('profile', 'ProfileController@update');
-    Route::get('profile/password', 'ProfileController@editPassword');
-    Route::put('profile/password', 'ProfileController@updatePassword');
-
     Route::group(['middleware' => 'acl'], function () {
         // Users
         Route::get('users/datatables', 'UsersController@getDatatables')->name('users.datatables');

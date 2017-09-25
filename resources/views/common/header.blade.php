@@ -57,20 +57,6 @@
 
                     <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                         <li>
-                            <a href="{{ url('/profile') }}">
-                                <i class="ace-icon fa fa-user"></i>Edit Profile
-                            </a>
-                        </li>
-
-                        <li>
-                            <a href="{{ url('/profile/password') }}">
-                                <i class="ace-icon fa fa-lock"></i>Update Password
-                            </a>
-                        </li>
-
-                        <li class="divider"></li>
-
-                        <li>
                             <a href="{{ url('/logout') }}"
                                 onclick="event.preventDefault();
                                          document.getElementById('logout-form').submit();">

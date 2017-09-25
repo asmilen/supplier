@@ -125,6 +125,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Product Suppliers
         Route::post('product-suppliers/update-all-prices-to-magento', 'ProductSuppliersController@updateAllPricesToMagento')->name('product-suppliers.update-all-prices-to-magento');
+        Route::post('product-suppliers/update-all-status-to-magento', 'ProductSuppliersController@updateAllStatusToMagento')->name('product-suppliers.update-all-status-to-magento');
         Route::get('product-suppliers', 'ProductSuppliersController@index')->name('product-suppliers.index');
         Route::post('product-suppliers', 'ProductSuppliersController@store')->name('product-suppliers.store');
         Route::post('product-suppliers/update-valid-time', 'ProductSuppliersController@updateValidTime')->name('product-suppliers.updateValidTime');

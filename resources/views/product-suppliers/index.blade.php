@@ -64,6 +64,13 @@
         <div class="col-sm-6">
             <p class="text-right">
                 @if (Sentinel::getUser()->hasAccess('product-suppliers.update-all-prices-to-magento'))
+                    <button class="btn btn-success text-right" ng-click="showUpdateStatusToMagentoModal()">
+                        <i class="ace-icon fa fa-flask" aria-hidden="true"></i>
+                        <span class="hidden-xs">Cập nhật status sang Magento</span>
+                    </button>
+                @endif
+
+                @if (Sentinel::getUser()->hasAccess('product-suppliers.update-all-prices-to-magento'))
                 <button class="btn btn-info text-right" ng-click="showUpdatePricesToMagentoModal()">
                     <i class="ace-icon fa fa-flask" aria-hidden="true"></i>
                     <span class="hidden-xs">Cập nhật giá sang Magento</span>
@@ -407,6 +414,26 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modal-update-status-to-magento" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Cập nhật status sang Magento</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Cập nhật status sang Magento sẽ mất thời gian chạy ngầm.</p>
+                    <p>Bạn có đồng ý cập nhật giá không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success" ng-click="updateStatusToMagento()" ng-disabled="updateStatusToMagentoForm.disabled"><i class="fa fa-save"></i> Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="modal fade" id="modal-edit-product-supplier" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg">

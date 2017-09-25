@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\OffProductToMagento;
-use App\Jobs\UpdateProductPriceToMagento;
+use App\Jobs\UpdateAllProductStatusToMagento;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Category;
@@ -121,6 +121,11 @@ class ProductSuppliersController extends Controller
     public function updateAllPricesToMagento()
     {
         dispatch(new UpdateAllProductPricesToMagento());
+    }
+
+    public function updateAllStatusToMagento()
+    {
+        dispatch(new UpdateAllProductStatusToMagento());
     }
 
     public function updateValidTime()

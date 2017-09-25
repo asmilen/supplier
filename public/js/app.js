@@ -8694,12 +8694,25 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.showUpdatePricesToMagentoModal = function () {
         $('#modal-update-prices-to-magento').modal('show');
     };
+    $scope.showUpdateStatusToMagentoModal = function () {
+        $('#modal-update-status-to-magento').modal('show');
+    };
 
     $scope.updatePricesToMagento = function () {
         $scope.updatePricesToMagentoForm.disabled = true;
 
         $http.post('/product-suppliers/update-all-prices-to-magento').then(function (response) {
             $scope.updatePricesToMagentoForm.disabled = false;
+
+            $('#modal-update-prices-to-magento').modal('hide');
+        });
+    };
+
+    $scope.updateStatusToMagento = function () {
+        $scope.updatePricesToMagentoForm.disabled = true;
+
+        $http.post('/product-suppliers/update-all-status-to-magento').then(function (response) {
+            $scope.updateStatussToMagentoForm.disabled = false;
 
             $('#modal-update-prices-to-magento').modal('hide');
         });

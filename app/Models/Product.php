@@ -420,7 +420,8 @@ class Product extends Model
             ->first();
 
         if ($logs){
-            if ($logs->type != 'OFF'){
+
+            if ($logs->type === "ON"){
                 $response = $this->callApiOffProduct($post_data);
 
                 LogOffProduct::create([

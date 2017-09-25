@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\UpdateAllProductStatusToMagento;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Console\Commands\SendQueue;
@@ -21,6 +22,7 @@ class Kernel extends ConsoleKernel
         Commands\MigrateRegionIdProductSupplier::class,
         Commands\EmailAlert::class,
         SendQueue::class,
+        Commands\UpdateStatusToMagento::class,
     ];
 
     /**

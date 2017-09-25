@@ -43,10 +43,13 @@ class OffProductToMagento implements ShouldQueue
      */
     public function handle()
     {
-        Sentinel::login($this->user);
         if ($this->type == 0){
+            Sentinel::login($this->user);
+            $this->product->offProductToMagento($this->regionId);
+        }elseif($this->type == 2){
             $this->product->offProductToMagento($this->regionId);
         }else{
+            Sentinel::login($this->user);
             $this->product->onProductToMagento($this->regionId);
         }
     }

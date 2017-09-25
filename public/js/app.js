@@ -8494,9 +8494,6 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     function updatePricesToMagentoForm() {
         this.disabled = false;
     }
-    function updateStatusToMagentoForm() {
-        this.disabled = false;
-    }
 
     function updateValidTimeForm() {
         this.from_date = '';
@@ -8511,7 +8508,6 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.suppliersListForm = new suppliersListForm();
     $scope.exportForm = new exportForm();
     $scope.updatePricesToMagentoForm = new updatePricesToMagentoForm();
-    $scope.updateStatusToMagentoForm = new updateStatusToMagentoForm();
     $scope.updateValidTimeForm = new updateValidTimeForm();
 
     $scope.refreshData = function () {
@@ -8698,10 +8694,6 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         $('#modal-update-prices-to-magento').modal('show');
     };
 
-    $scope.showUpdateStatusToMagentoModal = function () {
-        $('#modal-update-status-to-magento').modal('show');
-    };
-
     $scope.updatePricesToMagento = function () {
         $scope.updatePricesToMagentoForm.disabled = true;
 
@@ -8709,16 +8701,6 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
             $scope.updatePricesToMagentoForm.disabled = false;
 
             $('#modal-update-prices-to-magento').modal('hide');
-        });
-    };
-
-    $scope.updateStatusToMagento = function () {
-        $scope.updateStatusToMagentoForm.disabled = true;
-
-        $http.post('/product-suppliers/update-all-status-to-magento').then(function (response) {
-            $scope.updateStatusToMagentoForm.disabled = false;
-
-            $('#modal-update-status-to-magento').modal('hide');
         });
     };
 

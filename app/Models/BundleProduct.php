@@ -110,8 +110,7 @@ class BundleProduct extends Model
             ->where('region_id', $regionId)
             ->first();
         $marginValue = ($margin ? 1 + 0.01 * $margin->margin : 1.05);
-        $province = Province::where('region_id', $regionId)
-            ->where('code', $provinceCode)
+        $province = Province::where('code', $provinceCode)
             ->first();
         $provinceId = $province ? $province->id : 0;
 

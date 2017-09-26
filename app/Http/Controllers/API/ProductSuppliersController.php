@@ -159,9 +159,14 @@ class ProductSuppliersController extends Controller
         $productSuppliers = $builder->get();
 
         $productSuppliers->transform(function ($item,$key){
+            if ($item->product->category)
+                $categoryMargin = $item->product->category->margins()->where('region_id',$item->region_id)->first();
+
             return [
                 'id' => $item->id,
+                'Miền' => $item->region_id ? config('teko.regions')[$item->region_id] : '',
                 'Danh mục' => $item->product->category ? $item->product->category->name : '',
+                'Margin' => $categoryMargin ? $categoryMargin->margin : '',
                 'Nhà Sản xuất' => $item->product->manufacturer ? $item->product->manufacturer->name : '',
                 'sku' => $item->product->sku,
                 'Tên' => $item->product->name,
@@ -170,7 +175,7 @@ class ProductSuppliersController extends Controller
                 'Hiệu lực từ' => $item->from_date,
                 'Hiệu lực đến' => $item->to_date,
                 'Số lượng tối thiểu' => $item->min_quantity,
-                'Giá bán khuyến nghị' => $item->recommend_price,
+                'Giá bán khuyến nghị' => $item->price_recommend,
                 'Tình trạng' => config('teko.product.state')[$item->state],
                 'Cập nhật lần cuối' => $item->updated_at,
             ];

@@ -44,14 +44,9 @@ class CategoriesController extends Controller
      */
     public function store()
     {
-        if(!request()->has('margin')){
-            request()->merge(['margin' => 0]);
-        }
-
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories',
             'code' => 'required|alpha_num|min:3|max:3|unique:categories',
-            'margin' => 'required|integer|between:0,100',
         ], [
             'name.max' => 'Tên danh mục quá dài, tối đa 255 ký tự.',
             'name.required' => 'Vui lòng nhập tên danh mục.',
@@ -61,16 +56,12 @@ class CategoriesController extends Controller
             'code.alpha_num' => 'Mã danh mục không được chứa kí tự đặc biệt.',
             'code.min' => 'Mã danh mục dài 3 kí tự.',
             'code.max' => 'Mã danh mục dài 3 kí tự.',
-            'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
-            'margin.integer' => 'Biên độ lợi nhuận phải là một số',
-            'margin.required' => 'Vui lòng nhập biên độ lợi nhuận',
         ]);
 
         $category = Category::forceCreate([
             'name' => request('name'),
             'code' => strtoupper(request('code')),
             'status' => !! request('status'),
-            'margin' => request('margin'),
         ]);
 
         $category->attributes()->attach(request('attributes', []));
@@ -123,20 +114,15 @@ class CategoriesController extends Controller
     {
         $this->validate(request(), [
             'name' => 'required|max:255|unique:categories,name,'.$category->id,
-            'margin' => 'required|integer|between:0,100',
         ], [
             'name.required' => 'Vui lòng nhập tên danh mục.',
             'name.max' => 'Tên danh mục quá dài, tối đa 255 kí tự.',
             'name.unique' => 'Tên danh mục đã tồn tại.',
-            'margin.between' => 'Biên độ lợi nhuận phải lớn hơn bằng 0 và nhỏ hơn bằng 100',
-            'margin.integer' => 'Biên độ lợi nhuận phải là một số',
-            'margin.required' => 'Vui lòng nhập biên độ lợi nhuận',
         ]);
 
         $category->forceFill([
             'name' => request('name'),
             'status' => !! request('status'),
-            'margin' => request('margin'),
         ])->save();
 
         $category->attributes()->sync(request('attributes', []));

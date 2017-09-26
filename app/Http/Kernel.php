@@ -36,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\ShareCurrentUser::class,
             \Gtk\LaravelTokenGuard\CreateFreshApiToken::class,
+            \App\Http\Middleware\SSOLogin::class,
         ],
 
         'api' => [

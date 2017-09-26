@@ -38,6 +38,8 @@ class AttributesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255|unique:attributes',
         ], [
+            'name.required' => 'Tên thuộc tính là bắt buộc',
+            'name.max' => 'Tên thuộc tính ít hơn 255 kí tự',
             'name.unique' => 'Tên thuộc tính đã tồn tại.',
         ]);
 
@@ -84,6 +86,8 @@ class AttributesController extends Controller
         $this->validate(request(), [
             'name' => 'required|max:255|unique:attributes,name,'.$attribute->id,
         ], [
+            'name.required' => 'Tên thuộc tính là bắt buộc',
+            'name.max' => 'Tên thuộc tính ít hơn 255 kí tự',
             'name.unique' => 'Tên thuộc tính đã tồn tại.',
         ]);
 

@@ -20,6 +20,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.total_items = 0;
         this.sorting = 'name';
         this.direction = 'asc';
+        this.product_id = '';
     }
 
     function addProductSupplierForm() {
@@ -103,6 +104,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
             '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id +
             '&region_id=' + $scope.searchProductSupplierForm.region_id +
             '&q=' + $scope.searchProductSupplierForm.q +
+            '&product_id=' + $scope.searchProductSupplierForm.product_id +
             '&state=' + $scope.searchProductSupplierForm.state +
             '&sorting=' + $scope.searchProductSupplierForm.sorting +
             '&direction=' + $scope.searchProductSupplierForm.direction)
@@ -278,6 +280,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
             '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id +
             '&region_id=' + $scope.searchProductSupplierForm.region_id +
             '&q=' + $scope.searchProductSupplierForm.q +
+            '&product_id=' + $scope.searchProductSupplierForm.product_id +
             '&state=' + $scope.searchProductSupplierForm.state)
             .then(function (response) {
                 $scope.updateValidTimeForm.productSupplierIds = response.data.data;

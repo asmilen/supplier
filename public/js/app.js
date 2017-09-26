@@ -8435,6 +8435,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         this.total_items = 0;
         this.sorting = 'name';
         this.direction = 'asc';
+        this.product_id = '';
     }
 
     function addProductSupplierForm() {
@@ -8511,7 +8512,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
     $scope.updateValidTimeForm = new updateValidTimeForm();
 
     $scope.refreshData = function () {
-        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&region_id=' + $scope.searchProductSupplierForm.region_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state + '&sorting=' + $scope.searchProductSupplierForm.sorting + '&direction=' + $scope.searchProductSupplierForm.direction).then(function (response) {
+        $http.get('/api/product-suppliers?page=' + $scope.searchProductSupplierForm.page + '&limit=' + $scope.searchProductSupplierForm.limit + '&category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&region_id=' + $scope.searchProductSupplierForm.region_id + '&q=' + $scope.searchProductSupplierForm.q + '&product_id=' + $scope.searchProductSupplierForm.product_id + '&state=' + $scope.searchProductSupplierForm.state + '&sorting=' + $scope.searchProductSupplierForm.sorting + '&direction=' + $scope.searchProductSupplierForm.direction).then(function (response) {
             $scope.productSuppliers = response.data.data;
             $scope.productSuppliersLoaded = true;
             $scope.searchProductSupplierForm.total_items = response.data.total_items;
@@ -8668,7 +8669,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
         $scope.updateValidTimeForm.disabled = true;
         $scope.updateValidTimeForm.errors = [];
 
-        $http.get('/api/product-suppliers/get-ids?category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&region_id=' + $scope.searchProductSupplierForm.region_id + '&q=' + $scope.searchProductSupplierForm.q + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
+        $http.get('/api/product-suppliers/get-ids?category_id=' + $scope.searchProductSupplierForm.category_id + '&manufacturer_id=' + $scope.searchProductSupplierForm.manufacturer_id + '&supplier_id=' + $scope.searchProductSupplierForm.supplier_id + '&region_id=' + $scope.searchProductSupplierForm.region_id + '&q=' + $scope.searchProductSupplierForm.q + '&product_id=' + $scope.searchProductSupplierForm.product_id + '&state=' + $scope.searchProductSupplierForm.state).then(function (response) {
             $scope.updateValidTimeForm.productSupplierIds = response.data.data;
 
             $http.post('product-suppliers/update-valid-time', $scope.updateValidTimeForm).then(function (response) {

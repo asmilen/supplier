@@ -22,13 +22,6 @@
 </div>
 
 <div class="form-group">
-    <label class="col-sm-3 control-label no-padding-right">Biên độ lợi nhuận</label>
-    <div class="col-sm-6">
-        <input type="number" class="form-control" name="margin" placeholder="Biên độ lợi nhuận" value="{{ old('margin', $category->margin) }}">
-    </div>
-</div>
-
-<div class="form-group">
     <label class="col-sm-3 control-label no-padding-right">Kích hoạt</label>
     <div class="col-sm-6">
         <label>

@@ -84,7 +84,7 @@
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
                             <div class="row">
-                                <div class="col-sm-2">
+                                <div class="col-sm-2" style="width:13%">
                                     <select class="select2" ng-model="searchProductSupplierForm.category_id" ng-change="refreshData()" select2>
                                         <option value="">-- Danh mục --</option>
                                         @foreach ($categories as $category)
@@ -116,10 +116,13 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2" style="width:11%">
                                     <input type="text"  placeholder="Tên hoặc SKU sản phẩm" ng-model="searchProductSupplierForm.q" ng-change="refreshData()" />
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2" style="width:11%">
+                                    <input type="text"  placeholder="Id sản phẩm" ng-model="searchProductSupplierForm.product_id" ng-change="refreshData()" />
+                                </div>
+                                <div class="col-sm-2" style="width:11%">
                                     <select class="select2" ng-model="searchProductSupplierForm.state" ng-change="refreshData()" select2>
                                         <option value="">-- Trạng thái hàng --</option>
                                         @foreach (config('teko.product.state') as $k => $v)

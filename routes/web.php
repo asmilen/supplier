@@ -6,10 +6,6 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('login', function () {
-    return redirect('/auth/google');
-});
-
 Route::get('auth/google', 'Auth\AuthController@redirectToProvider');
 Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback');
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
@@ -20,11 +16,6 @@ Route::get('products/getProductInCombo', 'ProductsController@getProductInCombo')
 Route::get('products/getSimpleProduct', 'ProductsController@getSimpleProduct')->name('products.getSimpleProduct');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
-
-    Route::get('profile', 'ProfileController@edit');
-    Route::put('profile', 'ProfileController@update');
-    Route::get('profile/password', 'ProfileController@editPassword');
-    Route::put('profile/password', 'ProfileController@updatePassword');
 
     Route::group(['middleware' => 'acl'], function () {
         // Users

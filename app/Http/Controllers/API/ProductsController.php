@@ -213,7 +213,7 @@ class ProductsController extends Controller
                     ->orderBy('transport_fees.percent_fee')
                     ->first(); // lấy phí vận chuyển thấp nhất của ncc cung cấp sản phẩm với giá tốt nhất
 
-                $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->where('status', 1)->pluck('province_id');
+                $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->pluck('province_id');
                 //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
                 if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {

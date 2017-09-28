@@ -236,6 +236,15 @@ class ProductsController extends Controller
 
     public function toggleStatus(Product $product)
     {
+        $user = Sentinel::getUser();
+
+        if ($product->status){
+            $productSuppliers = ProductSupplier::where('product_id', $product->id)->get();
+            foreach ($productSuppliers as $productSupplier){
+                dispatch(new OffProductToMagento($product, 0, $user, $productSupplier->region_id));
+            }
+        }
+
         $product->forceFill(['status' => !$product->status])->save();
     }
 }

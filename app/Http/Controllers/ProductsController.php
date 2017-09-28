@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\OffProductToMagento;
 use Validator;
 use App\Models\Color;
 use App\Models\Product;
+use Sentinel;
+use App\Models\ProductSupplier;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use Intervention\Image\Facades\Image as Image;
@@ -139,6 +142,8 @@ class ProductsController extends Controller
      */
     public function update(Product $product)
     {
+        $user = Sentinel::getUser();
+
         $code = strtoupper(request('code'));
 
         $rules = [
@@ -153,6 +158,13 @@ class ProductsController extends Controller
         foreach (explode(',', request('channel')) as $key => $channel) {
             if ($channel == 'true') {
                 array_push($channelChoose, $key);
+            }
+        }
+
+        if (filter_var(request('status'), FILTER_VALIDATE_BOOLEAN) == false || !in_array("2", $channelChoose)){
+            $productSuppliers = ProductSupplier::where('product_id', $product->id)->get();
+            foreach ($productSuppliers as $productSupplier){
+                dispatch(new OffProductToMagento($product, 0, $user, $productSupplier->region_id));
             }
         }
 

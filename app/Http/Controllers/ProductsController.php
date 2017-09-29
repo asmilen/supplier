@@ -84,7 +84,6 @@ class ProductsController extends Controller
         $file = request('imageBase64')['file'];
         $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['name'];
         $img = Image::make($file);
-        dd($img->filesize());
         $img->save(storage_path('app/public/' . $filename));
 
 

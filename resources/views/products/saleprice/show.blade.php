@@ -45,7 +45,7 @@
             </div>
 
             <div class="alert alert-danger" ng-show="productSalepriceForm.errors.length > 0">
-                <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                Có lỗi xảy xa trong quá trình cập nhật:<br><br>
                 <ul>
                     <li ng-repeat="error in productSalepriceForm.errors">@{{ error }}</li>
                 </ul>

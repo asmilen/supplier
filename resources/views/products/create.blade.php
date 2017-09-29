@@ -40,7 +40,7 @@
         <div class="row">
             <div class="col-xs-12" ng-controller="ProductCreateController">
                 <div class="alert alert-danger" ng-show="productForm.errors.length > 0">
-                    <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                    Có lỗi xảy ra trong quá trình thêm mới<br><br>
                     <ul>
                         <li ng-repeat="error in productForm.errors">@{{ error }}</li>
                     </ul>
@@ -127,7 +127,7 @@
                     <div class="form-group">
                         <label class="col-sm-3 control-label no-padding-right">Ảnh sản phẩm</label>
                         <div class="col-sm-6">
-                            <input type="file" class="form-control" name="image" placeholder="Image" fileread="productForm.image">
+                            <input type="file" class="form-control" name="image" placeholder="Image" fileread="productForm.image" accept="image/*">
                         </div>
                     </div>
 

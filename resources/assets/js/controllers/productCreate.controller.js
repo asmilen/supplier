@@ -19,6 +19,7 @@ function ProductCreateController($scope, $http, $window) {
         this.code = '';
         this.source_url = '';
         this.image = {};
+        this.imageBase64 = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -82,20 +83,34 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
 
-        $http.post('/products', $scope.productForm)
-            .then(function () {
-                $scope.productForm.successful = true;
-                $scope.productForm.disabled = false;
+        var reader = new FileReader();
+        var image = $scope.productForm.image;
 
-                $window.location.href = '/products';
-            })
-            .catch(function (response) {
-                if (typeof response.data === 'object') {
-                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
-                } else {
-                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
-                }
-                $scope.productForm.disabled = false;
-            });
+        reader.onloadend = function() {
+            var binaryString = reader.result;
+
+            $scope.productForm.imageBase64 = {
+                file : btoa(binaryString),
+                name : image.name,
+            };
+
+            $http.post('/products', $scope.productForm)
+                .then(function () {
+                    $scope.productForm.successful = true;
+                    $scope.productForm.disabled = false;
+
+                    //$window.location.href = '/products';
+                })
+                .catch(function (response) {
+                    if (typeof response.data === 'object') {
+                        $scope.productForm.errors = _.flatten(_.toArray(response.data));
+                    } else {
+                        $scope.productForm.errors = ['Something went wrong. Please try again.'];
+                    }
+                    $scope.productForm.disabled = false;
+                });
+        };
+
+        reader.readAsBinaryString(image);
     };
 }

@@ -59,7 +59,7 @@ class CategoriesController extends Controller
         ]);
 
         $category = Category::forceCreate([
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'code' => strtoupper(request('code')),
             'status' => !! request('status'),
         ]);
@@ -121,7 +121,7 @@ class CategoriesController extends Controller
         ]);
 
         $category->forceFill([
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'status' => !! request('status'),
         ])->save();
 

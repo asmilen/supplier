@@ -7923,6 +7923,7 @@ function ProductCreateController($scope, $http, $window) {
         this.code = '';
         this.source_url = '';
         this.image = {};
+        this.imageBase64 = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -7981,19 +7982,33 @@ function ProductCreateController($scope, $http, $window) {
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
 
-        $http.post('/products', $scope.productForm).then(function () {
-            $scope.productForm.successful = true;
-            $scope.productForm.disabled = false;
+        var reader = new FileReader();
+        var image = $scope.productForm.image;
 
-            $window.location.href = '/products';
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.productForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.productForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.productForm.disabled = false;
-        });
+        reader.onloadend = function () {
+            var binaryString = reader.result;
+
+            $scope.productForm.imageBase64 = {
+                file: btoa(binaryString),
+                name: image.name
+            };
+
+            $http.post('/products', $scope.productForm).then(function () {
+                $scope.productForm.successful = true;
+                $scope.productForm.disabled = false;
+
+                //$window.location.href = '/products';
+            }).catch(function (response) {
+                if (_typeof(response.data) === 'object') {
+                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
+                }
+                $scope.productForm.disabled = false;
+            });
+        };
+
+        reader.readAsBinaryString(image);
     };
 }
 
@@ -8078,6 +8093,7 @@ function ProductEditController($scope, $http, $window) {
         this.code = '';
         this.source_url = '';
         this.image = {};
+        this.imageBase64 = {};
         this.description = '';
         this.status = true;
         this.attributes = {};
@@ -8110,7 +8126,6 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.name = $scope.product.name;
         $scope.productForm.code = $scope.product.code;
         $scope.productForm.source_url = $scope.product.source_url;
-        $scope.productForm.image = $scope.product.image ? $scope.product.image : '';
         $scope.productForm.description = $scope.product.description;
         $scope.productForm.status = $scope.product.status;
         $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
@@ -8181,35 +8196,34 @@ function ProductEditController($scope, $http, $window) {
         $scope.productForm.errors = [];
         $scope.productForm.disabled = true;
         $scope.productForm.successful = false;
-        $http({
-            method: 'POST',
-            url: '/products/' + PRODUCT_ID,
-            processData: false,
-            transformRequest: function transformRequest(data) {
-                var formData = new FormData();
-                for (var key in data) {
-                    formData.append(key, data[key]);
+
+        var reader = new FileReader();
+        var image = $scope.productForm.image;
+
+        reader.onloadend = function () {
+            var binaryString = reader.result;
+
+            $scope.productForm.imageBase64 = {
+                file: btoa(binaryString),
+                name: image.name
+            };
+
+            $http.post('/products/' + PRODUCT_ID, $scope.productForm).then(function () {
+                $scope.productForm.successful = true;
+                $scope.productForm.disabled = false;
+
+                $window.location.href = '/products';
+            }).catch(function (response) {
+                if (_typeof(response.data) === 'object') {
+                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
                 }
+                $scope.productForm.disabled = false;
+            });
+        };
 
-                return formData;
-            },
-            data: $scope.productForm,
-            headers: {
-                'Content-Type': undefined
-            }
-        }).success(function (response) {
-            $scope.productForm.successful = true;
-            $scope.productForm.disabled = false;
-
-            $window.location.href = '/products';
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.productForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.productForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.productForm.disabled = false;
-        });
+        reader.readAsBinaryString(image);
     };
 }
 

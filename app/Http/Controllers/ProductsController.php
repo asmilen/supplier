@@ -55,8 +55,8 @@ class ProductsController extends Controller
             'channels' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
-            //'image' => 'image|mimes:jpg,png,jpeg|max:2000',
             'code' => 'alpha_num|max:255',
+            'imageBase64' => 'required'
         ], [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
             'name.required' => 'Bạn chưa nhập tên sản phẩm.',
@@ -64,8 +64,9 @@ class ProductsController extends Controller
             'channels.required' => 'Bạn chưa chọn kênh bán hàng.',
             'category_id.required' => 'Bạn chưa chọn danh mục.',
             'manufacturer_id.required' => 'Bạn chưa chọn nhà sản xuất.',
-            'code.alpha_num' => 'Mã sản phẩm phải là số.',
+            'code.alpha_num' => 'Mã sản phẩm phải là số hoặc chữ.',
             'code.max' => 'Mã sản phẩm quá dài, tối đa 255 ký tự.',
+            'imageBase64.required' => 'Bạn chưa chọn ảnh sản phẩm.',
         ])->after(function ($validator) use ($code) {
             if (!empty($code)) {
                 $check = Product::where('category_id', request('category_id'))
@@ -79,10 +80,12 @@ class ProductsController extends Controller
             }
         })->validate();
 
-//        $file = request('image');
-
-//        $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
-//        Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+        $filename = '';
+        $file = request('imageBase64')['file'];
+        $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['name'];
+        $img = Image::make($file);
+        dd($img->filesize());
+        $img->save(storage_path('app/public/' . $filename));
 
 
         $channelChoose = [];
@@ -96,9 +99,9 @@ class ProductsController extends Controller
             'color_id' => request('color_id', 0),
             'type' => request('type') == 'simple' ? 0 : 1,
             'parent_id' => request('parent_id', 0),
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
-//            'image' => url('/') . '/storage/' . $filename,
+            'image' => url('/') . '/storage/' . $filename,
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
             'channel' => implode(",", $channelChoose),
@@ -145,12 +148,8 @@ class ProductsController extends Controller
             'name' => 'required|max:255|unique:products,name,' . $product->id,
         ];
 
-        if (request()->file('image')) {
-            $rules['image'] = 'image|mimes:jpg,png,jpeg|max:2000';
-        }
-
         $channelChoose = [];
-        foreach (explode(',', request('channel')) as $key => $channel) {
+        foreach (request('channel') as $key => $channel) {
             if ($channel == 'true') {
                 array_push($channelChoose, $key);
             }
@@ -167,17 +166,18 @@ class ProductsController extends Controller
 
         $product->forceFill([
             'parent_id' => request('parent_id', 0),
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
             'description' => request('description'),
             'attributes' => json_encode(request('attributes', [])),
             'channel' => implode(",", $channelChoose),
         ])->save();
 
-        if (request()->file('image')) {
-            $file = request('image');
-            $filename = md5(uniqid() . '_' . time()) . '.' . $file->getClientOriginalExtension();
-            Image::make($file->getRealPath())->save(storage_path('app/public/' . $filename));
+        if (request()->has('imageBase64')) {
+            $file = request('imageBase64')['file'];
+            $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['name'];
+            $img = Image::make($file);
+            $img->save(storage_path('app/public/' . $filename));
 
             $product->forceFill([
                 'image' => url('/') . '/storage/' . $filename,

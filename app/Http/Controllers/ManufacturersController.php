@@ -52,7 +52,7 @@ class ManufacturersController extends Controller
         ]);
 
         $manufacturer = Manufacturer::forceCreate([
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'code' => strtoupper(request('code')),
             'homepage' => request('homepage'),
             'status' => !! request('status'),
@@ -121,7 +121,7 @@ class ManufacturersController extends Controller
         $jsonSend = [
             "id"        => $manufacturer->id,
             "code"      => $manufacturer->code,
-            "name"      => request('name'),
+            "name"      => trim(request('name')),
             "status"    => $manufacturer->status == true ? 'active' : 'inactive',
             "homepage"  => request('homepage') ,
             "createdAt" => strtotime($manufacturer->updated_at)

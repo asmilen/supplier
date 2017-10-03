@@ -26,7 +26,7 @@
     <div class="page-content">
         <div class="page-header">
             <h1>
-                Sản phẩm
+                Nhà Cung Cấp
                 <small>
                     <i class="ace-icon fa fa-angle-double-right"></i>
                     Thay đổi

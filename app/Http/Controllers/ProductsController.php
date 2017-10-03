@@ -184,7 +184,7 @@ class ProductsController extends Controller
             'channel' => implode(",", $channelChoose),
         ])->save();
 
-        if (request()->has('imageBase64')) {
+        if (request('imageBase64')) {
             $file = request('imageBase64')['file'];
             $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['name'];
             $img = Image::make($file);

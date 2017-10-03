@@ -132,6 +132,23 @@ function ProductEditController($scope, $http, $window) {
     $scope.getProductConfigurables();
     $scope.getProduct();
 
+    $scope.submitForm = function() {
+        $http.post('/products/' + PRODUCT_ID, $scope.productForm)
+            .then(function () {
+                $scope.productForm.successful = true;
+                $scope.productForm.disabled = false;
+
+                $window.location.href = '/products';
+            })
+            .catch(function (response) {
+                if (typeof response.data === 'object') {
+                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
+                }
+                $scope.productForm.disabled = false;
+            });
+    }
 
     $scope.updateProduct = function () {
         $scope.productForm.errors = [];
@@ -149,24 +166,13 @@ function ProductEditController($scope, $http, $window) {
                 name : image.name,
             };
 
-            $http.post('/products/' + PRODUCT_ID, $scope.productForm)
-                .then(function () {
-                    $scope.productForm.successful = true;
-                    $scope.productForm.disabled = false;
-
-                    $window.location.href = '/products';
-                })
-                .catch(function (response) {
-                    if (typeof response.data === 'object') {
-                        $scope.productForm.errors = _.flatten(_.toArray(response.data));
-                    } else {
-                        $scope.productForm.errors = ['Something went wrong. Please try again.'];
-                    }
-                    $scope.productForm.disabled = false;
-                });
+            $scope.submitForm();
         };
 
-        reader.readAsBinaryString(image);
+        if (image.type && image.type.match('image.*'))
+            reader.readAsBinaryString(image);
+        else
+            $scope.submitForm();
     };
 }
 

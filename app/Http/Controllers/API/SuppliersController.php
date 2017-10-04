@@ -33,12 +33,6 @@ class SuppliersController extends Controller
 
         $region = Province::where('code', request('region_code'))->firstOrFail();
 
-        $provinceIds = Province::where('region_id', $region->region_id)->pluck('id');
-
-        $supplierIds = SupplierSupportedProvince::whereIn('province_id', $provinceIds)
-            ->get()
-            ->pluck('supplier_id');
-
         $productIds = \request('product_ids');
 
         $suppliers = Supplier::select('suppliers.id','suppliers.name','suppliers.sup_type','product_supplier.import_price','product_supplier.product_id')
@@ -47,7 +41,7 @@ class SuppliersController extends Controller
                                 ->whereIn('product_supplier.product_id', $productIds)
                                 ->where('product_supplier.state', '=', 1);
                         })
-                        ->whereIn('suppliers.id', $supplierIds)
+                        ->where('product_supplier.region_id', $region->region_id)
                         ->where('suppliers.status',true)
                         ->get();
 

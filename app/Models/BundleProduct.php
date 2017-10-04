@@ -95,6 +95,10 @@ class BundleProduct extends Model
             ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
             ->min(DB::raw('(ceil(product_supplier.price_recommend/1000) * 1000)'));
 
+        $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productMarginFee['feeMax']  / 1000), '0'), '.')) * 1000;
+
+        $product->official_price = $official_price;
+
         $product->quantity = $this->quantity;
 
         $product->isDefault = $this->is_default;
@@ -117,6 +121,9 @@ class BundleProduct extends Model
         $provinceFee_index = TransportFee::where('province_id', $provinceId)->first();
 
         $feeValue = ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
+
+        $province_id = Province::where('region_id', $regionId)->pluck('id');
+        $provinceFeeMax = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
 
         $minPrice = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
@@ -141,11 +148,13 @@ class BundleProduct extends Model
 
         $provinceFee = TransportFee::where('province_id', $provinceFeeMin ? $provinceFeeMin->province_id : 0)->first();
         $productMarginFee['supplierId'] = $minPrice ? $minPrice->supplier->id : 0;
+
         if (in_array($provinceId, $supportProvince ? $supportProvince->toArray() : [])) {
             $productMarginFee['margin'] = $marginValue + $feeValue;
         } else {
             $productMarginFee['margin'] = $marginValue + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + $feeValue;
         }
+        $productMarginFee['feeMax'] = $marginValue + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
 
         return $productMarginFee;
     }

@@ -196,6 +196,9 @@ class ProductsController extends Controller
 
             $feeValue = ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01; //giá trị của phí ship của tỉnh mua hàng
 
+            $province_id = Province::where('region_id', $regions[0])->pluck('id');
+            $provinceFeeMax = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
+
             $minPrice = ProductSupplier::where('product_id', $id)
                 ->where('product_supplier.region_id', $regions[0])
                 ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
@@ -218,10 +221,10 @@ class ProductsController extends Controller
 
                 if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
-
                 } else {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
                 }
+                $productFeeMax = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
                 $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
                 $product->best_price = ProductSupplier::where('product_id', $id)
@@ -248,6 +251,8 @@ class ProductsController extends Controller
                     ->where('price_recommend', $product->best_price)
                     ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min('product_supplier.price_recommend');
+
+                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
                 if ($product->recommended_price == $product->best_price) {
                     $suppliers = ProductSupplier::where('price_recommend', $product->best_price)

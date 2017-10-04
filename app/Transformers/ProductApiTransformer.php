@@ -59,11 +59,14 @@ class ProductApiTransformer extends TransformerAbstract
         $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->pluck('province_id');
         //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
+        $provinceFeeMax = TransportFee::whereIn('province_id', $this->provinceIds)->orderBy('percent_fee', 'DESC')->first();
+
         if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
         } else {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
         }
+        $productFeeMax = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
         $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
         $product = ProductSupplier::select('product_supplier.import_price')
@@ -75,6 +78,7 @@ class ProductApiTransformer extends TransformerAbstract
 
         $import_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * ($productFee - $w_margin) / 1000), '0'), '.')) * 1000;
         $import_price_w_margin = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFee / 1000), '0'), '.')) * 1000;
+        $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
         return [
             'id' => $data['id'],
@@ -83,6 +87,7 @@ class ProductApiTransformer extends TransformerAbstract
             'import_price' => $import_price,
             'import_price_w_margin' => $import_price_w_margin,
             'recommended_price' =>  $data['recommended_price'] ? (Int)$data['recommended_price'] : 0,
+            'official_price' => $official_price,
             'source_url' => $data['image'],
             'sku' => $data['sku']
         ];

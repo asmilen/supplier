@@ -29,10 +29,6 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
-            <a class="btn btn-primary pull-right" href="{{ route('categories.create') }}">
-                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Thêm</span>
-            </a>
         </h1>
     </div><!-- /.page-header -->
     <div class="row">
@@ -42,6 +38,10 @@
             </div>
         </div>
         <div class="col-xs-6">
+            <a class="btn btn-primary btn-sm pull-right" href="{{ route('categories.create') }}">
+                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                <span class="hidden-xs">Thêm</span>
+            </a>
         </div>
     </div>
     <div class="row" ng-show="categoriesLoaded">
@@ -85,7 +85,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Quản lý Margin Danh mục @{{ marginCategoryName }}</h4>
+                    <h4 class="modal-title">Quản lý Margin Danh mục @{{ editingCategory.name }}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-danger" ng-show="marginsForm.errors.length > 0">

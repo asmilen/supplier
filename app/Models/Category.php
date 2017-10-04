@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Datatables;
 use Illuminate\Database\Eloquent\Model;
+use App\Jobs\UpdateCategoryPriceToMagento;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Category extends Model
@@ -37,22 +38,13 @@ class Category extends Model
         return $query->where('status', true);
     }
 
-    public static function getDatatables()
-    {
-        $model = static::select([
-                'id', 'code', 'name', 'status',
-            ]);
-
-        return Datatables::eloquent($model)
-            ->editColumn('status', 'categories.datatables.status')
-            ->addColumn('margin', 'categories.datatables.margin')
-            ->addColumn('action', 'categories.datatables.action')
-            ->rawColumns(['status','margin', 'action'])
-            ->make(true);
-    }
-
     public static function getActiveList()
     {
         return static::active()->pluck('name', 'id')->all();
+    }
+
+    public function updatePriceToMagento()
+    {
+        dispatch(new UpdateCategoryPriceToMagento($this));
     }
 }

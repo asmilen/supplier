@@ -35,15 +35,23 @@
             </a>
         </h1>
     </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-inline">
+                <label>Tìm kiếm: <input type="search" class="form-control" placeholder="Từ khóa tìm kiếm..." ng-model="searchForm.q" ng-change="refreshData()"></label>
+            </div>
+        </div>
+        <div class="col-xs-6">
+        </div>
+    </div>
     <div class="row" ng-show="categoriesLoaded">
         <div class="col-xs-12">
-            <table id="dataTables-categories" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top dataTable no-footer">
                 <thead>
                     <tr>
-                        <th>Mã</th>
-                        <th>Tên</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('code', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('code')">Mã</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('name', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('name')">Tên</th>
                         <th>Trạng thái</th>
-                        <th>Margin</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -51,12 +59,23 @@
                     <tr ng-repeat="category in categories">
                         <td>@{{ category.code }}</td>
                         <td>@{{ category.name }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>
+                            <span class="label label-success" ng-if="category.status == 1">Đang hoạt động</span>
+                            <span class="label label-danger" ng-if="category.status == 0">Ngừng hoạt động</span>
+                        </td>
+                        <td>
+                            @if ($currentUser->hasAccess('categories.margins.index'))
+                            <button class="btn btn-white btn-warning btn-sm" ng-click="showEditMarginsModal(category)">Quản lý Margin</button>
+                            @endif
+                            @if ($currentUser->hasAccess('categories.edit'))
+                            <a class="btn btn-white btn-success btn-sm" href="/categories/@{{ category.id }}">Sửa</a>
+                            @endif
+                        </td>
                     </tr>
                 </tbody>
             </table>
+
+            <ul uib-pagination boundary-link-numbers="true" rotate="true" max-size="3" total-items="totalItems" items-per-page="@{{ searchForm.limit }}" ng-model="searchForm.page" ng-change="refreshData()" class="pagination"></ul>
         </div>
     </div>
 

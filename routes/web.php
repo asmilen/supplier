@@ -34,8 +34,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('permissions', 'PermissionsController', ['only' => ['index']]);
 
         // Categories
-        Route::get('categories/datatables', 'CategoriesController@getDatatables')->name('categories.datatables');
-        Route::get('categories/all', 'CategoriesController@all')->name('categories.all');
+        Route::get('categories/listing', 'CategoriesController@listing')->name('categories.listing');
         Route::resource('categories', 'CategoriesController');
         Route::get('categories/{category}/margins', 'CategoryMarginsController@index')->name('categories.margins.index');
         Route::put('categories/{category}/margins', 'CategoryMarginsController@update')->name('categories.margins.update');

@@ -122,8 +122,8 @@ class BundleProduct extends Model
 
         $feeValue = ($provinceFee_index ? $provinceFee_index->percent_fee : 0) * 0.01;
 
-        $province_id = Province::where('region_id', $regionId)->pluck('id');
-        $provinceFeeMax = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
+        $provinceIds = Province::where('region_id', $regionId)->pluck('id');
+        $provinceFeeMax = TransportFee::whereIn('province_id', $provinceIds)->orderBy('percent_fee', 'DESC')->first();
 
         $minPrice = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)

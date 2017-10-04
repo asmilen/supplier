@@ -59,8 +59,7 @@ class ProductApiTransformer extends TransformerAbstract
         $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->pluck('province_id');
         //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
-        $province_id = Province::where('region_id', $regions[0])->pluck('id');
-        $provinceFeeMax = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
+        $provinceFeeMax = TransportFee::whereIn('province_id', $this->provinceIds)->orderBy('percent_fee', 'DESC')->first();
 
         if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
             $productFee = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;

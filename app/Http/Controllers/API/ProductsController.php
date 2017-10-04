@@ -196,8 +196,8 @@ class ProductsController extends Controller
 
             $feeValue = ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01; //giá trị của phí ship của tỉnh mua hàng
 
-            $province_id = Province::where('region_id', $regions[0])->pluck('id');
-            $provinceFeeMax = TransportFee::whereIn('province_id', $province_id)->orderBy('percent_fee', 'DESC')->first();
+            $provinceIds = Province::where('region_id', $regions[0])->pluck('id');
+            $provinceFeeMax = TransportFee::whereIn('province_id', $provinceIds)->orderBy('percent_fee', 'DESC')->first();
 
             $minPrice = ProductSupplier::where('product_id', $id)
                 ->where('product_supplier.region_id', $regions[0])

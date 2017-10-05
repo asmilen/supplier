@@ -227,7 +227,7 @@ class ProductsController extends Controller
                 $productFeeMax = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
                 $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
-                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
+                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $minPrice->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
                 $product->best_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
@@ -258,6 +258,7 @@ class ProductsController extends Controller
                     $suppliers = ProductSupplier::where('price_recommend', $product->best_price)
                         ->where('product_id', $id)
                         ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
+                        ->where('product_supplier.region_id', $regions[0])
                         ->pluck('supplier_id');
                     $supplier = Supplier::whereIn('id', $suppliers ? $suppliers : 0)
                         ->where('status', 1)

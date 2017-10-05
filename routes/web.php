@@ -42,6 +42,9 @@ Route::group(['middleware' => 'auth'], function () {
         // Attributes
         Route::get('attributes/listing', 'AttributesController@listing')->name('attributes.listing');
         Route::resource('attributes', 'AttributesController');
+        Route::get('attributes/{attribute}/options', 'AttributeOptionsController@index')->name('attributes.options.index');
+        Route::post('attributes/{attribute}/options', 'AttributeOptionsController@store')->name('attributes.options.store');
+        Route::put('attributes/{attribute}/options/{option}', 'AttributeOptionsController@update')->name('attributes.options.update');
 
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');

@@ -17,18 +17,6 @@ class AttributesController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $attribute = new Attribute;
-
-        return view('attributes.create', compact('attribute'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @return \Illuminate\Http\Response
@@ -70,28 +58,6 @@ class AttributesController extends Controller
         }
 
         return request('backend_type', 'varchar');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Attribute  $attribute
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Attribute $attribute)
-    {
-        return view('attributes.edit', compact('attribute'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Attribute  $attribute
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Attribute $attribute)
-    {
-        return view('attributes.edit', compact('attribute'));
     }
 
     /**

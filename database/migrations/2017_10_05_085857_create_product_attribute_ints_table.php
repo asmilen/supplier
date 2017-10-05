@@ -17,7 +17,7 @@ class CreateProductAttributeIntsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('product_id')->nullable();
             $table->unsignedInteger('attribute_id')->nullable();
-            $table->interger('value')->nullable();
+            $table->integer('value')->nullable();
             $table->timestamps();
         });
     }

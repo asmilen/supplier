@@ -69,19 +69,21 @@ class BundleProduct extends Model
 
         $marginValue = $productMarginFee['margin'] - ($margin ? $margin->margin * 0.01 : 0.05);
 
-        $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productMarginFee['feeMax']  / 1000), '0'), '.')) * 1000;
-
         $product->best_price = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
             ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
             ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMarginFee['margin'] . '/1000) * 1000))'));
 
-        $product->import_price = ProductSupplier::where('product_id', $product->id)
+        $import_price = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
             ->where('state', 1)
             ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
-            ->min(DB::raw('(ceil(product_supplier.import_price * (' . $marginValue . ')/1000) * 1000)'));
+            ->min(DB::raw('(ceil(product_supplier.import_price))'));
+
+        $product->import_price = ceil($import_price * $marginValue / 1000) * 1000;
+
+        $official_price = ceil(rtrim(rtrim(sprintf('%f', $import_price * $productMarginFee['feeMax'] / 1000), '0'), '.')) * 1000;
 
         $product->import_price_w_margin = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)

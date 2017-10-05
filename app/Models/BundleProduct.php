@@ -54,7 +54,7 @@ class BundleProduct extends Model
 
     public function getProduct($regionId, $provinceId)
     {
-        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`import_price`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, if(sum(`product_supplier`.`state`) > 0, 1, 0) as 'state', `products`.`status`,`products`.`updated_at` as 'last_update_info', max(`product_supplier`.`updated_at`) as 'last_update_price'"))
+        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `products`.`description`, `product_supplier`.`import_price`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, if(sum(`product_supplier`.`state`) > 0, 1, 0) as 'state', `products`.`status`,`products`.`updated_at` as 'last_update_info', max(`product_supplier`.`updated_at`) as 'last_update_price'"))
             ->join('product_supplier', function ($q) use ($regionId) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->where('product_supplier.region_id', $regionId);

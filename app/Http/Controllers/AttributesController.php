@@ -100,8 +100,37 @@ class AttributesController extends Controller
         return redirect()->route('attributes.index');
     }
 
-    public function getDatatables()
+    public function listing()
     {
-        return Attribute::getDatatables();
+        $sorting = request('sorting', 'slug');
+
+        $direction = request('direction', 'asc');
+
+        $page = request('page', 1);
+
+        $limit = request('limit', 25);
+
+        $builder = Attribute::where(function ($query) {
+            if (! empty(request('q'))) {
+                $query->where('id', 'like', '%'.request('q').'%')
+                    ->orWhere('slug', 'like', '%'.request('q').'%')
+                    ->orWhere('name', 'like', '%'.request('q').'%')
+                    ->orWhere('backend_type', 'like', '%'.request('q').'%')
+                    ->orWhere('frontend_input', 'like', '%'.request('q').'%');
+            }
+        });
+
+        $totalItems = $builder->count();
+
+        $attributes = $builder
+            ->orderBy($sorting, $direction)
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $attributes,
+            'total_items' => $totalItems,
+        ]);
     }
 }

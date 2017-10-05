@@ -39,6 +39,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('categories/{category}/margins', 'CategoryMarginsController@index')->name('categories.margins.index');
         Route::put('categories/{category}/margins', 'CategoryMarginsController@update')->name('categories.margins.update');
 
+        // Attributes
+        Route::get('attributes/listing', 'AttributesController@listing')->name('attributes.listing');
+        Route::resource('attributes', 'AttributesController');
+
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
         Route::resource('manufacturers', 'ManufacturersController');
@@ -46,10 +50,6 @@ Route::group(['middleware' => 'auth'], function () {
         // Colors
         Route::get('color/datatables', 'ColorsController@getDatatables')->name('colors.datatables');
         Route::resource('colors', 'ColorsController');
-
-        // Attributes
-        Route::get('attributes/datatables', 'AttributesController@getDatatables')->name('attributes.datatables');
-        Route::resource('attributes', 'AttributesController');
 
         // Products
         Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');

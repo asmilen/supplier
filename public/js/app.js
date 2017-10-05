@@ -75,7 +75,7 @@ module.exports = __webpack_require__(16);
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.attributeIndex', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -84,12 +84,13 @@ app.config(['$httpProvider', function ($httpProvider) {
 __webpack_require__(2);
 
 __webpack_require__(4);
+__webpack_require__(10);
+__webpack_require__(21);
 __webpack_require__(5);
 __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(8);
 __webpack_require__(9);
-__webpack_require__(10);
 __webpack_require__(11);
 
 __webpack_require__(12);
@@ -8937,6 +8938,115 @@ function currencyInput($filter, $browser) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.attributeIndex', []).controller('AttributeIndexController', AttributeIndexController);
+
+AttributeIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function AttributeIndexController($scope, $http) {
+    $scope.attributesLoaded = false;
+
+    $scope.totalItems = 0;
+
+    $scope.frontendInputs = {
+        'text': 'Text',
+        'textarea': 'Textarea',
+        'select': 'Dropdown',
+        'multiselect': 'Multiple Select'
+    };
+
+    $scope.backendTypes = {
+        'varchar': 'varchar',
+        'int': 'int',
+        'decimal': 'decimal'
+        // 'text': 'text'
+    };
+
+    function searchForm() {
+        this.q = '';
+        this.sorting = 'slug';
+        this.direction = 'asc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    function addAttributeForm() {
+        this.slug = '';
+        this.name = '';
+        this.frontend_input = 'text';
+        this.backend_type = 'varchar';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.searchForm = new searchForm();
+    $scope.addAttributeForm = new addAttributeForm();
+
+    $scope.refreshData = function () {
+        $http.get('/attributes/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.attributes = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.attributesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
+    $scope.mapBackendType = function () {
+        if ($scope.addAttributeForm.frontend_input == 'textarea') {
+            $scope.addAttributeForm.backend_type = 'text';
+        } else if ($scope.addAttributeForm.frontend_input == 'select' || $scope.addAttributeForm.frontend_input == 'multiselect') {
+            $scope.addAttributeForm.backend_type = 'int';
+        } else {
+            $scope.addAttributeForm.backend_type = 'varchar';
+        }
+    };
+
+    $scope.addAttribute = function () {
+        $scope.addAttributeForm.errors = [];
+        $scope.addAttributeForm.disabled = true;
+
+        $http.post('/attributes', $scope.addAttributeForm).then(function (response) {
+            $scope.addAttributeForm = new addAttributeForm();
+
+            $scope.refreshData();
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addAttributeForm.disabled = false;
+        });
+    };
+}
 
 /***/ })
 /******/ ]);

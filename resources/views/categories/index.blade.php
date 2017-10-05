@@ -1,27 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
-<div class="breadcrumbs" id="breadcrumbs">
-    <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-    </script>
-
-    <ul class="breadcrumb">
-        <li>
-            <i class="ace-icon fa fa-home home-icon"></i>
-            <a href="{{ url('/dashboard') }}">Dashboard</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.index') }}">Danh mục</a>
-        </li>
-        <li class="active">Danh sách</li>
-    </ul><!-- /.breadcrumb -->
-    <!-- /section:basics/content.searchbox -->
-</div>
-<!-- /section:basics/content.breadcrumbs -->
-
-<div class="page-content" id="categoryController" ng-controller="CategoryIndexController">
+<div class="page-content" ng-controller="CategoryIndexController">
     <div class="page-header">
         <h1>
             Danh mục
@@ -38,15 +18,18 @@
             </div>
         </div>
         <div class="col-xs-6">
-            <a class="btn btn-primary btn-sm pull-right" href="{{ route('categories.create') }}">
+            @if (Sentinel::getUser()->hasAccess('categories.create'))
+            <a class="btn btn-primary pull-right" href="{{ route('categories.create') }}">
                 <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Thêm</span>
+                <span class="hidden-xs">Tạo danh mục</span>
             </a>
+            @endif
         </div>
     </div>
-    <div class="row" ng-show="categoriesLoaded">
+
+    <div class="row p-t-10" ng-show="categoriesLoaded">
         <div class="col-xs-12">
-            <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top dataTable no-footer">
+            <table class="table table-striped table-bordered no-margin-bottom dataTable no-footer">
                 <thead>
                     <tr>
                         <th class="sorting@{{ getSortingDirectionClassHeader('code', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('code')">Mã</th>
@@ -81,7 +64,7 @@
 
     <!-- Show Edit Margins Modal -->
     <div class="modal fade" id="modal-edit-margins" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>

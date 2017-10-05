@@ -30,8 +30,20 @@
                 <tbody>
                     <tr ng-repeat="attribute in attributes">
                         <td>@{{ attribute.slug }}</td>
-                        <td>@{{ attribute.name }}</td>
-                        <td>@{{ attribute.frontend_input }}</td>
+                        <td ng-if="editingAttribute.id != attribute.id" ng-click="showEditForm(attribute)">@{{ attribute.name }}</td>
+                        <td ng-if="editingAttribute.id == attribute.id">
+                            <form class="form-inline">
+                                <input type="text" ng-model="editAttributeForm.name">
+                                <button class="btn btn-sm btn-primary" ng-click="update()" ng-disabled="editingAttribute.disabled">Lưu</button>
+                                <button class="btn btn-white btn-sm btn-default" ng-click="cancelEditing()">Hủy</button>
+                            </form>
+                        </td>
+                        <td>
+                            @{{ attribute.frontend_input }}
+                            <button class="btn btn-white btn-sm btn-info" ng-if="attribute.frontend_input == 'select' || attribute.frontend_input == 'multiselect'" ng-click="showEditOptionsModal(attribute)">
+                                Quản lý Option
+                            </button>
+                        </td>
                         <td>@{{ attribute.backend_type }}</td>
                     </tr>
                 </tbody>
@@ -44,6 +56,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading">Tạo thuộc tính</div>
                 <div class="panel-body">
+                    <div class="alert alert-success" ng-if="addAttributeForm.successful">
+                        Tạo thuộc tính thành công.
+                    </div>
                     <div class="alert alert-danger" ng-show="addAttributeForm.errors.length > 0">
                         <ul>
                             <li ng-repeat="error in addAttributeForm.errors">@{{ error }}</li>
@@ -72,9 +87,23 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-success" ng-click="addAttribute()" ng-disabled="addAttributeForm.disabled"><i class="fa fa-save"></i> Lưu</button>
+                            <button class="btn btn-success" ng-click="store()" ng-disabled="addAttributeForm.disabled"><i class="fa fa-save"></i> Lưu</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Show Edit Options Modal -->
+    <div class="modal fade" id="modal-edit-options" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Quản lý Option thuộc tính @{{ editingCategory.name }}</h4>
+                </div>
+                <div class="modal-body">
                 </div>
             </div>
         </div>

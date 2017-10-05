@@ -8959,6 +8959,8 @@ function AttributeIndexController($scope, $http) {
 
     $scope.totalItems = 0;
 
+    $scope.editingAttribute = null;
+
     $scope.frontendInputs = {
         'text': 'Text',
         'textarea': 'Textarea',
@@ -8986,6 +8988,13 @@ function AttributeIndexController($scope, $http) {
         this.name = '';
         this.frontend_input = 'text';
         this.backend_type = 'varchar';
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
+    function editAttributeForm() {
+        this.name = '';
         this.errors = [];
         this.disabled = false;
     }
@@ -9029,14 +9038,20 @@ function AttributeIndexController($scope, $http) {
         }
     };
 
-    $scope.addAttribute = function () {
+    $scope.store = function () {
         $scope.addAttributeForm.errors = [];
+        $scope.addAttributeForm.successful = false;
         $scope.addAttributeForm.disabled = true;
 
         $http.post('/attributes', $scope.addAttributeForm).then(function (response) {
             $scope.addAttributeForm = new addAttributeForm();
+            $scope.addAttributeForm.successful = true;
 
             $scope.refreshData();
+
+            if (response.data.frontend_input == 'select' || response.data.frontend_input == 'multiselect') {
+                $scope.showEditOptionsModal(response.data);
+            }
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
                 $scope.addAttributeForm.errors = _.flatten(_.toArray(response.data));
@@ -9045,6 +9060,40 @@ function AttributeIndexController($scope, $http) {
             }
             $scope.addAttributeForm.disabled = false;
         });
+    };
+
+    $scope.showEditForm = function (attribute) {
+        $scope.editingAttribute = attribute;
+
+        $scope.editAttributeForm = new editAttributeForm();
+        $scope.editAttributeForm.name = attribute.name;
+    };
+
+    $scope.cancelEditing = function () {
+        $scope.editingAttribute = null;
+    };
+
+    $scope.update = function () {
+        $scope.editAttributeForm.errors = [];
+        $scope.editAttributeForm.disabled = true;
+
+        $http.put('/attributes/' + $scope.editingAttribute.id, $scope.editAttributeForm).then(function (response) {
+            $scope.editAttributeForm = new editAttributeForm();
+            $scope.editingAttribute = null;
+
+            $scope.refreshData();
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.showEditOptionsModal = function (attribute) {
+        console.log(attribute);
     };
 }
 

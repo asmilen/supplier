@@ -36,20 +36,40 @@ class AttributesController extends Controller
     public function store()
     {
         $this->validate(request(), [
-            'name' => 'required|max:255|unique:attributes',
+            'slug' => 'required|max:30|regex:/(^[a-z0-9_]+$)+/|unique:attributes',
+            'name' => 'required|max:255',
         ], [
-            'name.required' => 'Tên thuộc tính là bắt buộc',
-            'name.max' => 'Tên thuộc tính ít hơn 255 kí tự',
-            'name.unique' => 'Tên thuộc tính đã tồn tại.',
+            'slug.required' => 'Mã thuộc tính là bắt buộc',
+            'slug.max' => 'Mã thuộc tính ít hơn 30 kí tự',
+            'slug.unique' => 'Mã thuộc tính đã tồn tại.',
+            'slug.regex' => 'Vui lòng chỉ sử dụng chữ cái (a-z), số (0-9) hoặc gạch dưới (_) cho Mã thuộc tính.',
+            'name.required' => 'Tên hiển thị là bắt buộc',
+            'name.max' => 'Tên hiển thị ít hơn 255 kí tự',
         ]);
 
         $attribute = Attribute::forceCreate([
+            'slug' => request('slug'),
             'name' => request('name'),
+            'frontend_input' => request('frontend_input'),
+            'backend_type' => $this->mapBackendType(),
         ]);
 
-        flash()->success('Success!', 'Attribute successfully created.');
+        return $attribute;
+    }
 
-        return redirect()->route('attributes.index');
+    protected function mapBackendType()
+    {
+        $frontendInput = request('frontend_input');
+
+        if ($frontendInput == 'textarea') {
+            return 'text';
+        }
+
+        if ($frontendInput == 'select' || $frontendInput == 'multiselect') {
+            return 'int';
+        }
+
+        return request('backend_type', 'varchar');
     }
 
     /**
@@ -95,9 +115,7 @@ class AttributesController extends Controller
             'name' => request('name'),
         ])->save();
 
-        flash()->success('Success!', 'Attribute successfully updated.');
-
-        return redirect()->route('attributes.index');
+        return $attribute;
     }
 
     public function listing()

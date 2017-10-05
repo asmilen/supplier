@@ -1,27 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
-<div class="breadcrumbs" id="breadcrumbs">
-    <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-    </script>
-
-    <ul class="breadcrumb">
-        <li>
-            <i class="ace-icon fa fa-home home-icon"></i>
-            <a href="{{ url('/dashboard') }}">Dashboard</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.index') }}">Danh mục</a>
-        </li>
-        <li class="active">Danh sách</li>
-    </ul><!-- /.breadcrumb -->
-    <!-- /section:basics/content.searchbox -->
-</div>
-<!-- /section:basics/content.breadcrumbs -->
-
-<div class="page-content" id="categoryController" ng-controller="CategoryIndexController">
+<div class="page-content" ng-controller="CategoryIndexController">
     <div class="page-header">
         <h1>
             Danh mục
@@ -29,21 +9,32 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
-            <a class="btn btn-primary pull-right" href="{{ route('categories.create') }}">
-                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Thêm</span>
-            </a>
         </h1>
     </div><!-- /.page-header -->
-    <div class="row" ng-show="categoriesLoaded">
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="form-inline">
+                <label>Tìm kiếm: <input type="search" class="form-control" placeholder="Từ khóa tìm kiếm..." ng-model="searchForm.q" ng-change="refreshData()"></label>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            @if (Sentinel::getUser()->hasAccess('categories.create'))
+            <a class="btn btn-primary pull-right" href="{{ route('categories.create') }}">
+                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                <span class="hidden-xs">Tạo danh mục</span>
+            </a>
+            @endif
+        </div>
+    </div>
+
+    <div class="row p-t-10" ng-show="categoriesLoaded">
         <div class="col-xs-12">
-            <table id="dataTables-categories" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+            <table class="table table-striped table-bordered no-margin-bottom dataTable no-footer">
                 <thead>
                     <tr>
-                        <th>Mã</th>
-                        <th>Tên</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('code', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('code')">Mã</th>
+                        <th class="sorting@{{ getSortingDirectionClassHeader('name', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('name')">Tên</th>
                         <th>Trạng thái</th>
-                        <th>Margin</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -51,22 +42,33 @@
                     <tr ng-repeat="category in categories">
                         <td>@{{ category.code }}</td>
                         <td>@{{ category.name }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td>
+                            <span class="label label-success" ng-if="category.status == 1">Đang hoạt động</span>
+                            <span class="label label-danger" ng-if="category.status == 0">Ngừng hoạt động</span>
+                        </td>
+                        <td>
+                            @if ($currentUser->hasAccess('categories.margins.index'))
+                            <button class="btn btn-white btn-warning btn-sm" ng-click="showEditMarginsModal(category)">Quản lý Margin</button>
+                            @endif
+                            @if ($currentUser->hasAccess('categories.edit'))
+                            <a class="btn btn-white btn-success btn-sm" href="/categories/@{{ category.id }}">Sửa</a>
+                            @endif
+                        </td>
                     </tr>
                 </tbody>
             </table>
+
+            <ul uib-pagination boundary-link-numbers="true" rotate="true" max-size="3" total-items="totalItems" items-per-page="@{{ searchForm.limit }}" ng-model="searchForm.page" ng-change="refreshData()" class="pagination"></ul>
         </div>
     </div>
 
     <!-- Show Edit Margins Modal -->
     <div class="modal fade" id="modal-edit-margins" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Quản lý Margin Danh mục @{{ marginCategoryName }}</h4>
+                    <h4 class="modal-title">Quản lý Margin Danh mục @{{ editingCategory.name }}</h4>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-danger" ng-show="marginsForm.errors.length > 0">
@@ -103,48 +105,4 @@
         </div>
     </div>
 </div><!-- /.page-content -->
-@endsection
-@section('scripts')
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-@endsection
-@section('inline_scripts')
-    <script>
-        $(function () {
-            var datatable = $("#dataTables-categories").DataTable({
-                searching: true,
-                autoWidth: false,
-                processing: true,
-                serverSide: true,
-                pageLength: 25,
-                ajax: {
-                    url: '{!! route('categories.datatables') !!}',
-                    data: function (d) {
-                        d.keyword = $('input[name=keyword]').val();
-                        d.typeId = $('select[name=typeId]').val();
-                        d.status = $('select[name=status]').val();
-                    }
-                },
-                columns: [
-                    {data: 'code', name: 'code'},
-                    {data: 'name', name: 'name'},
-                    {data: 'status', name: 'status'},
-                    {data: 'margin', name: 'margin', orderable: false},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
-                ]
-            });
-
-            $('#search-form').on('submit', function(e) {
-                datatable.draw();
-                e.preventDefault();
-            });
-            $(document).on("click", ".orange", function () {
-                    var data = datatable.row( $(this).parents('tr') ).data();
-                angular.element('#categoryController').scope().$apply();
-                angular.element('#categoryController').scope().showEditMarginsModal(data);
-            });
-        });
-
-
-    </script>
 @endsection

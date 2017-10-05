@@ -75,7 +75,7 @@ module.exports = __webpack_require__(16);
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.categoryIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.attributeIndex', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -84,12 +84,13 @@ app.config(['$httpProvider', function ($httpProvider) {
 __webpack_require__(2);
 
 __webpack_require__(4);
+__webpack_require__(10);
+__webpack_require__(21);
 __webpack_require__(5);
 __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(8);
 __webpack_require__(9);
-__webpack_require__(10);
 __webpack_require__(11);
 
 __webpack_require__(12);
@@ -7898,6 +7899,14 @@ AppController.$inject = ['$scope', '$http'];
 /* @ngInject */
 function AppController($scope, $http) {
     console.log('Booting App Controller');
+
+    $scope.getSortingDirectionClassHeader = function (current, sorting, direction) {
+        if (current != sorting) {
+            return '';
+        }
+
+        return '_' + direction;
+    };
 }
 
 /***/ }),
@@ -8373,8 +8382,21 @@ CategoryIndexController.$inject = ['$scope', '$http'];
 function CategoryIndexController($scope, $http) {
     $scope.categoriesLoaded = false;
 
+    $scope.editingCategory = null;
+
+    $scope.totalItems = 0;
+
+    function searchForm() {
+        this.q = '';
+        this.sorting = 'code';
+        this.direction = 'asc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    $scope.searchForm = new searchForm();
+
     function marginsForm() {
-        this.category_id = '';
         this.margins = {
             1: 5,
             2: 5,
@@ -8385,19 +8407,35 @@ function CategoryIndexController($scope, $http) {
     }
 
     $scope.refreshData = function () {
-        $http.get('/categories/all').then(function (response) {
-            $scope.categories = response.data;
+        $http.get('/categories/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.categories = response.data.data;
+            $scope.totalItems = response.data.total_items;
             $scope.categoriesLoaded = true;
         });
     };
 
     $scope.refreshData();
 
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
     $scope.showEditMarginsModal = function (category) {
-        $scope.marginCategoryName = category.name;
+        $scope.editingCategory = category;
 
         $scope.marginsForm = new marginsForm();
-        $scope.marginsForm.category_id = category.id;
 
         $http.get('/categories/' + category.id + '/margins').then(function (response) {
             _.each(response.data, function (margin, regionId) {
@@ -8412,12 +8450,14 @@ function CategoryIndexController($scope, $http) {
         $scope.marginsForm.errors = [];
         $scope.marginsForm.disabled = true;
 
-        $http.put('/categories/' + $scope.marginsForm.category_id + '/margins', {
+        $http.put('/categories/' + $scope.editingCategory.id + '/margins', {
             'north_region': this.marginsForm.margins[1],
             'middle_region': this.marginsForm.margins[2],
             'south_region': this.marginsForm.margins[3]
         }).then(function (response) {
+            $scope.editingCategory = null;
             $scope.marginsForm = new marginsForm();
+
             $('#modal-edit-margins').modal('hide');
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
@@ -8898,6 +8938,164 @@ function currencyInput($filter, $browser) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.attributeIndex', []).controller('AttributeIndexController', AttributeIndexController);
+
+AttributeIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function AttributeIndexController($scope, $http) {
+    $scope.attributesLoaded = false;
+
+    $scope.totalItems = 0;
+
+    $scope.editingAttribute = null;
+
+    $scope.frontendInputs = {
+        'text': 'Text',
+        'textarea': 'Textarea',
+        'select': 'Dropdown',
+        'multiselect': 'Multiple Select'
+    };
+
+    $scope.backendTypes = {
+        'varchar': 'varchar',
+        'int': 'int',
+        'decimal': 'decimal'
+        // 'text': 'text'
+    };
+
+    function searchForm() {
+        this.q = '';
+        this.sorting = 'slug';
+        this.direction = 'asc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    function addAttributeForm() {
+        this.slug = '';
+        this.name = '';
+        this.frontend_input = 'text';
+        this.backend_type = 'varchar';
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
+    function editAttributeForm() {
+        this.name = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.searchForm = new searchForm();
+    $scope.addAttributeForm = new addAttributeForm();
+
+    $scope.refreshData = function () {
+        $http.get('/attributes/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.attributes = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.attributesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
+    $scope.mapBackendType = function () {
+        if ($scope.addAttributeForm.frontend_input == 'textarea') {
+            $scope.addAttributeForm.backend_type = 'text';
+        } else if ($scope.addAttributeForm.frontend_input == 'select' || $scope.addAttributeForm.frontend_input == 'multiselect') {
+            $scope.addAttributeForm.backend_type = 'int';
+        } else {
+            $scope.addAttributeForm.backend_type = 'varchar';
+        }
+    };
+
+    $scope.store = function () {
+        $scope.addAttributeForm.errors = [];
+        $scope.addAttributeForm.successful = false;
+        $scope.addAttributeForm.disabled = true;
+
+        $http.post('/attributes', $scope.addAttributeForm).then(function (response) {
+            $scope.addAttributeForm = new addAttributeForm();
+            $scope.addAttributeForm.successful = true;
+
+            $scope.refreshData();
+
+            if (response.data.frontend_input == 'select' || response.data.frontend_input == 'multiselect') {
+                $scope.showEditOptionsModal(response.data);
+            }
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.showEditForm = function (attribute) {
+        $scope.editingAttribute = attribute;
+
+        $scope.editAttributeForm = new editAttributeForm();
+        $scope.editAttributeForm.name = attribute.name;
+    };
+
+    $scope.cancelEditing = function () {
+        $scope.editingAttribute = null;
+    };
+
+    $scope.update = function () {
+        $scope.editAttributeForm.errors = [];
+        $scope.editAttributeForm.disabled = true;
+
+        $http.put('/attributes/' + $scope.editingAttribute.id, $scope.editAttributeForm).then(function (response) {
+            $scope.editAttributeForm = new editAttributeForm();
+            $scope.editingAttribute = null;
+
+            $scope.refreshData();
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.showEditOptionsModal = function (attribute) {
+        console.log(attribute);
+    };
+}
 
 /***/ })
 /******/ ]);

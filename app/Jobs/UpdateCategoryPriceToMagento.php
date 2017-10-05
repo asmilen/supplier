@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;

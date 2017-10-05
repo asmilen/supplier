@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\MarginRegionCategory;
-use App\Jobs\UpdateCategoryPriceToMagento;
+use App\Events\CategoryMarginUpdated;
 
 class CategoryMarginsController extends Controller
 {
@@ -49,6 +49,6 @@ class CategoryMarginsController extends Controller
             ]);
         }
 
-        dispatch(new UpdateCategoryPriceToMagento($category));
+        event(new CategoryMarginUpdated($category));
     }
 }

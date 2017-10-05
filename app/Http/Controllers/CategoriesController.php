@@ -143,13 +143,36 @@ class CategoriesController extends Controller
         return redirect()->route('categories.index');
     }
 
-    public function getDatatables()
+    public function listing()
     {
-        return Category::getDatatables();
-    }
+        $sorting = request('sorting', 'code');
 
-    public function all()
-    {
-        return Category::orderBy('name', 'asc')->get();
+        $direction = request('direction', 'asc');
+
+        $page = request('page', 1);
+
+        $limit = request('limit', 25);
+
+        $builder = Category::where(function ($query) {
+            if (! empty(request('q'))) {
+                $query->where('id', 'like', '%'.request('q').'%')
+                    ->orWhere('code', 'like', '%'.request('q').'%')
+                    ->orWhere('name', 'like', '%'.request('q').'%');
+            }
+        });
+
+        $totalItems = $builder->count();
+
+        $categories = $builder
+            ->orderBy('status', 'desc')
+            ->orderBy($sorting, $direction)
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $categories,
+            'total_items' => $totalItems,
+        ]);
     }
 }

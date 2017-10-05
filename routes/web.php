@@ -34,11 +34,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('permissions', 'PermissionsController', ['only' => ['index']]);
 
         // Categories
-        Route::get('categories/datatables', 'CategoriesController@getDatatables')->name('categories.datatables');
-        Route::get('categories/all', 'CategoriesController@all')->name('categories.all');
+        Route::get('categories/listing', 'CategoriesController@listing')->name('categories.listing');
         Route::resource('categories', 'CategoriesController');
         Route::get('categories/{category}/margins', 'CategoryMarginsController@index')->name('categories.margins.index');
         Route::put('categories/{category}/margins', 'CategoryMarginsController@update')->name('categories.margins.update');
+
+        // Attributes
+        Route::get('attributes/listing', 'AttributesController@listing')->name('attributes.listing');
+        Route::resource('attributes', 'AttributesController');
 
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
@@ -47,10 +50,6 @@ Route::group(['middleware' => 'auth'], function () {
         // Colors
         Route::get('color/datatables', 'ColorsController@getDatatables')->name('colors.datatables');
         Route::resource('colors', 'ColorsController');
-
-        // Attributes
-        Route::get('attributes/datatables', 'AttributesController@getDatatables')->name('attributes.datatables');
-        Route::resource('attributes', 'AttributesController');
 
         // Products
         Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');

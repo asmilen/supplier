@@ -44,8 +44,8 @@
             <a href="{{ url('/dashboard') }}"><i class="menu-icon fa fa-tachometer"></i> <span class="menu-text"> Dashboard </span></a>
         </li>
 
-        @if ($currentUser->hasAccess('categories.index') || $currentUser->hasAccess('manufacturers.index') || $currentUser->hasAccess('colors.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('suppliers.index'))
-            <li class="{{ (Request::is('categories') || Request::is('categories/*') || Request::is('manufacturers') || Request::is('manufacturers/*') || Request::is('colors') || Request::is('colors/*') || Request::is('suppliers') || Request::is('suppliers/*')) ? 'active open' : '' }}">
+        @if ($currentUser->hasAccess('categories.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('manufacturers.index') || $currentUser->hasAccess('colors.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('suppliers.index'))
+            <li class="{{ (Request::is('categories') || Request::is('categories/*') || Request::is('attributes') || Request::is('attributes/*') || Request::is('manufacturers') || Request::is('manufacturers/*') || Request::is('colors') || Request::is('colors/*') || Request::is('suppliers') || Request::is('suppliers/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-list"></i>
                     <span class="menu-text"> Quản lý danh mục </span>
@@ -60,6 +60,12 @@
                     <li class="{{ (Request::is('categories') || Request::is('categories/*')) ? 'active' : '' }}">
                         <a href="{{ url('/categories') }}"><i class="menu-icon fa fa-folder"></i> <span class="menu-text"> Danh mục </span></a>
                     </li>
+                    @endif
+
+                    @if ($currentUser->hasAccess('attributes.index'))
+                        <li class="{{ (Request::is('attributes') || Request::is('attributes/*')) ? 'active' : '' }}">
+                            <a href="{{ url('/attributes') }}"><i class="menu-icon fa fa-list-alt"></i> <span class="menu-text"> Thuộc tính </span></a>
+                        </li>
                     @endif
 
                     @if ($currentUser->hasAccess('manufacturers.index'))
@@ -83,8 +89,8 @@
             </li>
         @endif
 
-        @if ($currentUser->hasAccess('products.index') || $currentUser->hasAccess('attributes.index') || $currentUser->hasAccess('combo.index'))
-            <li class="{{ (Request::is('products') || Request::is('products/*') || Request::is('attributes') || Request::is('attributes/*') || Request::is('combo') || Request::is('combo/*')) ? 'active open' : '' }}">
+        @if ($currentUser->hasAccess('products.index') || $currentUser->hasAccess('combo.index'))
+            <li class="{{ (Request::is('products') || Request::is('products/*') || Request::is('combo') || Request::is('combo/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-list"></i>
                     <span class="menu-text"> Quản lý sản phẩm </span>
@@ -98,12 +104,6 @@
                     @if ($currentUser->hasAccess('products.index'))
                         <li class="{{ (Request::is('products') || Request::is('products/*')) ? 'active' : '' }}">
                             <a href="{{ url('/products') }}"><i class="menu-icon fa fa-cubes"></i> <span class="menu-text"> Sản phẩm </span></a>
-                        </li>
-                    @endif
-
-                    @if ($currentUser->hasAccess('attributes.index'))
-                        <li class="{{ (Request::is('attributes') || Request::is('attributes/*')) ? 'active' : '' }}">
-                            <a href="{{ url('/attributes') }}"><i class="menu-icon fa fa-list-alt"></i> <span class="menu-text"> Thuộc tính </span></a>
                         </li>
                     @endif
 

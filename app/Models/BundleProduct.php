@@ -54,7 +54,7 @@ class BundleProduct extends Model
 
     public function getProduct($regionId, $provinceId)
     {
-        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, if(sum(`product_supplier`.`state`) > 0, 1, 0) as 'state', `products`.`status`,`products`.`updated_at` as 'last_update_info', max(`product_supplier`.`updated_at`) as 'last_update_price'"))
+        $product = Product::select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`, `product_supplier`.`import_price`, `product_supplier`.`image` as `source_url`,`products`.`category_id`, if(sum(`product_supplier`.`state`) > 0, 1, 0) as 'state', `products`.`status`,`products`.`updated_at` as 'last_update_info', max(`product_supplier`.`updated_at`) as 'last_update_price'"))
             ->join('product_supplier', function ($q) use ($regionId) {
                 $q->on('product_supplier.product_id', '=', 'products.id')
                     ->where('product_supplier.region_id', $regionId);
@@ -65,10 +65,11 @@ class BundleProduct extends Model
         $margin = MarginRegionCategory::where('category_id', $product->category_id)
             ->where('region_id', $regionId)
             ->first();
-
         $productMarginFee = $this->getProductMarginFee($product, $regionId, $provinceId);
 
         $marginValue = $productMarginFee['margin'] - ($margin ? $margin->margin * 0.01 : 0.05);
+
+        $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productMarginFee['feeMax']  / 1000), '0'), '.')) * 1000;
 
         $product->best_price = ProductSupplier::where('product_id', $product->id)
             ->where('product_supplier.region_id', $regionId)
@@ -94,8 +95,6 @@ class BundleProduct extends Model
             ->where('state', 1)
             ->where('product_supplier.supplier_id', $productMarginFee['supplierId'])
             ->min(DB::raw('(ceil(product_supplier.price_recommend/1000) * 1000)'));
-
-        $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productMarginFee['feeMax']  / 1000), '0'), '.')) * 1000;
 
         $product->official_price = $official_price;
 

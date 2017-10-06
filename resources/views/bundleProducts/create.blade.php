@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
     <!-- #section:basics/content.breadcrumbs -->
     <div class="breadcrumbs" id="breadcrumbs">
         <script type="text/javascript">
@@ -106,7 +105,6 @@
     </div><!-- /.page-content -->
 @endsection
 @section('inline_scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
     <script type="application/javascript">
         $(document).ready(function() {
             $(".multiple").select2({

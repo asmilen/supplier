@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="{{ asset('/vendor/ace/assets/css/bootstrap.css') }}" />
 <link rel="stylesheet" href="{{ asset('/vendor/ace/assets/css/font-awesome.css') }}" />
 <link rel="stylesheet" href="{{ asset('/css/sweetalert.min.css') }}">
+<link rel="stylesheet" href="{{ asset('/vendor/ace/assets/css/select2.css') }}">
 
 @yield('styles')
 
@@ -42,6 +43,22 @@
         'csrfToken' => csrf_token(),
         'regions' => config('teko.regions')
     ]) !!};
+</script>
+
+<!--[if !IE]> -->
+<script type="text/javascript">
+    window.jQuery || document.write("<script src='/vendor/ace/assets/js/jquery.js'>"+"<"+"/script>");
+</script>
+<!-- <![endif]-->
+
+<!--[if IE]>
+<script type="text/javascript">
+    window.jQuery || document.write("<script src='/vendor/ace/assets/js/jquery1x.js'>"+"<"+"/script>");
+</script>
+<![endif]-->
+
+<script type="text/javascript">
+    if('ontouchstart' in document.documentElement) document.write("<script src='/vendor/ace/assets/js/jquery.mobile.custom.js'>"+"<"+"/script>");
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>

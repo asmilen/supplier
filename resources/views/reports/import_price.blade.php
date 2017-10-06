@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@section('styles')
-    <link href="/css/select2.min.css" rel="stylesheet" />
-@endsection
-
 @section('content')
     <!-- #section:basics/content.breadcrumbs -->
     <div class="breadcrumbs" id="breadcrumbs">
@@ -142,7 +138,6 @@
 @endsection
 
 @section('inline_scripts')
-    <script src="/js/select2.min.js"></script>
     <script>
         $(document).ready(function () {
             $('.select2').select2();

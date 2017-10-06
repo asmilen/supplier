@@ -1,7 +1,5 @@
 @extends('layouts.app')
-@section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
-@endsection
+
 @section('content')
     <!-- #section:basics/content.breadcrumbs -->
     <div class="breadcrumbs" id="breadcrumbs">
@@ -48,9 +46,7 @@
         </div>
     </div><!-- /.page-content -->
 @endsection
-@section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
-@endsection
+
 @section('inline_scripts')
     <script type="application/javascript">
         $( document ).ready(function() {

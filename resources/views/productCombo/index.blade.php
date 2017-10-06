@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.css">
     <style>
         .select2-container, .select2-drop, .select2-search, .select2-container .select2-search input{vertical-align: middle;}
         .select2-search:after {
@@ -72,7 +71,6 @@
 @section('scripts')
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
     <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/2.1.0/select2.min.js"></script>
 @endsection
 
 @section('inline_scripts')

@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-sm-8">
-        <div class="panel panel-success">
+        <div class="panel panel-primary">
             <div class="panel-heading">Danh sách thuộc tính đang gán</div>
             <div class="panel-body">
                 <table class="table table-striped table-bordered no-margin-bottom dataTable no-footer">

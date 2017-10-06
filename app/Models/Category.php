@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Datatables;
+use App\Jobs\PublishMessage;
 use Illuminate\Database\Eloquent\Model;
 use App\Jobs\UpdateCategoryPriceToMagento;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,12 +11,11 @@ class Category extends Model
 {
     use SoftDeletes, Trackable, HasUpdater;
 
-    /**
-     * The attributes that should be mutated to dates.
-     *
-     * @var array
-     */
     protected $dates = ['deleted_at'];
+
+    protected $casts = [
+        'status' => 'boolean',
+    ];
 
     public function products()
     {
@@ -46,5 +45,18 @@ class Category extends Model
     public function updatePriceToMagento()
     {
         dispatch(new UpdateCategoryPriceToMagento($this));
+    }
+
+    public function broadcastUpserted()
+    {
+        $message = json_encode([
+            'id' => $this->id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'status' => $this->status ? 'active' : 'inactive',
+            'createdAt' => strtotime($this->updated_at),
+        ]);
+
+        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $message));
     }
 }

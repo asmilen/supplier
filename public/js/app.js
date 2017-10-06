@@ -75,7 +75,7 @@ module.exports = __webpack_require__(17);
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.attributeIndex', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -85,6 +85,7 @@ __webpack_require__(2);
 
 __webpack_require__(4);
 __webpack_require__(5);
+__webpack_require__(22);
 __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(8);
@@ -7935,8 +7936,6 @@ function CategoryIndexController($scope, $http) {
         this.limit = 25;
     }
 
-    $scope.searchForm = new searchForm();
-
     function marginsForm() {
         this.margins = {
             1: 5,
@@ -7946,6 +7945,18 @@ function CategoryIndexController($scope, $http) {
         this.errors = [];
         this.disabled = false;
     }
+
+    function addCategoryForm() {
+        this.code = '';
+        this.name = '';
+        this.status = true;
+        this.errors = [];
+        this.successful = false;
+        this.busy = false;
+    }
+
+    $scope.searchForm = new searchForm();
+    $scope.addCategoryForm = new addCategoryForm();
 
     $scope.refreshData = function () {
         $http.get('/categories/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
@@ -8007,6 +8018,28 @@ function CategoryIndexController($scope, $http) {
                 $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
             }
             $scope.marginsForm.disabled = false;
+        });
+    };
+
+    $scope.showAddCategoryModal = function () {
+        $('#modal-add-category').modal('show');
+    };
+
+    $scope.store = function () {
+        $scope.addCategoryForm.errors = [];
+        $scope.addCategoryForm.disabled = true;
+
+        $http.post('/categories', $scope.addCategoryForm).then(function (response) {
+            $scope.addCategoryForm = new addCategoryForm();
+
+            window.location = '/categories/' + response.data.id + '/edit';
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addCategoryForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addCategoryForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addCategoryForm.disabled = false;
         });
     };
 }
@@ -9169,6 +9202,65 @@ function currencyInput($filter, $browser) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.categoryEdit', []).controller('CategoryEditController', CategoryEditController);
+
+CategoryEditController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function CategoryEditController($scope, $http) {
+    $scope.categoryLoaded = false;
+
+    function editCategoryForm() {
+        this.name = '';
+        this.status = false;
+        this.errors = [];
+        this.successful = false;
+        this.busy = false;
+    }
+
+    $scope.editCategoryForm = new editCategoryForm();
+
+    $scope.getCategory = function () {
+        $http.get('/categories/' + CATEGORY_ID).then(function (response) {
+            $scope.category = response.data;
+            $scope.categoryLoaded = true;
+
+            $scope.editCategoryForm.name = $scope.category.name;
+            $scope.editCategoryForm.status = $scope.category.status;
+        });
+    };
+
+    $scope.getCategory();
+
+    $scope.update = function () {
+        $scope.editCategoryForm.errors = [];
+        $scope.editCategoryForm.successful = false;
+        $scope.editCategoryForm.disabled = true;
+
+        $http.put('/categories/' + CATEGORY_ID, $scope.editCategoryForm).then(function (response) {
+            $scope.editCategoryForm.successful = true;
+            $scope.editCategoryForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editCategoryForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editCategoryForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editCategoryForm.disabled = false;
+        });
+    };
+}
 
 /***/ })
 /******/ ]);

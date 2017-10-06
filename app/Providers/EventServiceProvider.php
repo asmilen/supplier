@@ -16,6 +16,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\CategoryMarginUpdated' => [
             'App\Listeners\UpdateCategoryPriceToMagento',
         ],
+        'App\Events\CategoryUpserted' => [
+            'App\Listeners\BroadcastCategoryUpserted',
+        ],
     ];
 
     /**

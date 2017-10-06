@@ -31,9 +31,4 @@ class Attribute extends Model
             }
         })->exists();
     }
-
-    public static function getList()
-    {
-        return static::pluck('name', 'id')->all();
-    }
 }

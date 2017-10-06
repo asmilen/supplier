@@ -2,6 +2,7 @@ var app = angular.module('app', [
     'ui.bootstrap',
     'controllers.app',
     'controllers.categoryIndex',
+    'controllers.categoryEdit',
     'controllers.attributeIndex',
     'controllers.productCreate',
     'controllers.productSupplier',
@@ -22,6 +23,7 @@ require('angular-ui-bootstrap');
 
 require('./controllers/app.controller.js');
 require('./controllers/categoryIndex.controller.js');
+require('./controllers/categoryEdit.controller.js');
 require('./controllers/attributeIndex.controller.js');
 require('./controllers/productCreate.controller.js');
 require('./controllers/productSupplier.controller.js');

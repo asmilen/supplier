@@ -20,8 +20,6 @@ function CategoryIndexController($scope, $http) {
         this.limit = 25;
     }
 
-    $scope.searchForm = new searchForm();
-
     function marginsForm() {
         this.margins = {
             1: 5,
@@ -31,6 +29,18 @@ function CategoryIndexController($scope, $http) {
         this.errors = [];
         this.disabled = false;
     }
+
+    function addCategoryForm() {
+        this.code = '';
+        this.name = '';
+        this.status = true;
+        this.errors = [];
+        this.successful = false;
+        this.busy = false;
+    }
+
+    $scope.searchForm = new searchForm();
+    $scope.addCategoryForm = new addCategoryForm();
 
     $scope.refreshData = function () {
         $http.get('/categories/listing?q=' + $scope.searchForm.q +
@@ -100,6 +110,30 @@ function CategoryIndexController($scope, $http) {
                     $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
                 }
                 $scope.marginsForm.disabled = false;
+            });
+    }
+
+    $scope.showAddCategoryModal = function () {
+        $('#modal-add-category').modal('show');
+    }
+
+    $scope.store = function () {
+        $scope.addCategoryForm.errors = [];
+        $scope.addCategoryForm.disabled = true;
+
+        $http.post('/categories', $scope.addCategoryForm)
+            .then(response => {
+                $scope.addCategoryForm = new addCategoryForm();
+
+                window.location = '/categories/' + response.data.id + '/edit';
+            })
+            .catch(response => {
+                if (typeof response.data === 'object') {
+                    $scope.addCategoryForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.addCategoryForm.errors = ['Something went wrong. Please try again.'];
+                }
+                $scope.addCategoryForm.disabled = false;
             });
     }
 }

@@ -11,8 +11,24 @@ class Attribute extends Model
         return $this->belongsToMany(Category::class);
     }
 
-    public static function getList()
+    public function options()
     {
-        return static::pluck('name', 'id')->all();
+        return $this->hasMany(AttributeOption::class);
+    }
+
+    public function addOption(AttributeOption $option)
+    {
+        $this->options()->save($option);
+    }
+
+    public function hasValue($value, $exceptId = null)
+    {
+        return $this->options()->where(function ($query) use ($value, $exceptId) {
+            $query->where('value', $value);
+
+            if ($exceptId) {
+                $query->where('id', '<>', $exceptId);
+            }
+        })->exists();
     }
 }

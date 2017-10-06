@@ -17,18 +17,6 @@ class AttributesController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $attribute = new Attribute;
-
-        return view('attributes.create', compact('attribute'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @return \Illuminate\Http\Response
@@ -49,7 +37,7 @@ class AttributesController extends Controller
 
         $attribute = Attribute::forceCreate([
             'slug' => request('slug'),
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'frontend_input' => request('frontend_input'),
             'backend_type' => $this->mapBackendType(),
         ]);
@@ -73,28 +61,6 @@ class AttributesController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Attribute  $attribute
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Attribute $attribute)
-    {
-        return view('attributes.edit', compact('attribute'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Attribute  $attribute
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Attribute $attribute)
-    {
-        return view('attributes.edit', compact('attribute'));
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \App\Models\Attribute  $attribute
@@ -112,7 +78,7 @@ class AttributesController extends Controller
         ]);
 
         $attribute->forceFill([
-            'name' => request('name'),
+            'name' => trim(request('name')),
         ])->save();
 
         return $attribute;

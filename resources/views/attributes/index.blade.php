@@ -34,7 +34,7 @@
                         <td ng-if="editingAttribute.id == attribute.id">
                             <form class="form-inline">
                                 <input type="text" ng-model="editAttributeForm.name">
-                                <button class="btn btn-sm btn-primary" ng-click="update()" ng-disabled="editingAttribute.disabled">Lưu</button>
+                                <button class="btn btn-sm btn-primary" ng-click="update()" ng-disabled="editAttributeForm.disabled">Lưu</button>
                                 <button class="btn btn-white btn-sm btn-default" ng-click="cancelEditing()">Hủy</button>
                             </form>
                         </td>
@@ -87,7 +87,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-success" ng-click="store()" ng-disabled="addAttributeForm.disabled"><i class="fa fa-save"></i> Lưu</button>
+                            <button class="btn btn-success" ng-click="store()" ng-disabled="addAttributeForm.disabled"><i class="ace-icon fa fa-save bigger-110"></i> Lưu</button>
                         </div>
                     </form>
                 </div>
@@ -100,10 +100,35 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Quản lý Option thuộc tính @{{ editingCategory.name }}</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Quản lý Option thuộc tính @{{ editingOptionsAttribute.name }}</h4>
                 </div>
                 <div class="modal-body">
+                    <form class="form-inline p-b-10">
+                        <input type="text" class="form-control" ng-model="addOptionForm.value">
+                        <button class="btn btn-success btn-sm" title="Thêm" ng-click="addOption()" ng-disabled="addOptionForm.value == '' || addOptionForm.disabled"><i class="ace-icon fa fa-plus"></i></button>
+                    </form>
+                    <table class="table table-hover">
+                        <thead>
+                            <th>Giá trị</th>
+                            <th></th>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="item in options track by item.id">
+                                <td ng-if="editingOption.id != item.id" ng-click="showEditOptionForm(item)">@{{ item.value }}</td>
+                                <td ng-if="editingOption.id == item.id">
+                                    <form class="form-inline">
+                                        <input type="text" ng-model="editOptionForm.value">
+                                        <button class="btn btn-info btn-sm" title="Lưu" ng-click="updateOption()" ng-disabled="editOptionForm.disabled">Lưu</button>
+                                        <button class="btn btn-white btn-sm btn-default" ng-click="cancelEditingOption()">Hủy</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <!-- <button class="btn btn-danger btn-sm btn-white" title="Xóa" ng-click="deleteOption(item)"><i class="fa fa-trash"></i></button> -->
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

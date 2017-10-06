@@ -38,10 +38,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('categories', 'CategoriesController');
         Route::get('categories/{category}/margins', 'CategoryMarginsController@index')->name('categories.margins.index');
         Route::put('categories/{category}/margins', 'CategoryMarginsController@update')->name('categories.margins.update');
+        Route::get('categories/{category}/unassigned-attributes', 'CategoryUnassignedAttributesController@index')->name('categories.unassigned-attributes.index');
+        Route::post('categories/{category}/attributes/{attribute}', 'CategoryAttributesController@store')->name('categories.attributes.store');
+        Route::delete('categories/{category}/attributes/{attribute}', 'CategoryAttributesController@destroy')->name('categories.attributes.destroy');
 
         // Attributes
         Route::get('attributes/listing', 'AttributesController@listing')->name('attributes.listing');
         Route::resource('attributes', 'AttributesController');
+        Route::get('attributes/{attribute}/options', 'AttributeOptionsController@index')->name('attributes.options.index');
+        Route::post('attributes/{attribute}/options', 'AttributeOptionsController@store')->name('attributes.options.store');
+        Route::put('attributes/{attribute}/options/{option}', 'AttributeOptionsController@update')->name('attributes.options.update');
 
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');

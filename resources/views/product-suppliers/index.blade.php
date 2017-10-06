@@ -2,7 +2,6 @@
 
 @section('styles')
 <link rel="stylesheet" href="/vendor/ace/assets/css/datepicker.css" />
-<link rel="stylesheet" href="/vendor/ace/assets/css/select2.css">
 @endsection
 
 @section('content')
@@ -569,5 +568,4 @@
 
 @section('scripts')
 <script src="/vendor/ace/assets/js/date-time/bootstrap-datepicker.js"></script>
-<script src="/vendor/ace/assets/js/select2.js"></script>
 @endsection

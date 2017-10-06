@@ -4,15 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Attribute;
-use App\Jobs\PublishMessage;
+use App\Events\CategoryUpserted;
 
 class CategoriesController extends Controller
 {
-    public function __construct()
-    {
-        view()->share('attributesList', Attribute::getList());
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -21,20 +16,6 @@ class CategoriesController extends Controller
     public function index()
     {
         return view('categories.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $category = (new Category)->forceFill([
-            'status' => true,
-        ]);
-
-        return view('categories.create', compact('category'));
     }
 
     /**
@@ -64,22 +45,9 @@ class CategoriesController extends Controller
             'status' => !! request('status'),
         ]);
 
-        $category->attributes()->attach(request('attributes', []));
+        event(new CategoryUpserted($category));
 
-        $jsonSend = [
-            "id"        => $category->id,
-            "code"      => strtoupper(request('code')),
-            "name"      => request('name'),
-            "status"    => $category->status == true ? 'active' : 'inactive',
-            "createdAt" => strtotime($category->created_at)
-        ];
-        $messSend = json_encode($jsonSend);
-
-        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $messSend));
-
-        flash()->success('Success!', 'Category successfully created.');
-
-        return redirect()->route('categories.index');
+        return $category;
     }
 
     /**
@@ -90,7 +58,7 @@ class CategoriesController extends Controller
      */
     public function show(Category $category)
     {
-        return view('categories.edit', compact('category'));
+        return $category;
     }
 
     /**
@@ -125,22 +93,9 @@ class CategoriesController extends Controller
             'status' => !! request('status'),
         ])->save();
 
-        $category->attributes()->sync(request('attributes', []));
+        event(new CategoryUpserted($category));
 
-        $jsonSend = [
-            "id"        => $category->id,
-            "code"      => $category->code,
-            "name"      => request('name'),
-            "status"    => $category->status == true ? 'active' : 'inactive',
-            "createdAt" => strtotime($category->updated_at)
-        ];
-        $messSend = json_encode($jsonSend);
-
-        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $messSend));
-
-        flash()->success('Success!', 'Category successfully updated.');
-
-        return redirect()->route('categories.index');
+        return $category;
     }
 
     public function listing()

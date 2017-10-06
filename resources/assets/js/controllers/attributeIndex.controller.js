@@ -11,6 +11,8 @@ function AttributeIndexController($scope, $http) {
     $scope.totalItems = 0;
 
     $scope.editingAttribute = null;
+    $scope.editingOptionsAttribute = null;
+    $scope.editingOption = null;
 
     $scope.frontendInputs = {
         'text': 'Text',
@@ -50,8 +52,21 @@ function AttributeIndexController($scope, $http) {
         this.disabled = false;
     }
 
+    function addOptionForm() {
+        this.value = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    function editOptionForm() {
+        this.value = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
     $scope.searchForm = new searchForm();
     $scope.addAttributeForm = new addAttributeForm();
+    $scope.addOptionForm = new addOptionForm();
 
     $scope.refreshData = function () {
         $http.get('/attributes/listing?q=' + $scope.searchForm.q +
@@ -153,6 +168,73 @@ function AttributeIndexController($scope, $http) {
     }
 
     $scope.showEditOptionsModal = function (attribute) {
-        console.log(attribute);
+        $scope.editingOptionsAttribute = attribute;
+
+        $('#modal-edit-options').modal('show');
+
+        $scope.loadAttributeOptions();
+    }
+
+    $scope.loadAttributeOptions = function () {
+        $http.get('/attributes/' + $scope.editingOptionsAttribute.id + '/options')
+            .then(response => {
+                $scope.options = response.data;
+            });
+    }
+
+    $scope.addOption = function () {
+        $scope.addOptionForm.errors = [];
+        $scope.addOptionForm.disabled = true;
+
+        $http.post('/attributes/' + $scope.editingOptionsAttribute.id + '/options', $scope.addOptionForm)
+            .then(response => {
+                $scope.addOptionForm = new addOptionForm();
+
+                $scope.loadAttributeOptions();
+            })
+            .catch(response => {
+                if (typeof response.data === 'object') {
+                    $scope.addOptionForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.addOptionForm.errors = ['Something went wrong. Please try again.'];
+                }
+                $scope.addOptionForm.disabled = false;
+
+                alert($scope.addOptionForm.errors[0]);
+            });
+    }
+
+    $scope.showEditOptionForm = function (option) {
+        $scope.editingOption = option;
+
+        $scope.editOptionForm = new editOptionForm();
+        $scope.editOptionForm.value = option.value;
+    }
+
+    $scope.cancelEditingOption = function () {
+        $scope.editingOption = null;
+    }
+
+    $scope.updateOption = function () {
+        $scope.editOptionForm.errors = [];
+        $scope.editOptionForm.disabled = true;
+
+        $http.put('/attributes/' + $scope.editingOptionsAttribute.id + '/options/' + $scope.editingOption.id, $scope.editOptionForm)
+            .then(response => {
+                $scope.editOptionForm = new editOptionForm();
+                $scope.editingOption = null;
+
+                $scope.loadAttributeOptions();
+            })
+            .catch(response => {
+                if (typeof response.data === 'object') {
+                    $scope.editOptionForm.errors = _.flatten(_.toArray(response.data));
+                } else {
+                    $scope.editOptionForm.errors = ['Something went wrong. Please try again.'];
+                }
+                $scope.editOptionForm.disabled = false;
+
+                alert($scope.editOptionForm.errors[0]);
+            });
     }
 }

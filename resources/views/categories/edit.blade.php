@@ -1,70 +1,60 @@
 @extends('layouts.app')
 
-@section('styles')
-<link rel="stylesheet" href="/vendor/ace/assets/css/bootstrap-duallistbox.css">
+@section('inline_scripts')
+<script>
+    var CATEGORY_ID = {{ $category->id }};
+</script>
 @endsection
 
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
-<div class="breadcrumbs" id="breadcrumbs">
-    <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-    </script>
-
-    <ul class="breadcrumb">
-        <li>
-            <i class="ace-icon fa fa-home home-icon"></i>
-            <a href="{{ url('/dashboard') }}">Dashboard</a>
-        </li>
-        <li>
-            <a href="{{ route('categories.index') }}">Danh mục</a>
-        </li>
-        <li class="active">Thay đổi</li>
-    </ul><!-- /.breadcrumb -->
-    <!-- /section:basics/content.searchbox -->
-</div>
-<!-- /section:basics/content.breadcrumbs -->
-
-<div class="page-content">
+<div class="page-content" ng-controller="CategoryEditController">
     <div class="page-header">
         <h1>
             Danh mục
             <small>
                 <i class="ace-icon fa fa-angle-double-right"></i>
-                Thay đổi
+                {{ $category->name }}
             </small>
+        </h1>
+    </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-6">
+        </div>
+        <div class="col-xs-6">
+            @if (Sentinel::getUser()->hasAccess('categories.create'))
             <p class="pull-right">
                 <a class="btn btn-primary" href="{{ route('categories.index') }}">
                     <i class="ace-icon fa fa-list" aria-hidden="true"></i>
                     <span class="hidden-xs">Danh sách</span>
                 </a>
             </p>
-        </h1>
-    </div><!-- /.page-header -->
-    <div class="row">
+            @endif
+        </div>
+    </div>
+
+    <div class="row" ng-if="categoryLoaded">
         <div class="col-xs-12">
-            @include('common.errors')
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#tab-general">Thông tin chung</a>
+                </li>
 
-            <form class="form-horizontal" role="form" method="POST" action="{{ route('categories.update', $category->id) }}">
-                {!! method_field('PUT') !!}
+                <li>
+                    <a data-toggle="tab" href="#tab-attributes">Quản lý Thuộc tính</a>
+                </li>
+            </ul>
 
-                @include('categories._form')
-            </form>
+            <div class="tab-content">
+                <div id="tab-general" class="tab-pane fade in active">
+                    @include('categories._edit-general')
+                </div>
+
+                <div id="tab-attributes" class="tab-pane fade">
+                    @include('categories._edit-attributes')
+                </div>
+            </div>
         </div>
     </div>
 </div><!-- /.page-content -->
-@endsection
-
-@section('scripts')
-<script src="/vendor/ace/assets/js/jquery.bootstrap-duallistbox.js"></script>
-@endsection
-
-@section('inline_scripts')
-<script>
-$(function () {
-    var attributes = $('select[name="attributes[]"]').bootstrapDualListbox({infoTextFiltered: '<span class="label label-purple label-lg">Lọc</span>'});
-    var attributesContainer = attributes.bootstrapDualListbox('getContainer');
-    attributesContainer.find('.btn').addClass('btn-white btn-info btn-bold');
-});
-</script>
 @endsection

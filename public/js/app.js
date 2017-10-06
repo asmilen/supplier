@@ -9226,10 +9226,20 @@ function CategoryEditController($scope, $http) {
         this.status = false;
         this.errors = [];
         this.successful = false;
-        this.busy = false;
+        this.disabled = false;
+    }
+
+    function attachAttributeForm() {
+        this.disabled = false;
+    }
+
+    function detachAttributeForm() {
+        this.disabled = false;
     }
 
     $scope.editCategoryForm = new editCategoryForm();
+    $scope.attachAttributeForm = new attachAttributeForm();
+    $scope.detachAttributeForm = new detachAttributeForm();
 
     $scope.getCategory = function () {
         $http.get('/categories/' + CATEGORY_ID).then(function (response) {
@@ -9240,8 +9250,6 @@ function CategoryEditController($scope, $http) {
             $scope.editCategoryForm.status = $scope.category.status;
         });
     };
-
-    $scope.getCategory();
 
     $scope.update = function () {
         $scope.editCategoryForm.errors = [];
@@ -9258,6 +9266,39 @@ function CategoryEditController($scope, $http) {
                 $scope.editCategoryForm.errors = ['Something went wrong. Please try again.'];
             }
             $scope.editCategoryForm.disabled = false;
+        });
+    };
+
+    $scope.getUnassignedAttributes = function () {
+        $http.get('/categories/' + CATEGORY_ID + '/unassigned-attributes').then(function (response) {
+            $scope.unassignedAttributes = response.data;
+        });
+    };
+
+    $scope.refreshData = function () {
+        $scope.getCategory();
+        $scope.getUnassignedAttributes();
+    };
+
+    $scope.refreshData();
+
+    $scope.attachAttribute = function (attribute) {
+        $scope.attachAttributeForm.disabled = true;
+
+        $http.post('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
+            $scope.refreshData();
+
+            $scope.attachAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.detachAttribute = function (attribute) {
+        $scope.detachAttributeForm.disabled = true;
+
+        $http.delete('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
+            $scope.refreshData();
+
+            $scope.detachAttributeForm.disabled = false;
         });
     };
 }

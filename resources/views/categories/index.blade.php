@@ -40,8 +40,8 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="category in categories">
-                        <td>@{{ category.code }}</td>
-                        <td>@{{ category.name }}</td>
+                        <td><a href="/categories/@{{ category.id }}/edit">@{{ category.code }}</a></td>
+                        <td><a href="/categories/@{{ category.id }}/edit">@{{ category.name }}</a></td>
                         <td>
                             <span class="label label-success" ng-if="category.status == 1">Đang hoạt động</span>
                             <span class="label label-danger" ng-if="category.status == 0">Ngừng hoạt động</span>
@@ -51,7 +51,7 @@
                             <button class="btn btn-white btn-warning btn-sm" ng-click="showEditMarginsModal(category)">Quản lý Margin</button>
                             @endif
                             @if ($currentUser->hasAccess('categories.edit'))
-                            <a class="btn btn-white btn-success btn-sm" href="/categories/@{{ category.id }}/edit">Sửa</a>
+                            <a class="btn btn-white btn-info btn-sm" href="/categories/@{{ category.id }}/edit">Sửa</a>
                             @endif
                         </td>
                     </tr>

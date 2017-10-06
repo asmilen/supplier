@@ -17,6 +17,8 @@ class Category extends Model
         'status' => 'boolean',
     ];
 
+    protected $with = ['attributes'];
+
     public function products()
     {
         return $this->hasMany(Product::class);
@@ -24,7 +26,7 @@ class Category extends Model
 
     public function attributes()
     {
-        return $this->belongsToMany(Attribute::class);
+        return $this->belongsToMany(Attribute::class)->orderBy('slug', 'asc');
     }
 
     public function margins()

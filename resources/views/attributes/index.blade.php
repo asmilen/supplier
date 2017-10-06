@@ -87,7 +87,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-success" ng-click="store()" ng-disabled="addAttributeForm.disabled"><i class="fa fa-save"></i> Lưu</button>
+                            <button class="btn btn-success" ng-click="store()" ng-disabled="addAttributeForm.disabled"><i class="ace-icon fa fa-save bigger-110"></i> Lưu</button>
                         </div>
                     </form>
                 </div>
@@ -106,7 +106,7 @@
                 <div class="modal-body">
                     <form class="form-inline p-b-10">
                         <input type="text" class="form-control" ng-model="addOptionForm.value">
-                        <button class="btn btn-success btn-sm" title="Thêm" ng-click="addOption()" ng-disabled="addOptionForm.value == '' || addOptionForm.disabled"><i class="fa fa-plus"></i></button>
+                        <button class="btn btn-success btn-sm" title="Thêm" ng-click="addOption()" ng-disabled="addOptionForm.value == '' || addOptionForm.disabled"><i class="ace-icon fa fa-plus"></i></button>
                     </form>
                     <table class="table table-hover">
                         <thead>

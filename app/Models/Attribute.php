@@ -21,6 +21,17 @@ class Attribute extends Model
         $this->options()->save($option);
     }
 
+    public function hasValue($value, $exceptId = null)
+    {
+        return $this->options()->where(function ($query) use ($value, $exceptId) {
+            $query->where('value', $value);
+
+            if ($exceptId) {
+                $query->where('id', '<>', $exceptId);
+            }
+        })->exists();
+    }
+
     public static function getList()
     {
         return static::pluck('name', 'id')->all();

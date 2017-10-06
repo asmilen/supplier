@@ -51,7 +51,7 @@
                             <button class="btn btn-white btn-warning btn-sm" ng-click="showEditMarginsModal(category)">Quản lý Margin</button>
                             @endif
                             @if ($currentUser->hasAccess('categories.edit'))
-                            <a class="btn btn-white btn-success btn-sm" href="/categories/@{{ category.id }}">Sửa</a>
+                            <a class="btn btn-white btn-success btn-sm" href="/categories/@{{ category.id }}/edit">Sửa</a>
                             @endif
                         </td>
                     </tr>

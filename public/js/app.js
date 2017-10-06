@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(16);
+module.exports = __webpack_require__(17);
 
 
 /***/ }),
@@ -84,19 +84,19 @@ app.config(['$httpProvider', function ($httpProvider) {
 __webpack_require__(2);
 
 __webpack_require__(4);
-__webpack_require__(10);
-__webpack_require__(21);
 __webpack_require__(5);
 __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(8);
 __webpack_require__(9);
+__webpack_require__(10);
 __webpack_require__(11);
-
 __webpack_require__(12);
+
 __webpack_require__(13);
 __webpack_require__(14);
 __webpack_require__(15);
+__webpack_require__(16);
 
 /***/ }),
 /* 2 */
@@ -7915,6 +7915,339 @@ function AppController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
+
+CategoryIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function CategoryIndexController($scope, $http) {
+    $scope.categoriesLoaded = false;
+
+    $scope.editingCategory = null;
+
+    $scope.totalItems = 0;
+
+    function searchForm() {
+        this.q = '';
+        this.sorting = 'code';
+        this.direction = 'asc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    $scope.searchForm = new searchForm();
+
+    function marginsForm() {
+        this.margins = {
+            1: 5,
+            2: 5,
+            3: 5
+        };
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.refreshData = function () {
+        $http.get('/categories/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.categories = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.categoriesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
+    $scope.showEditMarginsModal = function (category) {
+        $scope.editingCategory = category;
+
+        $scope.marginsForm = new marginsForm();
+
+        $http.get('/categories/' + category.id + '/margins').then(function (response) {
+            _.each(response.data, function (margin, regionId) {
+                $scope.marginsForm.margins[regionId] = margin.margin;
+            });
+        });
+
+        $('#modal-edit-margins').modal('show');
+    };
+
+    $scope.updateMargins = function () {
+        $scope.marginsForm.errors = [];
+        $scope.marginsForm.disabled = true;
+
+        $http.put('/categories/' + $scope.editingCategory.id + '/margins', {
+            'north_region': this.marginsForm.margins[1],
+            'middle_region': this.marginsForm.margins[2],
+            'south_region': this.marginsForm.margins[3]
+        }).then(function (response) {
+            $scope.editingCategory = null;
+            $scope.marginsForm = new marginsForm();
+
+            $('#modal-edit-margins').modal('hide');
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.marginsForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.attributeIndex', []).controller('AttributeIndexController', AttributeIndexController);
+
+AttributeIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function AttributeIndexController($scope, $http) {
+    $scope.attributesLoaded = false;
+
+    $scope.totalItems = 0;
+
+    $scope.editingAttribute = null;
+    $scope.editingOptionsAttribute = null;
+    $scope.editingOption = null;
+
+    $scope.frontendInputs = {
+        'text': 'Text',
+        'textarea': 'Textarea',
+        'select': 'Dropdown',
+        'multiselect': 'Multiple Select'
+    };
+
+    $scope.backendTypes = {
+        'varchar': 'varchar',
+        'int': 'int',
+        'decimal': 'decimal'
+        // 'text': 'text'
+    };
+
+    function searchForm() {
+        this.q = '';
+        this.sorting = 'slug';
+        this.direction = 'asc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    function addAttributeForm() {
+        this.slug = '';
+        this.name = '';
+        this.frontend_input = 'text';
+        this.backend_type = 'varchar';
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
+    function editAttributeForm() {
+        this.name = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    function addOptionForm() {
+        this.value = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    function editOptionForm() {
+        this.value = '';
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.searchForm = new searchForm();
+    $scope.addAttributeForm = new addAttributeForm();
+    $scope.addOptionForm = new addOptionForm();
+
+    $scope.refreshData = function () {
+        $http.get('/attributes/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.attributes = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.attributesLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
+    $scope.mapBackendType = function () {
+        if ($scope.addAttributeForm.frontend_input == 'textarea') {
+            $scope.addAttributeForm.backend_type = 'text';
+        } else if ($scope.addAttributeForm.frontend_input == 'select' || $scope.addAttributeForm.frontend_input == 'multiselect') {
+            $scope.addAttributeForm.backend_type = 'int';
+        } else {
+            $scope.addAttributeForm.backend_type = 'varchar';
+        }
+    };
+
+    $scope.store = function () {
+        $scope.addAttributeForm.errors = [];
+        $scope.addAttributeForm.successful = false;
+        $scope.addAttributeForm.disabled = true;
+
+        $http.post('/attributes', $scope.addAttributeForm).then(function (response) {
+            $scope.addAttributeForm = new addAttributeForm();
+            $scope.addAttributeForm.successful = true;
+
+            $scope.refreshData();
+
+            if (response.data.frontend_input == 'select' || response.data.frontend_input == 'multiselect') {
+                $scope.showEditOptionsModal(response.data);
+            }
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.showEditForm = function (attribute) {
+        $scope.editingAttribute = attribute;
+
+        $scope.editAttributeForm = new editAttributeForm();
+        $scope.editAttributeForm.name = attribute.name;
+    };
+
+    $scope.cancelEditing = function () {
+        $scope.editingAttribute = null;
+    };
+
+    $scope.update = function () {
+        $scope.editAttributeForm.errors = [];
+        $scope.editAttributeForm.disabled = true;
+
+        $http.put('/attributes/' + $scope.editingAttribute.id, $scope.editAttributeForm).then(function (response) {
+            $scope.editAttributeForm = new editAttributeForm();
+            $scope.editingAttribute = null;
+
+            $scope.refreshData();
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.showEditOptionsModal = function (attribute) {
+        $scope.editingOptionsAttribute = attribute;
+
+        $('#modal-edit-options').modal('show');
+
+        $scope.loadAttributeOptions();
+    };
+
+    $scope.loadAttributeOptions = function () {
+        $http.get('/attributes/' + $scope.editingOptionsAttribute.id + '/options').then(function (response) {
+            $scope.options = response.data;
+        });
+    };
+
+    $scope.addOption = function () {
+        $scope.addOptionForm.errors = [];
+        $scope.addOptionForm.disabled = true;
+
+        $http.post('/attributes/' + $scope.editingOptionsAttribute.id + '/options', $scope.addOptionForm).then(function (response) {
+            $scope.addOptionForm = new addOptionForm();
+
+            $scope.loadAttributeOptions();
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addOptionForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addOptionForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addOptionForm.disabled = false;
+
+            alert($scope.addOptionForm.errors[0]);
+        });
+    };
+
+    $scope.showEditOptionForm = function (option) {
+        $scope.editingOption = option;
+
+        $scope.editOptionForm = new editOptionForm();
+        $scope.editOptionForm.value = option.value;
+    };
+
+    $scope.cancelEditingOption = function () {
+        $scope.editingOption = null;
+    };
+
+    $scope.updateOption = function () {
+        $scope.editOptionForm.errors = [];
+        $scope.editOptionForm.disabled = true;
+
+        $http.put('/attributes/' + $scope.editingOptionsAttribute.id + '/options/' + $scope.editingOption.id, $scope.editOptionForm).then(function (response) {
+            $scope.editOptionForm = new editOptionForm();
+            $scope.editingOption = null;
+
+            $scope.loadAttributeOptions();
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editOptionForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editOptionForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editOptionForm.disabled = false;
+
+            alert($scope.editOptionForm.errors[0]);
+        });
+    };
+}
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 angular.module('controllers.productCreate', ['directives.fileread', 'directives.select2']).controller('ProductCreateController', ProductCreateController);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
@@ -8025,7 +8358,7 @@ function ProductCreateController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 6 */
+/* 8 */
 /***/ (function(module, exports) {
 
 angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
@@ -8083,7 +8416,7 @@ function ProductSupplierController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 7 */
+/* 9 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8244,7 +8577,7 @@ function ProductEditController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 8 */
+/* 10 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8314,7 +8647,7 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8369,109 +8702,7 @@ function TransportFeeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
-
-CategoryIndexController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function CategoryIndexController($scope, $http) {
-    $scope.categoriesLoaded = false;
-
-    $scope.editingCategory = null;
-
-    $scope.totalItems = 0;
-
-    function searchForm() {
-        this.q = '';
-        this.sorting = 'code';
-        this.direction = 'asc';
-        this.page = 1;
-        this.limit = 25;
-    }
-
-    $scope.searchForm = new searchForm();
-
-    function marginsForm() {
-        this.margins = {
-            1: 5,
-            2: 5,
-            3: 5
-        };
-        this.errors = [];
-        this.disabled = false;
-    }
-
-    $scope.refreshData = function () {
-        $http.get('/categories/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
-            $scope.categories = response.data.data;
-            $scope.totalItems = response.data.total_items;
-            $scope.categoriesLoaded = true;
-        });
-    };
-
-    $scope.refreshData();
-
-    $scope.updateSorting = function (sorting) {
-        if ($scope.searchForm.sorting == sorting) {
-            if ($scope.searchForm.direction == 'asc') {
-                $scope.searchForm.direction = 'desc';
-            } else {
-                $scope.searchForm.direction = 'asc';
-            }
-        } else {
-            $scope.searchForm.direction = 'asc';
-        }
-
-        $scope.searchForm.sorting = sorting;
-
-        $scope.refreshData();
-    };
-
-    $scope.showEditMarginsModal = function (category) {
-        $scope.editingCategory = category;
-
-        $scope.marginsForm = new marginsForm();
-
-        $http.get('/categories/' + category.id + '/margins').then(function (response) {
-            _.each(response.data, function (margin, regionId) {
-                $scope.marginsForm.margins[regionId] = margin.margin;
-            });
-        });
-
-        $('#modal-edit-margins').modal('show');
-    };
-
-    $scope.updateMargins = function () {
-        $scope.marginsForm.errors = [];
-        $scope.marginsForm.disabled = true;
-
-        $http.put('/categories/' + $scope.editingCategory.id + '/margins', {
-            'north_region': this.marginsForm.margins[1],
-            'middle_region': this.marginsForm.margins[2],
-            'south_region': this.marginsForm.margins[3]
-        }).then(function (response) {
-            $scope.editingCategory = null;
-            $scope.marginsForm = new marginsForm();
-
-            $('#modal-edit-margins').modal('hide');
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.marginsForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8792,7 +9023,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 }
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -8813,7 +9044,7 @@ function fileread() {
 }
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive('select2', select2);
@@ -8863,7 +9094,7 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 angular.module('directives.format', []).directive('format', format);
@@ -8890,7 +9121,7 @@ function format($filter) {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
@@ -8934,241 +9165,10 @@ function currencyInput($filter, $browser) {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 17 */,
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.attributeIndex', []).controller('AttributeIndexController', AttributeIndexController);
-
-AttributeIndexController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function AttributeIndexController($scope, $http) {
-    $scope.attributesLoaded = false;
-
-    $scope.totalItems = 0;
-
-    $scope.editingAttribute = null;
-    $scope.editingOptionsAttribute = null;
-    $scope.editingOption = null;
-
-    $scope.frontendInputs = {
-        'text': 'Text',
-        'textarea': 'Textarea',
-        'select': 'Dropdown',
-        'multiselect': 'Multiple Select'
-    };
-
-    $scope.backendTypes = {
-        'varchar': 'varchar',
-        'int': 'int',
-        'decimal': 'decimal'
-        // 'text': 'text'
-    };
-
-    function searchForm() {
-        this.q = '';
-        this.sorting = 'slug';
-        this.direction = 'asc';
-        this.page = 1;
-        this.limit = 25;
-    }
-
-    function addAttributeForm() {
-        this.slug = '';
-        this.name = '';
-        this.frontend_input = 'text';
-        this.backend_type = 'varchar';
-        this.errors = [];
-        this.successful = false;
-        this.disabled = false;
-    }
-
-    function editAttributeForm() {
-        this.name = '';
-        this.errors = [];
-        this.disabled = false;
-    }
-
-    function addOptionForm() {
-        this.value = '';
-        this.errors = [];
-        this.disabled = false;
-    }
-
-    function editOptionForm() {
-        this.value = '';
-        this.errors = [];
-        this.disabled = false;
-    }
-
-    $scope.searchForm = new searchForm();
-    $scope.addAttributeForm = new addAttributeForm();
-    $scope.addOptionForm = new addOptionForm();
-
-    $scope.refreshData = function () {
-        $http.get('/attributes/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
-            $scope.attributes = response.data.data;
-            $scope.totalItems = response.data.total_items;
-            $scope.attributesLoaded = true;
-        });
-    };
-
-    $scope.refreshData();
-
-    $scope.updateSorting = function (sorting) {
-        if ($scope.searchForm.sorting == sorting) {
-            if ($scope.searchForm.direction == 'asc') {
-                $scope.searchForm.direction = 'desc';
-            } else {
-                $scope.searchForm.direction = 'asc';
-            }
-        } else {
-            $scope.searchForm.direction = 'asc';
-        }
-
-        $scope.searchForm.sorting = sorting;
-
-        $scope.refreshData();
-    };
-
-    $scope.mapBackendType = function () {
-        if ($scope.addAttributeForm.frontend_input == 'textarea') {
-            $scope.addAttributeForm.backend_type = 'text';
-        } else if ($scope.addAttributeForm.frontend_input == 'select' || $scope.addAttributeForm.frontend_input == 'multiselect') {
-            $scope.addAttributeForm.backend_type = 'int';
-        } else {
-            $scope.addAttributeForm.backend_type = 'varchar';
-        }
-    };
-
-    $scope.store = function () {
-        $scope.addAttributeForm.errors = [];
-        $scope.addAttributeForm.successful = false;
-        $scope.addAttributeForm.disabled = true;
-
-        $http.post('/attributes', $scope.addAttributeForm).then(function (response) {
-            $scope.addAttributeForm = new addAttributeForm();
-            $scope.addAttributeForm.successful = true;
-
-            $scope.refreshData();
-
-            if (response.data.frontend_input == 'select' || response.data.frontend_input == 'multiselect') {
-                $scope.showEditOptionsModal(response.data);
-            }
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.addAttributeForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.addAttributeForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.addAttributeForm.disabled = false;
-        });
-    };
-
-    $scope.showEditForm = function (attribute) {
-        $scope.editingAttribute = attribute;
-
-        $scope.editAttributeForm = new editAttributeForm();
-        $scope.editAttributeForm.name = attribute.name;
-    };
-
-    $scope.cancelEditing = function () {
-        $scope.editingAttribute = null;
-    };
-
-    $scope.update = function () {
-        $scope.editAttributeForm.errors = [];
-        $scope.editAttributeForm.disabled = true;
-
-        $http.put('/attributes/' + $scope.editingAttribute.id, $scope.editAttributeForm).then(function (response) {
-            $scope.editAttributeForm = new editAttributeForm();
-            $scope.editingAttribute = null;
-
-            $scope.refreshData();
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.editAttributeForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.editAttributeForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.editAttributeForm.disabled = false;
-        });
-    };
-
-    $scope.showEditOptionsModal = function (attribute) {
-        $scope.editingOptionsAttribute = attribute;
-
-        $('#modal-edit-options').modal('show');
-
-        $scope.loadAttributeOptions();
-    };
-
-    $scope.loadAttributeOptions = function () {
-        $http.get('/attributes/' + $scope.editingOptionsAttribute.id + '/options').then(function (response) {
-            $scope.options = response.data;
-        });
-    };
-
-    $scope.addOption = function () {
-        $scope.addOptionForm.errors = [];
-        $scope.addOptionForm.disabled = true;
-
-        $http.post('/attributes/' + $scope.editingOptionsAttribute.id + '/options', $scope.addOptionForm).then(function (response) {
-            $scope.addOptionForm = new addOptionForm();
-
-            $scope.loadAttributeOptions();
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.addOptionForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.addOptionForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.addOptionForm.disabled = false;
-        });
-    };
-
-    $scope.showEditOptionForm = function (option) {
-        $scope.editingOption = option;
-
-        $scope.editOptionForm = new editOptionForm();
-        $scope.editOptionForm.value = option.value;
-    };
-
-    $scope.cancelEditingOption = function () {
-        $scope.editingOption = null;
-    };
-
-    $scope.updateOption = function () {
-        $scope.editOptionForm.errors = [];
-        $scope.editOptionForm.disabled = true;
-
-        $http.put('/attributes/' + $scope.editingOptionsAttribute.id + '/options/' + $scope.editingOption.id, $scope.editOptionForm).then(function (response) {
-            $scope.editOptionForm = new editOptionForm();
-            $scope.editingOption = null;
-
-            $scope.loadAttributeOptions();
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.editOptionForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.editOptionForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.editOptionForm.disabled = false;
-        });
-    };
-}
 
 /***/ })
 /******/ ]);

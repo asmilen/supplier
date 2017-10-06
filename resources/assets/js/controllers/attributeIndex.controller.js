@@ -199,6 +199,8 @@ function AttributeIndexController($scope, $http) {
                     $scope.addOptionForm.errors = ['Something went wrong. Please try again.'];
                 }
                 $scope.addOptionForm.disabled = false;
+
+                alert($scope.addOptionForm.errors[0]);
             });
     }
 
@@ -231,6 +233,8 @@ function AttributeIndexController($scope, $http) {
                     $scope.editOptionForm.errors = ['Something went wrong. Please try again.'];
                 }
                 $scope.editOptionForm.disabled = false;
+
+                alert($scope.editOptionForm.errors[0]);
             });
     }
 }

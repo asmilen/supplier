@@ -18,6 +18,12 @@ class AttributeOptionsController extends Controller
             'value' => 'required|max:255',
         ]);
 
+        if ($attribute->hasValue(request('value'))) {
+            return response([
+                'value' => 'Giá trị thuộc tính đã tồn tại.'
+            ], 422);
+        }
+
         $attribute->addOption((new AttributeOption)->forceFill([
             'value' => request('value'),
         ]));
@@ -28,6 +34,12 @@ class AttributeOptionsController extends Controller
         $this->validate(request(), [
             'value' => 'required|max:255',
         ]);
+
+        if ($attribute->hasValue(request('value'), $option->id)) {
+            return response([
+                'value' => 'Giá trị thuộc tính đã tồn tại.'
+            ], 422);
+        }
 
         $option->forceFill(['value' => request('value')])->save();
     }

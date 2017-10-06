@@ -37,7 +37,7 @@ class AttributesController extends Controller
 
         $attribute = Attribute::forceCreate([
             'slug' => request('slug'),
-            'name' => request('name'),
+            'name' => trim(request('name')),
             'frontend_input' => request('frontend_input'),
             'backend_type' => $this->mapBackendType(),
         ]);
@@ -78,7 +78,7 @@ class AttributesController extends Controller
         ]);
 
         $attribute->forceFill([
-            'name' => request('name'),
+            'name' => trim(request('name')),
         ])->save();
 
         return $attribute;

@@ -22,7 +22,7 @@
         <div class="col-xs-6">
         </div>
         <div class="col-xs-6">
-            @if (Sentinel::getUser()->hasAccess('categories.create'))
+            @if (Sentinel::getUser()->hasAccess('categories.index'))
             <p class="pull-right">
                 <a class="btn btn-primary" href="{{ route('categories.index') }}">
                     <i class="ace-icon fa fa-list" aria-hidden="true"></i>

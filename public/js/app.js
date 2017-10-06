@@ -68,7 +68,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(17);
+module.exports = __webpack_require__(18);
 
 
 /***/ }),
@@ -85,7 +85,6 @@ __webpack_require__(2);
 
 __webpack_require__(4);
 __webpack_require__(5);
-__webpack_require__(22);
 __webpack_require__(6);
 __webpack_require__(7);
 __webpack_require__(8);
@@ -93,11 +92,12 @@ __webpack_require__(9);
 __webpack_require__(10);
 __webpack_require__(11);
 __webpack_require__(12);
-
 __webpack_require__(13);
+
 __webpack_require__(14);
 __webpack_require__(15);
 __webpack_require__(16);
+__webpack_require__(17);
 
 /***/ }),
 /* 2 */
@@ -8050,6 +8050,102 @@ function CategoryIndexController($scope, $http) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+angular.module('controllers.categoryEdit', []).controller('CategoryEditController', CategoryEditController);
+
+CategoryEditController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function CategoryEditController($scope, $http) {
+    $scope.categoryLoaded = false;
+
+    function editCategoryForm() {
+        this.name = '';
+        this.status = false;
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
+    function attachAttributeForm() {
+        this.disabled = false;
+    }
+
+    function detachAttributeForm() {
+        this.disabled = false;
+    }
+
+    $scope.editCategoryForm = new editCategoryForm();
+    $scope.attachAttributeForm = new attachAttributeForm();
+    $scope.detachAttributeForm = new detachAttributeForm();
+
+    $scope.getCategory = function () {
+        $http.get('/categories/' + CATEGORY_ID).then(function (response) {
+            $scope.category = response.data;
+            $scope.categoryLoaded = true;
+
+            $scope.editCategoryForm.name = $scope.category.name;
+            $scope.editCategoryForm.status = $scope.category.status;
+        });
+    };
+
+    $scope.update = function () {
+        $scope.editCategoryForm.errors = [];
+        $scope.editCategoryForm.successful = false;
+        $scope.editCategoryForm.disabled = true;
+
+        $http.put('/categories/' + CATEGORY_ID, $scope.editCategoryForm).then(function (response) {
+            $scope.editCategoryForm.successful = true;
+            $scope.editCategoryForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editCategoryForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editCategoryForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editCategoryForm.disabled = false;
+        });
+    };
+
+    $scope.getUnassignedAttributes = function () {
+        $http.get('/categories/' + CATEGORY_ID + '/unassigned-attributes').then(function (response) {
+            $scope.unassignedAttributes = response.data;
+        });
+    };
+
+    $scope.refreshData = function () {
+        $scope.getCategory();
+        $scope.getUnassignedAttributes();
+    };
+
+    $scope.refreshData();
+
+    $scope.attachAttribute = function (attribute) {
+        $scope.attachAttributeForm.disabled = true;
+
+        $http.post('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
+            $scope.refreshData();
+
+            $scope.attachAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.detachAttribute = function (attribute) {
+        $scope.detachAttributeForm.disabled = true;
+
+        $http.delete('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
+            $scope.refreshData();
+
+            $scope.detachAttributeForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 angular.module('controllers.attributeIndex', []).controller('AttributeIndexController', AttributeIndexController);
 
 AttributeIndexController.$inject = ['$scope', '$http'];
@@ -8276,7 +8372,7 @@ function AttributeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8391,7 +8487,7 @@ function ProductCreateController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
@@ -8449,12 +8545,12 @@ function ProductSupplierController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', ['directives.fileread', 'directives.select2']).controller('ProductEditController', ProductEditController);
+angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -8462,155 +8558,65 @@ ProductEditController.$inject = ['$scope', '$http', '$window'];
 function ProductEditController($scope, $http, $window) {
     $scope.productIsLoaded = false;
 
-    function productForm() {
-        this.category_id = '';
-        this.manufacturer_id = '';
-        this.color_id = '';
-        this.parent_id = '';
+    function editProductForm() {
         this.name = '';
-        this.code = '';
         this.source_url = '';
-        this.image = {};
-        this.imageBase64 = {};
+        this.image = '';
         this.description = '';
+        this.channel = { 1: false, 2: false };
         this.status = true;
-        this.attributes = {};
         this.errors = [];
-        this.disabled = false;
         this.successful = false;
-        this.channel = '';
+        this.disabled = false;
     };
 
-    $scope.productForm = new productForm();
+    $scope.editProductForm = new editProductForm();
 
     $scope.getProduct = function () {
-        $http.get('/api/products/' + PRODUCT_ID).then(function (response) {
+        $http.get('/products/' + PRODUCT_ID).then(function (response) {
             $scope.product = response.data;
 
-            if (!$scope.productIsLoaded) {
-                $scope.productIsLoaded = true;
+            $scope.productIsLoaded = true;
 
-                $scope.populateProductForm();
-                $scope.refreshData();
-            }
+            $scope.populateProductForm();
         });
     };
 
     $scope.populateProductForm = function () {
-        $scope.productForm.category_id = $scope.product.category_id;
-        $scope.productForm.manufacturer_id = $scope.product.manufacturer_id;
-        $scope.productForm.color_id = $scope.product.color_id;
-        $scope.productForm.parent_id = $scope.product.parent_id ? $scope.product.parent_id : 0;
-        $scope.productForm.name = $scope.product.name;
-        $scope.productForm.code = $scope.product.code;
-        $scope.productForm.source_url = $scope.product.source_url;
-        $scope.productForm.description = $scope.product.description;
-        $scope.productForm.status = $scope.product.status;
-        $scope.productForm.attributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
-        $scope.productForm.channel = $scope.product.channel.toString();
-        $scope.channel = $scope.product.product_options;
-        $scope.channels = $scope.product.channels;
-        $scope.productForm.channel = [];
+        $scope.editProductForm.name = $scope.product.name;
+        $scope.editProductForm.source_url = $scope.product.source_url;
+        $scope.editProductForm.description = $scope.product.description;
+        $scope.editProductForm.status = $scope.product.status;
+        $scope.editProductForm.image = $scope.product.image;
 
-        $.each($scope.product.product_options, function (index, value) {
-            if ($scope.channels.indexOf(index.toString()) >= 0) $scope.productForm.channel[index] = true;else $scope.productForm.channel[index] = false;
+        _.each($scope.product.channel.split(','), function (channelKey) {
+            $scope.editProductForm.channel[channelKey] = true;
         });
     };
 
-    $scope.getCategories = function () {
-        $http.get('/api/categories').then(function (response) {
-            $scope.categories = response.data;
-        });
-    };
-
-    $scope.getManufacturers = function () {
-        $http.get('/api/manufacturers').then(function (response) {
-            $scope.manufacturers = response.data;
-        });
-    };
-
-    $scope.getColors = function () {
-        $http.get('/api/colors').then(function (response) {
-            $scope.colors = response.data;
-        });
-    };
-
-    $scope.getProductConfigurables = function () {
-        $http.get('/api/products/getConfigurableList').then(function (response) {
-            $scope.productConfigurables = response.data;
-        });
-    };
-
-    $scope.refreshData = function () {
-        categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
-
-        $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
-            $scope.attributes = response.data;
-
-            productAttributes = $scope.product.attributes ? JSON.parse($scope.product.attributes) : {};
-
-            _.each($scope.attributes, function (attribute) {
-                $scope.productForm.attributes[attribute.slug] = attribute.slug in productAttributes ? productAttributes[attribute.slug] : '';
-            });
-        }).catch(function () {
-            $scope.attributes = {};
-        });
-    };
-
-    $scope.removeChild = function (childId) {
-        if (confirm("Are you sure?")) {
-            $http.post('/products/' + PRODUCT_ID + '/removeChild/' + childId).then(function (response) {});
-            $window.location.reload();
-        }
-    };
-
-    $scope.getCategories();
-    $scope.getManufacturers();
-    $scope.getColors();
-    $scope.getProductConfigurables();
     $scope.getProduct();
 
-    $scope.submitForm = function () {
-        $http.post('/products/' + PRODUCT_ID, $scope.productForm).then(function () {
-            $scope.productForm.successful = true;
-            $scope.productForm.disabled = false;
+    $scope.update = function () {
+        $scope.editProductForm.errors = [];
+        $scope.editProductForm.disabled = true;
+        $scope.editProductForm.successful = false;
 
-            $window.location.href = '/products';
+        $http.post('/products/' + PRODUCT_ID, $scope.editProductForm).then(function () {
+            $scope.editProductForm.successful = true;
+            $scope.editProductForm.disabled = false;
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
-                $scope.productForm.errors = _.flatten(_.toArray(response.data));
+                $scope.editProductForm.errors = _.flatten(_.toArray(response.data));
             } else {
-                $scope.productForm.errors = ['Something went wrong. Please try again.'];
+                $scope.editProductForm.errors = ['Something went wrong. Please try again.'];
             }
-            $scope.productForm.disabled = false;
+            $scope.editProductForm.disabled = false;
         });
-    };
-
-    $scope.updateProduct = function () {
-        $scope.productForm.errors = [];
-        $scope.productForm.disabled = true;
-        $scope.productForm.successful = false;
-
-        var reader = new FileReader();
-        var image = $scope.productForm.image;
-
-        reader.onloadend = function () {
-            var binaryString = reader.result;
-
-            $scope.productForm.imageBase64 = {
-                file: btoa(binaryString),
-                name: image.name
-            };
-
-            $scope.submitForm();
-        };
-
-        if (image.type && image.type.match('image.*')) reader.readAsBinaryString(image);else $scope.submitForm();
     };
 }
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8680,7 +8686,7 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8735,7 +8741,7 @@ function TransportFeeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -9056,7 +9062,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 }
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -9077,7 +9083,7 @@ function fileread() {
 }
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive('select2', select2);
@@ -9127,7 +9133,7 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 angular.module('directives.format', []).directive('format', format);
@@ -9154,7 +9160,7 @@ function format($filter) {
 };
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
@@ -9198,110 +9204,10 @@ function currencyInput($filter, $browser) {
 };
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 18 */,
-/* 19 */,
-/* 20 */,
-/* 21 */,
-/* 22 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.categoryEdit', []).controller('CategoryEditController', CategoryEditController);
-
-CategoryEditController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function CategoryEditController($scope, $http) {
-    $scope.categoryLoaded = false;
-
-    function editCategoryForm() {
-        this.name = '';
-        this.status = false;
-        this.errors = [];
-        this.successful = false;
-        this.disabled = false;
-    }
-
-    function attachAttributeForm() {
-        this.disabled = false;
-    }
-
-    function detachAttributeForm() {
-        this.disabled = false;
-    }
-
-    $scope.editCategoryForm = new editCategoryForm();
-    $scope.attachAttributeForm = new attachAttributeForm();
-    $scope.detachAttributeForm = new detachAttributeForm();
-
-    $scope.getCategory = function () {
-        $http.get('/categories/' + CATEGORY_ID).then(function (response) {
-            $scope.category = response.data;
-            $scope.categoryLoaded = true;
-
-            $scope.editCategoryForm.name = $scope.category.name;
-            $scope.editCategoryForm.status = $scope.category.status;
-        });
-    };
-
-    $scope.update = function () {
-        $scope.editCategoryForm.errors = [];
-        $scope.editCategoryForm.successful = false;
-        $scope.editCategoryForm.disabled = true;
-
-        $http.put('/categories/' + CATEGORY_ID, $scope.editCategoryForm).then(function (response) {
-            $scope.editCategoryForm.successful = true;
-            $scope.editCategoryForm.disabled = false;
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.editCategoryForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.editCategoryForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.editCategoryForm.disabled = false;
-        });
-    };
-
-    $scope.getUnassignedAttributes = function () {
-        $http.get('/categories/' + CATEGORY_ID + '/unassigned-attributes').then(function (response) {
-            $scope.unassignedAttributes = response.data;
-        });
-    };
-
-    $scope.refreshData = function () {
-        $scope.getCategory();
-        $scope.getUnassignedAttributes();
-    };
-
-    $scope.refreshData();
-
-    $scope.attachAttribute = function (attribute) {
-        $scope.attachAttributeForm.disabled = true;
-
-        $http.post('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
-            $scope.refreshData();
-
-            $scope.attachAttributeForm.disabled = false;
-        });
-    };
-
-    $scope.detachAttribute = function (attribute) {
-        $scope.detachAttributeForm.disabled = true;
-
-        $http.delete('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
-            $scope.refreshData();
-
-            $scope.detachAttributeForm.disabled = false;
-        });
-    };
-}
 
 /***/ })
 /******/ ]);

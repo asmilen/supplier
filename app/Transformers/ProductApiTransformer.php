@@ -69,11 +69,12 @@ class ProductApiTransformer extends TransformerAbstract
         $productFeeMax = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
         $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
-        $product = ProductSupplier::select('product_supplier.import_price')
-            ->where('product_id', $data['id'])
+        $product = ProductSupplier::select('product_supplier.import_price', 'products.description')
+            ->where('product_supplier.product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
             ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
+            ->leftJoin('products', 'product_supplier.product_id', 'products.id')
             ->first();
 
         $import_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * ($productFee - $w_margin) / 1000), '0'), '.')) * 1000;
@@ -83,6 +84,7 @@ class ProductApiTransformer extends TransformerAbstract
         return [
             'id' => $data['id'],
             'name' => html_entity_decode($data['name']),
+            'description' => $product->description,
             'price' => (Int)$data['price'],
             'import_price' => $import_price,
             'import_price_w_margin' => $import_price_w_margin,

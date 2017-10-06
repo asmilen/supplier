@@ -172,7 +172,7 @@ class ProductsController extends Controller
             $channels = request('channels', [2]);
 
             $product = Product::with('manufacturer', 'category')
-                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`,  `products`.`description`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`"))
+                ->select(DB::raw("`products`.`id`, `products`.`name` , `products`.`sku`,  `products`.`description`, `products`.`image` as `source_url`, `products`.`manufacturer_id`, `products`.`category_id`, `product_supplier`.`quantity`, `product_supplier`.`import_price`"))
                 ->leftJoin('product_supplier', function ($q) use ($regions) {
                     $q->on('product_supplier.product_id', '=', 'products.id')
                         ->where('product_supplier.region_id', $regions[0])
@@ -227,6 +227,8 @@ class ProductsController extends Controller
                 $productFeeMax = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
                 $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
+                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $minPrice->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
+
                 $product->best_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
@@ -252,12 +254,11 @@ class ProductsController extends Controller
                     ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min('product_supplier.price_recommend');
 
-                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
-
                 if ($product->recommended_price == $product->best_price) {
                     $suppliers = ProductSupplier::where('price_recommend', $product->best_price)
                         ->where('product_id', $id)
                         ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
+                        ->where('product_supplier.region_id', $regions[0])
                         ->pluck('supplier_id');
                     $supplier = Supplier::whereIn('id', $suppliers ? $suppliers : 0)
                         ->where('status', 1)

@@ -122,7 +122,7 @@ class ProductsController extends Controller
      */
     public function show(Product $product)
     {
-        return view('products.edit', compact('product'));
+        return $product;
     }
 
     /**
@@ -144,58 +144,35 @@ class ProductsController extends Controller
      */
     public function update(Product $product)
     {
-        $user = Sentinel::getUser();
+        $channels = array_keys(array_filter(request('channel', []), function ($value, $key) {
+            return $value;
+        }, ARRAY_FILTER_USE_BOTH));
 
-        $code = strtoupper(request('code'));
-
-        $rules = [
+        Validator::make(request()->all(), [
             'name' => 'required|max:255|unique:products,name,' . $product->id,
-        ];
-
-        $channelChoose = [];
-        foreach (request('channel') as $key => $channel) {
-            if ($channel == 'true') {
-                array_push($channelChoose, $key);
-            }
-        }
-
-        if (filter_var(request('status'), FILTER_VALIDATE_BOOLEAN) == false || !in_array("2", $channelChoose)){
-            $productSuppliers = ProductSupplier::where('product_id', $product->id)->get();
-            foreach ($productSuppliers as $productSupplier){
-                dispatch(new OffProductToMagento($product, 0, $user, $productSupplier->region_id));
-            }
-        }
-
-        Validator::make(request()->all(), $rules, [
+        ], [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
-            'channel.max' => 'Bạn chưa chọn kênh bán hàng.',
-        ])->after(function ($validator) use ($channelChoose) {
-            if (!$channelChoose) {
-                $validator->errors()->add('channel', 'Bạn chưa chọn kênh bán hàng.');
+        ])->after(function ($validator) use ($channels) {
+            if (empty($channels)) {
+                $validator->errors()->add('channels', 'Bạn chưa chọn kênh bán hàng.');
             }
         })->validate();
 
         $product->forceFill([
-            'parent_id' => request('parent_id', 0),
             'name' => trim(request('name')),
-            'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
+            'source_url' => trim(request('source_url')),
             'description' => request('description'),
-            'attributes' => json_encode(request('attributes', [])),
-            'channel' => implode(",", $channelChoose),
+            'status' => request('status'),
+            'channel' => implode(',', $channels),
         ])->save();
 
-        if (request('imageBase64')) {
-            $file = request('imageBase64')['file'];
-            $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['name'];
-            $img = Image::make($file);
-            $img->save(storage_path('app/public/' . $filename));
+        if (! request('status') || ! in_array(2, $channels)) {
+            $productSuppliers = ProductSupplier::where('product_id', $product->id)->get();
 
-            $product->forceFill([
-                'image' => url('/') . '/storage/' . $filename,
-            ])->save();
+            foreach ($productSuppliers as $productSupplier) {
+                dispatch(new OffProductToMagento($product, 0, Sentinel::getUser(), $productSupplier->region_id));
+            }
         }
-
-        flash()->success('Success!', 'Product successfully updated.');
 
         return $product;
     }

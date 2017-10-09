@@ -18,12 +18,12 @@
             </div>
         </div>
         <div class="col-xs-6">
-            @if (Sentinel::getUser()->hasAccess('categories.create'))
-            <a class="btn btn-primary pull-right" ng-click="showAddCategoryModal()">
-                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Tạo danh mục</span>
-            </a>
-            @endif
+            <p class="pull-right">
+                <a class="btn btn-primary" ng-click="showAddCategoryModal()">
+                    <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                    <span class="hidden-xs">Tạo danh mục</span>
+                </a>
+            </p>
         </div>
     </div>
 
@@ -67,7 +67,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Tạo danh mục</h4>
                 </div>
                 <div class="modal-body">
@@ -115,7 +115,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button " class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Quản lý Margin Danh mục @{{ editingCategory.name }}</h4>
                 </div>
                 <div class="modal-body">

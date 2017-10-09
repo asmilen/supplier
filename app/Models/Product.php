@@ -27,6 +27,8 @@ class Product extends Model
         'status' => 'boolean',
     ];
 
+    protected $with = ['category', 'manufacturer', 'color'];
+
     public static function boot()
     {
         parent::boot();

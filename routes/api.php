@@ -1,5 +1,9 @@
 <?php
 
+Route::prefix('v2')->namespace('V2')->group(function () {
+    Route::get('region-products', 'RegionProductsController@index');
+});
+
 Route::get('categories', 'CategoriesController@index');
 Route::get('manufacturers', 'ManufacturersController@index');
 Route::get('colors', 'ColorsController@index');

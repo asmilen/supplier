@@ -41,6 +41,22 @@ function ProductIndexController($scope, $http) {
 
     $scope.refreshData();
 
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    }
+
     $scope.channelText = function (channel) {
         return channel.replace('1', 'Online').replace('2', 'Offline');
     }

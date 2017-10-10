@@ -85,7 +85,7 @@ class Product extends Model
 
     public function productSuppliers()
     {
-        return $this->hasMany(ProductSupplier::class);
+        return $this->hasMany(ProductSupplier::class)->where('state', 1);
     }
 
     public function scopeActive($query)

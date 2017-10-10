@@ -84,7 +84,7 @@
     </div>
 
     <div class="clearfix form-actions">
-        <div class="col-md-offset-3 col-md-9">
+        <div class="col-md-12">
             <button type="submit" class="btn btn-info" ng-click="update()" ng-disabled="editProductForm.disabled">
                 <i class="ace-icon fa fa-save bigger-110"></i>Lưu
             </button>

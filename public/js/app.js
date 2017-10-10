@@ -8570,7 +8570,15 @@ function ProductEditController($scope, $http, $window) {
         this.disabled = false;
     };
 
+    function editProductAttributeForm() {
+        this.values = {};
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
     $scope.editProductForm = new editProductForm();
+    $scope.editProductAttributeForm = new editProductAttributeForm();
 
     $scope.getProduct = function () {
         $http.get('/products/' + PRODUCT_ID).then(function (response) {
@@ -8579,6 +8587,8 @@ function ProductEditController($scope, $http, $window) {
             $scope.productIsLoaded = true;
 
             $scope.populateProductForm();
+
+            $scope.populateProductAttributeForm();
         });
     };
 
@@ -8611,6 +8621,36 @@ function ProductEditController($scope, $http, $window) {
                 $scope.editProductForm.errors = ['Something went wrong. Please try again.'];
             }
             $scope.editProductForm.disabled = false;
+        });
+    };
+
+    $scope.populateProductAttributeForm = function () {
+        var productAttributes = JSON.parse($scope.product.attributes);
+
+        _.each($scope.product.category.attributes, function (attribute) {
+            if (typeof productAttributes[attribute.slug] == 'undefined') {
+                $scope.editProductAttributeForm.values[attribute.slug] = '';
+            } else {
+                $scope.editProductAttributeForm.values[attribute.slug] = '' + productAttributes[attribute.slug];
+            }
+        });
+    };
+
+    $scope.updateProductAttribute = function () {
+        $scope.editProductAttributeForm.errors = [];
+        $scope.editProductAttributeForm.disabled = true;
+        $scope.editProductAttributeForm.successful = false;
+
+        $http.put('/products/' + PRODUCT_ID + '/attributes', $scope.editProductAttributeForm).then(function (response) {
+            $scope.editProductAttributeForm.successful = true;
+            $scope.editProductAttributeForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editProductAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editProductAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editProductAttributeForm.disabled = false;
         });
     };
 }

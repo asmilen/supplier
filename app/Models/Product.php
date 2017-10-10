@@ -461,4 +461,40 @@ class Product extends Model
         }
         return $decodedResult;
     }
+
+    public function updateAttributes($values)
+    {
+        foreach ($this->category->attributes()->get() as $attribute) {
+            $value = isset($values[$attribute->slug]) ? $values[$attribute->slug] : '';
+
+            $this->updateAttribute($attribute, $value);
+        }
+
+        array_walk_recursive($values, function (&$item, $key) {
+            $item = null === $item ? '' : $item;
+        });
+
+        $this->forceFill([
+            'attributes' => json_encode($values),
+        ])->save();
+
+        return $this;
+    }
+
+    public function updateAttribute($attribute, $value)
+    {
+        $className = $this->getProductAttributeClassName($attribute->backend_type);
+
+        return $className::updateOrCreate([
+            'product_id' => $this->id,
+            'attribute_id' => $attribute->id,
+        ], [
+            'value' => $value,
+        ]);
+    }
+
+    protected function getProductAttributeClassName($type)
+    {
+        return 'App\Models\ProductAttribute'.ucfirst($type);
+    }
 }

@@ -61,6 +61,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('colors', 'ColorsController');
 
         // Products
+        Route::get('products/listing', 'ProductsController@listing')->name('products.listing');
         Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');
         Route::post('products/{product}', 'ProductsController@update')->name('products.update');
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);

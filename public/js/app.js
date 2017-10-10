@@ -75,21 +75,22 @@ module.exports = __webpack_require__(18);
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+__webpack_require__(2);
+
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
 
-__webpack_require__(2);
-
 __webpack_require__(4);
 __webpack_require__(5);
 __webpack_require__(6);
 __webpack_require__(7);
+__webpack_require__(23);
+__webpack_require__(10);
 __webpack_require__(8);
 __webpack_require__(9);
-__webpack_require__(10);
 __webpack_require__(11);
 __webpack_require__(12);
 __webpack_require__(13);
@@ -9248,6 +9249,52 @@ function currencyInput($filter, $browser) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.productIndex', []).controller('ProductIndexController', ProductIndexController);
+
+ProductIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function ProductIndexController($scope, $http) {
+    $scope.productsLoaded = false;
+
+    $scope.totalItems = 0;
+
+    function searchForm() {
+        this.category_id = '';
+        this.manufacturer_id = '';
+        this.status = '';
+        this.q = '';
+        this.sorting = 'id';
+        this.direction = 'desc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    $scope.searchForm = new searchForm();
+
+    $scope.refreshData = function () {
+        $http.get('/products/listing?q=' + $scope.searchForm.q + '&category_id=' + $scope.searchForm.category_id + '&manufacturer_id=' + $scope.searchForm.manufacturer_id + '&status=' + $scope.searchForm.status + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.products = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.productsLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.channelText = function (channel) {
+        return channel.replace('1', 'Online').replace('2', 'Offline');
+    };
+}
 
 /***/ })
 /******/ ]);

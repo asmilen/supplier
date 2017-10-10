@@ -223,4 +223,54 @@ class ProductsController extends Controller
 
         $product->forceFill(['status' => !$product->status])->save();
     }
+
+    public function listing()
+    {
+        $sorting = request('sorting', 'id');
+
+        $direction = request('direction', 'desc');
+
+        $page = request('page', 1);
+
+        $limit = request('limit', 25);
+
+        $builder = Product::where(function ($query) {
+            if (! empty(request('q'))) {
+                $query->where('id', 'like', '%'.request('q').'%')
+                    ->orWhere('code', 'like', '%'.request('q').'%')
+                    ->orWhere('sku', 'like', '%'.request('q').'%')
+                    ->orWhere('name', 'like', '%'.request('q').'%');
+            }
+
+            if (! empty(request('category_id'))) {
+                $query->where('category_id', request('category_id'));
+            }
+
+            if (! empty(request('manufacturer_id'))) {
+                $query->where('manufacturer_id', request('manufacturer_id'));
+            }
+
+            if (! empty(request('status'))) {
+                if (request('status') == 'active') {
+                    $query->active();
+                } elseif (request('status') == 'inactive') {
+                    $query->inactive();
+                }
+            }
+        });
+
+        $totalItems = $builder->count();
+
+        $products = $builder
+            ->orderBy('status', 'desc')
+            ->orderBy($sorting, $direction)
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $products,
+            'total_items' => $totalItems,
+        ]);
+    }
 }

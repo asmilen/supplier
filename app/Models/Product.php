@@ -93,6 +93,11 @@ class Product extends Model
         return $query->where('status', true);
     }
 
+    public function scopeInactive($query)
+    {
+        return $query->where('status', false);
+    }
+
     public static function getDatatables()
     {
         $model = static::select([

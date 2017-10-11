@@ -51,14 +51,12 @@ class Category extends Model
 
     public function broadcastUpserted()
     {
-        $message = json_encode([
+        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', json_encode([
             'id' => $this->id,
             'code' => $this->code,
             'name' => $this->name,
             'status' => $this->status ? 'active' : 'inactive',
             'createdAt' => strtotime($this->updated_at),
-        ]);
-
-        dispatch(new PublishMessage('teko.sale', 'sale.cat.upsert', $message));
+        ])));
     }
 }

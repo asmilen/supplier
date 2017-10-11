@@ -29,35 +29,6 @@ class Product extends Model
 
     protected $with = ['category', 'manufacturer', 'color'];
 
-    public static function boot()
-    {
-        parent::boot();
-
-        static::saved(function ($model) {
-            if ($model->sku) {
-                dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
-                    'id' => $model->id,
-                    'categoryId' => $model->category_id,
-                    'brandId' => $model->manufacturer_id,
-                    'type' => $model->type,
-                    'sku' => $model->sku,
-                    'name' => $model->name,
-                    'skuIdentifier' => $model->code,
-                    'status' => $model->status ? 'active' : 'inactive',
-                    'sourceUrl' => $model->source_url,
-                    'createdAt' => strtotime($model->created_at),
-                ])));
-            } else {
-                $code = $model->code ?: $model->id;
-
-                $model->forceFill([
-                    'code' => $code,
-                    'sku' => $model->generateSku($code),
-                ])->save();
-            }
-        });
-    }
-
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -233,17 +204,6 @@ class Product extends Model
             ->whereNotNull('product_supplier.to_date')
             ->where('product_supplier.to_date', '>', Carbon::now())
             ->where('product_supplier.to_date', '<=', Carbon::now()->addDays($days));
-    }
-
-    protected function generateSku($code)
-    {
-        $sku = $this->category->code . '-' . $this->manufacturer->code . '-' . $code;
-
-        if ($this->color) {
-            $sku .= '-' . $this->color->code;
-        }
-
-        return $sku;
     }
 
     public function updatePriceToMagento($regionId)
@@ -490,16 +450,107 @@ class Product extends Model
     {
         $className = $this->getProductAttributeClassName($attribute->backend_type);
 
-        return $className::updateOrCreate([
-            'product_id' => $this->id,
-            'attribute_id' => $attribute->id,
-        ], [
-            'value' => $value,
-        ]);
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $className::updateOrCreate([
+                    'product_id' => $this->id,
+                    'attribute_id' => $attribute->id,
+                    'value' => $v,
+                ]);
+            }
+
+            $className::where('product_id', $this->id)
+                ->where('attribute_id', $attribute->id)
+                ->whereNotIn('value', $value)
+                ->delete();
+        } else {
+            return $className::updateOrCreate([
+                'product_id' => $this->id,
+                'attribute_id' => $attribute->id,
+            ], [
+                'value' => $value,
+            ]);
+        }
     }
 
     protected function getProductAttributeClassName($type)
     {
         return 'App\Models\ProductAttribute'.ucfirst($type);
+    }
+
+    public function generateSku($code = null, $force = false)
+    {
+        if (! empty($this->sku) && ! $force) {
+            return $this;
+        }
+
+        $code = $code ? : $this->id;
+
+        $sku = $this->category->code . '-' . $this->manufacturer->code . '-' . $code;
+
+        if ($this->color) {
+            $sku .= '-' . $this->color->code;
+        }
+
+        $this->forceFill([
+            'code' => $code,
+            'sku' => $sku,
+        ])->save();
+
+        return $this;
+    }
+
+    public function setChannels($channels)
+    {
+        $this->forceFill([
+            'channel' => implode(',', $channels),
+        ])->save();
+
+        return $this;
+    }
+
+    public function isDisabled()
+    {
+        return ! $this->status;
+    }
+
+    public function isAvailableToOfflineStore()
+    {
+        return in_array(2, explode(',', $this->channel));
+    }
+
+    public function isNotAvailableToOfflineStore()
+    {
+        return ! $this->isAvailableToOfflineStore();
+    }
+
+    public function needToOffOnMagento()
+    {
+        return $this->isDisabled() || $this->isNotAvailableToOfflineStore();
+    }
+
+    public function setOffOnMagento()
+    {
+        $regionIds = ProductSupplier::where('product_id', $this->id)->distinct()->get(['region_id'])->pluck('region_id');
+
+        foreach ($regionIds as $regionId) {
+            dispatch(new OffProductToMagento($this, 0, Sentinel::getUser(), $regionId));
+        }
+    }
+
+    public function broadcastUpserted()
+    {
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+            'id' => $this->id,
+            'categoryId' => $this->category_id,
+            'brandId' => $this->manufacturer_id,
+            'type' => $this->type,
+            'sku' => $this->sku,
+            'name' => $this->name,
+            'skuIdentifier' => $this->code,
+            'status' => $this->status ? 'active' : 'inactive',
+            'sourceUrl' => $this->source_url,
+            'createdAt' => strtotime($this->created_at),
+        ])));
     }
 }

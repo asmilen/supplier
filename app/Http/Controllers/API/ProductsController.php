@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Supplier;
 use DB;
 use Validator;
 use Datatables;
@@ -10,11 +9,13 @@ use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Province;
-use App\Models\TransportFee;
+use App\Models\Supplier;
 use App\Models\Manufacturer;
+use App\Models\TransportFee;
+use App\Events\ProductUpserted;
 use App\Models\ProductSupplier;
-use App\Models\MarginRegionCategory;
 use App\Http\Controllers\Controller;
+use App\Models\MarginRegionCategory;
 use App\Models\SupplierSupportedProvince;
 use App\Transformers\ProductApiTransformer;
 
@@ -344,7 +345,7 @@ class ProductsController extends Controller
             }
         }
 
-        return Product::forceCreate([
+        $product = Product::forceCreate([
             'category_id' => $category->id,
             'manufacturer_id' => $manufacturer->id,
             'color_id' => $color ? $color->id : 0,
@@ -352,6 +353,10 @@ class ProductsController extends Controller
             'code' => $productData['code'],
             'status' => 0,
         ]);
+
+        event(new ProductUpserted($product));
+
+        return $product;
     }
 
     public function updateNameBySku()

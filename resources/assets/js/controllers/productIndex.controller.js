@@ -10,6 +10,8 @@ function ProductIndexController($scope, $http) {
 
     $scope.totalItems = 0;
 
+    $scope.countAll = 0;
+
     function searchForm() {
         this.category_id = '';
         this.manufacturer_id = '';
@@ -35,6 +37,7 @@ function ProductIndexController($scope, $http) {
             .then(response => {
                 $scope.products = response.data.data;
                 $scope.totalItems = response.data.total_items;
+                $scope.countAll = response.data.all;
                 $scope.productsLoaded = true;
             });
     }

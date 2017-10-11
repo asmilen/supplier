@@ -111,12 +111,15 @@
                                 @endif
                             </td>
                         </tr>
+                        <tr ng-if="totalItems == 0">
+                            <td colspan="10">Không tìm thấy kết quả tương ứng nào.</td>
+                        </tr>
                     </tbody>
                 </table>
 
                 <div class="row">
                     <div class="col-xs-6">
-                        <div class="dataTables_info">Hiển thị từ @{{ (searchForm.page - 1) * searchForm.limit + 1 }} đến @{{ searchForm.page * searchForm.limit }} của @{{ totalItems }} sản phẩm</div>
+                        <div class="dataTables_info">Hiển thị từ @{{ (totalItems > 0) ? (searchForm.page - 1) * searchForm.limit + 1 : 0 }} đến @{{ (searchForm.page * searchForm.limit < totalItems) ? searchForm.page * searchForm.limit : totalItems }} của @{{ totalItems }} sản phẩm <span ng-if="all > totalItems">(Lọc từ @{{ countAll }} sản phẩm)</span></div>
                     </div>
                     <div class="col-xs-6">
                         <div class="dataTables_paginate paging_simple_numbers">

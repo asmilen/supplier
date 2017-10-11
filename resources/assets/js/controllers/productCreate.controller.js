@@ -1,34 +1,17 @@
 angular
-    .module('controllers.productCreate', [
-        'directives.fileread', 'directives.select2'
-    ])
+    .module('controllers.productCreate', [])
     .controller('ProductCreateController', ProductCreateController);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
 function ProductCreateController($scope, $http, $window) {
-
-    function productForm() {
+    function selectCategoryForm() {
         this.category_id = '';
-        this.manufacturer_id = '';
-        this.color_id = '';
-        this.type = 'simple';
-        this.parent_id = '0';
-        this.name = '';
-        this.code = '';
-        this.source_url = '';
-        this.image = {};
-        this.description = '';
-        this.status = true;
-        this.attributes = {};
-        this.errors = [];
         this.disabled = false;
-        this.successful = false;
-        this.channels = {};
-    };
+    }
 
-    $scope.productForm = new productForm();
+    $scope.selectCategoryForm = new selectCategoryForm();
 
     $scope.getCategories = function () {
         $http.get('/api/categories')
@@ -37,86 +20,19 @@ function ProductCreateController($scope, $http, $window) {
             });
     };
 
-    $scope.getManufacturers = function () {
-        $http.get('/api/manufacturers')
-            .then(function (response) {
-                $scope.manufacturers = response.data;
-            });
-    };
-
-    $scope.getColors = function () {
-        $http.get('/api/colors')
-            .then(function (response) {
-                $scope.colors = response.data;
-            });
-    };
-
-    $scope.getProductConfigurables = function () {
-        $http.get('/api/products/configurable')
-            .then(function (response) {
-                $scope.productConfigurables = response.data;
-            });
-    };
-
-    $scope.refreshData = function () {
-        categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
-
-        $http.get('/api/categories/' + categoryId + '/attributes')
-            .then(function (response) {
-                $scope.attributes = response.data;
-
-                _.each($scope.attributes, function (attribute) {
-                    $scope.productForm.attributes[attribute.slug] = '';
-                });
-            });
-    };
-
     $scope.getCategories();
-    $scope.getManufacturers();
-    $scope.getColors();
-    $scope.getProductConfigurables();
-    $scope.refreshData();
 
-    $scope.submitForm = function() {
-        $http.post('/products', $scope.productForm)
-            .then(function () {
-                $scope.productForm.successful = true;
-                $scope.productForm.disabled = false;
+    $scope.selectCategory = function () {
+        $scope.selectCategoryForm.disabled = true;
 
-                $window.location.href = '/products';
-            })
-            .catch(function (response) {
-                if (typeof response.data === 'object') {
-                    $scope.productForm.errors = _.flatten(_.toArray(response.data));
-                } else {
-                    $scope.productForm.errors = ['Something went wrong. Please try again.'];
-                }
-                $scope.productForm.disabled = false;
-            });
+        if ($scope.selectCategoryForm.category_id == '') {
+            alert('Vui lòng chọn danh mục.');
+
+            $scope.selectCategoryForm.disabled = false;
+
+            return false;
+        }
+
+        $window.location = '/products/create?category_id=' + $scope.selectCategoryForm.category_id;
     }
-
-    $scope.addProduct = function () {
-        $scope.productForm.errors = [];
-        $scope.productForm.disabled = true;
-        $scope.productForm.successful = false;
-
-        var reader = new FileReader();
-        var image = $scope.productForm.image;
-
-        reader.onloadend = function() {
-            var binaryString = reader.result;
-
-            $scope.productForm.imageBase64 = {
-                file : btoa(binaryString),
-                name : image.name,
-            };
-
-            $scope.submitForm();
-        };
-
-        if (image.type && image.type.match('image.*'))
-            reader.readAsBinaryString(image);
-        else
-            $scope.submitForm();
-    };
 }

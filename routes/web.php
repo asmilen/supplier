@@ -62,16 +62,17 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Products
         Route::get('products/listing', 'ProductsController@listing')->name('products.listing');
-        Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');
-        Route::post('products/{product}', 'ProductsController@update')->name('products.update');
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
-        Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
-        Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
-        Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
 
-        Route::put('products/{product}/getChildren', 'ProductSalepriceController@getChildren')->name('products.getChildren');
-        Route::post('products/{product}/addChild', 'ProductsController@addChild')->name('products.addChild');
-        Route::post('products/{product}/removeChild/{childId}', 'ProductsController@removeChild')->name('products.removeChild');
+        Route::post('categories/{category}/products', 'CategoryProductsController@store')->name('categories.products.store');
+
+        // Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
+        // Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
+        // Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
+
+        // Route::put('products/{product}/getChildren', 'ProductSalepriceController@getChildren')->name('products.getChildren');
+        // Route::post('products/{product}/addChild', 'ProductsController@addChild')->name('products.addChild');
+        // Route::post('products/{product}/removeChild/{childId}', 'ProductsController@removeChild')->name('products.removeChild');
 
         // ProductCombos
         Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');

@@ -60,11 +60,11 @@
             </div>
 
             <div class="form-group">
-                <label for="channel">Kênh bán hàng</label>
+                <label for="channels">Kênh bán hàng</label>
                 @foreach (config('teko.stores') as $k => $v)
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" class="ace" ng-model="editProductForm.channel[{{ $k }}]" />
+                            <input type="checkbox" class="ace" ng-model="editProductForm.channels[{{ $k }}]" />
                             <span class="lbl"> {{ $v }}</span>
                         </label>
                     </div>

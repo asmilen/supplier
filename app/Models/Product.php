@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use phpDocumentor\Reflection\Types\Array_;
-use Sentinel;
 use DB;
+use Sentinel;
 use Datatables;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use App\Jobs\PublishMessage;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Jobs\OffProductToMagento;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\Array_;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {

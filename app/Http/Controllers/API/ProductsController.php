@@ -298,9 +298,7 @@ class ProductsController extends Controller
 
     public function listDetail()
     {
-
         $productIds = explode(',', request()->get('ids'));
-//        dd($productIds);
         $products = array();
 
         /**
@@ -336,7 +334,7 @@ class ProductsController extends Controller
                         }
                     })
                     ->where('products.id', $id)->first();
-//                    ->findOrFail($id); // kiểm tra thông tin sản phẩm cần mua
+                // kiểm tra thông tin sản phẩm cần mua
                 if ($product) {
                     $margin = MarginRegionCategory::where('category_id', $product->category_id)
                         ->whereIn('region_id', $regions)->first(); // tính margin của category sản phẩm
@@ -442,7 +440,7 @@ class ProductsController extends Controller
                     } else {
                         return api_response(['message' => 'Sản phẩm không tồn tại hoặc không có nhà cung cấp'], 404);
                     }
-                }else{
+                } else {
                     array_push($products, $product);
                 }
             }

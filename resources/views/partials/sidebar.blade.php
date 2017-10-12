@@ -145,12 +145,6 @@
             </li>
         @endif
 
-        @if ($currentUser->hasAccess('supplier.updatePrice'))
-            <li class="{{ (Request::is('supplier') || Request::is('supplier/updatePrice')) ? 'active' : '' }}">
-                <a href="{{ url('/supplier/updatePrice') }}"><i class="menu-icon fa fa-wrench"></i> <span class="menu-text"> NCC Cập nhật giá </span></a>
-            </li>
-        @endif
-
         @if ($currentUser->hasAccess('margins.index') || $currentUser->hasAccess('transport-fees.index'))
             <li class="{{ (Request::is('margins') || Request::is('margins/*') || Request::is('transport-fees') || Request::is('transport-fees/*')) ? 'active open' : '' }}">
                 <a href="#" class="dropdown-toggle">

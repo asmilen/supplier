@@ -24,8 +24,12 @@ $factory->define(App\Models\User::class, function (Faker\Generator $faker) {
     ];
 });
 
-$factory->define(App\Models\Attribute::class, function (Faker\Generator $faker) {
+$factory->define(App\Models\Supplier::class, function (Faker\Generator $faker) {
+    $company = $faker->company;
+
     return [
-        'name' => ucfirst($faker->word),
+        'name' => $company,
+        'full_name' => $company,
+        'code' => str_slug($company),
     ];
 });

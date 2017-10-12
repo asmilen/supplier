@@ -15,7 +15,7 @@ class AddFieldStateTableProductSupplier extends Migration
     {
         //
         Schema::table('product_supplier', function (Blueprint $table) {
-            $table->integer('state');
+            $table->integer('state')->default(0);
         });
     }
 

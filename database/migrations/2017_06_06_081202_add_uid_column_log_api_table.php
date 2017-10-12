@@ -14,7 +14,7 @@ class AddUidColumnLogApiTable extends Migration
     public function up()
     {
         Schema::table('log_api', function (Blueprint $table) {
-            $table->integer('uid');
+            $table->integer('uid')->nullable();
         });
     }
 

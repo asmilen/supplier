@@ -21,7 +21,7 @@ class CreateUserSupportedProvince extends Migration
             $table->timestamps();
         });
         Schema::table('product_supplier', function (Blueprint $table) {
-        $table->integer('price_recommend');
+            $table->integer('price_recommend')->nullable();
         });
     }
 

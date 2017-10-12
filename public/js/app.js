@@ -77,7 +77,7 @@ module.exports = __webpack_require__(20);
 
 __webpack_require__(2);
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.supplierIndex', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -91,6 +91,7 @@ __webpack_require__(8);
 __webpack_require__(9);
 __webpack_require__(10);
 __webpack_require__(11);
+__webpack_require__(25);
 __webpack_require__(12);
 __webpack_require__(13);
 __webpack_require__(14);
@@ -9300,6 +9301,67 @@ function currencyInput($filter, $browser) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */,
+/* 25 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.supplierIndex', []).controller('SupplierIndexController', SupplierIndexController);
+
+SupplierIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function SupplierIndexController($scope, $http) {
+    $scope.suppliersLoaded = false;
+
+    $scope.totalItems = 0;
+
+    $scope.countAll = 0;
+
+    function searchForm() {
+        this.status = '';
+        this.q = '';
+        this.sorting = 'id';
+        this.direction = 'desc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    $scope.searchForm = new searchForm();
+
+    $scope.refreshData = function () {
+        $http.get('/suppliers/listing?q=' + $scope.searchForm.q + '&status=' + $scope.searchForm.status + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            console.log(response.data);
+            $scope.suppliers = response.data.data;
+            $scope.suppliersLoaded = true;
+
+            $scope.totalItems = response.data.total_items;
+            $scope.countAll = response.data.all;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+}
 
 /***/ })
 /******/ ]);

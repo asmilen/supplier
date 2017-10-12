@@ -14,7 +14,7 @@ class AddBankCodeSupplierBankAccounts extends Migration
     public function up()
     {
         Schema::table('supplier_bank_accounts', function (Blueprint $table) {
-            $table->string('bank_code');
+            $table->string('bank_code')->nullable();
         });
     }
 

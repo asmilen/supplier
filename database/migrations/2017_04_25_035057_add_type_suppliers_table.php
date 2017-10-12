@@ -14,7 +14,7 @@ class AddTypeSuppliersTable extends Migration
     public function up()
     {
         Schema::table('suppliers', function (Blueprint $table) {
-            $table->integer('type');
+            $table->integer('type')->nullable();
         });
     }
 

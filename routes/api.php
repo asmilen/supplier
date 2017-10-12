@@ -2,6 +2,7 @@
 
 Route::prefix('v2')->namespace('V2')->group(function () {
     Route::get('region-products', 'RegionProductsController@index');
+    Route::get('product_list/detail', 'ProductsController@listDetail');
 });
 
 Route::get('categories', 'CategoriesController@index');
@@ -20,7 +21,6 @@ Route::get('products/get-quotation','ProductsController@getProductQuotation');
 Route::get('products/get-product-with-cate-manu','ProductsController@getProductWithCategoryManufacturer');
 Route::get('products/{product}', 'ProductsController@show');
 Route::get('products/{id}/detail', 'ProductsController@detail');
-Route::get('v2/product_list/detail', 'ProductsController@listDetail');
 Route::get('listProductSku', 'ProductsController@getListProductSku');
 Route::get('listSupplierByProductId', 'SuppliersController@getListSupplierByProductId');
 Route::get('listBundleByProvinceCode/{codeProvince}', 'BundlesController@listBundleByProvinceCode');

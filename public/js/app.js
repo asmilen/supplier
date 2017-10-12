@@ -8490,7 +8490,9 @@ function ProductEditController($scope, $http, $window) {
         $scope.editProductForm.image = $scope.product.image;
 
         _.each($scope.product.channel.split(','), function (channelKey) {
-            $scope.editProductForm.channels[channelKey] = true;
+            if (channelKey) {
+                $scope.editProductForm.channels[channelKey] = true;
+            }
         });
     };
 
@@ -8628,6 +8630,9 @@ function CategoryProductCreateController($scope, $http, $window) {
     $scope.getColors();
 
     $scope.store = function () {
+        $scope.addProductForm.errors = [];
+        $scope.addProductForm.disabled = true;
+
         $http.post('/categories/' + CATEGORY_ID + '/products', $scope.addProductForm).then(function (response) {
             $scope.addProductForm.successful = true;
             $scope.addProductForm.disabled = false;

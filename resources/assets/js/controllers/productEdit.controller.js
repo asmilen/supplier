@@ -51,7 +51,9 @@ function ProductEditController($scope, $http, $window) {
         $scope.editProductForm.image = $scope.product.image;
 
         _.each($scope.product.channel.split(','), function (channelKey) {
-            $scope.editProductForm.channels[channelKey] = true;
+            if (channelKey) {
+                $scope.editProductForm.channels[channelKey] = true;
+            }
         });
     };
 

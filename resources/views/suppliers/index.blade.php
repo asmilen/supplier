@@ -1,91 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- #section:basics/content.breadcrumbs -->
-    <div class="breadcrumbs" id="breadcrumbs">
-        <script type="text/javascript">
-            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-        </script>
+<div class="page-content">
+    <div class="page-header">
+        <h1>
+            Nhà cung cấp
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                Danh sách
+            </small>
+            <a class="btn btn-primary pull-right" href="{{ route('suppliers.create') }}">
+                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                <span class="hidden-xs">Thêm</span>
+            </a>
+        </h1>
+    </div><!-- /.page-header -->
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Search</h5>
+                </div>
 
-        <ul class="breadcrumb">
-            <li>
-                <i class="ace-icon fa fa-home home-icon"></i>
-                <a href="{{ url('/dashboard') }}">Dashboard</a>
-            </li>
-            <li>
-                <a href="{{ url('/suppliers') }}">Nhà cung cấp</a>
-            </li>
-            <li class="active">Danh sách</li>
-        </ul><!-- /.breadcrumb -->
-        <!-- /section:basics/content.searchbox -->
-    </div>
-    <!-- /section:basics/content.breadcrumbs -->
-
-    <div class="page-content">
-        <div class="page-header">
-            <h1>
-                Nhà cung cấp
-                <small>
-                    <i class="ace-icon fa fa-angle-double-right"></i>
-                    Danh sách
-                </small>
-                <a class="btn btn-primary pull-right" href="{{ route('suppliers.create') }}">
-                    <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                    <span class="hidden-xs">Thêm</span>
-                </a>
-            </h1>
-        </div><!-- /.page-header -->
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="widget-box">
-                    <div class="widget-header">
-                        <h5 class="widget-title">Search</h5>
-                    </div>
-
-                    <div class="widget-body">
-                        <div class="widget-main">
-                            <form class="form-inline" id="search-form">
-                                <select class="form-control" name="typeId">
-                                    <option value="">--Chọn loại hóa đơn--</option>
-                                    <option value="0">Thanh toán trực tiếp</option>
-                                    <option value="1">Thanh toán gián tiếp</option>
-                                </select>
-                                <select class="form-control" name="status">
-                                    <option value="">--Chọn Trạng thái--</option>
-                                    <option value="active">Kích hoạt</option>
-                                    <option value="inactive">Không kích hoạt</option>
-                                </select>
-                                <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
-                                <button type="submit" class="btn btn-purple btn-sm">
-                                    <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                                </button>
-                            </form>
-                        </div>
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <form class="form-inline" id="search-form">
+                            <select class="form-control" name="typeId">
+                                <option value="">--Chọn loại hóa đơn--</option>
+                                <option value="0">Thanh toán trực tiếp</option>
+                                <option value="1">Thanh toán gián tiếp</option>
+                            </select>
+                            <select class="form-control" name="status">
+                                <option value="">--Chọn Trạng thái--</option>
+                                <option value="active">Kích hoạt</option>
+                                <option value="inactive">Không kích hoạt</option>
+                            </select>
+                            <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
+                            <button type="submit" class="btn btn-purple btn-sm">
+                                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
-                    <thead>
-                    <tr>
-                        <th>Tên</th>
-                        <th>Tên đầy đủ</th>
-                        <th>Địa chỉ</th>
-                        <th>Địa bàn cung cấp</th>
-                        <th>Mã số thuế</th>
-                        <th>Trạng thái</th>
-                        <th>Loại nhà cung cấp</th>
-                        <th>Thông tin về người đại diện của NCC</th>
-                        <th>Thời gian hiệu lực giá nhập</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
+                <thead>
+                <tr>
+                    <th>Tên</th>
+                    <th>Tên đầy đủ</th>
+                    <th>Địa chỉ</th>
+                    <th>Địa bàn cung cấp</th>
+                    <th>Mã số thuế</th>
+                    <th>Trạng thái</th>
+                    <th>Loại nhà cung cấp</th>
+                    <th>Thông tin về người đại diện của NCC</th>
+                    <th>Thời gian hiệu lực giá nhập</th>
+                    <th></th>
+                </tr>
+                </thead>
+            </table>
         </div>
-    </div><!-- /.page-content -->
+    </div>
+</div><!-- /.page-content -->
 @endsection
 
 @section('scripts')

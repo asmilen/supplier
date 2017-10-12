@@ -47,9 +47,7 @@ class User extends EloquentUser implements
             return $this->attributes['avatar'];
         }
 
-        $hash = md5(strtolower(trim($this->attributes['email'])));
-
-        return "http://www.gravatar.com/avatar/$hash";
+        return asset('/img/default_avatar.png');
     }
 
     public function hasAccess($permissions)

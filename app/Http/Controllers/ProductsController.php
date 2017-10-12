@@ -236,10 +236,12 @@ class ProductsController extends Controller
 
         $builder = Product::where(function ($query) {
             if (! empty(request('q'))) {
-                $query->where('id', 'like', '%'.request('q').'%')
-                    ->orWhere('code', 'like', '%'.request('q').'%')
-                    ->orWhere('sku', 'like', '%'.request('q').'%')
-                    ->orWhere('name', 'like', '%'.request('q').'%');
+                $query->where(function ($q) {
+                    $q->where('id', 'like', '%'.request('q').'%')
+                        ->orWhere('code', 'like', '%'.request('q').'%')
+                        ->orWhere('sku', 'like', '%'.request('q').'%')
+                        ->orWhere('name', 'like', '%'.request('q').'%');
+                });
             }
 
             if (! empty(request('category_id'))) {

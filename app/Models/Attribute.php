@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Attribute extends Model
 {
+    protected $with = ['options'];
+
     public function categories()
     {
         return $this->belongsToMany(Category::class);

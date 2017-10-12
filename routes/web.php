@@ -49,6 +49,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('attributes/{attribute}/options', 'AttributeOptionsController@store')->name('attributes.options.store');
         Route::put('attributes/{attribute}/options/{option}', 'AttributeOptionsController@update')->name('attributes.options.update');
 
+        // Product Attributes
+        Route::put('products/{product}/attributes', 'ProductAttributesController@update');
+
         // Manufacturers
         Route::get('manufacturers/datatables', 'ManufacturersController@getDatatables')->name('manufacturers.datatables');
         Route::resource('manufacturers', 'ManufacturersController');
@@ -58,16 +61,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::resource('colors', 'ColorsController');
 
         // Products
-        Route::get('products/datatables', 'ProductsController@getDatatables')->name('products.datatables');
-        Route::post('products/{product}', 'ProductsController@update')->name('products.update');
+        Route::get('products/listing', 'ProductsController@listing')->name('products.listing');
         Route::resource('products', 'ProductsController', ['except' => 'destroy']);
-        Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
-        Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
-        Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
 
-        Route::put('products/{product}/getChildren', 'ProductSalepriceController@getChildren')->name('products.getChildren');
-        Route::post('products/{product}/addChild', 'ProductsController@addChild')->name('products.addChild');
-        Route::post('products/{product}/removeChild/{childId}', 'ProductsController@removeChild')->name('products.removeChild');
+        Route::post('categories/{category}/products', 'CategoryProductsController@store')->name('categories.products.store');
+
+        // Route::get('products/{product}/saleprice', 'ProductSalepriceController@show')->name('products.saleprice.show');
+        // Route::put('products/{product}/saleprice', 'ProductSalepriceController@update')->name('products.saleprice.update');
+        // Route::post('products/{product}/toggleStatus', 'ProductsController@toggleStatus')->name('products.status.toggle');
+
+        // Route::put('products/{product}/getChildren', 'ProductSalepriceController@getChildren')->name('products.getChildren');
+        // Route::post('products/{product}/addChild', 'ProductsController@addChild')->name('products.addChild');
+        // Route::post('products/{product}/removeChild/{childId}', 'ProductsController@removeChild')->name('products.removeChild');
 
         // ProductCombos
         Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');

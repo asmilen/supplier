@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="{{ asset('/vendor/ace/assets/css/font-awesome.css') }}" />
 <link rel="stylesheet" href="{{ asset('/css/sweetalert.min.css') }}">
 <link rel="stylesheet" href="{{ asset('/vendor/ace/assets/css/select2.css') }}">
+<link rel="stylesheet" href="{{ asset('/css/lity.min.css') }}">
 
 @yield('styles')
 

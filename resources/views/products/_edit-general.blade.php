@@ -60,11 +60,11 @@
             </div>
 
             <div class="form-group">
-                <label for="channel">Kênh bán hàng</label>
+                <label for="channels">Kênh bán hàng</label>
                 @foreach (config('teko.stores') as $k => $v)
                     <div class="checkbox">
                         <label>
-                            <input type="checkbox" class="ace" ng-model="editProductForm.channel[{{ $k }}]" />
+                            <input type="checkbox" class="ace" ng-model="editProductForm.channels[{{ $k }}]" />
                             <span class="lbl"> {{ $v }}</span>
                         </label>
                     </div>
@@ -84,7 +84,7 @@
     </div>
 
     <div class="clearfix form-actions">
-        <div class="col-md-offset-3 col-md-9">
+        <div class="col-md-12">
             <button type="submit" class="btn btn-info" ng-click="update()" ng-disabled="editProductForm.disabled">
                 <i class="ace-icon fa fa-save bigger-110"></i>Lưu
             </button>

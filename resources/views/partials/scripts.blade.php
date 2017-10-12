@@ -9,6 +9,7 @@
 <script src="/vendor/ace/assets/js/ace/ace.submenu-hover.js"></script>
 <script src="/js/sweetalert.min.js"></script>
 <script src="/vendor/ace/assets/js/select2.js"></script>
+<script src="/js/lity.min.js"></script>
 
 <!-- Scripts -->
 <script src="{{ asset('/js/app.js') }}"></script>

@@ -6,8 +6,8 @@ function select2($timeout, $parse) {
     return {
         restrict: 'AC',
         require: 'ngModel',
-        link: function(scope, element, attrs) {
-            $timeout(function() {
+        link: function (scope, element, attrs) {
+            $timeout(function () {
                 element.select2({
                     placeholder: attrs.placeholder,
                     allowClear: true,
@@ -16,16 +16,16 @@ function select2($timeout, $parse) {
                 element.select2Initialized = true;
             });
 
-            var refreshSelect = function() {
+            var refreshSelect = function () {
                 if (!element.select2Initialized) return;
-                $timeout(function() {
+                $timeout(function () {
                     element.trigger('change');
                 });
             };
 
             var recreateSelect = function () {
                 if (!element.select2Initialized) return;
-                $timeout(function() {
+                $timeout(function () {
                     element.select2('destroy');
                     element.select2();
                 });

@@ -1,43 +1,7 @@
 @extends('layouts.app')
-@section('styles')
-    <style>
-        .select2-container, .select2-drop, .select2-search, .select2-container .select2-search input{vertical-align: middle;}
-        .select2-search:after {
-            font-family: FontAwesome;
-            font-size: 14px;
-            display: inline;
-            content: "" !important;
-            color: #777;
-            position: relative;
-            top: 0;
-            left: -20px;
-            z-index: 0;
-        }
-    </style>
 
-@endsection
 @section('content')
-<!-- #section:basics/content.breadcrumbs -->
-<div class="breadcrumbs" id="breadcrumbs">
-    <script type="text/javascript">
-        try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-    </script>
-
-    <ul class="breadcrumb">
-        <li>
-            <i class="ace-icon fa fa-home home-icon"></i>
-            <a href="{{ url('/dashboard') }}">Dashboard</a>
-        </li>
-        <li>
-            <a href="{{ route('products.index') }}">Sản phẩm</a>
-        </li>
-        <li class="active">Danh sách</li>
-    </ul><!-- /.breadcrumb -->
-    <!-- /section:basics/content.searchbox -->
-</div>
-<!-- /section:basics/content.breadcrumbs -->
-
-<div class="page-content">
+<div class="page-content" ng-controller="ProductIndexController">
     <div class="page-header">
         <h1>
             Sản phẩm
@@ -45,155 +9,126 @@
                 <i class="ace-icon fa fa-angle-double-right"></i>
                 Danh sách
             </small>
-            <a class="btn btn-primary pull-right" href="{{ route('products.create') }}">
-                <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                <span class="hidden-xs">Thêm</span>
-            </a>
         </h1>
     </div><!-- /.page-header -->
+
+    <div class="row">
+        <div class="col-xs-6">
+        </div>
+        <div class="col-xs-6">
+            <p class="pull-right">
+                <a class="btn btn-primary" href="{{ route('products.create') }}">
+                    <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
+                    <span class="hidden-xs">Tạo sản phẩm</span>
+                </a>
+            </p>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-xs-12">
             <div class="widget-box">
                 <div class="widget-header">
-                    <h5 class="widget-title">Search</h5>
+                    <h5 class="widget-title">Lọc</h5>
                 </div>
 
                 <div class="widget-body">
                     <div class="widget-main">
                         <form class="form-inline" id="search-form">
-                            <select class="categories" name="category_id">
-                                <option value=""></option>
-                                @foreach ($categoriesList as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="manufactures" name="manufacturer_id">
-                                <option value=""></option>
-                                @foreach ($manufacturersList as $id => $name)
-                                <option value="{{ $id }}">{{ $name }}</option>
-                                @endforeach
-                            </select>
-                            <select class="form-control" name="status">
-                                <option value="">--Chọn Trạng thái--</option>
-                                <option value="active">Kích hoạt</option>
-                                <option value="inactive">Không kích hoạt</option>
-                            </select>
-                            <select class="form-control" name="type">
-                                <option value="">--Chọn Loại Sản Phẩm--</option>
-                                <option value="0">Simple</option>
-                                <option value="1">Configurable</option>
-                            </select>
-                            <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
-                            <input type="text" class="form-control" name="id" placeholder="ID Sản phẩm" />
-                            <button type="submit" class="btn btn-purple btn-sm">
-                                <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                            </button>
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchForm.category_id" select2>
+                                        <option value="">- Chọn danh mục -</option>
+                                        @foreach ($categoriesList as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="select2" ng-model="searchForm.manufacturer_id" select2>
+                                        <option value="">- Chọn nhà SX -</option>
+                                        @foreach ($manufacturersList as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <select class="form-control" ng-model="searchForm.status" style="width: 100%">
+                                        <option value="">--Chọn Trạng thái--</option>
+                                        <option value="active">Kích hoạt</option>
+                                        <option value="inactive">Không kích hoạt</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" ng-model="searchForm.q" placeholder="Từ khóa tìm kiếm" style="width: 100%" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="submit" class="btn btn-purple btn-sm" ng-click="refreshData()">
+                                        <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
+
+    <div class="row p-t-10" ng-show="productsLoaded">
         <div class="col-xs-12">
-            <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Tên</th>
-                        <th>SKU</th>
-                        <th>Danh mục</th>
-                        <th>Nhà SX</th>
-                        <th>Kênh bán hàng</th>
-                        <th>Mã</th>
-                        <th>Ảnh</th>
-                        <th>Trạng thái</th>
-                        <th></th>
-                    </tr>
-                </thead>
-            </table>
+            <div class="dataTables_wrapper form-inline no-footer">
+                <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top dataTable no-footer">
+                    <thead>
+                        <tr>
+                            <th class="sorting@{{ getSortingDirectionClassHeader('id', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('id')">ID</th>
+                            <th class="sorting@{{ getSortingDirectionClassHeader('sku', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('sku')">SKU</th>
+                            <th class="sorting@{{ getSortingDirectionClassHeader('name', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('name')">Tên</th>
+                            <th>Danh mục</th>
+                            <th>Nhà SX</th>
+                            <th>Kênh bán hàng</th>
+                            <th>Ảnh</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="product in products">
+                            <td><a href="/products/@{{ product.id }}/edit">@{{ product.id }}</a></td>
+                            <td><a href="/products/@{{ product.id }}/edit">@{{ product.sku }}</a></td>
+                            <td><a href="/products/@{{ product.id }}/edit">@{{ product.name }}</a></td>
+                            <td>@{{ product.category.name }}</td>
+                            <td>@{{ product.manufacturer.name }}</td>
+                            <td>@{{ channelText(product.channel) }}</td>
+                            <td><img ng-if="product.image" ng-src="@{{ product.image }}" data-lity="@{{ product.image }}" style="height: 80px;"></td>
+                            <td>
+                                <span class="label label-success" ng-if="product.status">Đang hoạt động</span>
+                                <span class="label label-danger" ng-if="! product.status">Ngừng hoạt động</span>
+                            </td>
+                            <td>
+                                @if ($currentUser->hasAccess('products.edit'))
+                                <a class="btn btn-white btn-info btn-sm" href="/products/@{{ product.id }}/edit">Sửa</a>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr ng-if="totalItems == 0">
+                            <td colspan="10">Không tìm thấy kết quả tương ứng nào.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="dataTables_info">Hiển thị từ @{{ (totalItems > 0) ? (searchForm.page - 1) * searchForm.limit + 1 : 0 }} đến @{{ (searchForm.page * searchForm.limit < totalItems) ? searchForm.page * searchForm.limit : totalItems }} của @{{ totalItems }} sản phẩm <span ng-if="all > totalItems">(Lọc từ @{{ countAll }} sản phẩm)</span></div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="dataTables_paginate paging_simple_numbers">
+                            <ul uib-pagination boundary-link-numbers="true" rotate="true" max-size="3" total-items="totalItems" items-per-page="@{{ searchForm.limit }}" ng-model="searchForm.page" ng-change="refreshData()" class="pagination"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div><!-- /.page-content -->
 @endsection
-
-@section('scripts')
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-@endsection
-
-@section('inline_scripts')
-<script>
-$(function () {
-    $(".categories").select2({
-        placeholder: "-- Chọn danh mục --",
-        allowClear: true,
-        width:'10%',
-    });
-    $(".manufactures").select2({
-        placeholder: "-- Chọn nhà sản xuất --",
-        allowClear: true,
-        width:'11%',
-    });
-
-    var datatable = $("#dataTables-products").DataTable({
-        searching: false,
-        autoWidth: false,
-        processing: true,
-        serverSide: true,
-        pageLength: 25,
-        ajax: {
-            url: '{!! route('products.datatables') !!}',
-            data: function (d) {
-                d.id = $('input[name=id]').val();
-                d.category_id = $('select[name=category_id]').val();
-                d.manufacturer_id = $('select[name=manufacturer_id]').val();
-                d.keyword = $('input[name=keyword]').val();
-                d.status = $('select[name=status]').val();
-                d.type = $('select[name=type]').val();
-                d.channel = $('select[name=channel]').val();
-            }
-        },
-        columns: [
-            {data: 'id', name: 'id'},
-            {data: 'name', name: 'name'},
-            {data: 'sku', name: 'sku'},
-            {data: 'category_id', name: 'category_id'},
-            {data: 'manufacturer_id', name: 'manufacturer_id'},
-            {data: 'channel', name: 'channel'},
-            {data: 'code', name: 'code'},
-            {data: 'image', name: 'image'},
-            {data: 'status', name: 'status'},
-            {data: 'action', name: 'action', orderable: false, searchable: false}
-        ]
-    });
-
-    $('#search-form').on('submit', function(e) {
-        datatable.draw();
-        e.preventDefault();
-    });
-
-    datatable.on('click', '[id^="btn-toggle-"]', function (e) {
-        e.preventDefault();
-
-        var url = $(this).data('url');
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            beforeSend: function (xhr) {
-                return xhr.setRequestHeader('X-CSRF-TOKEN', window.Laradmin.csrfToken);
-            },
-            success: function (districts) {
-                var row = $(this).closest('tr');
-                datatable.row(row).draw(false);
-            },
-            error: function () {
-            }
-        });
-    });
-
-});
-</script>
-@endsection
-

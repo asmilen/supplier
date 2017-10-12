@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\OffProductToMagento;
+use Sentinel;
 use Validator;
 use App\Models\Color;
 use App\Models\Product;
-use Sentinel;
-use App\Models\ProductSupplier;
 use App\Models\Category;
 use App\Models\Manufacturer;
+use App\Events\ProductUpserted;
+use App\Models\ProductSupplier;
+use App\Jobs\OffProductToMagento;
 use Intervention\Image\Facades\Image as Image;
 
 class ProductsController extends Controller
@@ -38,11 +39,11 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        $product = (new Product)->forceFill([
-            'status' => true,
-        ]);
+        if (request()->has('category_id')) {
+            $category = Category::find(request('category_id'));
+        }
 
-        return view('products.create', compact('product'));
+        return view('products.create', compact('category'));
     }
 
     /**
@@ -144,7 +145,7 @@ class ProductsController extends Controller
      */
     public function update(Product $product)
     {
-        $channels = array_keys(array_filter(request('channel', []), function ($value, $key) {
+        $channels = array_keys(array_filter(request('channels', []), function ($value, $key) {
             return $value;
         }, ARRAY_FILTER_USE_BOTH));
 
@@ -162,16 +163,15 @@ class ProductsController extends Controller
             'name' => trim(request('name')),
             'source_url' => trim(request('source_url')),
             'description' => request('description'),
-            'status' => request('status'),
-            'channel' => implode(',', $channels),
+            'status' => !! request('status'),
         ])->save();
 
-        if (! request('status') || ! in_array(2, $channels)) {
-            $productSuppliers = ProductSupplier::where('product_id', $product->id)->get();
+        $product->setChannels($channels);
 
-            foreach ($productSuppliers as $productSupplier) {
-                dispatch(new OffProductToMagento($product, 0, Sentinel::getUser(), $productSupplier->region_id));
-            }
+        event(new ProductUpserted($product));
+
+        if ($product->needToOffOnMagento()) {
+            $product->setOffOnMagento();
         }
 
         return $product;
@@ -222,5 +222,56 @@ class ProductsController extends Controller
         }
 
         $product->forceFill(['status' => !$product->status])->save();
+    }
+
+    public function listing()
+    {
+        $sorting = request('sorting', 'id');
+
+        $direction = request('direction', 'desc');
+
+        $page = request('page', 1);
+
+        $limit = request('limit', 25);
+
+        $builder = Product::where(function ($query) {
+            if (! empty(request('q'))) {
+                $query->where('id', 'like', '%'.request('q').'%')
+                    ->orWhere('code', 'like', '%'.request('q').'%')
+                    ->orWhere('sku', 'like', '%'.request('q').'%')
+                    ->orWhere('name', 'like', '%'.request('q').'%');
+            }
+
+            if (! empty(request('category_id'))) {
+                $query->where('category_id', request('category_id'));
+            }
+
+            if (! empty(request('manufacturer_id'))) {
+                $query->where('manufacturer_id', request('manufacturer_id'));
+            }
+
+            if (! empty(request('status'))) {
+                if (request('status') == 'active') {
+                    $query->active();
+                } elseif (request('status') == 'inactive') {
+                    $query->inactive();
+                }
+            }
+        });
+
+        $totalItems = $builder->count();
+
+        $products = $builder
+            ->orderBy('status', 'desc')
+            ->orderBy($sorting, $direction)
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $products,
+            'total_items' => $totalItems,
+            'all' => Product::count(),
+        ]);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GoogleSpreadsheet;
 use Sentinel;
 use App\Models\User;
 use App\Models\Product;
+use App\Events\ProductUpserted;
 use App\Http\Controllers\Controller;
 
 class CreateProducts extends Controller
@@ -38,7 +39,7 @@ class CreateProducts extends Controller
             return $product;
         }
 
-        return Product::forceCreate([
+        $product = Product::forceCreate([
             'category_id' => $productData['category_id'],
             'manufacturer_id' => $productData['manufacturer_id'],
             'color_id' => isset($productData['color_id']) ? $productData['color_id'] : 0,
@@ -47,5 +48,9 @@ class CreateProducts extends Controller
             'description' => isset($productData['description']) ? $productData['description'] : null,
             'status' => 0,
         ]);
+
+        event(new ProductUpserted($product));
+
+        return $product;
     }
 }

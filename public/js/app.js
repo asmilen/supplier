@@ -68,20 +68,20 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(1);
-module.exports = __webpack_require__(18);
+module.exports = __webpack_require__(20);
 
 
 /***/ }),
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productCreate', 'controllers.productSupplier', 'controllers.productEdit', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+__webpack_require__(2);
+
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 }]);
-
-__webpack_require__(2);
 
 __webpack_require__(4);
 __webpack_require__(5);
@@ -93,11 +93,13 @@ __webpack_require__(10);
 __webpack_require__(11);
 __webpack_require__(12);
 __webpack_require__(13);
-
 __webpack_require__(14);
 __webpack_require__(15);
+
 __webpack_require__(16);
 __webpack_require__(17);
+__webpack_require__(18);
+__webpack_require__(19);
 
 /***/ }),
 /* 2 */
@@ -8375,41 +8377,240 @@ function AttributeIndexController($scope, $http) {
 /* 8 */
 /***/ (function(module, exports) {
 
+angular.module('controllers.productIndex', []).controller('ProductIndexController', ProductIndexController);
+
+ProductIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function ProductIndexController($scope, $http) {
+    $scope.productsLoaded = false;
+
+    $scope.totalItems = 0;
+
+    $scope.countAll = 0;
+
+    function searchForm() {
+        this.category_id = '';
+        this.manufacturer_id = '';
+        this.status = '';
+        this.q = '';
+        this.sorting = 'id';
+        this.direction = 'desc';
+        this.page = 1;
+        this.limit = 25;
+    }
+
+    $scope.searchForm = new searchForm();
+
+    $scope.refreshData = function () {
+        $http.get('/products/listing?q=' + $scope.searchForm.q + '&category_id=' + $scope.searchForm.category_id + '&manufacturer_id=' + $scope.searchForm.manufacturer_id + '&status=' + $scope.searchForm.status + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.products = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.countAll = response.data.all;
+            $scope.productsLoaded = true;
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
+    $scope.channelText = function (channel) {
+        return channel.replace('1', 'Online').replace('2', 'Offline');
+    };
+}
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productCreate', ['directives.fileread', 'directives.select2']).controller('ProductCreateController', ProductCreateController);
+angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController);
+
+ProductEditController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function ProductEditController($scope, $http, $window) {
+    $scope.productIsLoaded = false;
+
+    function editProductForm() {
+        this.name = '';
+        this.source_url = '';
+        this.image = '';
+        this.description = '';
+        this.channels = { 1: false, 2: false };
+        this.status = true;
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    };
+
+    function editProductAttributeForm() {
+        this.values = {};
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
+    $scope.editProductForm = new editProductForm();
+    $scope.editProductAttributeForm = new editProductAttributeForm();
+
+    $scope.getProduct = function () {
+        $http.get('/products/' + PRODUCT_ID).then(function (response) {
+            $scope.product = response.data;
+
+            $scope.productIsLoaded = true;
+
+            $scope.populateProductForm();
+
+            $scope.populateProductAttributeForm();
+        });
+    };
+
+    $scope.populateProductForm = function () {
+        $scope.editProductForm.name = $scope.product.name;
+        $scope.editProductForm.source_url = $scope.product.source_url;
+        $scope.editProductForm.description = $scope.product.description;
+        $scope.editProductForm.status = $scope.product.status;
+        $scope.editProductForm.image = $scope.product.image;
+
+        _.each($scope.product.channel.split(','), function (channelKey) {
+            $scope.editProductForm.channels[channelKey] = true;
+        });
+    };
+
+    $scope.getProduct();
+
+    $scope.update = function () {
+        $scope.editProductForm.errors = [];
+        $scope.editProductForm.disabled = true;
+        $scope.editProductForm.successful = false;
+
+        $http.put('/products/' + PRODUCT_ID, $scope.editProductForm).then(function () {
+            $scope.editProductForm.successful = true;
+            $scope.editProductForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editProductForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editProductForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editProductForm.disabled = false;
+        });
+    };
+
+    $scope.populateProductAttributeForm = function () {
+        var productAttributes = JSON.parse($scope.product.attributes);
+
+        _.each($scope.product.category.attributes, function (attribute) {
+            if (!productAttributes || typeof productAttributes[attribute.slug] == 'undefined') {
+                $scope.editProductAttributeForm.values[attribute.slug] = attribute.frontend_input == 'multiselect' ? [] : '';
+            } else {
+                $scope.editProductAttributeForm.values[attribute.slug] = attribute.frontend_input == 'multiselect' ? productAttributes[attribute.slug] : '' + productAttributes[attribute.slug];
+            }
+        });
+    };
+
+    $scope.updateProductAttribute = function () {
+        $scope.editProductAttributeForm.errors = [];
+        $scope.editProductAttributeForm.disabled = true;
+        $scope.editProductAttributeForm.successful = false;
+
+        $http.put('/products/' + PRODUCT_ID + '/attributes', $scope.editProductAttributeForm).then(function (response) {
+            $scope.editProductAttributeForm.successful = true;
+            $scope.editProductAttributeForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editProductAttributeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editProductAttributeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editProductAttributeForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController);
 
 ProductCreateController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
 function ProductCreateController($scope, $http, $window) {
-
-    function productForm() {
+    function selectCategoryForm() {
         this.category_id = '';
-        this.manufacturer_id = '';
-        this.color_id = '';
-        this.type = 'simple';
-        this.parent_id = '0';
-        this.name = '';
-        this.code = '';
-        this.source_url = '';
-        this.image = {};
-        this.description = '';
-        this.status = true;
-        this.attributes = {};
-        this.errors = [];
         this.disabled = false;
-        this.successful = false;
-        this.channels = {};
-    };
+    }
 
-    $scope.productForm = new productForm();
+    $scope.selectCategoryForm = new selectCategoryForm();
 
     $scope.getCategories = function () {
         $http.get('/api/categories').then(function (response) {
             $scope.categories = response.data;
         });
     };
+
+    $scope.getCategories();
+
+    $scope.selectCategory = function () {
+        $scope.selectCategoryForm.disabled = true;
+
+        if ($scope.selectCategoryForm.category_id == '') {
+            alert('Vui lòng chọn danh mục.');
+
+            $scope.selectCategoryForm.disabled = false;
+
+            return false;
+        }
+
+        $window.location = '/products/create?category_id=' + $scope.selectCategoryForm.category_id;
+    };
+}
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.categoryProductCreate', []).controller('CategoryProductCreateController', CategoryProductCreateController);
+
+CategoryProductCreateController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function CategoryProductCreateController($scope, $http, $window) {
+    function addProductForm() {
+        this.manufacturer_id = '';
+        this.color_id = '';
+        this.name = '';
+        this.source_url = '';
+        this.description = '';
+        this.channels = { 1: false, 2: false };
+        this.status = true;
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    }
+
+    $scope.addProductForm = new addProductForm();
 
     $scope.getManufacturers = function () {
         $http.get('/api/manufacturers').then(function (response) {
@@ -8423,71 +8624,28 @@ function ProductCreateController($scope, $http, $window) {
         });
     };
 
-    $scope.getProductConfigurables = function () {
-        $http.get('/api/products/configurable').then(function (response) {
-            $scope.productConfigurables = response.data;
-        });
-    };
-
-    $scope.refreshData = function () {
-        categoryId = $scope.productForm.category_id ? $scope.productForm.category_id : 0;
-
-        $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
-            $scope.attributes = response.data;
-
-            _.each($scope.attributes, function (attribute) {
-                $scope.productForm.attributes[attribute.slug] = '';
-            });
-        });
-    };
-
-    $scope.getCategories();
     $scope.getManufacturers();
     $scope.getColors();
-    $scope.getProductConfigurables();
-    $scope.refreshData();
 
-    $scope.submitForm = function () {
-        $http.post('/products', $scope.productForm).then(function () {
-            $scope.productForm.successful = true;
-            $scope.productForm.disabled = false;
+    $scope.store = function () {
+        $http.post('/categories/' + CATEGORY_ID + '/products', $scope.addProductForm).then(function (response) {
+            $scope.addProductForm.successful = true;
+            $scope.addProductForm.disabled = false;
 
-            $window.location.href = '/products';
+            $window.location.href = '/products/' + response.data.id + '/edit';
         }).catch(function (response) {
             if (_typeof(response.data) === 'object') {
-                $scope.productForm.errors = _.flatten(_.toArray(response.data));
+                $scope.addProductForm.errors = _.flatten(_.toArray(response.data));
             } else {
-                $scope.productForm.errors = ['Something went wrong. Please try again.'];
+                $scope.addProductForm.errors = ['Something went wrong. Please try again.'];
             }
-            $scope.productForm.disabled = false;
+            $scope.addProductForm.disabled = false;
         });
-    };
-
-    $scope.addProduct = function () {
-        $scope.productForm.errors = [];
-        $scope.productForm.disabled = true;
-        $scope.productForm.successful = false;
-
-        var reader = new FileReader();
-        var image = $scope.productForm.image;
-
-        reader.onloadend = function () {
-            var binaryString = reader.result;
-
-            $scope.productForm.imageBase64 = {
-                file: btoa(binaryString),
-                name: image.name
-            };
-
-            $scope.submitForm();
-        };
-
-        if (image.type && image.type.match('image.*')) reader.readAsBinaryString(image);else $scope.submitForm();
     };
 }
 
 /***/ }),
-/* 9 */
+/* 12 */
 /***/ (function(module, exports) {
 
 angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
@@ -8545,78 +8703,7 @@ function ProductSupplierController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController);
-
-ProductEditController.$inject = ['$scope', '$http', '$window'];
-
-/* @ngInject */
-function ProductEditController($scope, $http, $window) {
-    $scope.productIsLoaded = false;
-
-    function editProductForm() {
-        this.name = '';
-        this.source_url = '';
-        this.image = '';
-        this.description = '';
-        this.channel = { 1: false, 2: false };
-        this.status = true;
-        this.errors = [];
-        this.successful = false;
-        this.disabled = false;
-    };
-
-    $scope.editProductForm = new editProductForm();
-
-    $scope.getProduct = function () {
-        $http.get('/products/' + PRODUCT_ID).then(function (response) {
-            $scope.product = response.data;
-
-            $scope.productIsLoaded = true;
-
-            $scope.populateProductForm();
-        });
-    };
-
-    $scope.populateProductForm = function () {
-        $scope.editProductForm.name = $scope.product.name;
-        $scope.editProductForm.source_url = $scope.product.source_url;
-        $scope.editProductForm.description = $scope.product.description;
-        $scope.editProductForm.status = $scope.product.status;
-        $scope.editProductForm.image = $scope.product.image;
-
-        _.each($scope.product.channel.split(','), function (channelKey) {
-            $scope.editProductForm.channel[channelKey] = true;
-        });
-    };
-
-    $scope.getProduct();
-
-    $scope.update = function () {
-        $scope.editProductForm.errors = [];
-        $scope.editProductForm.disabled = true;
-        $scope.editProductForm.successful = false;
-
-        $http.post('/products/' + PRODUCT_ID, $scope.editProductForm).then(function () {
-            $scope.editProductForm.successful = true;
-            $scope.editProductForm.disabled = false;
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.editProductForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.editProductForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.editProductForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
-/* 11 */
+/* 13 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8686,7 +8773,7 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 12 */
+/* 14 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8741,7 +8828,7 @@ function TransportFeeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 13 */
+/* 15 */
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -9062,7 +9149,7 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 }
 
 /***/ }),
-/* 14 */
+/* 16 */
 /***/ (function(module, exports) {
 
 angular.module('directives.fileread', []).directive("fileread", fileread);
@@ -9083,7 +9170,7 @@ function fileread() {
 }
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports) {
 
 angular.module('directives.select2', []).directive('select2', select2);
@@ -9133,7 +9220,7 @@ function select2($timeout, $parse) {
 };
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports) {
 
 angular.module('directives.format', []).directive('format', format);
@@ -9160,7 +9247,7 @@ function format($filter) {
 };
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports) {
 
 angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
@@ -9204,7 +9291,7 @@ function currencyInput($filter, $browser) {
 };
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

@@ -39,6 +39,9 @@ function CategoryProductCreateController($scope, $http, $window) {
     $scope.getColors();
 
     $scope.store = function () {
+        $scope.addProductForm.errors = [];
+        $scope.addProductForm.disabled = true;
+
         $http.post('/categories/' + CATEGORY_ID + '/products', $scope.addProductForm)
             .then(response => {
                 $scope.addProductForm.successful = true;

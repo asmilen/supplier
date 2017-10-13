@@ -39,11 +39,11 @@ class ProductsController extends Controller
 
         foreach ($products as $product) {
             $margin = MarginRegionCategory::where('category_id', $product->category_id)
-                ->whereIn('region_id', $regionId)->first(); // tính margin của category sản phẩm
+                ->where('region_id', $regionId)->first(); // tính margin của category sản phẩm
 
             $marginValue = ($margin ? 1 + 0.01 * $margin->margin : 1.05); // giá trị của margin
 
-            $province = Province::whereIn('code', request('province_id'))->pluck('id'); // tìm tỉnh mua hàng
+            $province = Province::where('code', request('province_id'))->pluck('id'); // tìm tỉnh mua hàng
 
             $provinceFee = TransportFee::where('province_id', $province ? $province[0] : 0)->first();// phí ship của tỉnh mua hàng
 
@@ -52,7 +52,7 @@ class ProductsController extends Controller
             $provinceIds = Province::where('region_id', $regionId)->pluck('id');
             $provinceFeeMax = TransportFee::whereIn('province_id', $provinceIds)->orderBy('percent_fee', 'DESC')->first();
 
-            $minPrice = ProductSupplier::where('product_id', $id)
+            $minPrice = ProductSupplier::where('product_id', $product->id)
                 ->where('product_supplier.region_id', $regionId)
                 ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
                 ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
@@ -82,25 +82,25 @@ class ProductsController extends Controller
 
                 $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $minPrice->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
-                $product->best_price = ProductSupplier::where('product_id', $id)
+                $product->best_price = ProductSupplier::where('product_id', $product->id)
                     ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1)
                     ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
 
-                $product->import_price = ProductSupplier::where('product_id', $id)
+                $product->import_price = ProductSupplier::where('product_id', $product->id)
                     ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1)
                     ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
 
-                $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
+                $product->import_price_w_margin = ProductSupplier::where('product_id', $product->id)
                     ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1)
                     ->where('product_supplier.supplier_id', $minPrice->supplier->id)
                     ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
 
-                $product->recommended_price = ProductSupplier::where('product_id', $id)
+                $product->recommended_price = ProductSupplier::where('product_id', $product->id)
                     ->where('product_supplier.region_id', $regionId)
                     ->where('product_supplier.state', '=', 1)
                     ->where('price_recommend', $product->best_price)
@@ -109,7 +109,7 @@ class ProductsController extends Controller
 
                 if ($product->recommended_price == $product->best_price) {
                     $suppliers = ProductSupplier::where('price_recommend', $product->best_price)
-                        ->where('product_id', $id)
+                        ->where('product_id', $product->id)
                         ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
                         ->where('product_supplier.region_id', $regionId)
                         ->pluck('supplier_id');
@@ -129,7 +129,7 @@ class ProductsController extends Controller
                     $product->suppliers = array_merge([[
                         'id' => isset($supplier[$i]) ? $supplier[$i]->id : null,
                         'name' => isset($supplier[$i]) ? $supplier[$i]->name : null,
-                        'import_price' => ProductSupplier::where('product_id', $id)
+                        'import_price' => ProductSupplier::where('product_id', $product->id)
                             ->where('product_supplier.supplier_id', $supplier[$i]->id)
                             ->where('product_supplier.state', '=', 1)
                             ->min(DB::raw('ceil(product_supplier.import_price / 1000) * 1000')),

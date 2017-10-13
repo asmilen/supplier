@@ -12,6 +12,6 @@
 <script src="/js/lity.min.js"></script>
 
 <!-- Scripts -->
-<script src="{{ asset('/js/app.js') }}"></script>
+<script src="{{ mix('/js/app.js') }}"></script>
 
 @yield('inline_scripts')

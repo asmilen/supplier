@@ -63,56 +63,9 @@
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
+/******/ ({
 
-__webpack_require__(1);
-module.exports = __webpack_require__(20);
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(2);
-
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.supplierIndex', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
-
-app.config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-}]);
-
-__webpack_require__(4);
-__webpack_require__(5);
-__webpack_require__(6);
-__webpack_require__(7);
-__webpack_require__(8);
-__webpack_require__(9);
-__webpack_require__(10);
-__webpack_require__(11);
-__webpack_require__(25);
-__webpack_require__(12);
-__webpack_require__(13);
-__webpack_require__(14);
-__webpack_require__(15);
-
-__webpack_require__(16);
-__webpack_require__(17);
-__webpack_require__(18);
-__webpack_require__(19);
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(3);
-
-module.exports = 'ui.bootstrap';
-
-
-/***/ }),
-/* 3 */
+/***/ "./node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js":
 /***/ (function(module, exports) {
 
 /*
@@ -7893,7 +7846,50 @@ angular.module('ui.bootstrap.timepicker').run(function() {!angular.$$csp().noInl
 angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInlineStyle && !angular.$$uibTypeaheadCss && angular.element(document).find('head').prepend('<style type="text/css">[uib-typeahead-popup].dropdown-menu{display:block;}</style>'); angular.$$uibTypeaheadCss = true; });
 
 /***/ }),
-/* 4 */
+
+/***/ "./node_modules/angular-ui-bootstrap/index.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__("./node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js");
+
+module.exports = 'ui.bootstrap';
+
+
+/***/ }),
+
+/***/ "./resources/assets/js/app.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__("./node_modules/angular-ui-bootstrap/index.js");
+
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.supplierIndex', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+
+app.config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+}]);
+
+__webpack_require__("./resources/assets/js/controllers/app.controller.js");
+__webpack_require__("./resources/assets/js/controllers/categoryIndex.controller.js");
+__webpack_require__("./resources/assets/js/controllers/categoryEdit.controller.js");
+__webpack_require__("./resources/assets/js/controllers/attributeIndex.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productIndex.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productEdit.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productCreate.controller.js");
+__webpack_require__("./resources/assets/js/controllers/categoryProductCreate.controller.js");
+__webpack_require__("./resources/assets/js/controllers/supplierIndex.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productSupplier.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productSaleprice.controller.js");
+__webpack_require__("./resources/assets/js/controllers/transportFeeIndex.controller.js");
+__webpack_require__("./resources/assets/js/controllers/productSupplierIndex.controller.js");
+
+__webpack_require__("./resources/assets/js/directives/fileread.directive.js");
+__webpack_require__("./resources/assets/js/directives/select2.directive.js");
+__webpack_require__("./resources/assets/js/directives/format.directive.js");
+__webpack_require__("./resources/assets/js/directives/currencyInput.directive.js");
+
+/***/ }),
+
+/***/ "./resources/assets/js/controllers/app.controller.js":
 /***/ (function(module, exports) {
 
 angular.module('controllers.app', []).controller('AppController', AppController);
@@ -7914,237 +7910,8 @@ function AppController($scope, $http) {
 }
 
 /***/ }),
-/* 5 */
-/***/ (function(module, exports) {
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
-
-CategoryIndexController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function CategoryIndexController($scope, $http) {
-    $scope.categoriesLoaded = false;
-
-    $scope.editingCategory = null;
-
-    $scope.totalItems = 0;
-
-    function searchForm() {
-        this.q = '';
-        this.sorting = 'code';
-        this.direction = 'asc';
-        this.page = 1;
-        this.limit = 25;
-    }
-
-    function marginsForm() {
-        this.margins = {
-            1: 5,
-            2: 5,
-            3: 5
-        };
-        this.errors = [];
-        this.disabled = false;
-    }
-
-    function addCategoryForm() {
-        this.code = '';
-        this.name = '';
-        this.status = true;
-        this.errors = [];
-        this.successful = false;
-        this.busy = false;
-    }
-
-    $scope.searchForm = new searchForm();
-    $scope.addCategoryForm = new addCategoryForm();
-
-    $scope.refreshData = function () {
-        $http.get('/categories/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
-            $scope.categories = response.data.data;
-            $scope.totalItems = response.data.total_items;
-            $scope.categoriesLoaded = true;
-        });
-    };
-
-    $scope.refreshData();
-
-    $scope.updateSorting = function (sorting) {
-        if ($scope.searchForm.sorting == sorting) {
-            if ($scope.searchForm.direction == 'asc') {
-                $scope.searchForm.direction = 'desc';
-            } else {
-                $scope.searchForm.direction = 'asc';
-            }
-        } else {
-            $scope.searchForm.direction = 'asc';
-        }
-
-        $scope.searchForm.sorting = sorting;
-
-        $scope.refreshData();
-    };
-
-    $scope.showEditMarginsModal = function (category) {
-        $scope.editingCategory = category;
-
-        $scope.marginsForm = new marginsForm();
-
-        $http.get('/categories/' + category.id + '/margins').then(function (response) {
-            _.each(response.data, function (margin, regionId) {
-                $scope.marginsForm.margins[regionId] = margin.margin;
-            });
-        });
-
-        $('#modal-edit-margins').modal('show');
-    };
-
-    $scope.updateMargins = function () {
-        $scope.marginsForm.errors = [];
-        $scope.marginsForm.disabled = true;
-
-        $http.put('/categories/' + $scope.editingCategory.id + '/margins', {
-            'north_region': this.marginsForm.margins[1],
-            'middle_region': this.marginsForm.margins[2],
-            'south_region': this.marginsForm.margins[3]
-        }).then(function (response) {
-            $scope.editingCategory = null;
-            $scope.marginsForm = new marginsForm();
-
-            $('#modal-edit-margins').modal('hide');
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.marginsForm.disabled = false;
-        });
-    };
-
-    $scope.showAddCategoryModal = function () {
-        $('#modal-add-category').modal('show');
-    };
-
-    $scope.store = function () {
-        $scope.addCategoryForm.errors = [];
-        $scope.addCategoryForm.disabled = true;
-
-        $http.post('/categories', $scope.addCategoryForm).then(function (response) {
-            $scope.addCategoryForm = new addCategoryForm();
-
-            window.location = '/categories/' + response.data.id + '/edit';
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.addCategoryForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.addCategoryForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.addCategoryForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.categoryEdit', []).controller('CategoryEditController', CategoryEditController);
-
-CategoryEditController.$inject = ['$scope', '$http'];
-
-/* @ngInject */
-function CategoryEditController($scope, $http) {
-    $scope.categoryLoaded = false;
-
-    function editCategoryForm() {
-        this.name = '';
-        this.status = false;
-        this.errors = [];
-        this.successful = false;
-        this.disabled = false;
-    }
-
-    function attachAttributeForm() {
-        this.disabled = false;
-    }
-
-    function detachAttributeForm() {
-        this.disabled = false;
-    }
-
-    $scope.editCategoryForm = new editCategoryForm();
-    $scope.attachAttributeForm = new attachAttributeForm();
-    $scope.detachAttributeForm = new detachAttributeForm();
-
-    $scope.getCategory = function () {
-        $http.get('/categories/' + CATEGORY_ID).then(function (response) {
-            $scope.category = response.data;
-            $scope.categoryLoaded = true;
-
-            $scope.editCategoryForm.name = $scope.category.name;
-            $scope.editCategoryForm.status = $scope.category.status;
-        });
-    };
-
-    $scope.update = function () {
-        $scope.editCategoryForm.errors = [];
-        $scope.editCategoryForm.successful = false;
-        $scope.editCategoryForm.disabled = true;
-
-        $http.put('/categories/' + CATEGORY_ID, $scope.editCategoryForm).then(function (response) {
-            $scope.editCategoryForm.successful = true;
-            $scope.editCategoryForm.disabled = false;
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.editCategoryForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.editCategoryForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.editCategoryForm.disabled = false;
-        });
-    };
-
-    $scope.getUnassignedAttributes = function () {
-        $http.get('/categories/' + CATEGORY_ID + '/unassigned-attributes').then(function (response) {
-            $scope.unassignedAttributes = response.data;
-        });
-    };
-
-    $scope.refreshData = function () {
-        $scope.getCategory();
-        $scope.getUnassignedAttributes();
-    };
-
-    $scope.refreshData();
-
-    $scope.attachAttribute = function (attribute) {
-        $scope.attachAttributeForm.disabled = true;
-
-        $http.post('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
-            $scope.refreshData();
-
-            $scope.attachAttributeForm.disabled = false;
-        });
-    };
-
-    $scope.detachAttribute = function (attribute) {
-        $scope.detachAttributeForm.disabled = true;
-
-        $http.delete('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
-            $scope.refreshData();
-
-            $scope.detachAttributeForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
-/* 7 */
+/***/ "./resources/assets/js/controllers/attributeIndex.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8375,40 +8142,156 @@ function AttributeIndexController($scope, $http) {
 }
 
 /***/ }),
-/* 8 */
+
+/***/ "./resources/assets/js/controllers/categoryEdit.controller.js":
 /***/ (function(module, exports) {
 
-angular.module('controllers.productIndex', []).controller('ProductIndexController', ProductIndexController);
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-ProductIndexController.$inject = ['$scope', '$http'];
+angular.module('controllers.categoryEdit', []).controller('CategoryEditController', CategoryEditController);
+
+CategoryEditController.$inject = ['$scope', '$http'];
 
 /* @ngInject */
-function ProductIndexController($scope, $http) {
-    $scope.productsLoaded = false;
+function CategoryEditController($scope, $http) {
+    $scope.categoryLoaded = false;
+
+    function editCategoryForm() {
+        this.name = '';
+        this.status = false;
+        this.errors = [];
+        this.successful = false;
+        this.disabled = false;
+    }
+
+    function attachAttributeForm() {
+        this.disabled = false;
+    }
+
+    function detachAttributeForm() {
+        this.disabled = false;
+    }
+
+    $scope.editCategoryForm = new editCategoryForm();
+    $scope.attachAttributeForm = new attachAttributeForm();
+    $scope.detachAttributeForm = new detachAttributeForm();
+
+    $scope.getCategory = function () {
+        $http.get('/categories/' + CATEGORY_ID).then(function (response) {
+            $scope.category = response.data;
+            $scope.categoryLoaded = true;
+
+            $scope.editCategoryForm.name = $scope.category.name;
+            $scope.editCategoryForm.status = $scope.category.status;
+        });
+    };
+
+    $scope.update = function () {
+        $scope.editCategoryForm.errors = [];
+        $scope.editCategoryForm.successful = false;
+        $scope.editCategoryForm.disabled = true;
+
+        $http.put('/categories/' + CATEGORY_ID, $scope.editCategoryForm).then(function (response) {
+            $scope.editCategoryForm.successful = true;
+            $scope.editCategoryForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editCategoryForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editCategoryForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editCategoryForm.disabled = false;
+        });
+    };
+
+    $scope.getUnassignedAttributes = function () {
+        $http.get('/categories/' + CATEGORY_ID + '/unassigned-attributes').then(function (response) {
+            $scope.unassignedAttributes = response.data;
+        });
+    };
+
+    $scope.refreshData = function () {
+        $scope.getCategory();
+        $scope.getUnassignedAttributes();
+    };
+
+    $scope.refreshData();
+
+    $scope.attachAttribute = function (attribute) {
+        $scope.attachAttributeForm.disabled = true;
+
+        $http.post('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
+            $scope.refreshData();
+
+            $scope.attachAttributeForm.disabled = false;
+        });
+    };
+
+    $scope.detachAttribute = function (attribute) {
+        $scope.detachAttributeForm.disabled = true;
+
+        $http.delete('/categories/' + CATEGORY_ID + '/attributes/' + attribute.id).then(function (response) {
+            $scope.refreshData();
+
+            $scope.detachAttributeForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+
+/***/ "./resources/assets/js/controllers/categoryIndex.controller.js":
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.categoryIndex', []).controller('CategoryIndexController', CategoryIndexController);
+
+CategoryIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function CategoryIndexController($scope, $http) {
+    $scope.categoriesLoaded = false;
+
+    $scope.editingCategory = null;
 
     $scope.totalItems = 0;
 
-    $scope.countAll = 0;
-
     function searchForm() {
-        this.category_id = '';
-        this.manufacturer_id = '';
-        this.status = '';
         this.q = '';
-        this.sorting = 'id';
-        this.direction = 'desc';
+        this.sorting = 'code';
+        this.direction = 'asc';
         this.page = 1;
         this.limit = 25;
     }
 
+    function marginsForm() {
+        this.margins = {
+            1: 5,
+            2: 5,
+            3: 5
+        };
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    function addCategoryForm() {
+        this.code = '';
+        this.name = '';
+        this.status = true;
+        this.errors = [];
+        this.successful = false;
+        this.busy = false;
+    }
+
     $scope.searchForm = new searchForm();
+    $scope.addCategoryForm = new addCategoryForm();
 
     $scope.refreshData = function () {
-        $http.get('/products/listing?q=' + $scope.searchForm.q + '&category_id=' + $scope.searchForm.category_id + '&manufacturer_id=' + $scope.searchForm.manufacturer_id + '&status=' + $scope.searchForm.status + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
-            $scope.products = response.data.data;
+        $http.get('/categories/listing?q=' + $scope.searchForm.q + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.categories = response.data.data;
             $scope.totalItems = response.data.total_items;
-            $scope.countAll = response.data.all;
-            $scope.productsLoaded = true;
+            $scope.categoriesLoaded = true;
         });
     };
 
@@ -8430,13 +8313,173 @@ function ProductIndexController($scope, $http) {
         $scope.refreshData();
     };
 
-    $scope.channelText = function (channel) {
-        return channel.replace('1', 'Online').replace('2', 'Offline');
+    $scope.showEditMarginsModal = function (category) {
+        $scope.editingCategory = category;
+
+        $scope.marginsForm = new marginsForm();
+
+        $http.get('/categories/' + category.id + '/margins').then(function (response) {
+            _.each(response.data, function (margin, regionId) {
+                $scope.marginsForm.margins[regionId] = margin.margin;
+            });
+        });
+
+        $('#modal-edit-margins').modal('show');
+    };
+
+    $scope.updateMargins = function () {
+        $scope.marginsForm.errors = [];
+        $scope.marginsForm.disabled = true;
+
+        $http.put('/categories/' + $scope.editingCategory.id + '/margins', {
+            'north_region': this.marginsForm.margins[1],
+            'middle_region': this.marginsForm.margins[2],
+            'south_region': this.marginsForm.margins[3]
+        }).then(function (response) {
+            $scope.editingCategory = null;
+            $scope.marginsForm = new marginsForm();
+
+            $('#modal-edit-margins').modal('hide');
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.marginsForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.marginsForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.marginsForm.disabled = false;
+        });
+    };
+
+    $scope.showAddCategoryModal = function () {
+        $('#modal-add-category').modal('show');
+    };
+
+    $scope.store = function () {
+        $scope.addCategoryForm.errors = [];
+        $scope.addCategoryForm.disabled = true;
+
+        $http.post('/categories', $scope.addCategoryForm).then(function (response) {
+            $scope.addCategoryForm = new addCategoryForm();
+
+            window.location = '/categories/' + response.data.id + '/edit';
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addCategoryForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addCategoryForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addCategoryForm.disabled = false;
+        });
     };
 }
 
 /***/ }),
-/* 9 */
+
+/***/ "./resources/assets/js/controllers/categoryProductCreate.controller.js":
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.categoryProductCreate', []).controller('CategoryProductCreateController', CategoryProductCreateController);
+
+CategoryProductCreateController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function CategoryProductCreateController($scope, $http, $window) {
+    function addProductForm() {
+        this.manufacturer_id = '';
+        this.color_id = '';
+        this.name = '';
+        this.source_url = '';
+        this.description = '';
+        this.channels = { 1: false, 2: false };
+        this.status = true;
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    }
+
+    $scope.addProductForm = new addProductForm();
+
+    $scope.getManufacturers = function () {
+        $http.get('/api/manufacturers').then(function (response) {
+            $scope.manufacturers = response.data;
+        });
+    };
+
+    $scope.getColors = function () {
+        $http.get('/api/colors').then(function (response) {
+            $scope.colors = response.data;
+        });
+    };
+
+    $scope.getManufacturers();
+    $scope.getColors();
+
+    $scope.store = function () {
+        $scope.addProductForm.errors = [];
+        $scope.addProductForm.disabled = true;
+
+        $http.post('/categories/' + CATEGORY_ID + '/products', $scope.addProductForm).then(function (response) {
+            $scope.addProductForm.successful = true;
+            $scope.addProductForm.disabled = false;
+
+            $window.location.href = '/products/' + response.data.id + '/edit';
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addProductForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addProductForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addProductForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+
+/***/ "./resources/assets/js/controllers/productCreate.controller.js":
+/***/ (function(module, exports) {
+
+angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController);
+
+ProductCreateController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function ProductCreateController($scope, $http, $window) {
+    function selectCategoryForm() {
+        this.category_id = '';
+        this.disabled = false;
+    }
+
+    $scope.selectCategoryForm = new selectCategoryForm();
+
+    $scope.getCategories = function () {
+        $http.get('/api/categories').then(function (response) {
+            $scope.categories = response.data;
+        });
+    };
+
+    $scope.getCategories();
+
+    $scope.selectCategory = function () {
+        $scope.selectCategoryForm.disabled = true;
+
+        if ($scope.selectCategoryForm.category_id == '') {
+            alert('Vui lòng chọn danh mục.');
+
+            $scope.selectCategoryForm.disabled = false;
+
+            return false;
+        }
+
+        $window.location = '/products/create?category_id=' + $scope.selectCategoryForm.category_id;
+    };
+}
+
+/***/ }),
+
+/***/ "./resources/assets/js/controllers/productEdit.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8549,167 +8592,70 @@ function ProductEditController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 10 */
+
+/***/ "./resources/assets/js/controllers/productIndex.controller.js":
 /***/ (function(module, exports) {
 
-angular.module('controllers.productCreate', []).controller('ProductCreateController', ProductCreateController);
+angular.module('controllers.productIndex', []).controller('ProductIndexController', ProductIndexController);
 
-ProductCreateController.$inject = ['$scope', '$http', '$window'];
-
-/* @ngInject */
-function ProductCreateController($scope, $http, $window) {
-    function selectCategoryForm() {
-        this.category_id = '';
-        this.disabled = false;
-    }
-
-    $scope.selectCategoryForm = new selectCategoryForm();
-
-    $scope.getCategories = function () {
-        $http.get('/api/categories').then(function (response) {
-            $scope.categories = response.data;
-        });
-    };
-
-    $scope.getCategories();
-
-    $scope.selectCategory = function () {
-        $scope.selectCategoryForm.disabled = true;
-
-        if ($scope.selectCategoryForm.category_id == '') {
-            alert('Vui lòng chọn danh mục.');
-
-            $scope.selectCategoryForm.disabled = false;
-
-            return false;
-        }
-
-        $window.location = '/products/create?category_id=' + $scope.selectCategoryForm.category_id;
-    };
-}
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-angular.module('controllers.categoryProductCreate', []).controller('CategoryProductCreateController', CategoryProductCreateController);
-
-CategoryProductCreateController.$inject = ['$scope', '$http', '$window'];
+ProductIndexController.$inject = ['$scope', '$http'];
 
 /* @ngInject */
-function CategoryProductCreateController($scope, $http, $window) {
-    function addProductForm() {
-        this.manufacturer_id = '';
-        this.color_id = '';
-        this.name = '';
-        this.source_url = '';
-        this.description = '';
-        this.channels = { 1: false, 2: false };
-        this.status = true;
-        this.errors = [];
-        this.disabled = false;
-        this.successful = false;
-    }
+function ProductIndexController($scope, $http) {
+    $scope.productsLoaded = false;
 
-    $scope.addProductForm = new addProductForm();
+    $scope.totalItems = 0;
 
-    $scope.getManufacturers = function () {
-        $http.get('/api/manufacturers').then(function (response) {
-            $scope.manufacturers = response.data;
-        });
-    };
+    $scope.countAll = 0;
 
-    $scope.getColors = function () {
-        $http.get('/api/colors').then(function (response) {
-            $scope.colors = response.data;
-        });
-    };
-
-    $scope.getManufacturers();
-    $scope.getColors();
-
-    $scope.store = function () {
-        $scope.addProductForm.errors = [];
-        $scope.addProductForm.disabled = true;
-
-        $http.post('/categories/' + CATEGORY_ID + '/products', $scope.addProductForm).then(function (response) {
-            $scope.addProductForm.successful = true;
-            $scope.addProductForm.disabled = false;
-
-            $window.location.href = '/products/' + response.data.id + '/edit';
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.addProductForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.addProductForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.addProductForm.disabled = false;
-        });
-    };
-}
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
-
-ProductSupplierController.$inject = ['$scope', '$http', '$window'];
-
-/* @ngInject */
-function ProductSupplierController($scope, $http, $window) {
-
-    function productForm() {
+    function searchForm() {
         this.category_id = '';
         this.manufacturer_id = '';
-        this.color_id = '';
-        this.type = 'simple';
-        this.parent_id = '0';
-        this.name = '';
-        this.code = '';
-        this.source_url = '';
-        this.image = {};
-        this.description = '';
-        this.status = true;
-        this.attributes = {};
-        this.errors = [];
-        this.disabled = false;
-        this.successful = false;
-    };
+        this.status = '';
+        this.q = '';
+        this.sorting = 'id';
+        this.direction = 'desc';
+        this.page = 1;
+        this.limit = 25;
+    }
 
-    $scope.productForm = new productForm();
-    $scope.getCategories = function () {
-        $http.get('/api/categories').then(function (response) {
-            $scope.categories = response.data;
-        });
-    };
-
-    $scope.getManufacturers = function () {
-        $http.get('/api/manufacturers').then(function (response) {
-            $scope.manufacturers = response.data;
-        });
-    };
+    $scope.searchForm = new searchForm();
 
     $scope.refreshData = function () {
-        if (categoryId = $scope.productForm.category_id) {
-            $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
-                $scope.attributes = response.data;
-                _.each($scope.attributes, function (attribute) {
-                    $scope.productForm.attributes[attribute.slug] = '';
-                });
-            });
-        }
+        $http.get('/products/listing?q=' + $scope.searchForm.q + '&category_id=' + $scope.searchForm.category_id + '&manufacturer_id=' + $scope.searchForm.manufacturer_id + '&status=' + $scope.searchForm.status + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
+            $scope.products = response.data.data;
+            $scope.totalItems = response.data.total_items;
+            $scope.countAll = response.data.all;
+            $scope.productsLoaded = true;
+        });
     };
 
-    $scope.getCategories();
-    $scope.getManufacturers();
     $scope.refreshData();
+
+    $scope.updateSorting = function (sorting) {
+        if ($scope.searchForm.sorting == sorting) {
+            if ($scope.searchForm.direction == 'asc') {
+                $scope.searchForm.direction = 'desc';
+            } else {
+                $scope.searchForm.direction = 'asc';
+            }
+        } else {
+            $scope.searchForm.direction = 'asc';
+        }
+
+        $scope.searchForm.sorting = sorting;
+
+        $scope.refreshData();
+    };
+
+    $scope.channelText = function (channel) {
+        return channel.replace('1', 'Online').replace('2', 'Offline');
+    };
 }
 
 /***/ }),
-/* 13 */
+
+/***/ "./resources/assets/js/controllers/productSaleprice.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -8779,62 +8725,67 @@ function ProductSalepriceController($scope, $http, $window) {
 }
 
 /***/ }),
-/* 14 */
+
+/***/ "./resources/assets/js/controllers/productSupplier.controller.js":
 /***/ (function(module, exports) {
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+angular.module('controllers.productSupplier', ['directives.fileread', 'directives.select2']).controller('ProductSupplierController', ProductSupplierController);
 
-angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
-
-TransportFeeIndexController.$inject = ['$scope', '$http'];
+ProductSupplierController.$inject = ['$scope', '$http', '$window'];
 
 /* @ngInject */
-function TransportFeeIndexController($scope, $http) {
-    $scope.transportFeesLoaded = false;
+function ProductSupplierController($scope, $http, $window) {
 
-    function transportFeeForm() {
-        this.percentFees = {};
+    function productForm() {
+        this.category_id = '';
+        this.manufacturer_id = '';
+        this.color_id = '';
+        this.type = 'simple';
+        this.parent_id = '0';
+        this.name = '';
+        this.code = '';
+        this.source_url = '';
+        this.image = {};
+        this.description = '';
+        this.status = true;
+        this.attributes = {};
         this.errors = [];
         this.disabled = false;
         this.successful = false;
-    }
+    };
 
-    $scope.transportFeeForm = new transportFeeForm();
+    $scope.productForm = new productForm();
+    $scope.getCategories = function () {
+        $http.get('/api/categories').then(function (response) {
+            $scope.categories = response.data;
+        });
+    };
+
+    $scope.getManufacturers = function () {
+        $http.get('/api/manufacturers').then(function (response) {
+            $scope.manufacturers = response.data;
+        });
+    };
 
     $scope.refreshData = function () {
-        $http.get('/api/transport-fees').then(function (response) {
-            $scope.transportFees = response.data;
-            $scope.transportFeesLoaded = true;
-
-            _.each($scope.transportFees, function (transportFee) {
-                $scope.transportFeeForm.percentFees[transportFee.province_id] = transportFee.percent_fee;
+        if (categoryId = $scope.productForm.category_id) {
+            $http.get('/api/categories/' + categoryId + '/attributes').then(function (response) {
+                $scope.attributes = response.data;
+                _.each($scope.attributes, function (attribute) {
+                    $scope.productForm.attributes[attribute.slug] = '';
+                });
             });
-        });
+        }
     };
 
+    $scope.getCategories();
+    $scope.getManufacturers();
     $scope.refreshData();
-
-    $scope.updatePercentFee = function (provinceId) {
-        $scope.transportFeeForm.errors = [];
-        $scope.transportFeeForm.disabled = true;
-        $scope.transportFeeForm.successful = false;
-
-        $http.put('/api/provinces/' + provinceId + '/transport-fee', { percent_fee: $scope.transportFeeForm.percentFees[provinceId] }).then(function () {
-            $scope.transportFeeForm.successful = true;
-            $scope.transportFeeForm.disabled = false;
-        }).catch(function (response) {
-            if (_typeof(response.data) === 'object') {
-                $scope.transportFeeForm.errors = _.flatten(_.toArray(response.data));
-            } else {
-                $scope.transportFeeForm.errors = ['Something went wrong. Please try again.'];
-            }
-            $scope.transportFeeForm.disabled = false;
-        });
-    };
 }
 
 /***/ }),
-/* 15 */
+
+/***/ "./resources/assets/js/controllers/productSupplierIndex.controller.js":
 /***/ (function(module, exports) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -9155,159 +9106,8 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 }
 
 /***/ }),
-/* 16 */
-/***/ (function(module, exports) {
 
-angular.module('directives.fileread', []).directive("fileread", fileread);
-
-function fileread() {
-    return {
-        scope: {
-            fileread: "="
-        },
-        link: function link(scope, element, attributes) {
-            element.bind("change", function (changeEvent) {
-                scope.$apply(function () {
-                    scope.fileread = changeEvent.target.files[0];
-                });
-            });
-        }
-    };
-}
-
-/***/ }),
-/* 17 */
-/***/ (function(module, exports) {
-
-angular.module('directives.select2', []).directive('select2', select2);
-
-function select2($timeout, $parse) {
-    return {
-        restrict: 'AC',
-        require: 'ngModel',
-        link: function link(scope, element, attrs) {
-            $timeout(function () {
-                element.select2({
-                    placeholder: attrs.placeholder,
-                    allowClear: true,
-                    width: '100%'
-                });
-                element.select2Initialized = true;
-            });
-
-            var refreshSelect = function refreshSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.trigger('change');
-                });
-            };
-
-            var recreateSelect = function recreateSelect() {
-                if (!element.select2Initialized) return;
-                $timeout(function () {
-                    element.select2('destroy');
-                    element.select2();
-                });
-            };
-
-            scope.$watch(attrs.ngModel, refreshSelect);
-
-            if (attrs.ngOptions) {
-                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
-                // watch for option list change
-                scope.$watch(list, recreateSelect);
-            }
-
-            if (attrs.ngDisabled) {
-                scope.$watch(attrs.ngDisabled, refreshSelect);
-            }
-        }
-    };
-};
-
-/***/ }),
-/* 18 */
-/***/ (function(module, exports) {
-
-angular.module('directives.format', []).directive('format', format);
-
-format.$inject = ['$filter'];
-
-function format($filter) {
-    return {
-        require: '?ngModel',
-        link: function link(scope, elem, attrs, ctrl) {
-            if (!ctrl) return;
-
-            ctrl.$formatters.unshift(function (a) {
-                return $filter(attrs.format)(ctrl.$modelValue);
-            });
-
-            ctrl.$parsers.unshift(function (viewValue) {
-                var plainNumber = viewValue.replace(/[^\d|\-+|\.+]/g, '');
-                elem.val($filter(attrs.format)(plainNumber));
-                return plainNumber;
-            });
-        }
-    };
-};
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
-
-currencyInput.$inject = ['$filter', '$browser'];
-
-function currencyInput($filter, $browser) {
-    console.log('fdsfds');
-    return {
-        require: 'ngModel',
-        link: function link($scope, $element, $attrs, ngModelCtrl) {
-            var listener = function listener() {
-                var value = $element.val().replace(/,/g, '');
-                $element.val($filter('number')(value, false));
-            };
-
-            // This runs when we update the text field
-            ngModelCtrl.$parsers.push(function (viewValue) {
-                return viewValue.replace(/,/g, '');
-            });
-
-            // This runs when the model gets updated on the scope directly and keeps our view in sync
-            ngModelCtrl.$render = function () {
-                $element.val($filter('number')(ngModelCtrl.$viewValue, false));
-            };
-
-            $element.bind('change', listener);
-            $element.bind('keydown', function (event) {
-                var key = event.keyCode;
-                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
-                // This lets us support copy and paste too
-                if (key == 91 || 15 < key && key < 19 || 37 <= key && key <= 40) return;
-                $browser.defer(listener); // Have to do this or changes don't get picked up properly
-            });
-
-            $element.bind('paste cut', function () {
-                $browser.defer(listener);
-            });
-        }
-    };
-};
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 21 */,
-/* 22 */,
-/* 23 */,
-/* 24 */,
-/* 25 */
+/***/ "./resources/assets/js/controllers/supplierIndex.controller.js":
 /***/ (function(module, exports) {
 
 angular.module('controllers.supplierIndex', []).controller('SupplierIndexController', SupplierIndexController);
@@ -9363,5 +9163,224 @@ function SupplierIndexController($scope, $http) {
     };
 }
 
+/***/ }),
+
+/***/ "./resources/assets/js/controllers/transportFeeIndex.controller.js":
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.transportFeeIndex', []).controller('TransportFeeIndexController', TransportFeeIndexController);
+
+TransportFeeIndexController.$inject = ['$scope', '$http'];
+
+/* @ngInject */
+function TransportFeeIndexController($scope, $http) {
+    $scope.transportFeesLoaded = false;
+
+    function transportFeeForm() {
+        this.percentFees = {};
+        this.errors = [];
+        this.disabled = false;
+        this.successful = false;
+    }
+
+    $scope.transportFeeForm = new transportFeeForm();
+
+    $scope.refreshData = function () {
+        $http.get('/api/transport-fees').then(function (response) {
+            $scope.transportFees = response.data;
+            $scope.transportFeesLoaded = true;
+
+            _.each($scope.transportFees, function (transportFee) {
+                $scope.transportFeeForm.percentFees[transportFee.province_id] = transportFee.percent_fee;
+            });
+        });
+    };
+
+    $scope.refreshData();
+
+    $scope.updatePercentFee = function (provinceId) {
+        $scope.transportFeeForm.errors = [];
+        $scope.transportFeeForm.disabled = true;
+        $scope.transportFeeForm.successful = false;
+
+        $http.put('/api/provinces/' + provinceId + '/transport-fee', { percent_fee: $scope.transportFeeForm.percentFees[provinceId] }).then(function () {
+            $scope.transportFeeForm.successful = true;
+            $scope.transportFeeForm.disabled = false;
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.transportFeeForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.transportFeeForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.transportFeeForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+
+/***/ "./resources/assets/js/directives/currencyInput.directive.js":
+/***/ (function(module, exports) {
+
+angular.module('directives.currencyInput', []).directive('currencyInput', currencyInput);
+
+currencyInput.$inject = ['$filter', '$browser'];
+
+function currencyInput($filter, $browser) {
+    console.log('fdsfds');
+    return {
+        require: 'ngModel',
+        link: function link($scope, $element, $attrs, ngModelCtrl) {
+            var listener = function listener() {
+                var value = $element.val().replace(/,/g, '');
+                $element.val($filter('number')(value, false));
+            };
+
+            // This runs when we update the text field
+            ngModelCtrl.$parsers.push(function (viewValue) {
+                return viewValue.replace(/,/g, '');
+            });
+
+            // This runs when the model gets updated on the scope directly and keeps our view in sync
+            ngModelCtrl.$render = function () {
+                $element.val($filter('number')(ngModelCtrl.$viewValue, false));
+            };
+
+            $element.bind('change', listener);
+            $element.bind('keydown', function (event) {
+                var key = event.keyCode;
+                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
+                // This lets us support copy and paste too
+                if (key == 91 || 15 < key && key < 19 || 37 <= key && key <= 40) return;
+                $browser.defer(listener); // Have to do this or changes don't get picked up properly
+            });
+
+            $element.bind('paste cut', function () {
+                $browser.defer(listener);
+            });
+        }
+    };
+};
+
+/***/ }),
+
+/***/ "./resources/assets/js/directives/fileread.directive.js":
+/***/ (function(module, exports) {
+
+angular.module('directives.fileread', []).directive("fileread", fileread);
+
+function fileread() {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function link(scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                });
+            });
+        }
+    };
+}
+
+/***/ }),
+
+/***/ "./resources/assets/js/directives/format.directive.js":
+/***/ (function(module, exports) {
+
+angular.module('directives.format', []).directive('format', format);
+
+format.$inject = ['$filter'];
+
+function format($filter) {
+    return {
+        require: '?ngModel',
+        link: function link(scope, elem, attrs, ctrl) {
+            if (!ctrl) return;
+
+            ctrl.$formatters.unshift(function (a) {
+                return $filter(attrs.format)(ctrl.$modelValue);
+            });
+
+            ctrl.$parsers.unshift(function (viewValue) {
+                var plainNumber = viewValue.replace(/[^\d|\-+|\.+]/g, '');
+                elem.val($filter(attrs.format)(plainNumber));
+                return plainNumber;
+            });
+        }
+    };
+};
+
+/***/ }),
+
+/***/ "./resources/assets/js/directives/select2.directive.js":
+/***/ (function(module, exports) {
+
+angular.module('directives.select2', []).directive('select2', select2);
+
+function select2($timeout, $parse) {
+    return {
+        restrict: 'AC',
+        require: 'ngModel',
+        link: function link(scope, element, attrs) {
+            $timeout(function () {
+                element.select2({
+                    placeholder: attrs.placeholder,
+                    allowClear: true,
+                    width: '100%'
+                });
+                element.select2Initialized = true;
+            });
+
+            var refreshSelect = function refreshSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.trigger('change');
+                });
+            };
+
+            var recreateSelect = function recreateSelect() {
+                if (!element.select2Initialized) return;
+                $timeout(function () {
+                    element.select2('destroy');
+                    element.select2();
+                });
+            };
+
+            scope.$watch(attrs.ngModel, refreshSelect);
+
+            if (attrs.ngOptions) {
+                var list = attrs.ngOptions.match(/ in ([^ ]*)/)[1];
+                // watch for option list change
+                scope.$watch(list, recreateSelect);
+            }
+
+            if (attrs.ngDisabled) {
+                scope.$watch(attrs.ngDisabled, refreshSelect);
+            }
+        }
+    };
+};
+
+/***/ }),
+
+/***/ "./resources/assets/sass/app.scss":
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+
+/***/ 0:
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__("./resources/assets/js/app.js");
+module.exports = __webpack_require__("./resources/assets/sass/app.scss");
+
+
 /***/ })
-/******/ ]);
+
+/******/ });

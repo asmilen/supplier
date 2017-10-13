@@ -28,7 +28,7 @@
 <![endif]-->
 
 <!-- Styles -->
-<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
+<link href="{{ mix('/css/app.css') }}" rel="stylesheet">
 
 @yield('inline_styles')
 

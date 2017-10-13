@@ -14,7 +14,7 @@ class AddLabelColumnBundlesTable extends Migration
     public function up()
     {
         Schema::table('bundles', function (Blueprint $table) {
-           $table->integer('label');
+           $table->integer('label')->nullable();
         });
     }
 

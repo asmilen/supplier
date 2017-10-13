@@ -14,7 +14,7 @@ class AddRegionIdSalePrice extends Migration
     public function up()
     {
         Schema::table('saleprices', function (Blueprint $table) {
-            $table->integer('region_id');
+            $table->integer('region_id')->nullable();
         });
     }
 

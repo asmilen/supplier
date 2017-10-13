@@ -14,7 +14,7 @@ class AddAddressCodeSupplerAddress extends Migration
     public function up()
     {
         Schema::table('supplier_addresses', function (Blueprint $table) {
-            $table->string('addressCode');
+            $table->string('addressCode')->nullable();
         });
     }
 

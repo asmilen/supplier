@@ -2,26 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Sentinel;
 use Validator;
-use App\Models\Color;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Manufacturer;
 use App\Events\ProductUpserted;
-use App\Models\ProductSupplier;
-use App\Jobs\OffProductToMagento;
-use Intervention\Image\Facades\Image as Image;
 
 class ProductsController extends Controller
 {
-    public function __construct()
-    {
-        view()->share('categoriesList', Category::getActiveList());
-        view()->share('manufacturersList', Manufacturer::getActiveList());
-        view()->share('colorsList', Color::getActiveList());
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +17,11 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        $categoriesList = Category::getActiveList();
+
+        $manufacturersList = Manufacturer::getActiveList();
+
+        return view('products.index', compact('categoriesList', 'manufacturersList'));
     }
 
     /**
@@ -44,75 +36,6 @@ class ProductsController extends Controller
         }
 
         return view('products.create', compact('category'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function store()
-    {
-        $code = strtoupper(request('code'));
-        Validator::make(request()->all(), [
-            'category_id' => 'required',
-            'channels' => 'required',
-            'manufacturer_id' => 'required',
-            'name' => 'required|max:255|unique:products',
-            'code' => 'alpha_num|max:255',
-            'imageBase64' => 'required'
-        ], [
-            'name.unique' => 'Tên sản phẩm đã tồn tại.',
-            'name.required' => 'Bạn chưa nhập tên sản phẩm.',
-            'name.max' => 'Tên sản phẩm quá dài, tối đa 255 ký tự.',
-            'channels.required' => 'Bạn chưa chọn kênh bán hàng.',
-            'category_id.required' => 'Bạn chưa chọn danh mục.',
-            'manufacturer_id.required' => 'Bạn chưa chọn nhà sản xuất.',
-            'code.alpha_num' => 'Mã sản phẩm phải là số hoặc chữ.',
-            'code.max' => 'Mã sản phẩm quá dài, tối đa 255 ký tự.',
-            'imageBase64.required' => 'Bạn chưa chọn ảnh sản phẩm.',
-        ])->after(function ($validator) use ($code) {
-            if (!empty($code)) {
-                $check = Product::where('category_id', request('category_id'))
-                    ->where('manufacturer_id', request('manufacturer_id'))
-                    ->where('code', $code)
-                    ->first();
-
-                if ($check) {
-                    $validator->errors()->add('code', 'Mã sản phẩm này đã tồn tại.');
-                }
-            }
-        })->validate();
-
-        $filename = '';
-        $file = request('imageBase64')['file'];
-        $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['name'];
-        $img = Image::make($file);
-        $img->save(storage_path('app/public/' . $filename));
-
-
-        $channelChoose = [];
-        foreach (request('channels') as $key => $channel) {
-            if ($channel) array_push($channelChoose, $key);
-        }
-
-        $product = Product::forceCreate([
-            'category_id' => request('category_id'),
-            'manufacturer_id' => request('manufacturer_id'),
-            'color_id' => request('color_id', 0),
-            'type' => request('type') == 'simple' ? 0 : 1,
-            'parent_id' => request('parent_id', 0),
-            'name' => trim(request('name')),
-            'status' => filter_var(request('status'), FILTER_VALIDATE_BOOLEAN),
-            'image' => url('/') . '/storage/' . $filename,
-            'description' => request('description'),
-            'attributes' => json_encode(request('attributes', [])),
-            'channel' => implode(",", $channelChoose),
-        ]);
-
-        flash()->success('Success!', 'Product successfully created.');
-
-        return $product;
     }
 
     /**
@@ -177,11 +100,6 @@ class ProductsController extends Controller
         return $product;
     }
 
-    public function getDatatables()
-    {
-        return Product::getDatatables();
-    }
-
     public function getProductInCombo()
     {
         $productIds = request('productIds', []);
@@ -192,36 +110,6 @@ class ProductsController extends Controller
     public function getSimpleProduct()
     {
         return Product::getSimpleProduct();
-    }
-
-    public function addChild(Product $product)
-    {
-        $productChild = Product::findOrFail(request('productChild'));
-        $productChild->forceFill(['parent_id' => $product->id])->save();
-
-        return response()->json(['status' => 'success']);
-    }
-
-    public function removeChild(Product $product, $childId)
-    {
-        $productChild = Product::findOrFail($childId);
-        $productChild->forceFill(['parent_id' => 0])->save();
-
-        return response()->json(['status' => 'success']);
-    }
-
-    public function toggleStatus(Product $product)
-    {
-        $user = Sentinel::getUser();
-
-        if ($product->status){
-            $productSuppliers = ProductSupplier::where('product_id', $product->id)->get();
-            foreach ($productSuppliers as $productSupplier){
-                dispatch(new OffProductToMagento($product, 0, $user, $productSupplier->region_id));
-            }
-        }
-
-        $product->forceFill(['status' => !$product->status])->save();
     }
 
     public function listing()
@@ -236,10 +124,12 @@ class ProductsController extends Controller
 
         $builder = Product::where(function ($query) {
             if (! empty(request('q'))) {
-                $query->where('id', 'like', '%'.request('q').'%')
-                    ->orWhere('code', 'like', '%'.request('q').'%')
-                    ->orWhere('sku', 'like', '%'.request('q').'%')
-                    ->orWhere('name', 'like', '%'.request('q').'%');
+                $query->where(function ($q) {
+                    $q->where('id', 'like', '%'.request('q').'%')
+                        ->orWhere('code', 'like', '%'.request('q').'%')
+                        ->orWhere('sku', 'like', '%'.request('q').'%')
+                        ->orWhere('name', 'like', '%'.request('q').'%');
+                });
             }
 
             if (! empty(request('category_id'))) {

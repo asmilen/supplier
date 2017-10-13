@@ -129,7 +129,7 @@ class ProductsController extends Controller
         return Datatables::eloquent($model)
             ->filter(function ($query) {
                 if (request()->has('sku')) {
-                    $query->where('products.sku', 'like', '%' . request('sku') . '%');
+                    $query->where('products.sku',request('sku'));
                 }
                 if (request()->has('name')) {
                     $query->where('products.name', 'like', '%' . request('name') . '%');

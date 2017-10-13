@@ -771,13 +771,13 @@ class SuppliersController extends Controller
         if (!request('status')) {
             $user = Sentinel::getUser();
 
-            $productOffs = DB::select("select a.product_id, a.region_id from 
+            $productOffs = DB::select("select a.product_id, a.region_id from
                     (select product_id, region_id FROM `product_supplier` WHERE supplier_id = ? and state = 1 and `status` != 0 GROUP BY product_id) a
                     left join (select product_id, region_id from product_supplier a left join suppliers b on a.supplier_id = b.id
                     where a.state = 1
                     and b.status = 1
                     and a.supplier_id <> ?
-                    group by a.product_id, region_id) b on a.product_id = b.product_id and a.region_id = b.region_id where b.product_id is null 
+                    group by a.product_id, region_id) b on a.product_id = b.product_id and a.region_id = b.region_id where b.product_id is null
                      ", [$supplier->id, $supplier->id]);
 
             $productRegions = [];
@@ -1032,4 +1032,48 @@ class SuppliersController extends Controller
         }
     }
 
+    public function listing()
+    {
+        $sorting = request('sorting', 'id');
+
+        $direction = request('direction', 'desc');
+
+        $page = request('page', 1);
+
+        $limit = request('limit', 25);
+
+        $builder = Supplier::where(function ($query) {
+            if (! empty(request('q'))) {
+                $query->where(function ($q) {
+                    $q->where('id', request('q'))
+                        ->orWhere('code', 'like', '%'.request('q').'%')
+                        ->orWhere('name', 'like', '%'.request('q').'%')
+                        ->orWhere('full_name', 'like', '%'.request('q').'%');
+                });
+            }
+
+            if (! empty(request('status'))) {
+                if (request('status') == 'active') {
+                    $query->active();
+                } elseif (request('status') == 'inactive') {
+                    $query->inactive();
+                }
+            }
+        });
+
+        $totalItems = $builder->count();
+
+        $suppliers = $builder
+            ->orderBy('status', 'desc')
+            ->orderBy($sorting, $direction)
+            ->skip(($page - 1) * $limit)
+            ->take($limit)
+            ->get();
+
+        return response()->json([
+            'data' => $suppliers,
+            'total_items' => $totalItems,
+            'all' => Supplier::count(),
+        ]);
+    }
 }

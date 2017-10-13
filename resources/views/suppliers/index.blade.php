@@ -1,133 +1,124 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- #section:basics/content.breadcrumbs -->
-    <div class="breadcrumbs" id="breadcrumbs">
-        <script type="text/javascript">
-            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
-        </script>
+<div class="page-content" ng-controller="SupplierIndexController">
+    <div class="page-header">
+        <h1>
+            Nhà cung cấp
+            <small>
+                <i class="ace-icon fa fa-angle-double-right"></i>
+                Danh sách
+            </small>
+        </h1>
+    </div><!-- /.page-header -->
 
-        <ul class="breadcrumb">
-            <li>
-                <i class="ace-icon fa fa-home home-icon"></i>
-                <a href="{{ url('/dashboard') }}">Dashboard</a>
-            </li>
-            <li>
-                <a href="{{ url('/suppliers') }}">Nhà cung cấp</a>
-            </li>
-            <li class="active">Danh sách</li>
-        </ul><!-- /.breadcrumb -->
-        <!-- /section:basics/content.searchbox -->
-    </div>
-    <!-- /section:basics/content.breadcrumbs -->
-
-    <div class="page-content">
-        <div class="page-header">
-            <h1>
-                Nhà cung cấp
-                <small>
-                    <i class="ace-icon fa fa-angle-double-right"></i>
-                    Danh sách
-                </small>
-                <a class="btn btn-primary pull-right" href="{{ route('suppliers.create') }}">
+    <div class="row">
+        <div class="col-xs-6">
+        </div>
+        <div class="col-xs-6">
+            <p class="pull-right">
+                <a class="btn btn-primary" href="{{ route('suppliers.create') }}">
                     <i class="ace-icon fa fa-plus" aria-hidden="true"></i>
-                    <span class="hidden-xs">Thêm</span>
+                    <span class="hidden-xs">Tạo nhà cung cấp</span>
                 </a>
-            </h1>
-        </div><!-- /.page-header -->
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="widget-box">
-                    <div class="widget-header">
-                        <h5 class="widget-title">Search</h5>
-                    </div>
+            </p>
+        </div>
+    </div>
 
-                    <div class="widget-body">
-                        <div class="widget-main">
-                            <form class="form-inline" id="search-form">
-                                <select class="form-control" name="typeId">
-                                    <option value="">--Chọn loại hóa đơn--</option>
-                                    <option value="0">Thanh toán trực tiếp</option>
-                                    <option value="1">Thanh toán gián tiếp</option>
-                                </select>
-                                <select class="form-control" name="status">
-                                    <option value="">--Chọn Trạng thái--</option>
-                                    <option value="active">Kích hoạt</option>
-                                    <option value="inactive">Không kích hoạt</option>
-                                </select>
-                                <input type="text" class="form-control" name="keyword" placeholder="Từ khóa tìm kiếm" />
-                                <button type="submit" class="btn btn-purple btn-sm">
-                                    <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
-                                </button>
-                            </form>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="widget-box">
+                <div class="widget-header">
+                    <h5 class="widget-title">Lọc</h5>
+                </div>
+
+                <div class="widget-body">
+                    <div class="widget-main">
+                        <form class="form-inline" id="search-form">
+                            <div class="row">
+                                <div class="col-sm-2">
+                                    <select class="form-control" ng-model="searchForm.status" style="width: 100%">
+                                        <option value="">--Chọn Trạng thái--</option>
+                                        <option value="active">Kích hoạt</option>
+                                        <option value="inactive">Không kích hoạt</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" ng-model="searchForm.q" placeholder="Từ khóa tìm kiếm" style="width: 100%" />
+                                </div>
+                                <div class="col-sm-2">
+                                    <button type="submit" class="btn btn-purple btn-sm" ng-click="refreshData()">
+                                        <span class="ace-icon fa fa-search icon-on-right bigger-110"></span> Search
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row p-t-10" ng-show="suppliersLoaded">
+        <div class="col-xs-12">
+            <div class="dataTables_wrapper form-inline no-footer">
+                <table class="table table-striped table-bordered table-hover no-margin-bottom no-border-top dataTable no-footer">
+                    <thead>
+                        <tr>
+                            <th class="sorting@{{ getSortingDirectionClassHeader('id', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('id')">ID</th>
+                            <th class="sorting@{{ getSortingDirectionClassHeader('name', searchForm.sorting, searchForm.direction) }}" ng-click="updateSorting('name')">Tên</th>
+                            <th>Địa chỉ</th>
+                            <th>Địa bàn cung cấp</th>
+                            <th>Mã số thuế</th>
+                            <th>Loại nhà cung cấp</th>
+                            <th>Thông tin về người đại diện của NCC</th>
+                            <th>Thời gian hiệu lực giá nhập</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="supplier in suppliers">
+                            <td><a href="/suppliers/@{{ supplier.id }}/edit">@{{ supplier.id }}</a></td>
+                            <td><a href="/suppliers/@{{ supplier.id }}/edit">@{{ supplier.name }}</a></td>
+                            <td>@{{ supplier.address.address }}</td>
+                            <td>@{{ supplier.supplier_supported_province[0].name }}</td>
+                            <td>@{{ supplier.tax_number }}</td>
+                            <td>
+                                <span ng-if="supplier.sup_type == 1">Hàng mua</span>
+                                <span ng-if="supplier.sup_type == 2">Ký gửi</span>
+                                <span ng-if="supplier.sup_type != 1 && supplier.sup_type != 2">N/A</span>
+                            </td>
+                            <td>@{{ supplier.address.contact_name }} - @{{ supplier.address.contact_phone }}</td>
+                            <td>@{{ supplier.price_active_time / 24 }} ngày</td>
+                            <td>
+                                <span class="label label-success" ng-if="supplier.status">Đang hoạt động</span>
+                                <span class="label label-danger" ng-if="! supplier.status">Ngừng hoạt động</span>
+                            </td>
+                            <td>
+                                @if ($currentUser->hasAccess('suppliers.edit'))
+                                <a class="btn btn-white btn-info btn-sm" href="/suppliers/@{{ supplier.id }}/edit">Sửa</a>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr ng-if="totalItems == 0">
+                            <td colspan="10">Không tìm thấy kết quả tương ứng nào.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="dataTables_info">Hiển thị từ @{{ (totalItems > 0) ? (searchForm.page - 1) * searchForm.limit + 1 : 0 }} đến @{{ (searchForm.page * searchForm.limit < totalItems) ? searchForm.page * searchForm.limit : totalItems }} của @{{ totalItems }} sản phẩm <span ng-if="all > totalItems">(Lọc từ @{{ countAll }} sản phẩm)</span></div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="dataTables_paginate paging_simple_numbers">
+                            <ul uib-pagination boundary-link-numbers="true" rotate="true" max-size="3" total-items="totalItems" items-per-page="@{{ searchForm.limit }}" ng-model="searchForm.page" ng-change="refreshData()" class="pagination"></ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <table id="dataTables-products" class="table table-striped table-bordered table-hover no-margin-bottom no-border-top">
-                    <thead>
-                    <tr>
-                        <th>Tên</th>
-                        <th>Tên đầy đủ</th>
-                        <th>Địa chỉ</th>
-                        <th>Địa bàn cung cấp</th>
-                        <th>Mã số thuế</th>
-                        <th>Trạng thái</th>
-                        <th>Loại nhà cung cấp</th>
-                        <th>Thông tin về người đại diện của NCC</th>
-                        <th>Thời gian hiệu lực giá nhập</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-    </div><!-- /.page-content -->
-@endsection
-
-@section('scripts')
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.js"></script>
-    <script src="/vendor/ace/assets/js/dataTables/jquery.dataTables.bootstrap.js"></script>
-@endsection
-
-@section('inline_scripts')
-    <script>
-        $(function () {
-            var datatable = $("#dataTables-products").DataTable({
-                searching: false,
-                autoWidth: false,
-                processing: true,
-                serverSide: true,
-                pageLength: 50,
-                ajax: {
-                    url: '{!! route('suppliers.suppliersDatables') !!}',
-                    data: function (d) {
-                        d.keyword = $('input[name=keyword]').val();
-                        d.typeId = $('select[name=typeId]').val();
-                        d.status = $('select[name=status]').val();
-                    }
-                },
-                columns: [
-                    {data: 'name', name: 'name'},
-                    {data: 'full_name', name: 'full_name'},
-                    {data: 'address', name: 'address', orderable: false},
-                    {data: 'province', name: 'province', orderable: false},
-                    {data: 'tax_number', name: 'tax_number'},
-                    {data: 'status', name: 'status'},
-                    {data: 'sup_type', name: 'sup_type'},
-                    {data: 'info_person', name: 'info_person', orderable: false},
-                    {data: 'price_active_time', name: 'price_active_time'},
-                    {data: 'action', name: 'action', orderable: false, searchable: false}
-                ]
-            });
-
-            $('#search-form').on('submit', function(e) {
-                datatable.draw();
-                e.preventDefault();
-            });
-        });
-    </script>
+    </div>
+</div><!-- /.page-content -->
 @endsection

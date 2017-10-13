@@ -25,7 +25,7 @@ class ProductsController extends Controller
 
         $regionId = Province::where('code', request('province_id'))->pluck('region_id')->first();
 
-        if (! $regionId) {
+        if (!$regionId) {
             return response([
                 'error' => 'Mã tỉnh thành không tồn tại.'
             ], 422);
@@ -158,6 +158,7 @@ class ProductsController extends Controller
                 }
             })
             ->whereIn('products.id', $productIds)
+            ->groupBy('products.id')
             ->get();
     }
 }

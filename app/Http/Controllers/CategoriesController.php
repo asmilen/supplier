@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Attribute;
 use App\Events\CategoryUpserted;
 
 class CategoriesController extends Controller
@@ -110,9 +109,11 @@ class CategoriesController extends Controller
 
         $builder = Category::where(function ($query) {
             if (! empty(request('q'))) {
-                $query->where('id', 'like', '%'.request('q').'%')
-                    ->orWhere('code', 'like', '%'.request('q').'%')
-                    ->orWhere('name', 'like', '%'.request('q').'%');
+                $query->where(function ($q) {
+                    $q->where('id', 'like', '%'.request('q').'%')
+                        ->orWhere('code', 'like', '%'.request('q').'%')
+                        ->orWhere('name', 'like', '%'.request('q').'%');
+                });
             }
         });
 

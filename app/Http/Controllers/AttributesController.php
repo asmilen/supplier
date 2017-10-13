@@ -96,11 +96,13 @@ class AttributesController extends Controller
 
         $builder = Attribute::where(function ($query) {
             if (! empty(request('q'))) {
-                $query->where('id', 'like', '%'.request('q').'%')
-                    ->orWhere('slug', 'like', '%'.request('q').'%')
-                    ->orWhere('name', 'like', '%'.request('q').'%')
-                    ->orWhere('backend_type', 'like', '%'.request('q').'%')
-                    ->orWhere('frontend_input', 'like', '%'.request('q').'%');
+                $query->where(function ($q) {
+                    $q->where('id', 'like', '%'.request('q').'%')
+                        ->orWhere('slug', 'like', '%'.request('q').'%')
+                        ->orWhere('name', 'like', '%'.request('q').'%')
+                        ->orWhere('backend_type', 'like', '%'.request('q').'%')
+                        ->orWhere('frontend_input', 'like', '%'.request('q').'%');
+                });
             }
         });
 

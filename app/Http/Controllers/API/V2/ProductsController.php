@@ -158,6 +158,7 @@ class ProductsController extends Controller
                 }
             })
             ->whereIn('products.id', $productIds)
+            ->groupBy('products.id')
             ->get();
     }
 }

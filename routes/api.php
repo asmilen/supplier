@@ -2,7 +2,7 @@
 
 Route::prefix('v2')->namespace('V2')->group(function () {
     Route::get('region-products', 'RegionProductsController@index');
-    Route::get('products/detail', 'ProductsController@listDetail');
+    Route::get('products/list-with-prices', 'ProductsController@getListWithPrices');
 });
 
 Route::get('categories', 'CategoriesController@index');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Intervention\Image\Facades\Image as Image;
 use Validator;
 use App\Models\Product;
 use App\Models\Category;
@@ -80,13 +81,32 @@ class ProductsController extends Controller
             if (empty($channels)) {
                 $validator->errors()->add('channels', 'Bạn chưa chọn kênh bán hàng.');
             }
+            if (!empty(request('imageBase64'))) {
+                $image = request('imageBase64');
+
+                if ($image['filesize'] > 2000000){
+                    $validator->errors()->add('image', 'Ảnh không được vượt quá 2MB');
+                }
+
+                if (($image['filetype'] != 'image/png') && ($image['filetype'] != 'image/jpeg')){
+                    $validator->errors()->add('image', 'Định dạng ảnh phải là jpg hoặc png');
+                }
+            }
         })->validate();
+
+        if (!empty(request('imageBase64'))) {
+            $file = request('imageBase64')['base64'];
+            $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['filename'];
+            $img = Image::make($file);
+            $img->save(storage_path('app/public/' . $filename));
+        }
 
         $product->forceFill([
             'name' => trim(request('name')),
             'source_url' => trim(request('source_url')),
             'description' => request('description'),
             'status' => !! request('status'),
+            'image' => isset($filename) ? url('/') . '/storage/' . $filename : '',
         ])->save();
 
         $product->setChannels($channels);

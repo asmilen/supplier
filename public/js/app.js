@@ -8397,6 +8397,7 @@ function CategoryProductCreateController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.imageBase64 = {};
     }
 
     $scope.addProductForm = new addProductForm();
@@ -8484,7 +8485,7 @@ function ProductCreateController($scope, $http, $window) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-angular.module('controllers.productEdit', []).controller('ProductEditController', ProductEditController);
+angular.module('controllers.productEdit', ['naif.base64']).controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
 
@@ -8495,7 +8496,8 @@ function ProductEditController($scope, $http, $window) {
     function editProductForm() {
         this.name = '';
         this.source_url = '';
-        this.image = '';
+        this.image = {};
+        this.imageBase64 = {};
         this.description = '';
         this.channels = { 1: false, 2: false };
         this.status = true;
@@ -8543,6 +8545,7 @@ function ProductEditController($scope, $http, $window) {
     $scope.getProduct();
 
     $scope.update = function () {
+        console.log($scope.editProductForm);
         $scope.editProductForm.errors = [];
         $scope.editProductForm.disabled = true;
         $scope.editProductForm.successful = false;

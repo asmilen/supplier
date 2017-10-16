@@ -17,6 +17,7 @@ function CategoryProductCreateController($scope, $http, $window) {
         this.errors = [];
         this.disabled = false;
         this.successful = false;
+        this.imageBase64 = {};
     }
 
     $scope.addProductForm = new addProductForm();

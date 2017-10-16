@@ -73,7 +73,7 @@
 
             <div class="form-group">
                 <label for="image">Ảnh sản phẩm</label>
-                <input type="file" class="form-control" name="image" fileread="editProductForm.image" accept="image/*">
+                <input type="file" class="form-control" name="file" base-sixty-four-input ng-model="editProductForm.imageBase64" accept="image/*">
             </div>
 
             <div class="form-group" ng-if="product.image">

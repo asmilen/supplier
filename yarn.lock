@@ -75,6 +75,10 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-base64-upload@^0.1.23:
+  version "0.1.23"
+  resolved "https://registry.yarnpkg.com/angular-base64-upload/-/angular-base64-upload-0.1.23.tgz#ab99412a3b7617e69631eb36d5f034136e7a6935"
+
 angular-ui-bootstrap@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/angular-ui-bootstrap/-/angular-ui-bootstrap-2.5.0.tgz#2facefb915386655dc5f44150258032517236d01"

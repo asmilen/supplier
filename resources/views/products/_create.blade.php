@@ -80,6 +80,11 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        <div class="form-group">
+                            <label for="image">Ảnh sản phẩm</label>
+                            <input type="file" class="form-control" name="file" base-sixty-four-input ng-model="addProductForm.imageBase64" accept="image/*">
+                        </div>
                     </div>
                 </div>
 

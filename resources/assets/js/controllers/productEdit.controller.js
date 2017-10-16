@@ -1,5 +1,5 @@
 angular
-    .module('controllers.productEdit', [])
+    .module('controllers.productEdit', ['naif.base64'])
     .controller('ProductEditController', ProductEditController);
 
 ProductEditController.$inject = ['$scope', '$http', '$window'];
@@ -11,7 +11,8 @@ function ProductEditController($scope, $http, $window) {
     function editProductForm() {
         this.name = '';
         this.source_url = '';
-        this.image = '';
+        this.image = {};
+        this.imageBase64 = {};
         this.description = '';
         this.channels = {1: false, 2: false};
         this.status = true;
@@ -60,6 +61,7 @@ function ProductEditController($scope, $http, $window) {
     $scope.getProduct();
 
     $scope.update = function () {
+        console.log($scope.editProductForm);
         $scope.editProductForm.errors = [];
         $scope.editProductForm.disabled = true;
         $scope.editProductForm.successful = false;

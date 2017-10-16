@@ -38,6 +38,8 @@
 <script src="/vendor/ace/assets/js/respond.js"></script>
 <![endif]-->
 
+
+
 <!-- Scripts -->
 <script>
     window.Laradmin = {!! json_encode([
@@ -64,3 +66,4 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.8/angular.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="/js/angular-base64-upload.js"></script>

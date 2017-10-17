@@ -95,7 +95,7 @@ class ProductApiTransformer extends TransformerAbstract
             'id' => $data['id'],
             'name' => html_entity_decode($data['name']),
             'description' => $product->description,
-            'price' => (Int)$best_price,
+            'price' => (int)$best_price,
             'import_price' => $import_price,
             'import_price_w_margin' => $import_price_w_margin,
             'recommended_price' => $recommended_price,

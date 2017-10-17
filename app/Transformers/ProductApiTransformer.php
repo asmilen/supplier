@@ -52,11 +52,12 @@ class ProductApiTransformer extends TransformerAbstract
             ->first();// giá tốt nhất tìm được trong miền sau khi cộng margin và fee
 
         $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
-            ->where('supplier_id', $minPrice->supplier->id)
+            ->where('supplier_id', $minPrice->supplier_id)
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->orderBy('transport_fees.percent_fee')
             ->first(); // lấy phí vận chuyển thấp nhất của ncc cung cấp sản phẩm với giá tốt nhất
-        $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->pluck('province_id');
+
+        $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice ? $minPrice->supplier_id : 0)->pluck('province_id');
         //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
         $provinceFeeMax = TransportFee::whereIn('province_id', $this->provinceIds)->orderBy('percent_fee', 'DESC')->first();
@@ -73,7 +74,7 @@ class ProductApiTransformer extends TransformerAbstract
             ->where('product_supplier.product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
-            ->where('product_supplier.supplier_id',  $minPrice->supplier->id)
+            ->where('product_supplier.supplier_id',  $minPrice->supplier_id)
             ->leftJoin('products', 'product_supplier.product_id', 'products.id')
             ->first();
 

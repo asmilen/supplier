@@ -1,4 +1,5 @@
 require('angular-ui-bootstrap');
+require('angular-base64-upload');
 
 var app = angular.module('app', [
     'ui.bootstrap',

@@ -282,11 +282,8 @@ class ProductsController extends Controller
                     ->where('price_recommend', $product->best_price)
                     ->where('product_supplier.supplier_id', $minPrice[0]->supplier_id)
                     ->min('product_supplier.price_recommend');
-                if ($product->recommended_price){
-                    $product->official_price = $product->recommended_price;
-                }else{
-                    $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $minPrice[0]->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
-                }
+
+                $product->official_price = $product->recommended_price ? : ceil(rtrim(rtrim(sprintf('%f', $minPrice[0]->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
                 if ($product->recommended_price == $product->best_price) {
                     $suppliers = ProductSupplier::where('price_recommend', $product->best_price)

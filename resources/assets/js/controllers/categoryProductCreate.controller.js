@@ -14,6 +14,7 @@ function CategoryProductCreateController($scope, $http, $window) {
         this.description = '';
         this.channels = {1: false, 2: false};
         this.status = true;
+        this.image_base64 = null;
         this.errors = [];
         this.disabled = false;
         this.successful = false;

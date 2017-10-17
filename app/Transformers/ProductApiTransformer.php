@@ -81,6 +81,7 @@ class ProductApiTransformer extends TransformerAbstract
         $import_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * ($productFee - $w_margin) / 1000), '0'), '.')) * 1000;
         $import_price_w_margin = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFee / 1000), '0'), '.')) * 1000;
 
+
         $recommended_price = $data['recommended_price'] ? (Int)$data['recommended_price'] : 0;
         if ($recommended_price > 0) {
             $best_price = $recommended_price;

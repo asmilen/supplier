@@ -38,6 +38,8 @@
 <script src="/vendor/ace/assets/js/respond.js"></script>
 <![endif]-->
 
+
+
 <!-- Scripts -->
 <script>
     window.Laradmin = {!! json_encode([

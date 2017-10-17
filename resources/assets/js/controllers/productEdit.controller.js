@@ -11,11 +11,10 @@ function ProductEditController($scope, $http, $window) {
     function editProductForm() {
         this.name = '';
         this.source_url = '';
-        this.image = {};
-        this.imageBase64 = {};
         this.description = '';
         this.channels = {1: false, 2: false};
         this.status = true;
+        this.image_base64 = null;
         this.errors = [];
         this.successful = false;
         this.disabled = false;
@@ -49,7 +48,6 @@ function ProductEditController($scope, $http, $window) {
         $scope.editProductForm.source_url = $scope.product.source_url;
         $scope.editProductForm.description = $scope.product.description;
         $scope.editProductForm.status = $scope.product.status;
-        $scope.editProductForm.image = $scope.product.image;
 
         _.each($scope.product.channel.split(','), function (channelKey) {
             if (channelKey) {
@@ -61,15 +59,16 @@ function ProductEditController($scope, $http, $window) {
     $scope.getProduct();
 
     $scope.update = function () {
-        console.log($scope.editProductForm);
         $scope.editProductForm.errors = [];
         $scope.editProductForm.disabled = true;
         $scope.editProductForm.successful = false;
 
         $http.put('/products/' + PRODUCT_ID, $scope.editProductForm)
-            .then(function () {
+            .then(function (response) {
                 $scope.editProductForm.successful = true;
                 $scope.editProductForm.disabled = false;
+
+                $scope.product = response.data;
             })
             .catch(response => {
                 if (typeof response.data === 'object') {

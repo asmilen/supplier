@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use DB;
+use Image;
 use Sentinel;
 use Datatables;
 use Carbon\Carbon;
@@ -501,5 +502,24 @@ class Product extends Model
             'sourceUrl' => $this->source_url,
             'createdAt' => strtotime($this->created_at),
         ])));
+    }
+
+    public function setFeaturedImage($imageBase64)
+    {
+        if (empty($imageBase64)) {
+            return false;
+        }
+
+        $img = Image::make($imageBase64['base64']);
+
+        $filename = md5(uniqid() . '_' . time()) . '_' . $imageBase64['filename'];
+
+        $img->save(storage_path('app/public/' . $filename));
+
+        $this->forceFill([
+            'image' => url('/storage/' . $filename),
+        ])->save();
+
+        return $this;
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Intervention\Image\Facades\Image as Image;
 use Validator;
 use App\Models\Product;
 use App\Models\Category;
@@ -75,10 +74,10 @@ class ProductsController extends Controller
 
         Validator::make(request()->all(), [
             'name' => 'required|max:255|unique:products,name,' . $product->id,
-            'imageBase64' => 'product_image'
+            'image_base64' => 'nullable|image_base64'
         ], [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
-            'imageBase64.product_image' => 'Ảnh phải có định dạnh jpg/png và kích thước không quá 2MB',
+            'image_base64.image_base64' => 'Ảnh phải có định dạnh jpg/png và kích thước không quá 2MB',
         ])->after(function ($validator) use ($channels) {
             if (empty($channels)) {
                 $validator->errors()->add('channels', 'Bạn chưa chọn kênh bán hàng.');
@@ -92,18 +91,9 @@ class ProductsController extends Controller
             'status' => !! request('status'),
         ])->save();
 
-        $product->setChannels($channels);
-
-        if (!empty(request('imageBase64'))) {
-            $file = request('imageBase64')['base64'];
-            $filename = md5(uniqid() . '_' . time()) . '_' . request('imageBase64')['filename'];
-            $img = Image::make($file);
-            $img->save(storage_path('app/public/' . $filename));
-
-            $product->forceFill([
-                'image' => url('/') . '/storage/' . $filename,
-            ])->save();
-        }
+        $product
+            ->setChannels($channels)
+            ->setFeaturedImage(request('image_base64'));
 
         event(new ProductUpserted($product));
 

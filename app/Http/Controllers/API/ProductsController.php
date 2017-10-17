@@ -129,7 +129,7 @@ class ProductsController extends Controller
         return Datatables::eloquent($model)
             ->filter(function ($query) {
                 if (request()->has('sku')) {
-                    $query->where('products.sku',request('sku'));
+                    $query->where('products.sku', request('sku'));
                 }
                 if (request()->has('name')) {
                     $query->where('products.name', 'like', '%' . request('name') . '%');
@@ -152,6 +152,8 @@ class ProductsController extends Controller
      */
     public function detail($id)
     {
+        DB::enableQueryLog();
+
         /**
          * @var \Illuminate\Validation\Validator $validator
          */
@@ -200,27 +202,54 @@ class ProductsController extends Controller
             $provinceIds = Province::where('region_id', $regions[0])->pluck('id');
             $provinceFeeMax = TransportFee::whereIn('province_id', $provinceIds)->orderBy('percent_fee', 'DESC')->first();
 
-            $minPrice = ProductSupplier::where('product_id', $id)
-                ->where('product_supplier.region_id', $regions[0])
-                ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
-                ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
-                ->where('product_supplier.state', '=', 1)
-                ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
-                    $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))))'))
-                ->orderBy('transport_fees.percent_fee')
-                ->first(); // giá tốt nhất tìm được trong miền sau khi cộng margin và fee
+            $minPrice = DB::select("SELECT
+                                    product_supplier.*, supplier_supported_province.province_id, supplier_supported_province.province_name, transport_fees.percent_fee
+                                FROM
+                                    `product_supplier`
+                                LEFT JOIN `supplier_supported_province` ON `product_supplier`.`supplier_id` = `supplier_supported_province`.`supplier_id`
+                                LEFT JOIN `transport_fees` ON `transport_fees`.`province_id` = `supplier_supported_province`.`province_id`
+                                WHERE
+                                    `product_id` = ?
+                                AND `product_supplier`.`region_id` = ?
+                                AND `product_supplier`.`state` = 1
+                                ORDER BY
+                                    (
+                                        IF (
+                                            product_supplier.price_recommend > 0,
+                                            product_supplier.price_recommend,
+                                            product_supplier.import_price * (
+                                                ? + ? + (
+                                                    CASE
+                                                    WHEN supplier_supported_province.province_id = ? THEN
+                                                        0
+                                                    ELSE
+                                
+                                                    IF (
+                                                        transport_fees.percent_fee IS NULL,
+                                                        0,
+                                                        transport_fees.percent_fee / 100
+                                                    )
+                                                    END
+                                                )
+                                            )
+                                        )
+                                    ) ASC,
+                                    `transport_fees`.`percent_fee` ASC
+                                LIMIT 1
+                     ", [$id, $regions[0], $marginValue, $feeValue, $province[0]]);
+            // giá tốt nhất tìm được trong miền sau khi cộng margin và fee
 
             if ($minPrice) {
                 $provinceFeeMin = SupplierSupportedProvince::with('transportFee')
-                    ->where('supplier_id', $minPrice ? $minPrice->supplier->id : 0)
+                    ->where('supplier_id', $minPrice ? $minPrice[0]->supplier_id : 0)
                     ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
                     ->orderBy('transport_fees.percent_fee')
                     ->first(); // lấy phí vận chuyển thấp nhất của ncc cung cấp sản phẩm với giá tốt nhất
 
-                $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice->supplier ? $minPrice->supplier->id : 0)->pluck('province_id');
+                $supportedProvince = SupplierSupportedProvince::where('supplier_id', $minPrice ? $minPrice[0]->supplier_id : 0)->pluck('province_id');
                 //kiểm tra nhà cung cấp sản phẩm có hỗ trợ cho tỉnh mua hàng ko
 
-                if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : [])) {
+                if (in_array($province[0], $supportedProvince ? $supportedProvince->toArray() : []) || !$provinceFeeMin) {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01;
                 } else {
                     $productMargin = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFee ? $provinceFee->percent_fee : 0) * 0.01 + ($provinceFeeMin->transportFee ? $provinceFeeMin->transportFee->percent_fee : 0) * 0.01;
@@ -228,31 +257,31 @@ class ProductsController extends Controller
                 $productFeeMax = 1 + ($margin ? $margin->margin : 5) * 0.01 + ($provinceFeeMax ? $provinceFeeMax->percent_fee : 0) * 0.01 * 2;
                 $w_margin = ($margin ? $margin->margin : 5) * 0.01;
 
-                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $minPrice->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
+                $product->official_price = ceil(rtrim(rtrim(sprintf('%f', $minPrice[0]->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
                 $product->best_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
-                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice[0]->supplier_id)
                     ->min(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000))'));
 
                 $product->import_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
-                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice[0]->supplier_id)
                     ->min(DB::raw('ceil(product_supplier.import_price * (' . $productMargin . '-' . $w_margin . ')/1000) * 1000'));
 
                 $product->import_price_w_margin = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
-                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice[0]->supplier_id)
                     ->min(DB::raw('ceil(product_supplier.import_price * ' . $productMargin . '/1000) * 1000'));
 
                 $product->recommended_price = ProductSupplier::where('product_id', $id)
                     ->where('product_supplier.region_id', $regions[0])
                     ->where('product_supplier.state', '=', 1)
                     ->where('price_recommend', $product->best_price)
-                    ->where('product_supplier.supplier_id', $minPrice->supplier->id)
+                    ->where('product_supplier.supplier_id', $minPrice[0]->supplier_id)
                     ->min('product_supplier.price_recommend');
 
                 if ($product->recommended_price == $product->best_price) {

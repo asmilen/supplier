@@ -81,15 +81,21 @@ class ProductApiTransformer extends TransformerAbstract
         $import_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * ($productFee - $w_margin) / 1000), '0'), '.')) * 1000;
         $import_price_w_margin = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFee / 1000), '0'), '.')) * 1000;
 
-        $recommended_price = $data['recommended_price'] ? (int) $data['recommended_price'] : 0;
 
-        $official_price = $recommended_price > 0 ? $recommended_price : ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
+        $recommended_price = $data['recommended_price'] ? (Int)$data['recommended_price'] : 0;
+        if ($recommended_price > 0) {
+            $best_price = $recommended_price;
+            $official_price = $recommended_price;
+        } else {
+            $best_price = $import_price_w_margin;
+            $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
+        }
 
         return [
             'id' => $data['id'],
             'name' => html_entity_decode($data['name']),
             'description' => $product->description,
-            'price' => (int) $data['price'],
+            'price' => (int)$best_price,
             'import_price' => $import_price,
             'import_price_w_margin' => $import_price_w_margin,
             'recommended_price' => $recommended_price,

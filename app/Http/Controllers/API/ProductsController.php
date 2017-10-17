@@ -64,6 +64,10 @@ class ProductsController extends Controller
                     ->whereIn('product_supplier.region_id', $regionIds)
                     ->where('product_supplier.state', '=', 1);
             })
+            ->join('suppliers', function ($q) {
+                $q->on('product_supplier.supplier_id', '=', 'suppliers.id')
+                    ->where('suppliers.status', '=', 1);
+            })
             ->leftJoin('margin_region_category', function ($q) use ($regionIds) {
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->whereIn('margin_region_category.region_id', $regionIds);

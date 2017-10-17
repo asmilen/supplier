@@ -44,10 +44,8 @@ class ProductApiTransformer extends TransformerAbstract
         $minPrice = ProductSupplier::where('product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
-            ->leftJoin('suppliers', 'product_supplier.supplier_id', '=', 'suppliers.id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)
-            ->where('suppliers.status', '=', 1)
             ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
                 $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))))'))
             ->orderBy('transport_fees.percent_fee')

@@ -20,27 +20,17 @@ class CategoryProductsController extends Controller
             'channels' => 'required',
             'manufacturer_id' => 'required',
             'name' => 'required|max:255|unique:products',
+            'imageBase64' => 'product_image'
         ], [
             'name.unique' => 'Tên sản phẩm đã tồn tại.',
             'name.required' => 'Bạn chưa nhập tên sản phẩm.',
             'name.max' => 'Tên sản phẩm quá dài, tối đa 255 ký tự.',
             'channels.required' => 'Bạn chưa chọn kênh bán hàng.',
             'manufacturer_id.required' => 'Bạn chưa chọn nhà sản xuất.',
+            'imageBase64.product_image' => 'Ảnh phải có định dạnh jpg/png và kích thước không quá 2MB',
         ])->after(function ($validator) use ($channels) {
             if (empty($channels)) {
                 $validator->errors()->add('channels', 'Bạn chưa chọn kênh bán hàng.');
-            }
-
-            if (!empty(request('imageBase64'))) {
-                $image = request('imageBase64');
-
-                if ($image['filesize'] > 2000000){
-                    $validator->errors()->add('image', 'Ảnh không được vượt quá 2MB');
-                }
-
-                if (($image['filetype'] != 'image/png') && ($image['filetype'] != 'image/jpeg')){
-                    $validator->errors()->add('image', 'Định dạng ảnh phải là jpg hoặc png');
-                }
             }
         })->validate();
 

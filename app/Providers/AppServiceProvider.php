@@ -22,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
         Validator::extend('passcheck', function ($attribute, $value, $parameters, $validator) {
             return Hash::check($value, Sentinel::getUser()->password);
         });
+
+        Validator::extend('image_base64', function ($attribute, $value, $parameters, $validator) {
+            return $value['filesize'] < 2000000 && ($value['filetype'] == 'image/png' || $value['filetype'] == 'image/jpeg');
+        });
     }
 
     /**

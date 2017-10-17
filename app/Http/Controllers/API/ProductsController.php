@@ -152,8 +152,6 @@ class ProductsController extends Controller
      */
     public function detail($id)
     {
-        DB::enableQueryLog();
-
         /**
          * @var \Illuminate\Validation\Validator $validator
          */

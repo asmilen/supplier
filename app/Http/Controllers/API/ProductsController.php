@@ -221,7 +221,6 @@ class ProductsController extends Controller
                                                     WHEN supplier_supported_province.province_id = ? THEN
                                                         0
                                                     ELSE
-                                
                                                     IF (
                                                         transport_fees.percent_fee IS NULL,
                                                         0,

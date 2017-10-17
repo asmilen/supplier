@@ -42,12 +42,12 @@ class ProductApiTransformer extends TransformerAbstract
         $feeValue = $this->feeValue; //giá trị của phí ship của tỉnh mua hàng
 
         $minPrice = ProductSupplier::where('product_id', $data['id'])
-            ->where('product_supplier.region_id',  $regions[0])
+            ->where('product_supplier.region_id', $regions[0])
             ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('product_supplier.state', '=', 1)
             ->orderBy(DB::raw('(if(product_supplier.price_recommend > 0, product_supplier.price_recommend, product_supplier.import_price * (' .
-                $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0]  . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))))'))
+                $marginValue . '+' . $feeValue . '+' . '(case when supplier_supported_province.province_id = ' . $province[0] . ' then 0 else if(transport_fees.percent_fee is null, 0,transport_fees.percent_fee/100) end ))))'))
             ->orderBy('transport_fees.percent_fee')
             ->first();// giá tốt nhất tìm được trong miền sau khi cộng margin và fee
 
@@ -74,22 +74,25 @@ class ProductApiTransformer extends TransformerAbstract
             ->where('product_supplier.product_id', $data['id'])
             ->where('product_supplier.region_id', $regions[0])
             ->where('product_supplier.state', '=', 1)
-            ->where('product_supplier.supplier_id',  $minPrice->supplier_id)
+            ->where('product_supplier.supplier_id', $minPrice->supplier_id)
             ->leftJoin('products', 'product_supplier.product_id', 'products.id')
             ->first();
 
         $import_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * ($productFee - $w_margin) / 1000), '0'), '.')) * 1000;
         $import_price_w_margin = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFee / 1000), '0'), '.')) * 1000;
-        $official_price = ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
+
+        $recommended_price = $data['recommended_price'] ? (int) $data['recommended_price'] : 0;
+
+        $official_price = $recommended_price > 0 ? $recommended_price : ceil(rtrim(rtrim(sprintf('%f', $product->import_price * $productFeeMax / 1000), '0'), '.')) * 1000;
 
         return [
             'id' => $data['id'],
             'name' => html_entity_decode($data['name']),
             'description' => $product->description,
-            'price' => (Int)$data['price'],
+            'price' => (int) $data['price'],
             'import_price' => $import_price,
             'import_price_w_margin' => $import_price_w_margin,
-            'recommended_price' =>  $data['recommended_price'] ? (Int)$data['recommended_price'] : 0,
+            'recommended_price' => $recommended_price,
             'official_price' => $official_price,
             'source_url' => $data['image'],
             'sku' => $data['sku']

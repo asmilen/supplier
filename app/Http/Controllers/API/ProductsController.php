@@ -316,9 +316,13 @@ class ProductsController extends Controller
                     ]], is_array($product->suppliers) ? $product->suppliers : []);
                 }
 
+                $product->status = true;
+
                 return $product;
             } else {
-                return api_response(['message' => 'Sản phẩm không tồn tại hoặc không có nhà cung cấp'], 404);
+                $product->status = false;
+                $product->message = 'Sản phẩm không tồn tại hoặc không có nhà cung cấp';
+                return $product;
             }
 
         } catch (\Exception $e) {

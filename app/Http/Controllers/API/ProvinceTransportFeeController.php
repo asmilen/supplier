@@ -27,12 +27,12 @@ class ProvinceTransportFeeController extends Controller
             'percent_fee' => request('percent_fee'),
         ])->save();
 
-        dispatch(new PublishMessage('teko.sale', 'sale.percentShippingFee.upsert', json_encode([
+        dispatch(new PublishMessage('teko.sale', 'sale.percentShippingFee.upsert', [
             'province' => $transportFee->province->name,
             'addressCode' => $transportFee->province->code,
             'fee' => $transportFee->percent_fee,
             'createdAt' => $transportFee->updated_at->timestamp,
-        ])));
+        ]));
 
         return $transportFee;
     }

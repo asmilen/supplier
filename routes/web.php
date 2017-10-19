@@ -9,11 +9,14 @@ Auth::routes();
 Route::get('auth/google', 'Auth\AuthController@redirectToProvider');
 Route::get('auth/google/callback', 'Auth\AuthController@handleProviderCallback');
 Route::get('auth/teko/callback', 'Auth\AuthController@handleTekoCallback');
+
+Route::get('provinces', 'ProvincesController@index');
+Route::get('provinces/{province}/address-code', 'ProvincesController@getAddressCode');
 Route::get('provinces/{province}/districts', 'ProvinceDistrictsController@index');
-Route::get('provinces/{province}/addressCode', 'ProvinceDistrictsController@addressCode');
 Route::get('region/{bundle}/products', 'BundlesController@listProductByRegion');
 Route::get('products/getProductInCombo', 'ProductsController@getProductInCombo')->name('products.getProductInCombo');
 Route::get('products/getSimpleProduct', 'ProductsController@getSimpleProduct')->name('products.getSimpleProduct');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::get('dashboard', 'DashboardController@index');
 
@@ -68,6 +71,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         // Suppliers
         Route::get('suppliers/listing', 'SuppliersController@listing')->name('suppliers.listing');
+        Route::resource('suppliers', 'SuppliersController');
 
         // ProductCombos
         Route::get('combo/datatables', 'ComboController@getDatatables')->name('combo.datatables');
@@ -105,12 +109,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('suppliers/getSuppliers', 'SuppliersController@getSuppliers')->name('suppliers.getSuppliers');
         Route::post('suppliers/updateStatus', 'SuppliersController@updateStatus')->name('suppliers.updateStatus');
         Route::post('suppliers/updateIdProduct', 'SuppliersController@updateIdProduct')->name('suppliers.updateIdProduct');
-        Route::get('suppliers/getList', 'SuppliersController@getList')->name('suppliers.getList');
-        Route::get('suppliers/suppliersDatables', 'SuppliersController@suppliersDatables')->name('suppliers.suppliersDatables');
         Route::post('suppliers/exportExcel', 'SuppliersController@exportExcel')->name('suppliers.exportExcel');
         Route::post('suppliers/importExcel', 'SuppliersController@importExcel')->name('suppliers.importExcel');
         Route::post('suppliers/updateValidTime', 'SuppliersController@updateValidTime')->name('suppliers.updateValidTime');
-        Route::resource('suppliers', 'SuppliersController');
 
         // Transport Fees
         Route::resource('transport-fees', 'TransportFeesController', ['except' => 'destroy']);

@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use DB;
+use Sentinel;
+use App\Models\Product;
 use App\Jobs\PublishMessage;
+use App\Models\ProductSupplier;
+use App\Jobs\OffProductToMagento;
 use Illuminate\Database\Eloquent\Model;
 
 class Supplier extends Model
 {
     use Trackable, HasUpdater;
 
-    protected $with = ['supplierSupportedProvince', 'address'];
+    protected $with = ['supplierSupportedProvince', 'address', 'addresses', 'bankAccounts'];
 
     protected $casts = [
         'status' => 'boolean',

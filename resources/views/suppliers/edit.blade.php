@@ -126,6 +126,26 @@
                 </div>
             </form>
         </div>
+
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Thông tin địa chỉ
+                </div>
+                <div class="panel-body">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Tài khoản ngân hàng
+                </div>
+                <div class="panel-body">
+                </div>
+            </div>
+        </div>
     </div>
 </div><!-- /.page-content -->
 @endsection

@@ -12,6 +12,7 @@ var app = angular.module('app', [
     'controllers.productCreate',
     'controllers.supplierIndex',
     'controllers.supplierCreate',
+    'controllers.supplierEdit',
     'controllers.categoryProductCreate',
     'controllers.productSupplier',
     'controllers.productSaleprice',
@@ -36,6 +37,7 @@ require('./controllers/productCreate.controller.js');
 require('./controllers/categoryProductCreate.controller.js');
 require('./controllers/supplierIndex.controller.js');
 require('./controllers/supplierCreate.controller.js');
+require('./controllers/supplierEdit.controller.js');
 require('./controllers/productSupplier.controller.js');
 require('./controllers/productSaleprice.controller.js');
 require('./controllers/transportFeeIndex.controller.js');

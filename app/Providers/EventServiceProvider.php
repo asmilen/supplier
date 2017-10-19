@@ -24,6 +24,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'App\Events\SupplierUpserted' => [
             'App\Listeners\BroadcastSupplierUpserted',
+            'App\Listeners\OffInactiveSupplierProducts',
         ],
     ];
 

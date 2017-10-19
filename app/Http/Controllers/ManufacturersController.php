@@ -66,9 +66,8 @@ class ManufacturersController extends Controller
                         "homepage"  => request('homepage') ,
                         "createdAt" => strtotime($manufacturer->created_at)
                     ];
-        $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('teko.sale', 'sale.brand.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.brand.upsert', $jsonSend));
         flash()->success('Success!', 'Manufacturer successfully created.');
 
         return redirect()->route('manufacturers.index');
@@ -126,9 +125,8 @@ class ManufacturersController extends Controller
             "homepage"  => request('homepage') ,
             "createdAt" => strtotime($manufacturer->updated_at)
         ];
-        $messSend = json_encode($jsonSend);
 
-        dispatch(new PublishMessage('teko.sale', 'sale.brand.upsert', $messSend));
+        dispatch(new PublishMessage('teko.sale', 'sale.brand.upsert', $jsonSend));
 
         flash()->success('Success!', 'Manufacturer successfully updated.');
 

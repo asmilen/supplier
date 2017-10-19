@@ -8198,7 +8198,7 @@ module.exports = 'ui.bootstrap';
 __webpack_require__("./node_modules/angular-ui-bootstrap/index.js");
 __webpack_require__("./node_modules/angular-base64-upload/index.js");
 
-var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.supplierIndex', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
+var app = angular.module('app', ['ui.bootstrap', 'controllers.app', 'controllers.categoryIndex', 'controllers.categoryEdit', 'controllers.attributeIndex', 'controllers.productIndex', 'controllers.productEdit', 'controllers.productCreate', 'controllers.supplierIndex', 'controllers.supplierCreate', 'controllers.supplierEdit', 'controllers.categoryProductCreate', 'controllers.productSupplier', 'controllers.productSaleprice', 'controllers.transportFeeIndex', 'controllers.productSupplierIndex', 'directives.format', 'directives.currencyInput', 'directives.select2']);
 
 app.config(['$httpProvider', function ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
@@ -8213,6 +8213,8 @@ __webpack_require__("./resources/assets/js/controllers/productEdit.controller.js
 __webpack_require__("./resources/assets/js/controllers/productCreate.controller.js");
 __webpack_require__("./resources/assets/js/controllers/categoryProductCreate.controller.js");
 __webpack_require__("./resources/assets/js/controllers/supplierIndex.controller.js");
+__webpack_require__("./resources/assets/js/controllers/supplierCreate.controller.js");
+__webpack_require__("./resources/assets/js/controllers/supplierEdit.controller.js");
 __webpack_require__("./resources/assets/js/controllers/productSupplier.controller.js");
 __webpack_require__("./resources/assets/js/controllers/productSaleprice.controller.js");
 __webpack_require__("./resources/assets/js/controllers/transportFeeIndex.controller.js");
@@ -9445,6 +9447,173 @@ function ProductSupplierIndexController($scope, $http, $window, $filter) {
 
 /***/ }),
 
+/***/ "./resources/assets/js/controllers/supplierCreate.controller.js":
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.supplierCreate', []).controller('SupplierCreateController', SupplierCreateController);
+
+SupplierCreateController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function SupplierCreateController($scope, $http, $window) {
+    function addSupplierForm() {
+        this.name = '';
+        this.full_name = '';
+        this.code = '';
+        this.phone = '';
+        this.fax = '';
+        this.email = '';
+        this.website = '';
+        this.tax_number = '';
+        this.type = '0';
+        this.sup_type = '1';
+        this.price_active_time = 0;
+
+        // Address
+        this.province_id = '0';
+        this.district_id = '0';
+        this.address = '';
+        this.addressCode = '';
+        this.contact_name = '';
+        this.contact_mobile = '';
+        this.contact_phone = '';
+        this.contact_email = '';
+
+        // Bank Account
+        this.bank_account = '';
+        this.bank_account_name = '';
+        this.bank_name = '';
+        this.bank_code = '';
+        this.bank_branch = '';
+        this.bank_province = '';
+
+        this.status = true;
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.addSupplierForm = new addSupplierForm();
+
+    $scope.getProvinces = function () {
+        $http.get('/provinces').then(function (response) {
+            $scope.provinces = response.data;
+        });
+    };
+
+    $scope.getProvinces();
+
+    $scope.getDistricts = function () {
+        $http.get('/provinces/' + $scope.addSupplierForm.province_id + '/districts').then(function (response) {
+            $scope.districts = response.data;
+        });
+    };
+
+    $scope.getAddressCode = function () {
+        $http.get('/provinces/' + $scope.addSupplierForm.province_id + '/address-code').then(function (response) {
+            $scope.addSupplierForm.addressCode = response.data;
+        });
+    };
+
+    $scope.changeProvince = function () {
+        $scope.getDistricts();
+        $scope.getAddressCode();
+    };
+
+    $scope.store = function () {
+        $scope.addSupplierForm.errors = [];
+        $scope.addSupplierForm.disabled = true;
+
+        $http.post('/suppliers', $scope.addSupplierForm).then(function (response) {
+            $scope.addSupplierForm.disabled = false;
+
+            $window.location.href = '/suppliers';
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.addSupplierForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.addSupplierForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.addSupplierForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+
+/***/ "./resources/assets/js/controllers/supplierEdit.controller.js":
+/***/ (function(module, exports) {
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+angular.module('controllers.supplierEdit', []).controller('SupplierEditController', SupplierEditController);
+
+SupplierEditController.$inject = ['$scope', '$http', '$window'];
+
+/* @ngInject */
+function SupplierEditController($scope, $http, $window) {
+    function editSupplierForm() {
+        this.name = '';
+        this.full_name = '';
+        this.code = '';
+        this.phone = '';
+        this.fax = '';
+        this.email = '';
+        this.website = '';
+        this.tax_number = '';
+        this.type = '0';
+        this.sup_type = '1';
+        this.price_active_time = 0;
+        this.status = true;
+        this.errors = [];
+        this.disabled = false;
+    }
+
+    $scope.editSupplierForm = new editSupplierForm();
+
+    $scope.getSupplier = function () {
+        $http.get('/suppliers/' + SUPPLIER_ID).then(function (response) {
+            $scope.supplier = response.data;
+
+            $scope.editSupplierForm.name = response.data.name;
+            $scope.editSupplierForm.full_name = response.data.full_name;
+            $scope.editSupplierForm.code = response.data.code;
+            $scope.editSupplierForm.phone = response.data.phone;
+            $scope.editSupplierForm.fax = response.data.fax;
+            $scope.editSupplierForm.email = response.data.email;
+            $scope.editSupplierForm.website = response.data.website;
+            $scope.editSupplierForm.tax_number = response.data.tax_number;
+            $scope.editSupplierForm.type = response.data.type.toString();
+            $scope.editSupplierForm.sup_type = response.data.sup_type.toString();
+            $scope.editSupplierForm.price_active_time = response.data.price_active_time / 24;
+            $scope.editSupplierForm.status = response.data.status;
+        });
+    };
+
+    $scope.getSupplier();
+
+    $scope.update = function () {
+        $scope.editSupplierForm.errors = [];
+        $scope.editSupplierForm.disabled = true;
+
+        $http.put('/suppliers/' + SUPPLIER_ID, $scope.editSupplierForm).then(function (response) {
+            $scope.editSupplierForm.disabled = false;
+
+            $window.location.href = '/suppliers';
+        }).catch(function (response) {
+            if (_typeof(response.data) === 'object') {
+                $scope.editSupplierForm.errors = _.flatten(_.toArray(response.data));
+            } else {
+                $scope.editSupplierForm.errors = ['Something went wrong. Please try again.'];
+            }
+            $scope.editSupplierForm.disabled = false;
+        });
+    };
+}
+
+/***/ }),
+
 /***/ "./resources/assets/js/controllers/supplierIndex.controller.js":
 /***/ (function(module, exports) {
 
@@ -9473,7 +9642,6 @@ function SupplierIndexController($scope, $http) {
 
     $scope.refreshData = function () {
         $http.get('/suppliers/listing?q=' + $scope.searchForm.q + '&status=' + $scope.searchForm.status + '&sorting=' + $scope.searchForm.sorting + '&direction=' + $scope.searchForm.direction + '&page=' + $scope.searchForm.page + '&limit=' + $scope.searchForm.limit).then(function (response) {
-            console.log(response.data);
             $scope.suppliers = response.data.data;
             $scope.suppliersLoaded = true;
 

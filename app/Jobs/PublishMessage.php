@@ -30,7 +30,7 @@ class PublishMessage implements ShouldQueue
     {
         $this->exchange = $exchange;
         $this->routingKey = $routingKey;
-        $this->body = $body;
+        $this->body = json_encode($body);
     }
 
     /**

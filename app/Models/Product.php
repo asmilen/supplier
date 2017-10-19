@@ -85,7 +85,7 @@ class Product extends Model
 
         $this->saleprices()->save($saleprice);
 
-        dispatch(new PublishMessage('teko.sale', 'sale.price.update', json_encode([
+        dispatch(new PublishMessage('teko.sale', 'sale.price.update', [
             'storeId' => $saleprice->store_id,
             'storeName' => config('teko.stores')[$saleprice->store_id],
             'regionId' => $saleprice->region_id,
@@ -94,7 +94,7 @@ class Product extends Model
             'sku' => $this->sku,
             'price' => $saleprice->price,
             'createdAt' => time(),
-        ])));
+        ]));
 
         return $this;
     }
@@ -491,7 +491,7 @@ class Product extends Model
 
     public function broadcastUpserted()
     {
-        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', json_encode([
+        dispatch(new PublishMessage('teko.sale', 'sale.product.upsert', [
             'id' => $this->id,
             'categoryId' => $this->category_id,
             'brandId' => $this->manufacturer_id,
@@ -502,7 +502,7 @@ class Product extends Model
             'status' => $this->status ? 'active' : 'inactive',
             'sourceUrl' => $this->source_url,
             'createdAt' => strtotime($this->created_at),
-        ])));
+        ]));
     }
 
     public function setFeaturedImage($imageBase64)

@@ -31,7 +31,6 @@ function SupplierIndexController($scope, $http) {
             '&page=' + $scope.searchForm.page +
             '&limit=' + $scope.searchForm.limit)
             .then(response => {
-                console.log(response.data);
                 $scope.suppliers = response.data.data;
                 $scope.suppliersLoaded = true;
 

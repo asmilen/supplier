@@ -191,6 +191,7 @@ class Product extends Model
                         $importPrice = ProductSupplier::where('product_id', $product->id)
                             ->where('product_supplier.region_id', $regionId)
                             ->where('product_supplier.state', '=', 1)
+                            ->where('product_supplier.price_recommend', '=', 0)
                             ->orderBy('product_supplier.import_price')
                             ->first();
 

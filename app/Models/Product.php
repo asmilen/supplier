@@ -234,7 +234,7 @@ class Product extends Model
                                     ]
                                 ]
                             ];
-\Log::info($post_data);
+
                             $log = PostPriceToMgtLog::where('product_id', $product->id)
                                 ->where('region_id', $regionId ? $regionId : 0)
                                 ->orderBy('created_at', 'DESC')

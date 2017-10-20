@@ -72,7 +72,7 @@ class ProductsController extends Controller
                 $q->on('margin_region_category.category_id', '=', 'products.category_id')
                     ->whereIn('margin_region_category.region_id', $regionIds);
             })
-            ->leftJoin('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
+            ->join('supplier_supported_province', 'product_supplier.supplier_id', '=', 'supplier_supported_province.supplier_id')
             ->leftJoin('transport_fees', 'transport_fees.province_id', '=', 'supplier_supported_province.province_id')
             ->where('products.status', 1);
 

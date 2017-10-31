@@ -59,6 +59,20 @@ return [
             'engine' => null,
         ],
 
+        'magento' => [
+            'driver' => 'mysql',
+            'host' => env('MAGENTODB_HOST', '127.0.0.1'),
+            'port' => env('MAGENTODB_PORT', '3306'),
+            'database' => env('MAGENTODB_DATABASE', 'forge'),
+            'username' => env('MAGENTODB_USERNAME', 'forge'),
+            'password' => env('MAGENTODB_PASSWORD', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
